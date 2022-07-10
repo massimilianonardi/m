@@ -1,0 +1,48 @@
+#!/bin/sh
+
+#-------------------------------------------------------------------------------
+
+main()
+(
+  TYPE="$(file "$1")"
+  EXIT_CODE="$?"
+  if [ "$EXIT_CODE" != "0" ]
+  then
+    log_fatal "EXIT_CODE: $EXIT_CODE"
+    exit "$EXIT_CODE"
+  fi
+  
+  if [ "$TYPE" != "${TYPE#*tar}" ]
+  then
+    echo "tar"
+  elif [ "$TYPE" != "${TYPE#*gzip}" ]
+  then
+    echo "gzip"
+  elif [ "$TYPE" != "${TYPE#*bzip}" ]
+  then
+    echo "bzip"
+  elif [ "$TYPE" != "${TYPE#*XZ}" ]
+  then
+    echo "xz"
+  elif [ "$TYPE" != "${TYPE#*Zip}" ]
+  then
+    echo "zip"
+  elif [ "$TYPE" != "${TYPE#*zlib}" ]
+  then
+    echo "zlib"
+  else
+    log_fatal "unknown type: $TYPE"
+#    echo "undefined"
+    exit 1
+  fi
+)
+
+#-------------------------------------------------------------------------------
+
+#export PATH="$(cd -P -- "${0%/*}"; pwd):$PATH"
+
+. m.lib.sh
+
+m_command "$@"
+
+#-------------------------------------------------------------------------------

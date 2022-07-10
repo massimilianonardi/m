@@ -1,0 +1,3 @@
+#!/bin/sh
+
+"$(dirname "$(path -al "$0")")/../bin/Android Studio.app/Contents/MacOS/studio"

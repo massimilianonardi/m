@@ -1,0 +1,13 @@
+#!/bin/sh
+
+[ "$#" -ne 1 ] && echo "bad script arguments: need commit message!" && exit 1
+
+BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+echo "BRANCH: $BRANCH"
+[ -z "$BRANCH" ] && echo "empty branch!" && exit 1
+
+git add --all && \
+git commit -m "$1" && \
+git push origin "$BRANCH"
+
+git status

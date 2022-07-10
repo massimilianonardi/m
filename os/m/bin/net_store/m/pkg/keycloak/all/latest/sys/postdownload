@@ -1,0 +1,5 @@
+postdownload()
+(
+  copy -cf "$INSTALL_DIR/bin/standalone" "$INSTALL_DIR/def/home/"
+  copy -cf "$INSTALL_DIR/bin/domain" "$INSTALL_DIR/def/home/"
+)

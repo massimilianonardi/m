@@ -1,0 +1,166 @@
+
+https://192.168.253.136:8443/m/authenticator.id
+https://192.168.253.136:8443/m/authenticator.profiles
+https://192.168.253.136:8443/m/authenticator.authenticate?id=admin&credential=admin
+https://192.168.253.136:8443/m/app/framework_legacy/scan_edit
+
+https://192.168.253.136:8443/m/store/edit/test?data=test_text
+https://192.168.253.136:8443/m/store/edit/testdir/test?data=test_text
+https://192.168.253.136:8443/m/store/list
+https://192.168.253.136:8443/m/store/find/testdir
+https://192.168.253.136:8443/m/store/read/test
+https://192.168.253.136:8443/m/store/read/testdir/test
+
+http://localhost:18080/m/node/edit/test?data=test_text
+http://localhost:18080/m/node/edit/testdir/test?data=testdir_text
+http://localhost:18080/m/node/list
+http://localhost:18080/m/node/find/testdir
+http://localhost:18080/m/node/read/test
+http://localhost:18080/m/node/read/testdir/test
+http://localhost:18080/m/node/create/node_01
+http://localhost:18080/m/node/create/node_02
+http://localhost:18080/m/node/create/node_03
+http://localhost:18080/m/node/link/path_1_2?parentID=node_01&childID=node_02
+http://localhost:18080/m/node/link/path_1_3?parentID=node_01&childID=node_03
+http://localhost:18080/m/node/link/path_1_3_bis?parentID=node_01&childID=node_03
+http://localhost:18080/m/node/link/path_2_3?parentID=node_02&childID=node_03
+http://localhost:18080/m/node/childNodesByPath/node_01
+http://localhost:18080/m/node/parentNodes/node_03
+http://localhost:18080/m/node/parentNodePaths/node_03/node_01
+http://localhost:18080/m/node/parentPaths/node_03
+http://localhost:18080/m/node/parentPathNodes/node_03/path_1_3
+http://localhost:18080/m/node/unlink/path_1_2?parentID=node_01&childID=node_02
+http://localhost:18080/m/node/unlink/?parentID=node_01&childID=node_02
+
+
+
+mkdir -p /m; cd /m; git clone ssh://root@max.rpr-spa.it/m/src src; cd src; git status
+cd /m; /m/src/m/os/install/install dev
+
+cd /m/src; ./.mk/git/fetch-reset
+cd /m/src; /m/m netbeans>/dev/null 2>&1
+cd /m/src; /m/m
+cd /m/src; ./.mk/git/commit ""
+
+mk m/web --profile debug -- dependclean clean depend build test
+
+
+
+apt-get install sshfs
+mkdir sshfs-dir
+#sshfs -o allow_other,defer_permissions root@xxx.xxx.xxx.xxx:/ /mnt/sshfolder
+sshfs root@10.100.0.250:/ /mnt/sshfs-dir
+umount sshfs-dir; ls -la /mnt/sshfs-dir
+
+scp -v root@10.100.0.251:/DATA/backup/pg_db_bak_WEBGIS.sql /tmp/pg_db_bak_WEBGIS.sql
+scp -v /tmp/pg_db_bak_WEBGIS.sql massimiliano.nardi@10.173.9.169:/tmp/pg_db_bak_WEBGIS.sql
+scp -v /tmp/pg_db_bak_WEBGIS.sql massimiliano.nardi@10.173.9.175:/tmp/pg_db_bak_WEBGIS.sql
+rm /tmp/pg_db_bak_WEBGIS.sql; ls -la /tmp
+
+scp -r /m/pkg/geoserver massimiliano.nardi@10.173.9.136:/tmp
+scp -r /m/pkg/geoserver massimiliano.nardi@10.173.9.137:/tmp
+
+ssh massimiliano.nardi@10.173.9.136
+ssh massimiliano.nardi@10.173.9.137
+ssh massimiliano.nardi@10.173.9.169
+ssh massimiliano.nardi@10.173.9.175
+
+su postgres
+dropdb WEBGIS; createdb WEBGIS; psql -d WEBGIS -f /tmp/pg_db_bak_WEBGIS.sql 1>/tmp/stdout.log 2>/tmp/stderr.log
+cd /m/data/postgres_bak; dropdb WEBGIS; createdb WEBGIS; psql -d WEBGIS -f pg_db_bak_WEBGIS.sql 1>stdout.log 2>stderr.log
+
+su postgres --preserve-environment -s /bin/sh <<'EOF'
+cd /m/data/postgres_bak
+dropdb WEBGIS
+createdb WEBGIS
+psql -d WEBGIS -c "CREATE EXTENSION postgis; CREATE EXTENSION postgis_topology; SELECT PostGIS_full_version();"
+psql -d WEBGIS -c "CREATE ROLE "WEBGIS" NOSUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION;"
+psql -d WEBGIS -c "CREATE ROLE webgis LOGIN ENCRYPTED PASSWORD 'md5d39eb0e75d22d9f5976a76e7a97f70ac' NOSUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION;"
+psql -d WEBGIS -c "GRANT "WEBGIS" TO webgis;"
+psql -d WEBGIS -c "CREATE ROLE nic LOGIN ENCRYPTED PASSWORD 'md52e404807bfb60b1e6b61ca840a7f7dc7' NOSUPERUSER NOINHERIT NOCREATEDB NOCREATEROLE NOREPLICATION;"
+psql -d WEBGIS -f pg_db_bak_WEBGIS.sql 1>stdout.log 2>stderr.log
+EOF
+
+
+reverse proxy + many servers on firewalled private network
+many services on different servers bound on private-network-ip http-only firewalled so that cannot be accessed from outside network (only by exposed proxy)
+
+or
+
+2 failover haproxy load balancer and reverse proxy versus many servers for servers path mapping and http/https enable/redirect and certificate management
+private network and firewall only to protect load balancing functionality bypass
++
+haproxy on port 80/443 (or java-proxy on 8080/8443) for server paths mapping to different services on different ports
+many services on same server bound on 127.0.0.1 http-only that cannot be accessed from outside server (only by exposed proxy)
+custom, keycloak, wildfly+keycloak-adapter (network configuration of keycloak vs wildfly may be anything: all on same server, clustered, etc.)
++
+shared filesystem
++
+shared database
+
+
+
+auth/
+  attribute/
+  authentication/
+    id/
+      <username> -> password-salted-hash
+    qr/
+  profiler/
+    attribute/
+    authentication/
+      id/
+        <username> -> link to profile
+      qr/
+    session/
+  profiles/
+    location/
+      city/
+      state/
+    network/
+      internet/
+      intranet/
+      lan/
+      wan/
+    role/
+      sysadmin/
+      guest/
+    session/
+      anonymous/
+      authenticated/
+
+
+
+--------------------------------------------------------------------------------
+
+NATURE
+------
+
+sviluppo di linguaggi e metodologie per la comunicazione con animali di diversi gradi di intelligenza e canali di comunicazione
+anche tramite l'uso di strumenti tecnologici ed ai per la creazione di tali linguaggi e traduzione.
+tecniche di insegnamento per gli animali e sviluppo della loro intelligenza cognitiva: consapevolezza del se, ecc.
+
+
+--------------------------------------------------------------------------------
+
+MOVIES AND VIDEOGAMES
+---------------------
+
+film e giochi convergeranno
+
+i film diventeranno interattivi e col tempo sempre di più con diversi percorsi di trama, col tempo finali sempre più divergenti
+
+i giochi aumenteranno l'interazione verso la realtà aumentata
+
+vedere un film al cinema sarà un'esperienza interattiva collettiva, dove la trama sarà condizionata dal "voto in sala" (pulsantiera o brainscan per indicare il mood, 
+in base al mood, si evolve la trama in un verso anzichè un altro). poi uno può "rigiocare" il film a casa da solo o con gli amici per un'esperienza diversa.
+
+il virtual-game può essere lanciato in modo passivo scegliendo una delle trame o la trama progettata dal regista (= film), oppure essere totalmente interattivo e 
+consentire di esplorare e di agire in maniera del tutto svincolata
+
+questa convergenza sarà totale quando la digital graphics diventerà totalmente realistica (virtual reality)
+
+la virtual reality sarà inizialmente realizzata tramite integrazione di filmati reali digitalizzazioni di attori reali (per i vari movimenti ed espressioni) con 
+computer graphics pura
+
+--------------------------------------------------------------------------------

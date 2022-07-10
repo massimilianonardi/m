@@ -1,0 +1,42 @@
+#!/bin/sh
+
+M_PATH="m/os/m"
+
+INSTALL_DIR="$(cd "${0%/*}"; pwd)"
+
+if [ -z "$1" ] || [ "$1" = "dev" ]
+then
+  ROOT_DIR="${INSTALL_DIR%/src/*}"
+  SRC_DIR="$ROOT_DIR/src"
+else
+  ROOT_DIR="$1"
+  SRC_DIR="${INSTALL_DIR%/src/*}/src"
+fi
+
+PKG_DIR="$ROOT_DIR/pkg"
+
+PATH="$SRC_DIR/src/$M_PATH/bin:$PATH"
+export PATH
+
+mkdir -p "$PKG_DIR"
+
+if [ "$2" = "dev" ]
+then
+  ln -s "$SRC_DIR" "$ROOT_DIR/src"
+fi
+
+if [ "$1" = "dev" ] || [ "$2" = "dev" ]
+then
+  ln -s "../src/$M_PATH" "$PKG_DIR/m"
+  rm -f "$ROOT_DIR/m"
+  ln -s "./src/m/os/install/m" "$ROOT_DIR/m"
+else
+  cp -R "$SRC_DIR/$M_PATH" "$PKG_DIR"
+  cp -R "$INSTALL_DIR/m" "$ROOT_DIR"
+  rm -Rf "$PKG_DIR/m/.mk"
+fi
+
+#"$ROOT_DIR/m" mk "$INSTALL_DIR/src/os/shell"
+#"$ROOT_DIR/m" pkg install nodejs
+#"$ROOT_DIR/m" npm install -g electron
+#"$ROOT_DIR/m"

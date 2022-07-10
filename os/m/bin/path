@@ -1,0 +1,260 @@
+#!/bin/sh
+
+#-------------------------------------------------------------------------------
+
+switch_a()
+{
+  PATH_ABSOLUTE="true"
+}
+
+switch_e()
+{
+  PATH_EXIST="true"
+}
+
+switch_l()
+{
+  PATH_RESOLVE_LINKS="true"
+}
+
+switch_L()
+{
+  PATH_RESOLVE_REFERENCE_LINKS="true"
+}
+
+switch_r()
+{
+  PATH_ABSOLUTE="false"
+}
+
+switch_R()
+{
+  PATH_RELATIVE="true"
+}
+
+#-------------------------------------------------------------------------------
+
+main()
+(
+  if [ "$#" -gt "0" ]
+  then
+    PATH_ARG="$1"
+    shift
+    if [ -n "$1" ]
+    then
+      PATH_ABSOLUTE="false"
+      PATH_REFERENCE="$1"
+    else
+      PATH_REFERENCE="$(pwd)" || exit "$?"
+    fi
+  else
+    echo "missing arguments">&2
+    exit 1
+  fi
+  
+  PATH_CONVERTED="$PATH_ARG"
+  
+  if [ -z "$PATH_ABSOLUTE" ]
+  then
+    if [ "$PATH_CONVERTED" = "${PATH_CONVERTED#/}" ]
+    then
+      PATH_ABSOLUTE="false"
+    else
+      PATH_ABSOLUTE="true"
+    fi
+  fi
+  
+  PATH_CONVERTED="$(path_absolute "$PATH_CONVERTED")"
+  PATH_CONVERTED="$(path_canonicalize "$PATH_CONVERTED")"
+  
+  PATH_REFERENCE="$(path_absolute "$PATH_REFERENCE")"
+  PATH_REFERENCE="$(path_canonicalize "$PATH_REFERENCE")"
+  
+  if [ "$PATH_EXIST" = "true" ]
+  then
+    path_exist "$PATH_CONVERTED" && exit 1
+    [ "$PATH_ABSOLUTE" = "false" ] && [ ! -d "$PATH_REFERENCE" ] && echo "reference path does not exist">&2 && exit 1
+  fi
+  
+  [ "$PATH_RESOLVE_REFERENCE_LINKS" != "true" ] || PATH_REFERENCE="$(path_resolve_links "$PATH_REFERENCE")" || exit "$?"
+  [ "$PATH_RESOLVE_LINKS" != "true" ] || PATH_CONVERTED="$(path_resolve_links "$PATH_CONVERTED")" || exit "$?"
+  
+  [ "$PATH_ABSOLUTE" != "false" ] || PATH_CONVERTED="$(path_relativize "$PATH_CONVERTED" "$PATH_REFERENCE")" || exit "$?"
+  
+  [ "$PATH_RELATIVE" != "true" ] || PATH_CONVERTED="${PATH_CONVERTED#./}"
+  
+  echo "$PATH_CONVERTED"
+)
+
+#-------------------------------------------------------------------------------
+
+path_absolute()
+(
+  [ -z "$1" ] && pwd && exit 0
+  
+  PATH_CONVERTED="$1"
+  
+  if [ "$PATH_CONVERTED" = "${PATH_CONVERTED#/}" ]
+  then
+    PATH_CONVERTED="${PATH_CONVERTED#./}"
+    PATH_CONVERTED="$(pwd)/$PATH_CONVERTED"
+  fi
+  
+  echo "$PATH_CONVERTED"
+)
+
+#-------------------------------------------------------------------------------
+
+path_canonicalize()
+(
+  [ -z "$1" ] && echo "cannot canonicalize null paths">&2 && exit 1
+  
+  PATH_CONVERTED="$1"
+  
+  if [ "$PATH_CONVERTED" = "${PATH_CONVERTED#/}" ] && [ "$PATH_CONVERTED" = "${PATH_CONVERTED#./}" ] && [ "$PATH_CONVERTED" = "${PATH_CONVERTED#../}" ]
+  then
+    PATH_CONVERTED="./$PATH_CONVERTED"
+  fi
+  
+  while [ "$PATH_CONVERTED" != "${PATH_CONVERTED%//*}" ]
+  do
+    PATH_CONVERTED_PREFIX="${PATH_CONVERTED%//*}"
+    PATH_CONVERTED_SUFFIX="${PATH_CONVERTED#$PATH_CONVERTED_PREFIX//}"
+    PATH_CONVERTED="$PATH_CONVERTED_PREFIX/$PATH_CONVERTED_SUFFIX"
+  done
+  
+  PATH_CONVERTED="${PATH_CONVERTED%/}"
+  
+  while [ "$PATH_CONVERTED" != "${PATH_CONVERTED%/./*}" ]
+  do
+    PATH_CONVERTED_PREFIX="${PATH_CONVERTED%/./*}"
+    PATH_CONVERTED_SUFFIX="${PATH_CONVERTED#$PATH_CONVERTED_PREFIX/./}"
+    PATH_CONVERTED="$PATH_CONVERTED_PREFIX/$PATH_CONVERTED_SUFFIX"
+  done
+  
+  PATH_CONVERTED="${PATH_CONVERTED%/.}"
+  
+  PATH_REFERENCE=""
+  
+  while [ "$PATH_CONVERTED" != "${PATH_CONVERTED#../}" ]
+  do
+    PATH_CONVERTED="${PATH_CONVERTED#../}"
+    PATH_REFERENCE="../$PATH_REFERENCE"
+  done
+  
+  PATH_CONVERTED="$PATH_CONVERTED/"
+  
+  while [ "$PATH_CONVERTED" != "${PATH_CONVERTED#*/../}" ]
+  do
+    PATH_CONVERTED_SUFFIX="${PATH_CONVERTED#*/../}"
+    PATH_CONVERTED_PREFIX="${PATH_CONVERTED%/../$PATH_CONVERTED_SUFFIX}"
+    PATH_CONVERTED_PREFIX="${PATH_CONVERTED_PREFIX%/*}"
+    PATH_CONVERTED="$PATH_CONVERTED_PREFIX/$PATH_CONVERTED_SUFFIX"
+  done
+  
+  PATH_CONVERTED="${PATH_CONVERTED%/}"
+  
+  [ -n "$PATH_REFERENCE" ] && PATH_CONVERTED="$PATH_REFERENCE$PATH_CONVERTED"
+  
+  [ -z "$PATH_CONVERTED" ] && PATH_CONVERTED="/"
+  
+  echo "$PATH_CONVERTED"
+)
+
+#-------------------------------------------------------------------------------
+
+path_exist()
+(
+  if [ -f "$1" ] || [ -d "$1" ]
+  then
+    exit 0
+  else
+    echo "path does not exist">&2
+    exit 1
+  fi
+)
+
+#-------------------------------------------------------------------------------
+
+path_resolve_links()
+(
+  [ -z "$1" ] && echo "cannot resolve null paths">&2 && exit 1
+  
+  PATH_CONVERTED="$1"
+  
+  if [ -d "$PATH_CONVERTED" ]
+  then
+    PATH_CONVERTED="$(cd -P -- "$PATH_CONVERTED" && pwd -P)" || exit "$?"
+  elif [ -f "$PATH_CONVERTED" ]
+  then
+    PATH_CONVERTED_PREFIX="${PATH_CONVERTED%/*}"
+    PATH_CONVERTED_SUFFIX="${PATH_CONVERTED#$PATH_CONVERTED_PREFIX/}"
+    PATH_CONVERTED_PREFIX="$(cd -P -- "$PATH_CONVERTED_PREFIX" && pwd -P)" || exit "$?"
+    PATH_CONVERTED="$PATH_CONVERTED_PREFIX/$PATH_CONVERTED_SUFFIX"
+    PATH_CONVERTED_SUFFIX="$(ls -l "$PATH_CONVERTED")"
+    if [ "$PATH_CONVERTED_SUFFIX" != "${PATH_CONVERTED_SUFFIX#* $PATH_CONVERTED -> }" ]
+    then
+      PATH_CONVERTED_SUFFIX="${PATH_CONVERTED_SUFFIX#* $PATH_CONVERTED -> }"
+      PATH_CONVERTED="$PATH_CONVERTED_PREFIX/$PATH_CONVERTED_SUFFIX"
+      PATH_CONVERTED="$(path_canonicalize "$PATH_CONVERTED")" || exit "$?"
+    fi
+  else
+    echo "path does not exist">&2
+  fi
+  
+  echo "$PATH_CONVERTED"
+)
+
+#-------------------------------------------------------------------------------
+
+path_relativize()
+(
+  [ -z "$1" -o -z "$2" ] && echo "cannot relativize null paths">&2 && exit 1
+  
+  PATH_CONVERTED="$1"
+  PATH_REFERENCE="$2"
+  
+  if [ "$PATH_CONVERTED" != "${PATH_CONVERTED#$PATH_REFERENCE}" ]
+  then
+    PATH_CONVERTED=".${PATH_CONVERTED#$PATH_REFERENCE}"
+  else
+    PATH_CONVERTED_PREFIX="$PATH_CONVERTED"
+    PATH_CONVERTED_SUFFIX=""
+    
+    while [ "$PATH_REFERENCE" = "${PATH_REFERENCE#$PATH_CONVERTED_PREFIX}" ] && [ -n "$PATH_CONVERTED_PREFIX" ]
+    do
+      PATH_CONVERTED_PREFIX="${PATH_CONVERTED_PREFIX%/*}"
+      PATH_CONVERTED_SUFFIX="${PATH_CONVERTED#$PATH_CONVERTED_PREFIX/}"
+    done
+    
+    PATH_CONVERTED="${PATH_CONVERTED#$PATH_CONVERTED_PREFIX/}"
+    PATH_REFERENCE="${PATH_REFERENCE#$PATH_CONVERTED_PREFIX/}"
+    PATH_CONVERTED="${PATH_CONVERTED#/}"
+    PATH_REFERENCE="${PATH_REFERENCE#/}"
+    
+    while [ "$PATH_REFERENCE" != "${PATH_REFERENCE%/*}" ]
+    do
+      PATH_CONVERTED="../$PATH_CONVERTED"
+      PATH_REFERENCE="${PATH_REFERENCE%/*}"
+    done
+    
+    PATH_CONVERTED="../$PATH_CONVERTED"
+  fi
+  
+  echo "${PATH_CONVERTED%/}"
+)
+
+#-------------------------------------------------------------------------------
+
+#export PATH="$(cd -P -- "${0%/*}"; pwd):$PATH"
+
+. m.lib.sh
+
+ARGS_PARSE="true"
+ARGS_FORMAT="smart"
+ARGS_SWITCH="aelLrR"
+ARGS_SWITCH_FUNCTION_PREFIX="switch"
+
+m_command "$@"
+
+#-------------------------------------------------------------------------------

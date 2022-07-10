@@ -1,0 +1,182 @@
+#!/bin/bash
+
+## todo test if prj dir is link
+##if [ -z "$SRC_DIR" ] || [ ! -d "$SRC_DIR/$1" ]
+#if [ -z "$SRC_DIR" ]
+#then
+#  exit 1
+#fi
+#
+#cd "$SRC_DIR/$1"
+#if [ "$?" != "0" ]
+#then
+#  exit 1
+#fi
+#
+#pwd
+#
+#shift
+#
+#git "$@"
+
+#-------------------------------------------------------------------------------
+
+clone()
+(
+  if [ -z "$1" ]
+  then
+    exit 1
+  fi
+  
+  git clone "$@"
+)
+
+#-------------------------------------------------------------------------------
+
+commit()
+(
+  if [ -z "$1" ]
+  then
+    exit 1
+  fi
+  
+  BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+  echo "BRANCH: $BRANCH"
+  [ -z "$BRANCH" ] && echo "empty branch!" && exit 1
+  
+  for k in *
+  do
+    [ -d "$k/.git" ] && mv "$k/.git" "$k/.git_"
+  done
+  
+  git add --all && \
+  git commit -m "$1" && \
+  git push origin "$BRANCH"
+  EXIT_CODE="$?"
+  
+  git status
+  
+  for k in *
+  do
+    [ -d "$k/.git_" ] && mv "$k/.git_" "$k/.git"
+  done
+  
+  exit "$EXIT_CODE"
+)
+
+#-------------------------------------------------------------------------------
+
+push()
+(
+  if [ -z "$1" ]
+  then
+    exit 1
+  fi
+  
+  git push "$@"
+)
+
+#-------------------------------------------------------------------------------
+
+pull()
+(
+  if [ -z "$1" ]
+  then
+    exit 1
+  fi
+  
+  git pull "$@"
+)
+
+#-------------------------------------------------------------------------------
+
+branch()
+(
+  if [ -z "$1" ]
+  then
+    git rev-parse --abbrev-ref HEAD
+  elif [ "$1" = "list" ]
+  then
+    git branch -l
+    git branch -r -l
+  else
+    echo todo branch change
+  fi
+)
+
+#-------------------------------------------------------------------------------
+
+reset()
+(
+  git fetch origin
+
+  BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+  echo "BRANCH: $BRANCH"
+  [ -z "$BRANCH" ] && echo "empty branch!" && exit 1
+  
+  for k in *
+  do
+    [ -d "$k/.git" ] && mv "$k/.git" "$k/.git_"
+  done
+  
+  git reset --hard origin/"$BRANCH"
+  EXIT_CODE="$?"
+  
+  for k in *
+  do
+    [ -d "$k/.git_" ] && mv "$k/.git_" "$k/.git"
+  done
+  
+  exit "$EXIT_CODE"
+)
+
+#-------------------------------------------------------------------------------
+
+main()
+{
+  if [ "$#" -lt "2" ]
+  then
+    exit 1
+  fi
+  
+  case "$1" in
+    "clone") true;;
+    "commit") true;;
+    "push") true;;
+    "pull") true;;
+    "branch") true;;
+    "reset") true;;
+    "git") true;;
+    *) exit 1;;
+  esac
+  
+  if [ "$1" = "clone" ]
+  then
+    shift
+    PRJ_DIR="$SRC_DIR/$1"
+    shift
+    set -- "clone" "$@" "$PRJ_DIR"
+  elif [ "$1" != "git" ]
+  then
+    COMMAND="$1"
+    
+    mk_project_detect "$2"
+    shift
+    shift
+    set -- "$COMMAND" "$@"
+    cd "$PRJ_DIR"
+  fi
+  
+  "$@"
+}
+
+#-------------------------------------------------------------------------------
+
+. m.lib.sh
+
+ARGS_PARSE="true"
+ARGS_FORMAT="smart"
+
+m_script "$@"
+
+#-------------------------------------------------------------------------------

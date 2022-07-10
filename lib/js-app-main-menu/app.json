@@ -1,0 +1,16 @@
+{
+  "type": "menu",
+  "name": "desktop",
+  "title": "Desktop",
+  "description": "",
+  "css":
+  [
+    "/pub/lib/m/js.css"
+  ],
+  "js":
+  [
+    "/pub/lib/m/js.js",
+    "app.js"
+  ],
+  "icon": null
+}

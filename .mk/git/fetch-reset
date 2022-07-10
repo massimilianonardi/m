@@ -1,0 +1,9 @@
+#!/bin/sh
+
+git fetch origin
+
+BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+echo "BRANCH: $BRANCH"
+[ -z "$BRANCH" ] && echo "empty branch!" && exit 1
+
+git reset --hard origin/"$BRANCH"

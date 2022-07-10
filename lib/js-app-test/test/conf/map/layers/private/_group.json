@@ -1,0 +1,12 @@
+[
+  "@new", "ol.layer.Group",
+  [
+    {
+      "name": "private_group",
+      "label": "Private Group",
+      "open": true,
+      "visible": true,
+      "opacity": 1
+    }
+  ]
+]

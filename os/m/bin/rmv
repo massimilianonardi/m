@@ -1,0 +1,30 @@
+#!/bin/sh
+
+#-------------------------------------------------------------------------------
+
+main()
+{
+  SWITCH_RM="-"
+  [ -n "$SWITCH_q" ] && SWITCH_RM="${SWITCH_RM}f"
+  [ -n "$SWITCH_r" ] && SWITCH_RM="${SWITCH_RM}R"
+  
+  for k in "$@"
+  do
+    if [ ! -d "$k" ] && ([ -n "$SWITCH_e" ] || [ -n "$SWITCH_p" ])
+    then
+      fatal "options specified only apply to directories"
+    fi
+  done
+}
+
+#-------------------------------------------------------------------------------
+
+. m.lib.sh
+
+ARGS_PARSE="true"
+ARGS_FORMAT="smart"
+ARGS_SWITCH="epqr"
+
+m_command "$@"
+
+#-------------------------------------------------------------------------------
