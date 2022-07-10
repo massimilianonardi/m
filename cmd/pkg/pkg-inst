@@ -1,0 +1,419 @@
+#!/bin/sh
+
+. env.lib.sh
+
+#-------------------------------------------------------------------------------
+
+find_latest_version()
+{
+  if [ -z "$TYPE" ] || [ "$TYPE" = "custom" ]
+  then
+    true
+  elif [ "$TYPE" = "github" ]
+  then
+    if [ -z "$GITHUB_REPO" ]
+    then
+      echo "repo is null"
+      exit 1
+    fi
+    LATEST_RELEASE_URL="https://api.github.com/repos/${GITHUB_REPO}/releases/latest"
+    VERSION="$(wget --no-check-certificate -qO- "$LATEST_RELEASE_URL" | grep -oP '"tag_name": "\K(.*)(?=")')"
+  elif [ "$TYPE" = "codeberg" ]
+  then
+    if [ -z "$CODEBERG_REPO" ]
+    then
+      echo "repo is null"
+      exit 1
+    fi
+    LATEST_RELEASE_URL="https://codeberg.org/api/v1/repos/${CODEBERG_REPO}/releases/latest"
+    VERSION="$(wget --no-check-certificate -qO- "$LATEST_RELEASE_URL" | sed 's/^.*"tag_name":"\([^"]*\)".*$/\1/')"
+  elif [ "$TYPE" = "maven" ]
+  then
+    if [ -z "$MAVEN_REPO" ]
+    then
+      echo "repo is null"
+      exit 1
+    fi
+    MAVEN_GROUP_ID="${MAVEN_REPO%/*}"
+    MAVEN_ARTIFACT_ID="${MAVEN_REPO#*/}"
+    LATEST_RELEASE_URL="https://search.maven.org/solrsearch/select?q=g:%22${MAVEN_GROUP_ID}%22+AND+a:%22${MAVEN_ARTIFACT_ID}%22"
+    VERSION="$(wget --no-check-certificate -qO- "$LATEST_RELEASE_URL" | sed 's/^.*"latestVersion":"\([^"]*\)".*$/\1/')"
+  elif [ "$TYPE" = "sourceforge" ]
+  then
+    # LATEST_RELEASE_URL="https://sourceforge.net/projects/${SOURCEFORGE_REPO}/rss?path=/${SOURCEFORGE_PATH}"
+    # LATEST_RELEASE_URL="https://sourceforge.net/projects/${SOURCEFORGE_REPO}/files/${SOURCEFORGE_PATH}"
+    LATEST_RELEASE_URL="https://sourceforge.net/projects/${SOURCEFORGE_REPO}/best_release.json"
+    VERSION="$(wget --no-check-certificate -qO- "$LATEST_RELEASE_URL" | sed 's/", /\n/g' | grep "filename" | grep "${SOURCEFORGE_ASSET_NAME_PATTERN}" | head -n 1 | sed 's/.*\///g')"
+
+    VERSION_PREFIX="$(printf "%s\n%s\n" "$SOURCEFORGE_ASSET_NAME_PATTERN" "$VERSION" | sed -e 'N;s/^\(.*\).*\n\1.*$/\1\n\1/;D')"
+
+    VERSION_REV="$(echo "$VERSION" | sed -e 's/^/\
+/' -e ':a' -e 's/\n\(.*\)\(.\)/\2\
+\1/
+ta' -e 's/\n//')"
+
+    PATTERN_REV="$(echo "$SOURCEFORGE_ASSET_NAME_PATTERN" | sed -e 's/^/\
+/' -e ':a' -e 's/\n\(.*\)\(.\)/\2\
+\1/
+ta' -e 's/\n//')"
+
+    VERSION_SUFFIX="$(printf "%s\n%s\n" "$PATTERN_REV" "$VERSION_REV" | sed -e 'N;s/^\(.*\).*\n\1.*$/\1\n\1/;D' | sed -e 's/^/\
+/' -e ':a' -e 's/\n\(.*\)\(.\)/\2\
+\1/
+ta' -e 's/\n//')"
+
+    VERSION="${VERSION#$VERSION_PREFIX}"
+    VERSION="${VERSION%$VERSION_SUFFIX}"
+
+    # echo "VERSION=$VERSION"
+    # echo "VERSION_REV=$VERSION_REV"
+    # echo "PATTERN_REV=$PATTERN_REV"
+    # echo "VERSION_PREFIX=$VERSION_PREFIX"
+    # echo "VERSION_SUFFIX=$VERSION_SUFFIX"
+
+    # reverse string: sed -e 'G;:1' -e 's/\(.\)\(.*\n\)/\2\1/;t1' -e 's/.//'
+  else
+    echo "wrong type! TYPE=$TYPE"
+    exit 1
+  fi
+}
+
+#-------------------------------------------------------------------------------
+
+get_download_url()
+{
+  if [ -z "$TYPE" ] || [ "$TYPE" = "custom" ]
+  then
+    true
+  elif [ "$TYPE" = "github" ]
+  then
+    if [ -z "$GITHUB_REPO" ]
+    then
+      echo "repo is null"
+      exit 1
+    fi
+    if [ -z "$DOWNLOAD_URL" ]
+    then
+      RELEASE_URL="https://api.github.com/repos/${GITHUB_REPO}/releases/tags/${PKG_VER}"
+      DOWNLOAD_URL="$(wget --no-check-certificate -qO- "$RELEASE_URL" | grep "browser_download_url" | grep "${GITHUB_ASSET_NAME_PATTERN}" | grep -oP '"browser_download_url": "\K(.*)(?=")' | head -n 1)"
+    else
+      if [ -z "$VERSION" ]
+      then
+        VERSION="$PKG_VER"
+      fi
+      eval DOWNLOAD_URL="$DOWNLOAD_URL"
+      echo "DOWNLOAD_URL=$DOWNLOAD_URL"
+    fi
+  elif [ "$TYPE" = "codeberg" ]
+  then
+    if [ -z "$CODEBERG_REPO" ]
+    then
+      echo "repo is null"
+      exit 1
+    fi
+    if [ -z "$DOWNLOAD_URL" ]
+    then
+      RELEASE_URL="https://codeberg.org/api/v1/repos/${CODEBERG_REPO}/releases/tags/${PKG_VER}"
+      DOWNLOAD_URL="$(wget --no-check-certificate -qO- "$RELEASE_URL" | sed 's/"browser_download_url"/\n"browser_download_url"/g' | grep "browser_download_url" | grep "${CODEBERG_ASSET_NAME_PATTERN}" | sed 's/^.*"browser_download_url":"\([^"]*\)".*$/\1/' | head -n 1)"
+    else
+      if [ -z "$VERSION" ]
+      then
+        VERSION="$PKG_VER"
+      fi
+      eval DOWNLOAD_URL="$DOWNLOAD_URL"
+      echo "DOWNLOAD_URL=$DOWNLOAD_URL"
+    fi
+  elif [ "$TYPE" = "maven" ]
+  then
+    if [ -z "$MAVEN_REPO" ]
+    then
+      echo "repo is null"
+      exit 1
+    fi
+    MAVEN_GROUP_ID="${MAVEN_REPO%/*}"
+    MAVEN_ARTIFACT_ID="${MAVEN_REPO#*/}"
+    MAVEN_GROUP_PATH="$(echo "$MAVEN_GROUP_ID" | tr "." "/")"
+    MAVEN_BASE_URL="https://repo1.maven.org/maven2"
+    # DOWNLOAD_URL="${MAVEN_BASE_URL}/${MAVEN_GROUP_PATH}/${MAVEN_ARTIFACT_ID}/${VERSION}/${MAVEN_ARTIFACT_ID}-${VERSION}.${FILE_TYPE}"
+    DOWNLOAD_URL="${MAVEN_BASE_URL}/${MAVEN_GROUP_PATH}/${MAVEN_ARTIFACT_ID}/${VERSION}"
+  elif [ "$TYPE" = "sourceforge" ]
+  then
+    if [ -z "$VERSION" ]
+    then
+      VERSION="$PKG_VER"
+    fi
+    eval SOURCEFORGE_PATH="$SOURCEFORGE_PATH"
+    RELEASE_URL="https://sourceforge.net/projects/${SOURCEFORGE_REPO}/files/${SOURCEFORGE_PATH}"
+    # echo "RELEASE_URL=$RELEASE_URL"
+    DOWNLOAD_URL="$(wget --no-check-certificate -qO- "$RELEASE_URL" | tr "<" "\n" | grep 'href="' | grep "$SOURCEFORGE_ASSET_NAME_PATTERN" | grep "$PKG_VER" | head -n 1 | sed 's/.*href="//g' | sed 's/\/download"//g')"
+  else
+    echo "wrong type! TYPE=$TYPE"
+    exit 1
+  fi
+}
+
+#-------------------------------------------------------------------------------
+
+unpack()
+{
+  PACKED_FILE="$1"
+  shift
+  FILE_TYPE="$1"
+  shift
+  UNPACK_DIR="$1"
+  shift
+
+  echo "unpacking $PACKED_FILE to $UNPACK_DIR"
+  (
+    cd "$UNPACK_DIR"
+
+    if [ "$FILE_TYPE" = "zip" ]
+    then
+      unzip "$PACKED_FILE"
+    elif [ "$FILE_TYPE" = "tar.gz" ] || [ "$FILE_TYPE" = "tgz" ] || [ "$FILE_TYPE" = "tar" ] || [ "$FILE_TYPE" = "gzip" ] || [ "$FILE_TYPE" = "bzip" ] || [ "$FILE_TYPE" = "tar.xz" ] || [ "$FILE_TYPE" = "xz" ]
+    then
+      tar xvf "$PACKED_FILE"
+    elif [ "$FILE_TYPE" = "AppImage" ] || [ "$FILE_TYPE" = "appimage" ]
+    then
+      chmod +x "$PACKED_FILE"
+      "$PACKED_FILE" --appimage-extract
+    elif [ "$FILE_TYPE" = "deb" ]
+    then
+      dpkg-deb -x "$PACKED_FILE" ./
+    elif [ "$FILE_TYPE" = "jar" ] || [ "$FILE_TYPE" = "war" ]
+    then
+      mv "$PACKED_FILE" "$UNPACK_DIR"
+    elif [ "$FILE_TYPE" = "none" ]
+    then
+      true
+    else
+      echo "unknown file type: FILE_TYPE=$FILE_TYPE"
+      exit 1
+    fi
+  )
+}
+
+#-------------------------------------------------------------------------------
+
+download()
+{
+  echo "downloading $DOWNLOAD_URL"
+
+  rm -rf "$PKG_INST_DIR"
+  mkdir -p "$PKG_INST_DIR"
+
+  if [ "$FILE_TYPE" = "none" ]
+  then
+  (
+    cd "$PKG_INST_DIR"
+    # wget "$DOWNLOAD_URL"
+    wget --no-check-certificate "$DOWNLOAD_URL"
+  )
+  elif [ "$FILE_TYPE" = "jar" ] || [ "$FILE_TYPE" = "war" ]
+  then
+  (
+    cd "$PKG_INST_DIR"
+    # DOWNLOAD_URLS="$(wget --no-check-certificate -qO- "$DOWNLOAD_URL" | sed '1d')"
+    DOWNLOAD_URLS="$(wget \
+    --header="Accept: text/html" \
+    --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36" \
+    --no-check-certificate -qO- "$DOWNLOAD_URL" | grep "href" | sed 's/^.*href="\([^"]*\)".*$/\1/' | head -n -1)"
+    echo "DOWNLOAD_URLS=$DOWNLOAD_URLS"
+    for k in $DOWNLOAD_URLS
+    do
+      DOWNLOAD_FILE="$(echo "$k" | sed "s/-$PKG_VER//g")"
+      wget --no-check-certificate -O "$DOWNLOAD_FILE" "${DOWNLOAD_URL}/${k}"
+    done
+  )
+  else
+    DOWNLOAD_FILE="${PKG_INST_DIR}-$(date +"[%Y-%m-%d %H:%M:%S]").${FILE_TYPE}"
+    # wget -O "$DOWNLOAD_FILE" "$DOWNLOAD_URL" && \
+    wget --no-check-certificate -O "$DOWNLOAD_FILE" "$DOWNLOAD_URL" && \
+    unpack "$DOWNLOAD_FILE" "$FILE_TYPE" "$PKG_INST_DIR" && \
+    rm -f "$DOWNLOAD_FILE"
+  fi
+}
+
+#-------------------------------------------------------------------------------
+
+find_deepest_dir()
+{
+  DEEPEST_DIR="$1"
+  shift
+
+  (
+    cd "$DEEPEST_DIR"
+
+    if [ "$(ls | wc -l)" = "1" ] && [ -d "$(ls)" ]
+    then
+      DEEPEST_DIR="$(ls)"
+      if [ "$(ls "$DEEPEST_DIR" | wc -l)" = "1" ] && [ -d "$(ls "$DEEPEST_DIR")" ]
+      then
+        DEEPEST_DIR="$DEEPEST_DIR/$(ls "$DEEPEST_DIR")"
+      fi
+    else
+      DEEPEST_DIR=""
+    fi
+
+    cd "$DEEPEST_DIR"
+
+    pwd
+  )
+}
+
+#-------------------------------------------------------------------------------
+
+install()
+{
+  if [ -z "$PKG_VER" ]
+  then
+    find_latest_version
+    PKG_VER="$VERSION"
+  fi
+
+  PKG_INST_DIR="$PKG_INST_ROOT_DIR/${PKG_NAME}-${PKG_VER}"
+
+  if [ -d "$PKG_INST_DIR" ]
+  then
+    echo "$PKG_INST_DIR already installed!"
+    return 0
+  fi
+
+  echo "installing $PKG_INST_DIR"
+
+  get_download_url
+
+  download
+
+  DEEPEST_DIR="$(find_deepest_dir "$PKG_INST_DIR")"
+
+  if exist_function postinstall
+  then
+    (
+      # cd "$PKG_INST_DIR"
+      cd "$DEEPEST_DIR"
+      postinstall
+    )
+  fi
+
+  if [ -e "$PKG_INST_DIR_LINK" ] && [ ! -L "$PKG_INST_DIR_LINK" ]
+  then
+    echo "$PKG_INST_DIR_LINK already exists and is not a symlink!!!"
+    exit 1
+  fi
+
+  rm -f "$PKG_INST_DIR_LINK"
+  ln -s "$DEEPEST_DIR" "$PKG_INST_DIR_LINK"
+
+  if [ -z "$SYMLINKS" ]
+  then
+    # todo link all binaries found
+    echo "SYMLINKS is empty! cannot create links"
+    exit 1
+  else
+    for k in $SYMLINKS
+    do
+      symlink="${k%%=*}"
+      target="${k#*=}"
+      rm -f "$LINKS_ROOT_DIR/$symlink"
+      ln -s "$PKG_INST_DIR_LINK/$target" "$LINKS_ROOT_DIR/$symlink"
+
+      if [ -e "$PKG_INST_DIR_LINK/$target" ] && [ ! -x "$PKG_INST_DIR_LINK/$target" ]
+      then
+        sudo chmod +x "$PKG_INST_DIR_LINK/$target"
+      fi
+    done
+  fi
+
+  if [ -f "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}.desktop" ]
+  then
+    sudo ln -s "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}.desktop" "/usr/share/applications/${PKG_NAME}.desktop"
+  fi
+}
+
+#-------------------------------------------------------------------------------
+
+uninstall()
+{
+  # uninstall specific version and rebuild default link to latest version installed, or remove completely (dir link and bin links and desktop file)
+  true
+}
+
+#-------------------------------------------------------------------------------
+
+versions()
+{
+  echo "$VERSIONS"
+}
+
+#-------------------------------------------------------------------------------
+
+PKG_COMMAND="$1"
+shift
+
+PKG_NAME="$1"
+shift
+
+PKG_VER="$1"
+shift
+
+PKG_INST_ROOT_DIR="$1"
+shift
+
+PKG_INST_CONF_ROOT_DIR="$1"
+shift
+
+LINKS_ROOT_DIR="$1"
+shift
+
+LIBS_ROOT_DIR="$1"
+shift
+
+CONF_ROOT_DIR="$1"
+shift
+
+MOVED_CONF_ROOT_DIR="$1"
+shift
+
+if [ -z "$PKG_COMMAND" ] || [ -z "$PKG_NAME" ] || [ -z "$PKG_INST_ROOT_DIR" ] || [ -z "$PKG_INST_CONF_ROOT_DIR" ] || [ -z "$LINKS_ROOT_DIR" ]
+then
+  echo "some args are null, required: pkg-command, pkg-name, pkg-ver, pkg-inst-dir, pkg-inst-conf-dir, symlinks-dir"
+  exit 1
+fi
+
+if [ -z "$LIBS_ROOT_DIR" ]
+then
+  LIBS_ROOT_DIR="$LINKS_ROOT_DIR/.lib"
+fi
+
+if [ -z "$CONF_ROOT_DIR" ]
+then
+  CONF_ROOT_DIR="$HOME/.pkg-conf"
+fi
+
+if [ -z "$MOVED_CONF_ROOT_DIR" ]
+then
+  MOVED_CONF_ROOT_DIR="$HOME/.pkg-conf-alt"
+fi
+
+case "$PKG_COMMAND" in
+  "install") true;;
+  "uninstall") true;;
+  "versions") true;;
+  *) exit 1;;
+esac
+
+mkdir -p "$PKG_INST_ROOT_DIR"
+PKG_INST_ROOT_DIR="$(cd -- "$PKG_INST_ROOT_DIR" && pwd)"
+
+mkdir -p "$PKG_INST_CONF_ROOT_DIR"
+PKG_INST_CONF_ROOT_DIR="$(cd -- "$PKG_INST_CONF_ROOT_DIR" && pwd)"
+
+mkdir -p "$LINKS_ROOT_DIR"
+LINKS_ROOT_DIR="$(cd -- "$LINKS_ROOT_DIR" && pwd)"
+
+. "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}.conf"
+
+PKG_INST_DIR_LINK="$PKG_INST_ROOT_DIR/$PKG_NAME"
+
+"$PKG_COMMAND"

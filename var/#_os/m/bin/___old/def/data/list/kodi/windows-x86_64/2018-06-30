@@ -1,0 +1,5 @@
+PKG_TYPE=ext
+
+VERSION=""
+COMMANDS="bin/kodi.exe:kodi"
+APPS="bin/kodi.exe:multimedia/Kodi"

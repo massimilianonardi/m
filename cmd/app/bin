@@ -1,0 +1,180 @@
+#!/bin/sh
+
+. realpaths.lib.sh
+. waituser.lib.sh
+. array.lib.sh
+
+#-------------------------------------------------------------------------------
+
+exist_function()
+{
+  type "$1">/dev/null 2>&1
+}
+
+#-------------------------------------------------------------------------------
+
+update()
+{
+  . "${BIN_SCRIPT_DIR}/${BIN_NAME}-${COMMAND}"
+
+  DOWNLOAD_FILE="${BIN_NAME}-${VERSION}.${FILE_TYPE}"
+  echo "latest VERSION is $VERSION"
+  if [ -d "$VERSION" ]
+  then
+    echo "already have latest version"
+  else
+    rm -rf $VERSION
+    mkdir $VERSION
+    cd $VERSION
+    echo "fetching $DOWNLOAD_URL"
+
+    if [ "$FILE_TYPE" = "none" ]
+    then
+      # wget "$DOWNLOAD_URL"
+      wget --no-check-certificate "$DOWNLOAD_URL"
+    else
+      # wget -O "$DOWNLOAD_FILE" "$DOWNLOAD_URL"
+      wget --no-check-certificate -O "$DOWNLOAD_FILE" "$DOWNLOAD_URL"
+    fi
+
+    echo "unpacking..."
+    if [ "$FILE_TYPE" = "zip" ]
+    then
+      unzip "$DOWNLOAD_FILE"
+    elif [ "$FILE_TYPE" = "tar.gz" ] || [ "$FILE_TYPE" = "tgz" ] || [ "$FILE_TYPE" = "tar" ] || [ "$FILE_TYPE" = "gzip" ] || [ "$FILE_TYPE" = "bzip" ] || [ "$FILE_TYPE" = "tar.xz" ] || [ "$FILE_TYPE" = "xz" ]
+    then
+      tar xvf "$DOWNLOAD_FILE"
+    elif [ "$FILE_TYPE" = "deb" ]
+    then
+      dpkg-deb -x "$DOWNLOAD_FILE" ./
+    elif [ "$FILE_TYPE" = "none" ]
+    then
+      true
+    else
+      echo "unknown file type: FILE_TYPE=$FILE_TYPE"
+      exit 1
+    fi
+
+    if [ "$FILE_TYPE" = "none" ]
+    then
+      true
+    else
+      rm "$DOWNLOAD_FILE"
+    fi
+
+    # find the root subdir as UNPACKED_SUB_DIR (eventually empty)
+    if [ "$(ls | wc -l)" = "1" ] && [ -d "$(ls)" ]
+    then
+      UNPACKED_SUB_DIR="$(ls)"
+      ls "$UNPACKED_SUB_DIR"
+      echo "UNPACKED_SUB_DIR=$UNPACKED_SUB_DIR"
+      if [ "$(ls "$UNPACKED_SUB_DIR" | wc -l)" = "1" ] && [ -d "$(ls "$UNPACKED_SUB_DIR")" ]
+      then
+        UNPACKED_SUB_DIR="$UNPACKED_SUB_DIR/$(ls "$UNPACKED_SUB_DIR")"
+        echo "UNPACKED_SUB_DIR=$UNPACKED_SUB_DIR"
+      fi
+    else
+      UNPACKED_SUB_DIR=""
+    fi
+    cd ..
+
+    rm -f ./latest
+    if [ -z "$UNPACKED_SUB_DIR" ]
+    then
+      ln -s "$VERSION" ./latest
+    else
+      ln -s "$VERSION/$UNPACKED_SUB_DIR" ./latest
+    fi
+
+    if exist_function postinstall
+    then
+      postinstall
+    fi
+
+    if [ -z "$SYMLINKS" ]
+    then
+      # todo link all binaries found
+      echo "SYMLINKS is empty! cannot create links"
+      exit 1
+    else
+      for k in $SYMLINKS
+      do
+        symlink="${k%%=*}"
+        target="${k#*=}"
+        rm -f "$BINS_LINKS_DIR/$symlink"
+        ln -s "$BIN_DIR/latest/$target" "$BINS_LINKS_DIR/$symlink"
+      done
+    fi
+  fi
+
+  waituser
+}
+
+#-------------------------------------------------------------------------------
+
+realpaths
+
+. "$THIS_DIR/bin.conf"
+
+# parse command line: $1=BIN_NAME, $2=COMMAND
+if [ -n "$1" ]
+then
+  BIN_NAME="$1"
+  shift
+else
+  array BIN_ARRAY
+  for k in $(cd "$BINS_SCRIPT_DIR"; ls -d *)
+  do
+    if [ -d "$BINS_SCRIPT_DIR/$k" ] && [ -f "$BINS_SCRIPT_DIR/$k/$k-update" ]
+    then
+      array BIN_ARRAY add "$k"
+    fi
+  done
+
+  BIN_NAME="$(eval menu $(array BIN_ARRAY get))"
+  array BIN_ARRAY unset
+  if [ -z "$BIN_NAME" ]
+  then
+    exit 1
+  fi
+fi
+
+if [ -n "$1" ]
+then
+  COMMAND="$1"
+  shift
+else
+  COMMAND="update"
+  # COMMAND="$(menu run debug update desktop)"
+fi
+
+case "$COMMAND" in
+  "update") true;;
+  *) exit 1;;
+esac
+
+# apps update/run/debug script dir
+BIN_SCRIPT_DIR="$BINS_SCRIPT_DIR/$BIN_NAME"
+
+# apps bin dir
+BIN_DIR="$BINS_DIR/$BIN_NAME"
+
+if [ ! -d "$BINS_DIR" ]
+then
+  mkdir -p "$BINS_DIR"
+fi
+
+# create link to bin dir
+if [ ! -L "$THIS_DIR/../bin" ]
+then
+  ln -s "$BINS_LINKS_DIR" "$THIS_DIR/../bin"
+fi
+
+if [ ! -d "$BIN_DIR" ]
+then
+  mkdir -p "$BIN_DIR"
+fi
+
+cd "$BIN_DIR"
+
+"$COMMAND" "$@"

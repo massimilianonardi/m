@@ -1,0 +1,14 @@
+#!/bin/sh
+
+VERSION="$(curl -s https://packages.microsoft.com/repos/vscode/pool/main/c/code/ | sed -nE 's/.*code_([0-9.]*).*amd64\.deb.*/\1/p' | sort --version-sort | tail -n1)"
+DOWNLOAD_URL="https://code.visualstudio.com/sha/download?build=stable&os=linux-x64"
+DOWNLOAD_URL="https://update.code.visualstudio.com/${VERSION}/linux-x64/stable"
+FILE_TYPE="tar.gz"
+CONF_VC="'.config/Code/User' '.local/share' '.vscode'"
+
+postinstall()
+(
+  cd ./latest
+  sudo chown root:root ./chrome-sandbox
+  sudo chmod 4755 ./chrome-sandbox
+)

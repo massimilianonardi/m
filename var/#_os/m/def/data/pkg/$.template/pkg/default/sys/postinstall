@@ -1,0 +1,7 @@
+postinstall()
+(
+  echo postinstall_function > "$INSTALL_DIR/bin/postinstall_function"
+)
+
+echo postinstall > "$INSTALL_DIR/bin/postinstall"
+

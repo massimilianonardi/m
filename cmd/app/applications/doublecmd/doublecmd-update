@@ -1,0 +1,6 @@
+#!/bin/sh
+
+VERSION="1.1.24"
+DOWNLOAD_URL="https://github.com/doublecmd/doublecmd/releases/download/v${VERSION}/doublecmd-${VERSION}.gtk2.x86_64.tar.xz"
+FILE_TYPE="tar.gz"
+CONF_VC="*"

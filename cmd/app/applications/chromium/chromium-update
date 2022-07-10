@@ -1,0 +1,14 @@
+#!/bin/sh
+
+LASTCHANGE_URL="https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2FLAST_CHANGE?alt=media"
+
+VERSION=$(curl -s -S $LASTCHANGE_URL)
+DOWNLOAD_URL="https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F${VERSION}%2Fchrome-linux.zip?alt=media"
+FILE_TYPE="zip"
+
+postinstall()
+{
+  sudo chown root:root ./latest/chrome_sandbox
+  sudo chmod 4755 ./latest/chrome_sandbox
+}
+

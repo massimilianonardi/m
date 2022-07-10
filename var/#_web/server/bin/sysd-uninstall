@@ -1,0 +1,3 @@
+#!/bin/sh
+
+sysd uninstall m-web-server

@@ -1,0 +1,9 @@
+!SESSION 2025-07-17 11:19:14.335 -----------------------------------------------
+eclipse.buildId=unknown
+java.version=21.0.5
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=it_IT
+Command-line arguments:  -os linux -ws gtk -arch x86_64 -data /m/app/.conf/dbeaver/data-dir
+
+!ENTRY org.eclipse.ui 2 2 2025-07-17 11:19:18.002
+!MESSAGE Invalid preference category path: org.eclipse.debug.ui.ConsolePreferencePage (bundle: org.eclipse.ui.console, page: org.eclipse.ui.internal.console.ansi.preferences.AnsiConsolePreferencePage)

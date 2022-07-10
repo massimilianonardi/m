@@ -1,0 +1,5 @@
+PKG_TYPE=ext
+
+VERSION="3.100"
+PATHS="bin"
+#COMMANDS="bin/lame.exe:lame"

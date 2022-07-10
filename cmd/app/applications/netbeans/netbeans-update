@@ -1,0 +1,10 @@
+#!/bin/sh
+
+LASTCHANGE_URL="https://api.github.com/repos/apache/netbeans/releases/latest"
+
+# VERSION="26"
+# VERSION=$(curl -sSf "$LASTCHANGE_URL" | grep -oP '"tag_name": "\K(.*)(?=")')
+VERSION=$(wget --no-check-certificate -qO- "$LASTCHANGE_URL" | grep -oP '"tag_name": "\K(.*)(?=")')
+DOWNLOAD_URL="https://dlcdn.apache.org/netbeans/netbeans/${VERSION}/netbeans-${VERSION}-bin.zip"
+FILE_TYPE="zip"
+CONF_VC="*"

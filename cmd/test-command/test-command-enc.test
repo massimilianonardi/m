@@ -1,0 +1,52 @@
+#!/bin/sh
+
+#-------------------------------------------------------------------------------
+
+test_enc()
+{
+  . enc.lib.sh
+
+  test_string="Test Encoding/Decoding - # @ $ _ ? ' §"
+
+  # printf "$test_string" | od -A n -t x1
+  # printf "$test_string" | od -A n -b
+
+  # encoded="$(
+  # printf "$test_string" | od -A n -b | tr -d '\t\r\n'
+  # printf "$test_string" | od -A n -t x1 | tr -d '\t\r\n ' | xxd -r -p
+  # printf "$test_string" | od -A n -t x1 | tr -d '\t\r\n ' | sed -e 's/^\(.\(.\{2\}\)*\)$/0\1/' -e 's/\(.\{2\}\)/\\x\1/g'
+  # printf "$test_string" | od -A n -t x1 | tr -d '\t\r\n ' | sed -e 's/^\(.\(.\{2\}\)*\)$/0\1/' -e 's/\(.\{2\}\)/ 0x\1/g'
+  # printf "$test_string" | od -A n -t x1 | tr -d '\t\r\n '
+  # printf "$test_string" | od -A n -t x1 | tr -d '\t\r\n ' | sed -e 's/^\(.\(.\{2\}\)*\)$/0\1/' -e 's/\(.\{2\}\)/ 0x\1/g' | xargs -I % printf "%d\n" %
+  # printf "$test_string" | od -A n -t x1 | tr -d '\t\r\n ' | sed -e 's/^\(.\(.\{2\}\)*\)$/0\1/' -e 's/\(.\{2\}\)/ 0x\1/g' | xargs -I % printf "%d\n" %
+  # printf "$test_string" | od -A n -t x1 | tr -d '\t\r\n ' | od -An -t uC
+# )"
+
+  # for k in $(printf "$test_string" | od -A n -b | tr -d '\t\r\n')
+  # do
+  #   # echo "$k"
+  #   printf "\\$k"
+  # done
+
+  # printf "aaa bbb ccc" | printf $(cat) | od -A n -b | tr -d '\t\r\n'
+  # printf "aaa bbb ccc" | cat | sed '$ s/.$//' | od -A n -b | tr -d '\t\r\n'
+
+  # echo "encoded=$encoded"
+  # printf "%d\n" "$encoded"
+  # printf "%d\n" 0xFF
+
+  # a2o "$test_string"
+  # a2o "$test_string" "a" "aaa"
+  # a2o "a"
+  # printf "a" | a2o
+  # echo "\n" | a2o
+  # printf "141 141 141" | o2a
+  # o2a "$(a2o "$test_string")"
+  # a2o "$test_string" | o2a
+  # printf "$test_string" | a2o
+  printf "$test_string" | a2o | o2a
+
+  echo ""
+}
+
+#-------------------------------------------------------------------------------

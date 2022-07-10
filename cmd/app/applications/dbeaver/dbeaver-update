@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# VERSION="25.0.1"
+# DOWNLOAD_URL="https://dbeaver.io/files/dbeaver-ce-latest-linux.gtk.x86_64.tar.gz"
+
+LASTCHANGE_URL="https://api.github.com/repos/dbeaver/dbeaver/releases/latest"
+
+VERSION=$(wget --no-check-certificate -qO- "$LASTCHANGE_URL" | grep -oP '"tag_name": "\K(.*)(?=")')
+DOWNLOAD_URL="https://github.com/dbeaver/dbeaver/releases/download/${VERSION}/dbeaver-ce-${VERSION}-linux.gtk.x86_64.tar.gz"
+FILE_TYPE="tar.gz"
+CONF_VC="*"

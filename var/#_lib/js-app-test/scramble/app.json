@@ -1,0 +1,15 @@
+{
+  "name": "scramble",
+  "title": "Text Scramble",
+  "description": "",
+  "css":
+  [
+    "/pub/lib/m/js.css"
+  ],
+  "js":
+  [
+    "/pub/lib/m/js.js",
+    "app.js"
+  ],
+  "icon": null
+}

@@ -1,0 +1,202 @@
+#!/bin/sh
+
+. env.lib.sh
+
+#-------------------------------------------------------------------------------
+
+find_deepest_dir()
+{
+  DEEPEST_DIR="$1"
+  shift
+
+  (
+    cd "$DEEPEST_DIR"
+
+    if [ "$(ls | wc -l)" = "1" ] && [ -d "$(ls)" ]
+    then
+      DEEPEST_DIR="$(ls)"
+      if [ "$(ls "$DEEPEST_DIR" | wc -l)" = "1" ] && [ -d "$(ls "$DEEPEST_DIR")" ]
+      then
+        DEEPEST_DIR="$DEEPEST_DIR/$(ls "$DEEPEST_DIR")"
+      fi
+    else
+      DEEPEST_DIR=""
+    fi
+
+    cd "$DEEPEST_DIR"
+
+    pwd
+  )
+}
+
+#-------------------------------------------------------------------------------
+
+install_symlinks()
+{
+  PKG_INST_DEEPEST_DIR="$DEEPEST_DIR"
+
+  if [ -z "$SYMLINKS" ]
+  then
+    # todo link all binaries found
+    echo "SYMLINKS is empty! cannot create links"
+    exit 1
+  else
+    for k in $SYMLINKS
+    do
+      symlink="${k%%=*}"
+      target="${k#*=}"
+      rm -f "$LINKS_ROOT_DIR/$symlink"
+      ln -s "$PKG_INST_DEEPEST_DIR/$target" "$LINKS_ROOT_DIR/$symlink"
+
+      if [ -e "$PKG_INST_DEEPEST_DIR/$target" ] && [ ! -x "$PKG_INST_DEEPEST_DIR/$target" ]
+      then
+        sudo chmod +x "$PKG_INST_DEEPEST_DIR/$target"
+      fi
+    done
+  fi
+
+  if [ -f "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}.desktop" ]
+  then
+    sudo ln -s "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}.desktop" "/usr/share/applications/${PKG_NAME}.desktop"
+  fi
+}
+
+#-------------------------------------------------------------------------------
+
+install()
+{
+  if [ -z "$PKG_VER" ]
+  then
+    VERSION="$(pkg-repo latest_version "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}.conf")"
+    PKG_VER="$VERSION"
+  fi
+
+  PKG_INST_DIR="$PKG_INST_ROOT_DIR/${PKG_NAME}-${PKG_VER}"
+
+  if [ -d "$PKG_INST_DIR" ]
+  then
+    echo "$PKG_INST_DIR already installed!"
+    return 0
+  fi
+
+  echo "installing $PKG_INST_DIR"
+
+  DOWNLOAD_URL="$(pkg-repo download_url "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}.conf" "$PKG_VER")"
+
+  DOWNLOAD_FILE="${PKG_INST_DIR}-$(date +"[%Y-%m-%d %H:%M:%S]").${FILE_TYPE}"
+
+  UNPACK_DIR="$PKG_INST_DIR"
+
+  pkg-download "$DOWNLOAD_URL" "$DOWNLOAD_FILE" "$UNPACK_DIR" "$FILE_TYPE"
+
+  DEEPEST_DIR="$(find_deepest_dir "$PKG_INST_DIR")"
+
+  if exist_function postinstall
+  then
+    (
+      # cd "$PKG_INST_DIR"
+      cd "$DEEPEST_DIR"
+      postinstall
+    )
+  fi
+
+  install_symlinks
+}
+
+#-------------------------------------------------------------------------------
+
+if [ "$#" -lt "8" ]
+then
+  echo "some args are null, required: pkg-name, pkg-ver, pkg-inst-conf-dir, pkg-inst-dir, symlinks-dir, libs-symlink-dir, conf-dir, separated-conf-dir"
+  exit 1
+fi
+
+PKG_NAME="$1"
+shift
+
+PKG_VER="$1"
+shift
+
+PKG_INST_CONF_ROOT_DIR="$1"
+shift
+
+PKG_INST_ROOT_DIR="$1"
+shift
+
+LINKS_ROOT_DIR="$1"
+shift
+
+LIBS_ROOT_DIR="$1"
+shift
+
+CONF_ROOT_DIR="$1"
+shift
+
+MOVED_CONF_ROOT_DIR="$1"
+shift
+
+
+
+if [ -z "$PKG_INST_CONF_ROOT_DIR" ]
+then
+  echo "$0 - pkg-inst-conf-dir cannot be null"
+  exit 1
+fi
+mkdir -p "$PKG_INST_CONF_ROOT_DIR"
+PKG_INST_CONF_ROOT_DIR="$(cd -- "$PKG_INST_CONF_ROOT_DIR" && pwd)"
+
+
+
+if [ -z "$PKG_INST_ROOT_DIR" ]
+then
+  echo "$0 - pkg-inst-dir cannot be null"
+  exit 1
+fi
+mkdir -p "$PKG_INST_ROOT_DIR"
+PKG_INST_ROOT_DIR="$(cd -- "$PKG_INST_ROOT_DIR" && pwd)"
+
+
+
+if [ -z "$LINKS_ROOT_DIR" ]
+then
+  echo "$0 - LINKS_ROOT_DIR cannot be null"
+  exit 1
+fi
+mkdir -p "$LINKS_ROOT_DIR"
+LINKS_ROOT_DIR="$(cd -- "$LINKS_ROOT_DIR" && pwd)"
+
+
+
+if [ -z "$LIBS_ROOT_DIR" ]
+then
+  echo "$0 - LIBS_ROOT_DIR cannot be null"
+  exit 1
+fi
+mkdir -p "$LIBS_ROOT_DIR"
+LIBS_ROOT_DIR="$(cd -- "$LIBS_ROOT_DIR" && pwd)"
+
+
+
+if [ -z "$CONF_ROOT_DIR" ]
+then
+  echo "$0 - CONF_ROOT_DIR cannot be null"
+  exit 1
+fi
+mkdir -p "$CONF_ROOT_DIR"
+CONF_ROOT_DIR="$(cd -- "$CONF_ROOT_DIR" && pwd)"
+
+
+
+if [ -z "$MOVED_CONF_ROOT_DIR" ]
+then
+  echo "$0 - MOVED_CONF_ROOT_DIR cannot be null"
+  exit 1
+fi
+mkdir -p "$MOVED_CONF_ROOT_DIR"
+MOVED_CONF_ROOT_DIR="$(cd -- "$MOVED_CONF_ROOT_DIR" && pwd)"
+
+
+
+. "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}.conf"
+
+install

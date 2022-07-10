@@ -1,0 +1,13 @@
+.Container
+{
+  display: block;
+  position: relative;
+  overflow: auto;
+}
+
+/*.ContainerExpanded
+{
+  display: block;
+  position: relative;
+  overflow: visible;
+}*/

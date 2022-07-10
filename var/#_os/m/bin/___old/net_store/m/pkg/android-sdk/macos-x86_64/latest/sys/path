@@ -1,0 +1,7 @@
+bin/bin
+bin/emulator
+bin/platform-tools
+bin/platform-tools/bin
+bin/tools
+bin/tools/bin
+cmd

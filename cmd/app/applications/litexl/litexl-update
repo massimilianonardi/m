@@ -1,0 +1,6 @@
+#!/bin/sh
+
+VERSION="2.1.7"
+DOWNLOAD_URL="https://github.com/lite-xl/lite-xl/releases/download/v${VERSION}/lite-xl-v${VERSION}-addons-linux-x86_64-portable.tar.gz"
+FILE_TYPE="tar.gz"
+

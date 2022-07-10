@@ -1,0 +1,7 @@
+Name:
+Description:
+Version:
+
+CND_CPPINCLUDES=
+
+Cflags: -I${CND_CPPINCLUDES}

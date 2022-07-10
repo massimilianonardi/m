@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# ./latest/code --user-data-dir="./user-data-dir" "$@"
+./latest/code "$@"

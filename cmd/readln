@@ -1,0 +1,19 @@
+#!/bin/sh
+
+if [ -L "$1" ]
+then
+  TARGET=$(ls -ld -- "$1" 2>/dev/null) || exit 1
+  # TARGET="$(ls -ld -- "$1")"
+  TARGET="${TARGET#*" $1 -> "}"
+elif [ -e "$1" ]
+then
+  TARGET="$1"
+  if [ "$TARGET" = "${TARGET#/}" ] && [ "$TARGET" = "${TARGET#./}" ] && [ "$TARGET" = "${TARGET#../}" ]
+  then
+    TARGET="./$TARGET"
+  fi
+else
+  exit 1
+fi
+
+echo "$TARGET"

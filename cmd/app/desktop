@@ -1,0 +1,75 @@
+#!/bin/sh
+
+. realpaths.lib.sh
+. waituser.lib.sh
+. array.lib.sh
+
+#-------------------------------------------------------------------------------
+
+realpaths
+
+. "$THIS_DIR/app.conf"
+
+if [ -n "$1" ]
+then
+  APP_NAME="$1"
+  shift
+else
+  array APP_ARRAY
+  cd "$APPS_SCRIPT_DIR"
+  for k in ..?* .[!.]* *
+  do
+    if [ -e "$k" ] && [ -f "./$k/$k.desktop" ]
+    then
+      array APP_ARRAY add "$k"
+    fi
+  done
+
+  # menu should allow selection
+  APP_NAME="$(eval menu $(array APP_ARRAY get))"
+  array APP_ARRAY unset
+  if [ -z "$APP_NAME" ]
+  then
+    cd "$APPS_SCRIPT_DIR"
+    DESKTOP_COMMAND="$(menu inst_all="install all desktop files" uninst_all="uninstall all desktop files")"
+    case "$DESKTOP_COMMAND" in
+      "inst_all")
+        for k in ..?* .[!.]* *
+        do
+          if [ -e "$k" ] && [ -f "./$k/$k.desktop" ]
+          then
+            sudo rm -f "/usr/share/applications/$k.desktop"
+            sudo cp "./$k/$k.desktop" "/usr/share/applications"
+            sudo chown root:root "/usr/share/applications/$k.desktop"
+          fi
+        done
+      ;;
+      "uninst_all")
+        for k in ..?* .[!.]* *
+        do
+          if [ -e "$k" ] && [ -f "./$k/$k.desktop" ]
+          then
+            sudo rm -f "/usr/share/applications/$k.desktop"
+          fi
+        done
+      ;;
+      # *) exit 1;;
+    esac
+  else
+    cd "$APPS_SCRIPT_DIR/$APP_NAME"
+    DESKTOP_COMMAND="$(menu inst_app="install '$APP_NAME' desktop file" uninst_app="uninstall '$APP_NAME' desktop file")"
+    case "$DESKTOP_COMMAND" in
+      "inst_app")
+        sudo rm -f "/usr/share/applications/$APP_NAME.desktop"
+        sudo cp "./$APP_NAME.desktop" "/usr/share/applications"
+        sudo chown root:root "/usr/share/applications/$APP_NAME.desktop"
+      ;;
+      "uninst_app")
+        sudo rm -f "/usr/share/applications/$APP_NAME.desktop"
+      ;;
+      # *) exit 1;;
+    esac
+  fi
+fi
+
+waituser

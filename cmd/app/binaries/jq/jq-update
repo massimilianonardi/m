@@ -1,0 +1,12 @@
+#!/bin/sh
+
+VERSION="1.8.0"
+DOWNLOAD_URL="https://github.com/jqlang/jq/releases/download/jq-${VERSION}/jq-linux-amd64"
+FILE_TYPE="none"
+SYMLINKS="jq=jq-linux-amd64"
+
+postinstall()
+(
+  cd ./latest
+  sudo chmod +x ./jq-linux-amd64
+)

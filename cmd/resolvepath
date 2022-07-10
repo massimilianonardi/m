@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if [ -d "$1" ]
+then
+  cd -L -- "$1" && pwd -L
+elif [ -f "$1" ]
+then
+  echo "$(cd -L -- "${1%/*}" && pwd -L)/${1##*/}"
+  # echo "$(cd -L -- "$(dirname -- "$1")" && pwd -L)/$(basename -- "$1")"
+else
+  exit 1
+fi

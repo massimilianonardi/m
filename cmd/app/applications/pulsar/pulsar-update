@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# VERSION="1.127.1"
+# DOWNLOAD_URL="https://download.pulsar-edit.dev/?os=linux&type=linux_tar"
+
+LASTCHANGE_URL="https://api.github.com/repos/pulsar-edit/pulsar/releases/latest"
+
+VERSION=$(wget --no-check-certificate -qO- "$LASTCHANGE_URL" | grep -oP '"tag_name": "\K(.*)(?=")')
+VERSION="${VERSION#v}"
+DOWNLOAD_URL="https://github.com/pulsar-edit/pulsar/releases/download/v${VERSION}/Linux.pulsar-${VERSION}.tar.gz"
+FILE_TYPE="tar.gz"
+CONF_VC="'.config/Pulsar' '.local/share' '.pulsar'"
+
+postinstall()
+{
+  sudo chown root:root ./latest/chrome-sandbox
+  sudo chmod 4755 ./latest/chrome-sandbox
+}

@@ -1,0 +1,116 @@
+#!/bin/sh
+
+test_rsudo()
+{
+  REMOTE_HOST="localhost"
+  REMOTE_USER="$USER"
+
+  export RSUDO_PASSWORD="qwe123"
+  # if [ -z "$RSUDO_PASSWORD" ]
+  # then
+  #   if [ -t 0 ]
+  #   then
+  #     echo "[test_command rsudo] Enter password for ${REMOTE_HOST}@${REMOTE_USER}:" 1>&2
+  #     stty -echo
+  #     read -r RSUDO_PASSWORD
+  #     stty echo
+  #   else
+  #     read -r RSUDO_PASSWORD
+  #   fi
+  #   export RSUDO_PASSWORD
+  # fi
+
+  # # ask for password if not available in env
+  # rsudo execute "$REMOTE_HOST" "$REMOTE_USER" ls -ld
+
+  # # password from cmdline
+  # echo "$RSUDO_PASSWORD" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" ls -ld
+
+  # # commands from pipe
+  # echo "ls -lA" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER"
+
+  # # error no command from arg or pipe
+  # rsudo execute "$REMOTE_HOST" "$REMOTE_USER" ""
+
+  # # command from arg wich receives input from pipe
+  # echo "ls -lA" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" cat
+
+#   # command from heredoc are streamed through pipe to ssh, thus input from pipe is discarded (by posix sh design)
+#   echo "ls -lA" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" << EOF
+# # for above reasons eventual password could only be streamed inside heredoc (not proper way to do)
+# pwd; cat
+# EOF
+
+#   # correct way to combine stdin commands with commands from heredoc (heredoc and stdin commands cannot access stdin)
+#   (echo 'echo "ls -lA"'; echo "cat"; echo 'var="test value"'; cat << EOF; echo "echo after heredoc") | rsudo execute "$REMOTE_HOST" "$REMOTE_USER"
+# pwd; cat
+# echo "var=\$var"
+# echo "end of cat"
+# EOF
+
+#   (echo 'echo "ls -lA"'; echo "cat"; echo 'var="test value"'; cat << 'EOF'; echo "echo after heredoc") | rsudo execute "$REMOTE_HOST" "$REMOTE_USER"
+# pwd; cat
+# echo "var=$var"
+# echo "end of cat"
+# EOF
+
+#   # correct way to provide password (RSUDO_PASSWORD must already be defined or echoed directly without variable)
+#   # and combine stdin commands with commands from heredoc
+#   (echo "$RSUDO_PASSWORD"; echo 'echo "ls -lA"'; cat << EOF) | rsudo execute "$REMOTE_HOST" "$REMOTE_USER"
+# pwd; cat
+# echo "end of cat"
+# EOF
+
+#   (echo "ls -lA"; cat /dev/stdin << EOF) | cat
+#   test
+# EOF
+
+  # rsudo execute "$REMOTE_HOST" "$REMOTE_USER" sh -c "ls -ld"
+
+  # rsudo execute_as "$REMOTE_HOST" "$REMOTE_USER" postgres psql
+  # echo "select * from auth.roles;" | rsudo sql "$REMOTE_HOST" "$REMOTE_USER" system
+  # rsudo sql "$REMOTE_HOST" "$REMOTE_USER" system "select * from auth.roles;"
+  # rsudo sql "$REMOTE_HOST" "$REMOTE_USER" system select \* from auth.roles\;
+  # rsudo getdb "$REMOTE_HOST" "$REMOTE_USER" system | less
+  # echo "sql prefix" | rsudo getdb "$REMOTE_HOST" "$REMOTE_USER" system | less
+  # echo "sql prefix" | rsudo getdb "$REMOTE_HOST" "$REMOTE_USER" system > /tmp/!db.sql
+  # rsudo getdb "$REMOTE_HOST" "$REMOTE_USER" system | rsudo putdb "$REMOTE_HOST" "$REMOTE_USER" system_duplicate
+  # rsudo getdb "$REMOTE_HOST" "$REMOTE_USER" system > /tmp/!db.sql
+  # rsudo putdb "$REMOTE_HOST" "$REMOTE_USER" system_duplicate /tmp/!db.sql
+  # rm /tmp/!db.sql
+
+  # test_files_start
+
+  # read x
+
+  # # working because globbing is interpreted server side
+  # rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/*"
+
+  # # not working because multiple paths inside one argument
+  # rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "'${TEST_DIR}/000/'* '${TEST_DIR}/aaa'/*"
+
+  # # globbing server side + multiple entries (with eventual spaces or special characters)
+  # rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "\"${TEST_DIR}/000\"/*" "${TEST_DIR}/aaa/*"
+
+  # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/link-recursive" "${TEST_DIR}/upload/link-aaa-recursive"
+  # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/bbb/ccc/link-absolute" "${TEST_DIR}/upload/link-absolute"
+  # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/file_a1" "${TEST_DIR}/upload/file_a1"
+  # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/colliding/sub-colliding/file_colliding" "${TEST_DIR}/upload/file_colliding_renamed"
+  # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/upload/000" "admino:admino" "777"
+  # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/upload/0-0-0"
+  #
+  # rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/link-recursive" "${TEST_DIR}/download/link-aaa-recursive"
+  # rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/bbb/ccc/link-absolute" "${TEST_DIR}/download/link-absolute"
+  # rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/file_a1" "${TEST_DIR}/download/file_a1"
+  # rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/colliding/sub-colliding/file_colliding" "${TEST_DIR}/download/file_colliding_renamed"
+  # rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/download/000"
+  # rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/download/0-0-0"
+  #
+  # ls -lA "${TEST_DIR}/upload"
+  # ls -lA "${TEST_DIR}/download"
+  # read x
+
+  # test_files_end
+
+  # rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}"
+}

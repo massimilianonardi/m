@@ -1,0 +1,50 @@
+#!/bin/sh
+
+#-------------------------------------------------------------------------------
+
+. realpaths.lib.sh
+. waituser.lib.sh
+. enc.lib.sh
+
+#-------------------------------------------------------------------------------
+
+log()
+{
+  echo "$(date +"[%Y-%m-%d %H:%M:%S]")" "$@"
+#  echo "$(date +"[%Y-%m-%d %H:%M:%S]")" "$@" 1>&2
+}
+
+#------------------------------------------------------------------------------
+
+main()
+{
+  # . "rsudo-ctl"
+  # rsudo-ctl myhost execute ls -la
+  # rsudo-ctl myhost execute ls -la && \
+
+  rpr-jobs && \
+
+  true
+}
+
+#------------------------------------------------------------------------------
+
+realpaths
+
+RSUDO_PATH=""
+for k in $(cat "$THIS_DIR/rsudo-paths.conf")
+do
+  RSUDO_PATH="$k:$RSUDO_PATH"
+done
+export PATH="$RSUDO_PATH:$PATH"
+
+if [ "$#" -gt "0" ]
+then
+  "$@"
+else
+  log "rsudo-jobs - START"
+  main && log "rsudo-jobs: completed succesfully!" || log "rsudo-jobs: ERROR!!! EXIT_CODE=$?"
+  log "rsudo-jobs - END"
+fi
+
+waituser

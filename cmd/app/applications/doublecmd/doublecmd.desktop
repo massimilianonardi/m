@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Double Commander
+Exec=app doublecmd run %F
+Terminal=false
+Type=Application
+Icon=/m/app/pulsar/latest/doublecmd.png
+StartupNotify=true
+StartupWMClass=doublecmd

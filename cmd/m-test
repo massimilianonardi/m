@@ -1,0 +1,9 @@
+#!/bin/sh
+
+rm -rf "/m/dev"
+mkdir -p "/m/dev"
+cp -RT "/m/src" "/m/dev/src"
+cd "/m/dev"
+"/m/dev/src/m/os/install/install" dev
+"/m/dev/m"
+

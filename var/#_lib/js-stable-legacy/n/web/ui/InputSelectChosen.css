@@ -1,0 +1,8 @@
+.InputSelectChosen
+{
+}
+
+.InputSelectChosen a>*
+{
+  background: inherit;
+}

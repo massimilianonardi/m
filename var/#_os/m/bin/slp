@@ -1,0 +1,7 @@
+#!/bin/sh
+
+#while true
+while [ "$VAR" != "x" ] && [ "$VAR" != "q" ] && [ "$VAR" != "exit" ] && [ "$VAR" != "quit" ]
+do
+  read VAR
+done

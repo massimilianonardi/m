@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=NetBeans
+Exec=app netbeans run %F
+Terminal=false
+Type=Application
+Icon=/m/app/netbeans/latest/nb/apache-netbeans.svg
+StartupNotify=true
+StartupWMClass=Apache NetBeans IDE 25

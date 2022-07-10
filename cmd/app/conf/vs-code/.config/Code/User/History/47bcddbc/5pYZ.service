@@ -1,0 +1,13 @@
+[Unit]
+Description=KeyCloak Service
+After=network.service
+
+[Service]
+Type=simple
+User=keycloak
+Group=keycloak
+ExecStart=/m/src/git/m/cmd/pkg/zzz/pkg/keycloak-26.4.0/keycloak-26.4.0/bin/kc.sh start-dev
+
+[Install]
+WantedBy=multi-user.target
+

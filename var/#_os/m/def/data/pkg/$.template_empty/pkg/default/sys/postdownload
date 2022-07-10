@@ -1,0 +1,7 @@
+postdownload()
+(
+  echo postdownload_function > "$INSTALL_DIR/bin/postdownload_function"
+)
+
+echo postdownload > "$INSTALL_DIR/bin/postdownload"
+

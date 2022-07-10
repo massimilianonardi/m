@@ -1,0 +1,104 @@
+2025-07-17 11:19:16.445 - DBeaver 25.1.2.202507061449 is starting
+2025-07-17 11:19:16.447 - OS: Linux 6.11.0-29-generic (amd64)
+2025-07-17 11:19:16.448 - Java version: 21.0.5 by Eclipse Adoptium (64bit)
+2025-07-17 11:19:16.448 - Install path: '/m/app/dbeaver/25.1.2/dbeaver'
+2025-07-17 11:19:16.448 - Instance path: 'file:/m/src/git/m/cmd/app/conf/dbeaver/data-dir/'
+2025-07-17 11:19:16.451 - Memory available 100Mb/1024Mb
+2025-07-17 11:19:16.466 - Create display
+> Start Eclipse IDE UI [org.eclipse.ui.ide 3.22.600.v20250523-1502]
+2025-07-17 11:19:16.604 - Initialize desktop platform...
+2025-07-17 11:19:16.725 - BounceCastle bundle found. Use JCE provider BC
+> Start Core File Systems [org.eclipse.core.filesystem 1.11.200.v20250513-1234]
+> Start Core Resource Management [org.eclipse.core.resources 3.22.200.v20250513-1234]
+> Start Supporto principale per i team [org.eclipse.team.core 3.10.700.v20250313-0656]
+> Start DBeaver UI Navigator [org.jkiss.dbeaver.ui.navigator 1.0.158.202507061449]
+2025-07-17 11:19:16.937 - Initialize base platform...
+2025-07-17 11:19:16.955 - Platform initialized (351ms)
+2025-07-17 11:19:16.956 - Resetting workbench due to the version change (null -> 25.1.2)
+2025-07-17 11:19:16.984 - Starting instance server at http://localhost:41235
+2025-07-17 11:19:16.988 - Run workbench
+> Start Eclipse e4 Workbench SWT [org.eclipse.e4.ui.workbench.swt 0.17.800.v20250422-1254]
+> Start Eclipse Application Services [org.eclipse.e4.core.services 2.5.200.v20250326-1945]
+> Start Eclipse UI Application Services [org.eclipse.e4.ui.services 1.6.500.v20250123-0754]
+> Start Eclipse e4 Progress View [org.eclipse.e4.ui.progress 0.4.800.v20250422-1254]
+> Start Eclipse Bindings Support [org.eclipse.e4.ui.bindings 0.14.600.v20250331-1050]
+> Start Eclipse e4 core commands [org.eclipse.e4.core.commands 1.1.600.v20250307-1331]
+> Start EMF XML/XMI Persistence [org.eclipse.emf.ecore.xmi 2.39.0.v20250414-1351]
+> Start Eclipse CSS SWT Theme Support [org.eclipse.e4.ui.css.swt.theme 0.14.500.v20250213-1508]
+> Start Eclipse e4 Workbench Add-ons [org.eclipse.e4.ui.workbench.addons.swt 1.5.700.v20250422-1254]
+> Start Eclipse e4 Workbench SWT Renderer [org.eclipse.e4.ui.workbench.renderers.swt 0.16.800.v20250519-1609]
+> Start Eclipse Dependency Injection Extensions [org.eclipse.e4.core.di.extensions 0.18.300.v20240413-1529]
+> Start Eclipse CSS SWT Support [org.eclipse.e4.ui.css.swt 0.15.600.v20250409-1135]
+> Start Eclipse SDK Themes [org.eclipse.ui.themes 1.2.2800.v20250516-0925]
+> Start Editor di testo predefinito [org.eclipse.ui.editors 3.20.0.v20250514-1719]
+> Start Workbench [org.eclipse.ui.workbench.texteditor 3.19.200.v20250514-1719]
+> Start Equinox Java Authentication and Authorization Service (JAAS) [org.eclipse.equinox.security 1.4.600.v20250521-0413]
+> Start Interfaccia Gestione Connessione Internet [org.eclipse.ui.net 1.5.400.v20240413-1529]
+> Start Internet Connection Management [org.eclipse.core.net 1.5.700.v20250313-0656]
+2025-07-17 11:19:18.119 - Configure workbench window
+> Start DBeaver SQL Model [org.jkiss.dbeaver.model.sql 1.0.148.202507061449]
+2025-07-17 11:19:18.244 - Total database drivers: 123 (123)
+> Start Parte centrale del sistema della Guida [org.eclipse.help 3.10.500.v20250423-1201]
+2025-07-17 11:19:18.318 - Create actions
+2025-07-17 11:19:18.332 - Disable Eclipse action set 'org.eclipse.ui.edit.text.actionSet.annotationNavigation'
+2025-07-17 11:19:18.332 - Disable Eclipse action set 'org.eclipse.ui.WorkingSetActionSet'
+2025-07-17 11:19:18.332 - Disable Eclipse action set 'org.eclipse.ui.actionSet.openFiles'
+2025-07-17 11:19:18.332 - Create workbench actions
+2025-07-17 11:19:19.193 - Initialize workbench window
+2025-07-17 11:19:19.195 - Finish initialization
+> Start DBeaver UI Editors - Data [org.jkiss.dbeaver.ui.editors.data 1.0.158.202507061449]
+> Start DBeaver UI Editors - SQL [org.jkiss.dbeaver.ui.editors.sql 1.0.158.202507061449]
+> Start GEF Classic Draw2d [org.eclipse.draw2d 3.20.0.202505280821]
+> Start GEF Classic GEF (MVC) [org.eclipse.gef 3.22.0.202505280821]
+> Start DBeaver ERD UI [org.jkiss.dbeaver.erd.ui 3.0.118.202507061449]
+> Start DBeaver ERD Model [org.jkiss.dbeaver.erd.model 1.0.118.202507061449]
+> Start DBeaver Dashboard UI [org.jkiss.dbeaver.ui.dashboard 1.0.155.202507061449]
+> Start DBeaver Sample Database [org.jkiss.dbeaver.ui.config.sample 1.0.195.202507061449]
+2025-07-17 11:19:42.962 - Open [https://dbeaver.io/product/version.xml]
+2025-07-17 11:19:43.442 - Exception during a connection to https://dbeaver.io/product/version.xml
+javax.net.ssl.SSLHandshakeException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+	at java.base/sun.security.ssl.Alert.createSSLException(Unknown Source)
+	at java.base/sun.security.ssl.TransportContext.fatal(Unknown Source)
+	at java.base/sun.security.ssl.TransportContext.fatal(Unknown Source)
+	at java.base/sun.security.ssl.TransportContext.fatal(Unknown Source)
+	at java.base/sun.security.ssl.CertificateMessage$T13CertificateConsumer.checkServerCerts(Unknown Source)
+	at java.base/sun.security.ssl.CertificateMessage$T13CertificateConsumer.onConsumeCertificate(Unknown Source)
+	at java.base/sun.security.ssl.CertificateMessage$T13CertificateConsumer.consume(Unknown Source)
+	at java.base/sun.security.ssl.SSLHandshake.consume(Unknown Source)
+	at java.base/sun.security.ssl.HandshakeContext.dispatch(Unknown Source)
+	at java.base/sun.security.ssl.HandshakeContext.dispatch(Unknown Source)
+	at java.base/sun.security.ssl.TransportContext.dispatch(Unknown Source)
+	at java.base/sun.security.ssl.SSLTransport.decode(Unknown Source)
+	at java.base/sun.security.ssl.SSLSocketImpl.decode(Unknown Source)
+	at java.base/sun.security.ssl.SSLSocketImpl.readHandshakeRecord(Unknown Source)
+	at java.base/sun.security.ssl.SSLSocketImpl.startHandshake(Unknown Source)
+	at java.base/sun.security.ssl.SSLSocketImpl.startHandshake(Unknown Source)
+	at java.base/sun.net.www.protocol.https.HttpsClient.afterConnect(Unknown Source)
+	at java.base/sun.net.www.protocol.https.AbstractDelegateHttpsURLConnection.connect(Unknown Source)
+	at java.base/sun.net.www.protocol.https.HttpsURLConnectionImpl.connect(Unknown Source)
+	at org.jkiss.dbeaver.runtime.WebUtils.openURLConnection(WebUtils.java:155)
+	at org.jkiss.dbeaver.runtime.WebUtils.openURLConnection(WebUtils.java:87)
+	at org.jkiss.dbeaver.runtime.WebUtils.openURLConnection(WebUtils.java:76)
+	at org.jkiss.dbeaver.runtime.WebUtils.openConnection(WebUtils.java:58)
+	at org.jkiss.dbeaver.runtime.WebUtils.openConnection(WebUtils.java:53)
+	at org.jkiss.dbeaver.registry.updater.VersionDescriptor.<init>(VersionDescriptor.java:54)
+	at org.jkiss.dbeaver.ui.app.standalone.update.DBeaverVersionChecker.run(DBeaverVersionChecker.java:126)
+	at org.jkiss.dbeaver.model.runtime.AbstractJob.run(AbstractJob.java:119)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+Caused by: sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+	at java.base/sun.security.validator.PKIXValidator.doBuild(Unknown Source)
+	at java.base/sun.security.validator.PKIXValidator.engineValidate(Unknown Source)
+	at java.base/sun.security.validator.Validator.validate(Unknown Source)
+	at java.base/sun.security.ssl.X509TrustManagerImpl.checkTrusted(Unknown Source)
+	at java.base/sun.security.ssl.X509TrustManagerImpl.checkServerTrusted(Unknown Source)
+	... 24 more
+Caused by: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+	at java.base/sun.security.provider.certpath.SunCertPathBuilder.build(Unknown Source)
+	at java.base/sun.security.provider.certpath.SunCertPathBuilder.engineBuild(Unknown Source)
+	at java.base/java.security.cert.CertPathBuilder.build(Unknown Source)
+	... 29 more
+2025-07-17 11:19:50.583 - Dispose navigator model
+2025-07-17 11:19:50.664 - DBeaver is stopping
+2025-07-17 11:19:50.665 - Stop instance server
+2025-07-17 11:19:51.667 - Instance server has been stopped
+2025-07-17 11:19:51.667 - DBeaver shutdown completed

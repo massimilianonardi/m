@@ -1,0 +1,259 @@
+#!/bin/sh
+
+. realpaths.lib.sh
+. waituser.lib.sh
+. array.lib.sh
+
+#-------------------------------------------------------------------------------
+
+exist_function()
+{
+  type "$1">/dev/null 2>&1
+}
+
+#-------------------------------------------------------------------------------
+
+update()
+{
+  . "${APP_SCRIPT_DIR}/${APP_NAME}-${COMMAND}"
+
+  DOWNLOAD_FILE="${APP_NAME}-${VERSION}.${FILE_TYPE}"
+  echo "latest VERSION is $VERSION"
+  if [ -d "$VERSION" ]
+  then
+    echo "already have latest version"
+  else
+    rm -rf $VERSION
+    mkdir $VERSION
+    cd $VERSION
+    echo "fetching $DOWNLOAD_URL"
+    #curl -# "$DOWNLOAD_URL" > "$DOWNLOAD_FILE"
+    # wget -O "$DOWNLOAD_FILE" "$DOWNLOAD_URL"
+    wget --no-check-certificate -O "$DOWNLOAD_FILE" "$DOWNLOAD_URL"
+    echo "unpacking..."
+    if [ "$FILE_TYPE" = "zip" ]
+    then
+      unzip "$DOWNLOAD_FILE"
+    elif [ "$FILE_TYPE" = "tar.gz" ] || [ "$FILE_TYPE" = "tgz" ] || [ "$FILE_TYPE" = "tar" ] || [ "$FILE_TYPE" = "gzip" ] || [ "$FILE_TYPE" = "bzip" ] || [ "$FILE_TYPE" = "xz" ]
+    then
+      tar xvf "$DOWNLOAD_FILE"
+    elif [ "$FILE_TYPE" = "deb" ]
+    then
+      dpkg-deb -x "$DOWNLOAD_FILE" ./
+    else
+      echo "unknown file type: FILE_TYPE=$FILE_TYPE"
+      exit 1
+    fi
+    rm "$DOWNLOAD_FILE"
+    # find the root subdir as UNPACKED_SUB_DIR (eventually empty)
+    if [ "$(ls | wc -l)" = "1" ]
+    then
+      UNPACKED_SUB_DIR="$(ls)"
+      ls "$UNPACKED_SUB_DIR"
+      echo "UNPACKED_SUB_DIR=$UNPACKED_SUB_DIR"
+      if [ "$(ls "$UNPACKED_SUB_DIR" | wc -l)" = "1" ] && [ -d "$(ls "$UNPACKED_SUB_DIR")" ]
+      then
+        UNPACKED_SUB_DIR="$UNPACKED_SUB_DIR/$(ls "$UNPACKED_SUB_DIR")"
+        echo "UNPACKED_SUB_DIR=$UNPACKED_SUB_DIR"
+      fi
+    fi
+    cd ..
+
+    rm -f ./latest
+    ln -s "$VERSION/$UNPACKED_SUB_DIR" ./latest
+
+    if [ "$CONF_VC" = "*" ]
+    then
+      export HOME_VC="$HOME_VC_DIR/$APP_NAME"
+
+      if [ -e "$HOME_VC" ]
+      then
+        echo "vc dir '$HOME_VC' exists, removing eventual regular conf dir '$HOME'"
+        rm -rf "$HOME"
+      elif [ -e "$HOME" ]
+      then
+        echo "vc dir '$HOME_VC' DO NOT exists, moving regular conf dir '$HOME' under vc"
+        mv -T "$HOME" "$HOME_VC"
+      else
+        echo "vc dir '$HOME_VC' and regular conf dir '$HOME' DO NOT exists, creating vc dir"
+        mkdir -p "$HOME_VC"
+      fi
+      echo "linking vc element '$HOME_VC' to path '$HOME'"
+      ln -s "$HOME_VC" "$HOME"
+    elif [ -n "$CONF_VC" ]
+    then
+      export HOME_VC="$HOME_VC_DIR/$APP_NAME"
+      if [ ! -d "$HOME_VC" ]
+      then
+        mkdir -p "$HOME_VC"
+      fi
+
+      eval set -- $CONF_VC
+      for k in "$@"
+      do
+        echo "putting conf dir under version control: $k"
+        mkdir -p "$(dirname "$HOME_VC/$k")"
+        mkdir -p "$(dirname "$HOME/$k")"
+
+        if [ -e "$HOME_VC/$k" ]
+        then
+          echo "vc dir '$HOME_VC/$k' exists, removing eventual regular conf dir '$HOME/$k'"
+          rm -rf "$HOME/$k"
+        elif [ -e "$HOME/$k" ]
+        then
+          echo "vc dir '$HOME_VC/$k' DO NOT exists, moving regular conf dir '$HOME/$k' under vc"
+          mv -T "$HOME/$k" "$HOME_VC/$k"
+        else
+          echo "vc dir '$HOME_VC/$k' and regular conf dir '$HOME/$k' DO NOT exists, creating vc dir"
+          mkdir -p "$HOME_VC/$k"
+        fi
+        echo "linking vc element '$HOME_VC/$k' to path '$HOME/$k'"
+        ln -s "$HOME_VC/$k" "$HOME/$k"
+      done
+    fi
+
+    if exist_function postinstall
+    then
+      postinstall
+    fi
+  fi
+
+  waituser
+}
+
+#-------------------------------------------------------------------------------
+
+run()
+{
+  if [ ! -e "./latest" ]
+  then
+    (COMMAND="update"; update)
+  fi
+  #. "${APP_SCRIPT_DIR}/${APP_NAME}-${COMMAND}"
+  #"${APP_SCRIPT_DIR}/${APP_NAME}-${COMMAND}"
+  screen -S app-session -d -m "${APP_SCRIPT_DIR}/${APP_NAME}-${COMMAND}" "$@"
+  sleep 1
+}
+
+#-------------------------------------------------------------------------------
+
+debug()
+{
+  echo "debug cmdline: $@"
+  if [ ! -f "${APP_SCRIPT_DIR}/${APP_NAME}-${COMMAND}" ]
+  then
+    COMMAND="run"
+  fi
+
+  #. "${APP_SCRIPT_DIR}/${APP_NAME}-${COMMAND}"
+  "${APP_SCRIPT_DIR}/${APP_NAME}-${COMMAND}" "$@"
+
+  waituser
+}
+
+#-------------------------------------------------------------------------------
+
+desktop()
+{
+  if [ -f "$APP_SCRIPT_DIR/$APP_NAME.desktop" ]
+  then
+    DESKTOP_COMMAND="$(menu inst_app="install '$APP_NAME' desktop file" uninst_app="uninstall '$APP_NAME' desktop file")"
+    case "$DESKTOP_COMMAND" in
+      "inst_app")
+        sudo rm -f "/usr/share/applications/$APP_NAME.desktop"
+        sudo cp "$APP_SCRIPT_DIR/$APP_NAME.desktop" "/usr/share/applications"
+        sudo chown root:root "/usr/share/applications/$APP_NAME.desktop"
+      ;;
+      "uninst_app")
+        sudo rm -f "/usr/share/applications/$APP_NAME.desktop"
+      ;;
+      *) exit 1;;
+    esac
+  else
+    echo "no desktop file exists for this app: $APP_NAME"
+  fi
+
+  waituser
+}
+
+#-------------------------------------------------------------------------------
+
+realpaths
+
+. "$THIS_DIR/app.conf"
+
+# parse command line: $1=APP_NAME, $2=COMMAND
+if [ -n "$1" ]
+then
+  APP_NAME="$1"
+  shift
+else
+  array APP_ARRAY
+  for k in $(cd "$APPS_SCRIPT_DIR"; ls -d *)
+  do
+    if [ -d "$APPS_SCRIPT_DIR/$k" ] && [ -f "$APPS_SCRIPT_DIR/$k/$k-run" ] && [ -f "$APPS_SCRIPT_DIR/$k/$k-update" ]
+    then
+      array APP_ARRAY add "$k"
+    fi
+  done
+
+  APP_NAME="$(eval menu $(array APP_ARRAY get))"
+  array APP_ARRAY unset
+  if [ -z "$APP_NAME" ]
+  then
+    exit 1
+  fi
+fi
+
+if [ -n "$1" ]
+then
+  COMMAND="$1"
+  shift
+else
+  # COMMAND="run"
+  COMMAND="$(menu run debug update desktop)"
+fi
+
+case "$COMMAND" in
+  "run") true;;
+  "debug") true;;
+  "update") true;;
+  "desktop") true;;
+  *) exit 1;;
+esac
+
+# apps update/run/debug script dir
+APP_SCRIPT_DIR="$APPS_SCRIPT_DIR/$APP_NAME"
+
+# apps bin dir
+APP_DIR="$APPS_DIR/$APP_NAME"
+
+# setup home environment variable for app
+export HOME="$HOME_DIR/$APP_NAME"
+export USERHOME="$HOME"
+
+# create app dirs and cd into main dir
+if [ ! -d "$HOME" ]
+then
+  mkdir -p "$HOME"
+fi
+
+if [ ! -d "$APPS_DIR" ]
+then
+  mkdir -p "$APPS_DIR"
+fi
+
+# create link to this command
+if [ ! -L "$APPS_DIR/$THIS_FILE" ]
+then
+  ln -s "$THIS_DIR/$THIS_FILE" "$APPS_DIR/$THIS_FILE"
+fi
+
+if [ ! -d "$APP_DIR" ]
+then
+  mkdir -p "$APP_DIR"
+fi
+
+cd "$APP_DIR"
+
+"$COMMAND" "$@"
