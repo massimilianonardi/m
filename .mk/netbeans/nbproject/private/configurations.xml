@@ -2017,6 +2017,9 @@
             </df>
           </df>
           <df name="doc">
+            <df name="en_US.UTF-8">
+              <in>os</in>
+            </df>
             <df name="test_args">
               <df name="_it_IT.UTF-8">
               </df>

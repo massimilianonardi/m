@@ -2,6 +2,15 @@
 <configurationDescriptor version="100">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <df root="../.." name="0">
+      <df name="os">
+        <df name="m">
+          <df name="doc">
+            <df name="en_US.UTF-8">
+              <in>os</in>
+            </df>
+          </df>
+        </df>
+      </df>
     </df>
   </logicalFolder>
   <sourceFolderFilter>^(nbproject|netbeans|netbeans_java)$</sourceFolderFilter>
@@ -30,6 +39,8 @@
           <preBuildCommand>sh mk prebuild</preBuildCommand>
         </preBuild>
       </makefileType>
+      <item path="../../os/m/doc/en_US.UTF-8/os" ex="false" tool="3" flavor2="0">
+      </item>
     </conf>
   </confs>
 </configurationDescriptor>

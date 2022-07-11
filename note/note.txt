@@ -2,7 +2,6 @@
 https://192.168.253.136:8443/m/authenticator.id
 https://192.168.253.136:8443/m/authenticator.profiles
 https://192.168.253.136:8443/m/authenticator.authenticate?id=admin&credential=admin
-https://192.168.253.136:8443/m/app/framework_legacy/scan_edit
 
 https://192.168.253.136:8443/m/store/edit/test?data=test_text
 https://192.168.253.136:8443/m/store/edit/testdir/test?data=test_text
@@ -44,42 +43,6 @@ cd /m/src; ./.mk/git/commit ""
 
 mk m/web --profile debug -- dependclean clean depend build test
 
-
-
-apt-get install sshfs
-mkdir sshfs-dir
-#sshfs -o allow_other,defer_permissions root@xxx.xxx.xxx.xxx:/ /mnt/sshfolder
-sshfs root@10.100.0.250:/ /mnt/sshfs-dir
-umount sshfs-dir; ls -la /mnt/sshfs-dir
-
-scp -v root@10.100.0.251:/DATA/backup/pg_db_bak_WEBGIS.sql /tmp/pg_db_bak_WEBGIS.sql
-scp -v /tmp/pg_db_bak_WEBGIS.sql massimiliano.nardi@10.173.9.169:/tmp/pg_db_bak_WEBGIS.sql
-scp -v /tmp/pg_db_bak_WEBGIS.sql massimiliano.nardi@10.173.9.175:/tmp/pg_db_bak_WEBGIS.sql
-rm /tmp/pg_db_bak_WEBGIS.sql; ls -la /tmp
-
-scp -r /m/pkg/geoserver massimiliano.nardi@10.173.9.136:/tmp
-scp -r /m/pkg/geoserver massimiliano.nardi@10.173.9.137:/tmp
-
-ssh massimiliano.nardi@10.173.9.136
-ssh massimiliano.nardi@10.173.9.137
-ssh massimiliano.nardi@10.173.9.169
-ssh massimiliano.nardi@10.173.9.175
-
-su postgres
-dropdb WEBGIS; createdb WEBGIS; psql -d WEBGIS -f /tmp/pg_db_bak_WEBGIS.sql 1>/tmp/stdout.log 2>/tmp/stderr.log
-cd /m/data/postgres_bak; dropdb WEBGIS; createdb WEBGIS; psql -d WEBGIS -f pg_db_bak_WEBGIS.sql 1>stdout.log 2>stderr.log
-
-su postgres --preserve-environment -s /bin/sh <<'EOF'
-cd /m/data/postgres_bak
-dropdb WEBGIS
-createdb WEBGIS
-psql -d WEBGIS -c "CREATE EXTENSION postgis; CREATE EXTENSION postgis_topology; SELECT PostGIS_full_version();"
-psql -d WEBGIS -c "CREATE ROLE "WEBGIS" NOSUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION;"
-psql -d WEBGIS -c "CREATE ROLE webgis LOGIN ENCRYPTED PASSWORD 'md5d39eb0e75d22d9f5976a76e7a97f70ac' NOSUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION;"
-psql -d WEBGIS -c "GRANT "WEBGIS" TO webgis;"
-psql -d WEBGIS -c "CREATE ROLE nic LOGIN ENCRYPTED PASSWORD 'md52e404807bfb60b1e6b61ca840a7f7dc7' NOSUPERUSER NOINHERIT NOCREATEDB NOCREATEROLE NOREPLICATION;"
-psql -d WEBGIS -f pg_db_bak_WEBGIS.sql 1>stdout.log 2>stderr.log
-EOF
 
 
 reverse proxy + many servers on firewalled private network
