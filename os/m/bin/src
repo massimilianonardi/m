@@ -1,24 +1,5 @@
 #!/bin/bash
 
-## todo test if prj dir is link
-##if [ -z "$SRC_DIR" ] || [ ! -d "$SRC_DIR/$1" ]
-#if [ -z "$SRC_DIR" ]
-#then
-#  exit 1
-#fi
-#
-#cd "$SRC_DIR/$1"
-#if [ "$?" != "0" ]
-#then
-#  exit 1
-#fi
-#
-#pwd
-#
-#shift
-#
-#git "$@"
-
 #-------------------------------------------------------------------------------
 
 clone()
@@ -160,16 +141,14 @@ main()
   then
     COMMAND="$1"
 
-    mk_project_detect "$2"
+    # mk_project_detect "$2"
+    PRJ_DIR="$2"
     shift
     shift
     set -- "$COMMAND" "$@"
     cd "$PRJ_DIR"
   fi
 
-echo "2=$2"
-echo "CMD=$@"
-exit 0
   "$@"
 }
 
