@@ -17,35 +17,6 @@ m_this()
 
 #-------------------------------------------------------------------------------
 
-m_this_fast()
-{
-#  THIS_PATH="$0"
-#  THIS_DIR="${THIS_PATH%/*}"
-#  THIS_NAME="${THIS_PATH##*/}"
-  THIS_DIR="$(cd -P -- "${0%/*}"; pwd)"
-  THIS_NAME="${0##*/}"
-  THIS_PATH="$THIS_DIR/$THIS_NAME"
-  THIS_PACKAGE="$THIS_NAME"
-}
-
-#-------------------------------------------------------------------------------
-
-m_this_resolved()
-{
-  THIS_PATH="$(path -al "$0")"
-  THIS_DIR="${THIS_PATH%/*}"
-  THIS_NAME="${THIS_PATH##*/}"
-  THIS_PACKAGE="${THIS_DIR%/bin}"
-  if [ -f "$THIS_PACKAGE/sys/name" ]
-  then
-    THIS_PACKAGE="$(cat "$THIS_PACKAGE/sys/name")"
-  else
-    THIS_PACKAGE="${THIS_PACKAGE##*/}"
-  fi
-}
-
-#-------------------------------------------------------------------------------
-
 m_start()
 {
   . m-lang.lib.sh
@@ -155,11 +126,8 @@ m_conf_sys()
 
 m_command()
 {
-  # m_this_fast
   m_this
-
   m_start "$@"
-
   m_end "$@"
 }
 
@@ -167,7 +135,6 @@ m_command()
 
 m_script()
 {
-  # m_this_resolved
   m_this
 
   m_start "$@"
@@ -184,3 +151,22 @@ m_script()
 }
 
 #-------------------------------------------------------------------------------
+
+THIS_DIR="$(cd -P -- "${0%/*}"; pwd)"
+THIS_NAME="${0##*/}"
+THIS_PATH="$THIS_DIR/$THIS_NAME"
+
+. m-log.lib.sh
+
+log_info "********************************************************************************"
+log_info "[START] $THIS_NAME" "$@"
+log_debug "[THIS_DIR] $THIS_DIR [PWD] $PWD"
+
+trace exec return main "$@"
+EXIT_CODE="$?"
+[ "$EXIT_CODE" -eq "0" ] || log_error "EXIT_CODE: $EXIT_CODE"
+
+log_info "[END $EXIT_CODE] $THIS_NAME" "$@"
+log_info "********************************************************************************"
+
+exit "$EXIT_CODE"
