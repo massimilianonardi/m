@@ -80,8 +80,11 @@ branch()
   then
     git branch -l
     git branch -r -l
-  else
+  elif [ "$1" = "set" ]
+  then
     echo todo branch change
+  else
+    exit 1
   fi
 )
 
@@ -131,23 +134,12 @@ main()
     *) exit 1;;
   esac
 
-  if [ "$1" = "clone" ]
-  then
-    shift
-    PRJ_DIR="$SRC_DIR/$1"
-    shift
-    set -- "clone" "$@" "$PRJ_DIR"
-  elif [ "$1" != "git" ]
-  then
-    COMMAND="$1"
-
-    # mk_project_detect "$2"
-    PRJ_DIR="$2"
-    shift
-    shift
-    set -- "$COMMAND" "$@"
-    cd "$PRJ_DIR"
-  fi
+  COMMAND="$1"
+  shift
+  PRJ_DIR="$1"
+  shift
+  set -- "$COMMAND" "$@"
+  cd "$PRJ_DIR"
 
   "$@"
 }
@@ -155,10 +147,5 @@ main()
 #-------------------------------------------------------------------------------
 
 . m.lib.sh
-
-ARGS_PARSE="true"
-ARGS_FORMAT="smart"
-
-m_script "$@"
 
 #-------------------------------------------------------------------------------
