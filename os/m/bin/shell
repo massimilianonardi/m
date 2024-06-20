@@ -20,11 +20,13 @@ shell_gui()
 
 main()
 {
+  . m-sys.lib.sh
+  . m-init.lib.sh
 # export SHELL_PID and set trap function to activate on signal usr1 sent by pkg to update environment
 
 #  type electron>/dev/null 2>&1 || npm install -g electron
 #  npm list -g electron || npm install -g electron
-  
+
   if [ -z "$*" ]
   then
     if [ -f "$RUN_FILE" ]
@@ -50,13 +52,8 @@ main()
 
 #-------------------------------------------------------------------------------
 
-#export SHELL_PID="$$"
-#trap "env_update" USR1 USR2 URG
-
 export PATH="$(cd -L -- "${0%/*}" && pwd -L):$PATH"
 
 . m.lib.sh
-
-m_script "$@"
 
 #-------------------------------------------------------------------------------
