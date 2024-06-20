@@ -81,7 +81,7 @@ main()
 #ENV_START
 #$ENV_END
 #ENV_END
-  
+
 #  env_monitor_stop
 #  env_monitor_diff
   trace exec return rec_1
@@ -92,11 +92,6 @@ main()
 }
 
 #-------------------------------------------------------------------------------
-
-#export PATH="$(cd -P -- "${0%/*}"; pwd):$PATH"
-#echo $PATH | tr ':' '\n'
-
-. m.lib.sh
 
 #LOG_EXCLUDE="parse_args_"
 
@@ -131,6 +126,6 @@ ARGS_END_2="zaz_end2"
 #  . m-exec.lib.sh
 #env_monitor_start
 
-m_command "$@"
+. m.lib.sh
 
 #-------------------------------------------------------------------------------
