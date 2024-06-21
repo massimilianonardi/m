@@ -34,9 +34,9 @@ get()
     log_fatal "cannot find wget or curl"
     exit 1
   fi
-  
+
   log_debug "CMD: $CMD - OPT_FILE: $OPT_FILE - OPT_EXTRA: $OPT_EXTRA"
-  
+
   if [ "$#" = "1" ]
   then
     set -- $OPT_EXTRA "$(url smart encode "$1")"
@@ -49,14 +49,14 @@ get()
     log_fatal "wrong number of arguments $@"
     exit 1
   fi
-  
+
   if [ -n "$OPT_HEADER" ]
   then
     set -- "--header" "$OPT_HEADER" "$@"
   fi
-  
+
   log_debug "ARGS: $@"
-  
+
   "$CMD" "$@"
 }
 
@@ -68,15 +68,11 @@ main()
     "get") true;;
     *) exit 1;;
   esac
-  
+
   "$@"
 }
 
 #-------------------------------------------------------------------------------
-
-#export PATH="$(cd -P -- "${0%/*}"; pwd):$PATH"
-
-. m.lib.sh
 
 ARGS_PARSE="true"
 ARGS_FORMAT="smart"
@@ -85,6 +81,6 @@ ARGS_OPTION="header"
 ARGS_OPTION_header="1"
 ARGS_OPTION_header_FUNCTION="option_header"
 
-m_command "$@"
+. m.lib.sh
 
 #-------------------------------------------------------------------------------

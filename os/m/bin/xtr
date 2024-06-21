@@ -5,13 +5,13 @@
 dir_count()
 (
   COUNT="0"
-  
+
   for i in ..?* .[!.]* *
   do
     [ -e "$i" ] && COUNT="$((COUNT + 1))"
     [ -L "$i" ] && COUNT="$((COUNT + 1))"
   done
-  
+
   echo "$COUNT"
 )
 
@@ -20,7 +20,7 @@ dir_count()
 extract()
 (
   cd "$DESTINATION"
-  
+
   if [ "$TYPE" = "tar" ]
   then
     tar xvf "$SOURCE"
@@ -55,15 +55,15 @@ main()
 (
   SOURCE="$1"
   DESTINATION="$2"
-  
+
   SOURCE="$(path -a "$1")"
-  
+
   if [ -z "$DESTINATION" ]
   then
     log_trace "extracting to current working directory: $PWD"
     DESTINATION="$PWD"
   fi
-  
+
   TYPE="$(ty "$SOURCE")"
   EXIT_CODE="$?"
   if [ "$EXIT_CODE" != "0" ]
@@ -71,7 +71,7 @@ main()
     log_fatal "EXIT_CODE: $EXIT_CODE"
     exit "$EXIT_CODE"
   fi
-  
+
   if [ -d "$DESTINATION" ] && [ -z "$SWITCH_f" ]
   then
     log_fatal "extract destination already exists and -f switch not provided - DESTINATION: $DESTINATION"
@@ -85,7 +85,7 @@ main()
     OPT_TAR=""
     OPT_UNZIP="-o"
   fi
-  
+
   if [ ! -d "$DESTINATION" ] && [ -z "$SWITCH_c" ]
   then
     log_fatal "extract destination does not exist and -c switch not provided - DESTINATION: $DESTINATION"
@@ -93,9 +93,9 @@ main()
   else
     mkdir -p "$DESTINATION"
   fi
-  
+
   trace call exit extract
-  
+
   if [ -n "$SWITCH_s" ] && [ -z "$DESTINATION_EXISTS_AND_NOT_EMPTY" ] && [ "1" = "$(cd "$DESTINATION"; dir_count)" ]
   then
     log_debug "smart extraction: moving single element to parent directory"
@@ -118,14 +118,10 @@ main()
 
 #-------------------------------------------------------------------------------
 
-#export PATH="$(cd -P -- "${0%/*}"; pwd):$PATH"
-
-. m.lib.sh
-
 ARGS_PARSE="true"
 ARGS_FORMAT="smart"
 ARGS_SWITCH="cfs"
 
-m_command "$@"
+. m.lib.sh
 
 #-------------------------------------------------------------------------------

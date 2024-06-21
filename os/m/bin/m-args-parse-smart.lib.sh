@@ -1,0 +1,85 @@
+#!/bin/sh
+
+#-------------------------------------------------------------------------------
+
+if [ "$1" = "--help" ] || [ "$1" = "--info" ] || [ "$1" = "--version" ]
+then
+  "args_${1#--}"
+fi
+
+if [ -n "$ARGS_FIXED" ]
+then
+  args_array_set "ARGS_FIXED" "ARG_FIXED" "" "" "" "$@"
+  shift "$ARGS_SHIFT"
+fi
+
+args_parse_switch_defaults
+
+COUNT="0"
+TOTAL="$#"
+MOVED="0"
+log_trace "TOTAL: $TOTAL"
+while [ "$COUNT" -lt "$TOTAL" ]
+do
+  if [ "$1" = "--" ]
+  then
+    shift
+    log_debug "detected terminator -- remaining args: $@"
+    break
+  elif [ "$1" != "${1#--}" ]
+  then
+    log_debug "detected option: $1"
+    args_array_set_option "$@"
+    shift "$ARGS_SHIFT"
+    COUNT="$((COUNT + ARGS_SHIFT))"
+    log_trace "parse_option - managed $ARGS_SHIFT arguments as an option - remaining args: $@"
+  elif [ "$1" != "${1#-?}" ]
+  then
+    log_debug "detected switches: $1"
+    args_parse_switch "$1" "$ARGS_SWITCH"
+    shift
+    COUNT="$((COUNT + 1))"
+  else
+    set -- "$@" "$1"
+    shift
+    COUNT="$((COUNT + 1))"
+    MOVED="$((MOVED + 1))"
+  fi
+done
+
+COUNT="$(($# - MOVED))"
+while [ "$COUNT" -gt "0" ]
+do
+  set -- "$@" "$1"
+  shift
+  COUNT="$((COUNT - 1))"
+done
+
+if [ -n "$ARGS_START" ]
+then
+  args_array_set "ARGS_START" "ARG_START" "" "" "" "$@"
+  shift "$ARGS_SHIFT"
+fi
+
+if [ -n "$ARGS_END" ]
+then
+  COUNT="0"
+  TOTAL="$(($# - ARGS_END))"
+  log_trace "parse_args - end args moving regular args: $TOTAL"
+  while [ "$COUNT" -lt "$TOTAL" ]
+  do
+    set -- "$@" "$1"
+    shift
+    COUNT="$((COUNT + 1))"
+  done
+
+  args_array_set "ARGS_END" "ARG_END" "" "" "" "$@"
+  shift "$ARGS_SHIFT"
+fi
+
+for k in "$@"
+do
+  log_debug "detected regular arg: $k"
+done
+
+#-------------------------------------------------------------------------------

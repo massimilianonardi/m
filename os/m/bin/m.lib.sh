@@ -135,12 +135,10 @@ log_debug "[THIS_DIR] $THIS_DIR [PWD] $PWD"
 
 if [ "$ARGS_PARSE" = "true" ]
 then
-  . m-array.lib.sh
-  . m-parse.lib.sh
-  trace exec return args_parse "$@"
-else
-  trace exec return main "$@"
+  . m-args-parse.lib.sh
 fi
+
+trace exec return main "$@"
 EXIT_CODE="$?"
 [ "$EXIT_CODE" -eq "0" ] || log_error "EXIT_CODE: $EXIT_CODE"
 

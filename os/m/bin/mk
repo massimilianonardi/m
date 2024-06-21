@@ -15,23 +15,23 @@ main()
 main_constants()
 {
   MK_M_PATH="os/m"
-  
+
   MAKEFILE_DIR="$THIS_DIR/makefiles"
   MAKEFILE="$MAKEFILE_DIR/makefile"
-  
+
   MKCONF_SUBDIR="conf"
   MKCONF_FILENAME="mk.conf"
-  
+
   TASK_BUILD_FILENAME="task-build.done"
   TASK_RUN_FILENAME="task-run.done"
-  
+
   SOURCE_SUBDIR="src"
-  
+
   BUILD_SUBDIR="build"
   DIST_SUBDIR="dist"
   RUN_SUBDIR="run"
   TASK_SUBDIR="task"
-  
+
   TARGETS_DEFAULT="dependclean clean depend build install"
   TARGET_DEFAULT="install"
 }
@@ -42,21 +42,21 @@ main_variables()
 {
   export HOTSEEX
   export HOTSEEX_LEVEL
-  
+
   export PRJ_PATH
-  
+
   export INST_DIR
   export TEST_DIR
-  
+
   export SHARED_DIST_DIR
   export SHARED_RUN_DIR
-  
+
   # variables
   PRJ_DIR=""
   SOURCE_DIR=""
   MKCONF_DIR=""
   MKCONF_FILE=""
-  
+
 #  BUILD_DIR=""
 #  DIST_DIR=""
 #  RUN_DIR=""
@@ -68,15 +68,15 @@ main_variables()
 main_initializations()
 {
   work "$THIS_NAME"
-  
+
   SOURCE_SUBDIR=""
   MKCONF_SUBDIR=".mk"
-  
+
   [ -z "$BUILD_DIR" ] && [ -n "$FIXED_BUILD_DIR" ] && BUILD_DIR="$FIXED_BUILD_DIR"
   [ -z "$DIST_DIR" ] && [ -n "$FIXED_DIST_DIR" ] && DIST_DIR="$FIXED_DIST_DIR"
   [ -z "$RUN_DIR" ] && [ -n "$FIXED_RUN_DIR" ] && RUN_DIR="$FIXED_RUN_DIR"
   [ -z "$TASK_DIR" ] && [ -n "$FIXED_TASK_DIR" ] && TASK_DIR="$FIXED_TASK_DIR"
-  
+
   [ -z "$BUILD_DIR" ] && BUILD_DIR="$DATA_DIR/$BUILD_SUBDIR" && export FIXED_BUILD_DIR="$DATA_DIR/$BUILD_SUBDIR"
   [ -z "$DIST_DIR" ] && DIST_DIR="$DATA_DIR/$DIST_SUBDIR" && export FIXED_DIST_DIR="$DATA_DIR/$DIST_SUBDIR"
   [ -z "$RUN_DIR" ] && RUN_DIR="$DATA_DIR/$RUN_SUBDIR" && export FIXED_RUN_DIR="$DATA_DIR/$RUN_SUBDIR"
@@ -126,19 +126,19 @@ main_loop()
 mk_project()
 {
   PROJECT="$1"
-  
+
 # load main project conf at each profile to correctly evaluate dirs inside conf
   trace call exit mk_project_detect "$PROJECT"
 #  trace call exit mk_conf_project "$PROJECT"
 #  log_debug "project configuration - PROFILES: $PROFILES"
-  
+
   [ -n "$2" ] && [ "$PROFILES" != "$2" ] && log_debug "profiles specified into project configuration are overridden by commandline"
   [ -n "$2" ] && PROFILES="$2"
 # profiles are meant to be specified into project configuration but can be overidden, targets are meant to be specified only by commandline
   TARGETS="$3"
   [ -z "$TARGETS" ] && TARGETS="$TARGETS_DEFAULT"
   log_info "PROJECT: $PROJECT - PROFILES: $PROFILES - TARGETS: $TARGETS"
-  
+
   log_debug "project......: $PROJECT"
   log_debug "project.path.: $PRJ_PATH"
   log_debug "project.dir..: $PRJ_DIR"
@@ -155,7 +155,7 @@ mk_project()
   log_debug "run.dir......: $RUN_DIR"
   log_debug "task.dir.....: $TASK_DIR"
   log_debug "hotseex......: $HOTSEEX"
-  
+
   trace exec exit mk_profiles "$PROFILES" "$TARGETS"
 }
 
@@ -165,7 +165,7 @@ mk_profiles()
 {
   PROFILES="$1"
   TARGETS="$2"
-  
+
   if [ -z "$PROFILES" ]
   then
     trace exec exit mk_profile "" "$TARGETS"
@@ -183,7 +183,7 @@ mk_profile()
 {
   PROFILE="$1"
   TARGETS="$2"
-  
+
 # todo review here...
   if [ -n "$PROFILE" ]
   then
@@ -192,21 +192,21 @@ mk_profile()
     [ -z "${SHARED_RUN_DIR+true}" ] && RUN_DIR="$RUN_DIR-$PROFILE"
     TASK_DIR="$TASK_DIR-$PROFILE"
   fi
-  
+
   log_info "PROFILE: $PROFILE"
   log_debug "build.dir....: $BUILD_DIR"
   log_debug "dist.dir.....: $DIST_DIR"
   log_debug "run.dir......: $RUN_DIR"
   log_debug "task.dir.....: $TASK_DIR"
-  
+
   mkdir -p "$BUILD_DIR"
   mkdir -p "$DIST_DIR"
   mkdir -p "$RUN_DIR"
   mkdir -p "$TASK_DIR"
-  
+
 # load main project conf at each profile to correctly evaluate dirs inside conf
   trace call exit mk_conf_file_load
-  
+
   trace call exit mk_conf_profile "$PROFILE"
   trace exec exit mk_type "$TARGETS"
 }
@@ -216,20 +216,20 @@ mk_profile()
 mk_type()
 {
   TARGETS="$1"
-  
+
   log_info "TYPE: $TYPE"
-  
+
   trace call exit mk_conf_type "$TYPE"
-  
+
   log_debug "######### --- PROCESSING TYPE - START --- #########"
-  
+
   if exist mk_type_"$TYPE"
   then
     trace call exit mk_type_"$TYPE" "$TARGETS"
   else
     trace call exit mk_targets "$TARGETS"
   fi
-  
+
   log_debug "######### --- PROCESSING TYPE - END --- #########"
 }
 
@@ -238,7 +238,7 @@ mk_type()
 mk_targets()
 {
   TARGETS="$1"
-  
+
   if [ -z "$TARGETS" ]
   then
     fatal "no targets"
@@ -262,11 +262,11 @@ mk_target()
   TARGET="${1%%:*}"
   TARGET_PARAMS=${1##$TARGET}
   TARGET_PARAMS=${TARGET_PARAMS#:}
-  
+
   log_info "TARGET: $TARGET - TARGET_PARAMS: $TARGET_PARAMS"
-  
+
   trace call exit mk_conf_target "$TARGET"
-  
+
   if exist mk_type_"$TYPE"_target_"$TARGET"_ante
   then
     trace call exit mk_type_"$TYPE"_target_"$TARGET"_ante $TARGET_PARAMS
@@ -279,9 +279,9 @@ mk_target()
   else
     log_trace "type/target functions undefined: mk_target_${TARGET}_ante - mk_type_${TYPE}_target_ante - mk_type_${TYPE}_target_${TARGET}_ante"
   fi
-  
+
   [ -n "$TARGET_STOP" ] && unset TARGET_STOP && return 0
-  
+
   if exist mk_type_"$TYPE"_target_"$TARGET"
   then
     trace exec exit mk_type_"$TYPE"_target_"$TARGET" $TARGET_PARAMS
@@ -294,9 +294,9 @@ mk_target()
   else
     log_trace "type/target functions undefined: mk_target_$TARGET - mk_type_${TYPE}_target - mk_type_${TYPE}_target_$TARGET"
   fi
-  
+
   [ -n "$TARGET_STOP" ] && unset TARGET_STOP && return 0
-  
+
   if exist mk_type_"$TYPE"_target_"$TARGET"_post
   then
     trace call exit mk_type_"$TYPE"_target_"$TARGET"_post $TARGET_PARAMS
@@ -313,8 +313,6 @@ mk_target()
 
 #-------------------------------------------------------------------------------
 
-. m.lib.sh
-
 ARGS_PARSE="true"
 ARGS_FORMAT="smart"
 
@@ -329,6 +327,6 @@ ARGS_OPTION_target_VARIABLE="TARGETS"
 ARGS_FIXED="1"
 ARGS_FIXED_VARIABLE_0="PROJECT"
 
-m_script "$@"
+. m.lib.sh
 
 #-------------------------------------------------------------------------------

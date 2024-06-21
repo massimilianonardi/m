@@ -8,7 +8,7 @@ encode()
   then
     exit 1
   fi
-  
+
   local LANG=C
   local length="${#1}"
   for (( i = 0; i < length; i++ ))
@@ -17,7 +17,7 @@ encode()
     case $c in
       [a-zA-Z0-9\.\~\_\-\:\/\?\#]) printf "$c" ;;
       [a-zA-Z0-9\.\~\_\-\:/\?\#\[\]@!\$\&\'\(\)\*+,\;=]) printf "$c" ;;
-      *) printf '%%%02X' "'$c" ;; 
+      *) printf '%%%02X' "'$c" ;;
     esac
   done
 )
@@ -30,7 +30,7 @@ decode()
   then
     exit 1
   fi
-  
+
   local url_encoded="${1//+/ }"
   printf '%b' "${url_encoded//%/\\x}"
 )
@@ -44,7 +44,7 @@ smart()
     "decode") true;;
     *) exit 1;;
   esac
-  
+
   if [ "$2" != "${2%\?*}" ]
   then
     echo "${2%%\?*}?$("$1" "${2#*\?}")"
@@ -63,17 +63,15 @@ main()
     "smart") true;;
     *) exit 1;;
   esac
-  
+
   "$@"
 }
 
 #-------------------------------------------------------------------------------
 
-. m.lib.sh
-
 ARGS_PARSE="true"
 ARGS_FORMAT="smart"
 
-m_command "$@"
+. m.lib.sh
 
 #-------------------------------------------------------------------------------

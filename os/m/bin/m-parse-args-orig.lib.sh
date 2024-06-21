@@ -18,37 +18,38 @@ fi
 if [ "$ARGS_PARSE" = "true" ]
 then
   ARGS_DOC_FORMAT_smart="smart format"
-
+  
+#  [ -z "$ARGS_FORMAT" ] && ARGS_FORMAT="easy"
   [ -z "$ARGS_FORMAT" ] && ARGS_FORMAT="smart"
-
+  
   [ -z "$ARGS_SWITCH_ON" ] && ARGS_SWITCH_ON="true"
   [ -z "$ARGS_SWITCH_OFF" ] && ARGS_SWITCH_OFF=""
-
+  
   [ -z "$ARGS_OPTION_ON" ] && ARGS_OPTION_ON="true"
   [ -z "$ARGS_OPTION_OFF" ] && ARGS_OPTION_OFF=""
-
+  
   if [ -n "$ARGS_SWITCH" ]
   then
     [ -z "$ARGS_SWITCH_VARIABLE_PREFIX" ] && ARGS_SWITCH_VARIABLE_PREFIX="SWITCH"
   fi
-
+  
   if [ -n "$ARGS_OPTION" ]
   then
     [ -z "$ARGS_OPTION_VARIABLE_PREFIX" ] && ARGS_OPTION_VARIABLE_PREFIX="OPTION"
     [ -z "$ARGS_OPTION_FUNCTION_PREFIX" ] && ARGS_OPTION_FUNCTION_PREFIX="option"
     ARGS_OPTION=" $ARGS_OPTION "
   fi
-
+  
   if [ -n "$ARGS_FIXED" ]
   then
     [ -z "$ARGS_FIXED_VARIABLE_PREFIX" ] && ARGS_FIXED_VARIABLE_PREFIX="ARG_FIXED"
   fi
-
+  
   if [ -n "$ARGS_START" ]
   then
     [ -z "$ARGS_START_VARIABLE_PREFIX" ] && ARGS_START_VARIABLE_PREFIX="ARG_START"
   fi
-
+  
   if [ -n "$ARGS_END" ]
   then
     [ -z "$ARGS_END_VARIABLE_PREFIX" ] && ARGS_END_VARIABLE_PREFIX="ARG_END"
@@ -61,22 +62,22 @@ args_array_set()
 {
   DEFINITION="$1"
   shift
-
+  
   DEFAULT_VARIABLE_NAME="$1"
   shift
-
+  
   DEFAULT_FUNCTION_NAME="$1"
   shift
-
+  
   DEFAULT_LOOP_FUNCTION_NAME="$1"
   shift
-
+  
   TERMINATOR="$1"
   shift
-
+  
   eval "ARRAY_NAME=\"\$${DEFINITION}_VARIABLE\""
   [ -z "$ARRAY_NAME" ] && ARRAY_NAME="$DEFAULT_VARIABLE_NAME"
-
+  
   TERMINATOR_CHECK='case "$1" in $TERMINATOR) false;; *) true;; esac'
   eval "n=\"\$$DEFINITION\""
   [ "$n" = "${n#<}" ] && [ "$((n))" -ge "0" ] && TERMINATOR_CHECK="true"
@@ -93,15 +94,15 @@ args_array_set()
   done
   n="$i"
   shift "$(($# - i))"
-
+  
 #  eval "$ARRAY_NAME=\"\$ARGS_SWITCH_ON\""
   eval "$ARRAY_NAME=\"\$*\""
-
+  
   array_set "$ARRAY_NAME" "$@"
-
+  
   eval "k=\"\$${DEFINITION}_FUNCTION\""
   [ -z "$k" ] && k="$DEFAULT_FUNCTION_NAME"
-
+  
   if [ -n "$k" ]
   then
     if type "$k">/dev/null 2>&1
@@ -112,16 +113,16 @@ args_array_set()
 #      exit 1
     fi
   fi
-
+  
   i="0"
   while [ "$i" -lt "$n" ]
   do
     eval "k=\"${DEFINITION}_VARIABLE\"" && eval "k=\"\$${k}_$i\""
     [ -n "$k" ] && eval "$k=\"\$${ARRAY_NAME}_$i\""
-
+    
     eval "k=\"${DEFINITION}_FUNCTION\"" && eval "k=\"\$${k}_$i\""
     [ -z "$k" ] && k="$DEFAULT_LOOP_FUNCTION_NAME"
-
+    
     if [ -n "$k" ]
     then
       if type "$k">/dev/null 2>&1
@@ -132,16 +133,16 @@ args_array_set()
 #        exit 1
       fi
     fi
-
+    
     i="$((i + 1))"
   done
-
+  
   unset DEFINITION
   unset ARRAY_NAME
   unset DEFAULT_VARIABLE_NAME
   unset DEFAULT_FUNCTION_NAME
   unset TERMINATOR
-
+  
   ARGS_SHIFT="$i"
 }
 
@@ -151,20 +152,20 @@ args_array_set_option()
 {
   o="${1#--}"
   shift
-
+  
   if [ "$o" = "help" ] || [ "$o" = "info" ] || [ "$o" = "version" ]
   then
     "args_$o"
   fi
-
+  
   while [ "$o" != "${o#*-}" ]
   do
     o="${o%%-*}_${o#*-}"
   done
   log_trace "args_array_parse_option - determined option safe name: $o"
-
+  
   args_array_set "ARGS_OPTION_$o" "ARG_OPTION_$o" "${ARGS_OPTION_FUNCTION_PREFIX}_$o" "" "--*" "$@"
-
+  
   ARGS_SHIFT="$((ARGS_SHIFT + 1))"
 }
 
@@ -175,18 +176,18 @@ args_help()
   echo
   (args_version)
   echo
-
+  
 #  cat "$DOC_DIR/format_$ARGS_FORMAT"
   eval echo "\$ARGS_DOC_FORMAT_$ARGS_FORMAT"
   echo
-
+  
   if [ -f "$DOC_DIR/description" ]
   then
     echo "DESCRIPTION:"
     cat "$DOC_DIR/description"
     echo
   fi
-
+  
   if [ -n "$ARGS_FIXED" ]
   then
     echo "FIXED: $ARGS_FIXED"
@@ -198,7 +199,7 @@ args_help()
     fi
     echo
   fi
-
+  
   if [ -n "$ARGS_SWITCH" ]
   then
     echo "SWITCH:"
@@ -212,13 +213,13 @@ args_help()
       else
         echo "$k: UNDOCUMENTED"
       fi
-
+      
       r="${r#?}"
       k="${r%${r#?}}"
     done
     echo
   fi
-
+  
   if [ -n "$ARGS_OPTION" ]
   then
     echo "OPTION:"
@@ -233,7 +234,7 @@ args_help()
     done
     echo
   fi
-
+  
   if [ -n "$ARGS_START" ]
   then
     echo "START: $ARGS_START"
@@ -245,7 +246,7 @@ args_help()
     fi
     echo
   fi
-
+  
   echo "ARGUMENTS:"
   if [ -f "$DOC_DIR/fixed" ]
   then
@@ -254,7 +255,7 @@ args_help()
     echo "UNDOCUMENTED"
   fi
   echo
-
+  
   if [ -n "$ARGS_END" ]
   then
     echo "END: $ARGS_END"
@@ -266,23 +267,23 @@ args_help()
     fi
     echo
   fi
-
+  
   if [ -f "$DOC_DIR/examples" ]
   then
     echo "EXAMPLES:"
     cat "$DOC_DIR/examples"
     echo
   fi
-
+  
   if [ -f "$DOC_DIR/conclusion" ]
   then
     echo "CONCLUSION:"
     cat "$DOC_DIR/conclusion"
     echo
   fi
-
+  
   echo
-
+  
   exit 0
 }
 
@@ -291,7 +292,7 @@ args_help()
 args_info()
 {
   args_help | less
-
+  
   exit 0
 }
 
@@ -310,13 +311,18 @@ args_version()
 
 args_parse()
 {
-  case "$ARGS_FORMAT" in
-    "easy") true;;
-    "smart") true;;
-    "strict") true;;
-    *) exit 1;;
-  esac
-  trace call exit args_parse_format_$ARGS_FORMAT "$@"
+  if [ "$ARGS_PARSE" = "true" ]
+  then
+    case "$ARGS_FORMAT" in
+      "easy") true;;
+      "smart") true;;
+      "strict") true;;
+      *) exit 1;;
+    esac
+    trace call exit args_parse_format_$ARGS_FORMAT "$@"
+  else
+    trace exec return main "$@"
+  fi
 }
 
 #-------------------------------------------------------------------------------
@@ -358,7 +364,7 @@ args_parse_format_easy()
       MOVED="$((MOVED + 1))"
     fi
   done
-
+  
   COUNT="$(($# - MOVED))"
   while [ "$COUNT" -gt "0" ]
   do
@@ -370,7 +376,7 @@ args_parse_format_easy()
   do
     log_debug "detected regular arg: $k"
   done
-
+  
   trace exec return main "$@"
 }
 
@@ -382,15 +388,15 @@ args_parse_format_smart()
   then
     "args_${1#--}"
   fi
-
+  
   if [ -n "$ARGS_FIXED" ]
   then
     args_array_set "ARGS_FIXED" "ARG_FIXED" "" "" "" "$@"
     shift "$ARGS_SHIFT"
   fi
-
+  
   args_parse_switch_defaults
-
+  
   COUNT="0"
   TOTAL="$#"
   MOVED="0"
@@ -422,7 +428,7 @@ args_parse_format_smart()
       MOVED="$((MOVED + 1))"
     fi
   done
-
+  
   COUNT="$(($# - MOVED))"
   while [ "$COUNT" -gt "0" ]
   do
@@ -430,13 +436,13 @@ args_parse_format_smart()
     shift
     COUNT="$((COUNT - 1))"
   done
-
+  
   if [ -n "$ARGS_START" ]
   then
     args_array_set "ARGS_START" "ARG_START" "" "" "" "$@"
     shift "$ARGS_SHIFT"
   fi
-
+  
   if [ -n "$ARGS_END" ]
   then
     COUNT="0"
@@ -448,16 +454,16 @@ args_parse_format_smart()
       shift
       COUNT="$((COUNT + 1))"
     done
-
+    
     args_array_set "ARGS_END" "ARG_END" "" "" "" "$@"
     shift "$ARGS_SHIFT"
   fi
-
+  
   for k in "$@"
   do
     log_debug "detected regular arg: $k"
   done
-
+  
   trace exec return main "$@"
 }
 
@@ -470,16 +476,16 @@ args_parse_format_strict()
     args_array_set "ARGS_FIXED" "ARG_FIXED" "" "" "" "$@"
     shift "$ARGS_SHIFT"
   fi
-
+  
   args_parse_switch_defaults
-
+  
   if [ "$1" != "${1#-?}" ]
   then
     log_debug "detected switches: $1"
     args_parse_switch "$1" "$PARSE_ARGS_SWITCH"
     shift
   fi
-
+  
   while [ "$1" != "${1#--}" ] && [ "$1" != "--" ]
   do
     log_debug "detected option: $1"
@@ -487,19 +493,19 @@ args_parse_format_strict()
     shift "$ARGS_SHIFT"
     log_trace "parse_option - managed $r arguments as an option - remaining args: $@"
   done
-
+  
   if [ "$1" = "--" ]
   then
     shift
     log_debug "detected terminator -- remaining args: $@"
   fi
-
+  
   if [ -n "$ARGS_START" ]
   then
     args_array_set "ARGS_START" "ARG_START" "" "" "" "$@"
     shift "$ARGS_SHIFT"
   fi
-
+  
   if [ -n "$ARGS_END" ]
   then
     COUNT="0"
@@ -511,16 +517,16 @@ args_parse_format_strict()
       shift
       COUNT="$((COUNT + 1))"
     done
-
+    
     args_array_set "ARGS_END" "ARG_END" "" "" "" "$@"
     shift "$ARGS_SHIFT"
   fi
-
+  
   for k in "$@"
   do
     log_debug "detected regular arg: $k"
   done
-
+  
   trace exec return main "$@"
 }
 
@@ -538,14 +544,14 @@ args_parse_switch_defaults()
       eval "${ARGS_SWITCH_VARIABLE_PREFIX}_$k=\"$ARGS_SWITCH_OFF\""
       eval k="\$ARGS_SWITCH_$k"
       [ -n "$k" ] && eval "$k=\"$ARGS_SWITCH_OFF\""
-
+      
       r="${r#?}"
       k="${r%${r#?}}"
     done
-
+    
     unset r
     unset k
-
+    
     for k in $ARGS_OPTION
     do
       log_trace "setting default off for option: $k"
@@ -570,7 +576,7 @@ args_parse_switch()
 #    return 1
     exit 1
   fi
-
+  
   r="${1#-}"
   k="${r%${r#?}}"
   while [ -n "$k" ]
@@ -602,7 +608,7 @@ args_parse_switch()
     r="${r#?}"
     k="${r%${r#?}}"
   done
-
+  
   unset r
   unset k
 }
@@ -645,7 +651,7 @@ parse_option()
 {
   o="${1#--}"
   shift
-
+  
   if [ "$o" = "${o#*=}" ]
   then
     OPT_COUNT="0"
@@ -656,7 +662,7 @@ parse_option()
       OPT_COUNT="$((OPT_COUNT + 1))"
       shift
     done
-
+    
     shift "$(($# - OPT_COUNT))"
   else
     OPT_COUNT="0"
@@ -665,13 +671,13 @@ parse_option()
     eval set -- "$p"
     o="${o%%=*}"
   fi
-
+  
   while [ "$o" != "${o#*-}" ]
   do
     o="${o%%-*}_${o#*-}"
   done
   log_trace "parse_option - determined option function name: parse_option_$o"
-
+  
   if type "parse_option_$o">/dev/null 2>&1
   then
     log_trace "parse_option - managing option: parse_option_$o $@"
@@ -684,7 +690,7 @@ parse_option()
   else
     log_error "parse_option - unregistered error handler"
   fi
-
+  
   return "$((OPT_COUNT + 1))"
 }
 

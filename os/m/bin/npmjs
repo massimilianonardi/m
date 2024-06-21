@@ -9,11 +9,11 @@ npm_parse_pkg()
     log_fatal "wrong arguments: $@"
     exit 1
   fi
-  
+
   NPM_PACKAGE="${1%%/*}"
   NPM_VERSION="${1#"$NPM_PACKAGE"}"
   NPM_VERSION="${NPM_VERSION#/}"
-  
+
   log_debug "ARG: $1 - NPM_PACKAGE: $NPM_PACKAGE - NPM_VERSION: $NPM_VERSION"
 }
 
@@ -22,7 +22,7 @@ npm_parse_pkg()
 find()
 (
   npm_parse_pkg "$1"
-  
+
   if [ "$NPM_VERSION" = "*" ]
   then
     npm info "$NPM_PACKAGE" versions | sed "s/[^']*//;s/'/$NPM_PACKAGE\//;s/'.*//"
@@ -42,13 +42,13 @@ find()
 get()
 (
   npm_parse_pkg "$1"
-  
+
   if [ -z "$NPM_PACKAGE" ] || [ -z "$NPM_VERSION" ]
   then
     log_fatal "net store get npm pkg requires full package description (\$NPM_PACKAGE/\$NPM_VERSION): $@"
     exit 1
   fi
-  
+
   DEST="$2"
   if [ -z "$2" ]
   then
@@ -58,7 +58,7 @@ get()
     log_info "destination directory does not exist, creating it: $2"
     mkdir -p "$2"
   fi
-  
+
   if [ -n "$SWITCH_x" ]
   then
     cd "$DEST" && npm install "$NPM_PACKAGE@$NPM_VERSION"
@@ -87,20 +87,16 @@ main()
     "stream") true;;
     *) exit 1;;
   esac
-  
+
   "$@"
 }
 
 #-------------------------------------------------------------------------------
 
-#export PATH="$(cd -P -- "${0%/*}"; pwd):$PATH"
-
-. m.lib.sh
-
 ARGS_PARSE="true"
 ARGS_FORMAT="smart"
 ARGS_SWITCH="x"
 
-m_command "$@"
+. m.lib.sh
 
 #-------------------------------------------------------------------------------
