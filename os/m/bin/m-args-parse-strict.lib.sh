@@ -2,6 +2,10 @@
 
 #-------------------------------------------------------------------------------
 
+# strict order: n-args fixed, then switches, then options until --,
+# then args start into array, then regular args, then args end into array.
+# remaining command line has only regular args.
+
 if [ -n "$ARGS_FIXED" ]
 then
   args_array_set "ARGS_FIXED" "ARG_FIXED" "" "" "" "$@"

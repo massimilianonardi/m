@@ -2,6 +2,10 @@
 
 #-------------------------------------------------------------------------------
 
+# smart order: n-args fixed, then mixed switches and options until --,
+# then args start into array, then regular args, then args end into array.
+# remaining command line has only regular args.
+
 if [ "$1" = "--help" ] || [ "$1" = "--info" ] || [ "$1" = "--version" ]
 then
   "args_${1#--}"

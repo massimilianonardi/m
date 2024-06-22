@@ -2,6 +2,9 @@
 
 #-------------------------------------------------------------------------------
 
+# looks for switches and options and remove them from command line leaving real arguments in the same order
+
+# parses and removes switches and options while moves args at the end until --
 COUNT="0"
 TOTAL="$#"
 MOVED="0"
@@ -38,6 +41,7 @@ do
   fi
 done
 
+# if -- then args after it are at the beginning because others have been moved to the end, thus must be moved them too
 COUNT="$(($# - MOVED))"
 while [ "$COUNT" -gt "0" ]
 do
