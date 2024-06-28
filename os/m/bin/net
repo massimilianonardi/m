@@ -496,6 +496,12 @@ refresh()
 
 main()
 {
+  m_conf_local
+  m_conf_sys
+
+  . m-filesystem.lib.sh
+  . m-var.lib.sh
+  
   STORE_DIR="$THIS_DIR/net_store"
   CACHE_DIR="$DATA_DIR/cache"
 
