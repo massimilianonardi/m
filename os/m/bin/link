@@ -12,7 +12,7 @@ read()
     TARGET=${TARGET#*" $LINK -> "}
   elif [ -e "$1" ]
   then
-    TARGET="$1"
+    TARGET="$(dirname -- "$1")/$(basename -- "$1")"
   else
     exit 1
   fi
