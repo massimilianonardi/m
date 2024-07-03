@@ -13,6 +13,10 @@ read()
   elif [ -e "$1" ]
   then
     TARGET="$(dirname -- "$1")/$(basename -- "$1")"
+    if [ "$TARGET" = "${TARGET#/}" ] && [ "$TARGET" = "${TARGET#./}" ] && [ "$TARGET" = "${TARGET#../}" ]
+    then
+      TARGET="./$TARGET"
+    fi
   else
     exit 1
   fi

@@ -1,0 +1,36 @@
+#!/bin/sh
+
+#-------------------------------------------------------------------------------
+#https://github.com/ko1nksm/readlinkf/blob/master/readlinkf.sh
+
+test_link()
+{
+  mkdir -p /tmp/aaa/bbb
+  touch /tmp/aaa/bbb/ccc
+  ln -s ../aaa /tmp/aaa/bbb/ddd
+  ln -s ./bbb/ccc /tmp/aaa/eee
+
+  cd /tmp/aaa
+  link read bbb
+  link read bbb/ccc
+
+  rm -rf /tmp/aaa
+}
+
+#-------------------------------------------------------------------------------
+
+test_test_args()
+{
+  test_args --version
+  test_args --help
+#  test_args --info
+  log -l max -- test_args aaa bbb --version ccc ddd "eee fff"
+  test_args aaa bbb --help ccc ddd "eee fff"
+  test_args aaa bbb --info ccc ddd "eee fff"
+}
+
+#-------------------------------------------------------------------------------
+
+test_"$@"
+
+#-------------------------------------------------------------------------------

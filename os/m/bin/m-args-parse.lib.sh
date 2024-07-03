@@ -2,17 +2,6 @@
 
 #-------------------------------------------------------------------------------
 
-DOC_DIR="${THIS_DIR%/*}/doc/$THIS_NAME"
-if [ -d "$DOC_DIR/$LANG" ]
-then
-  DOC_DIR="$DOC_DIR/$LANG"
-elif [ -d "$DOC_DIR/$LANG_DEF" ]
-then
-  DOC_DIR="$DOC_DIR/$LANG_DEF"
-fi
-
-#-------------------------------------------------------------------------------
-
 [ -z "$LOG_FILTER" ] && log_filter args_parse args_parse_format_easy args_parse_format_smart args_parse_format_strict
 
 if [ "$ARGS_PARSE" = "true" ]
@@ -153,10 +142,10 @@ args_array_set_option()
   o="${1#--}"
   shift
 
-  if [ "$o" = "help" ] || [ "$o" = "info" ] || [ "$o" = "version" ]
-  then
-    "args_$o"
-  fi
+  # if [ "$o" = "help" ] || [ "$o" = "info" ] || [ "$o" = "version" ]
+  # then
+  #   "args_$o"
+  # fi
 
   while [ "$o" != "${o#*-}" ]
   do
@@ -167,144 +156,6 @@ args_array_set_option()
   args_array_set "ARGS_OPTION_$o" "ARG_OPTION_$o" "${ARGS_OPTION_FUNCTION_PREFIX}_$o" "" "--*" "$@"
 
   ARGS_SHIFT="$((ARGS_SHIFT + 1))"
-}
-
-#-------------------------------------------------------------------------------
-
-args_help()
-{
-  echo
-  (args_version)
-  echo
-
-#  cat "$DOC_DIR/format_$ARGS_FORMAT"
-  eval echo "\$ARGS_DOC_FORMAT_$ARGS_FORMAT"
-  echo
-
-  if [ -f "$DOC_DIR/description" ]
-  then
-    echo "DESCRIPTION:"
-    cat "$DOC_DIR/description"
-    echo
-  fi
-
-  if [ -n "$ARGS_FIXED" ]
-  then
-    echo "FIXED: $ARGS_FIXED"
-    if [ -f "$DOC_DIR/fixed" ]
-    then
-      cat "$DOC_DIR/fixed"
-    else
-      echo "UNDOCUMENTED"
-    fi
-    echo
-  fi
-
-  if [ -n "$ARGS_SWITCH" ]
-  then
-    echo "SWITCH:"
-    r="$ARGS_SWITCH"
-    k="${r%${r#?}}"
-    while [ -n "$k" ]
-    do
-      if [ -f "$DOC_DIR/description" ]
-      then
-        echo "$k: $(cat "$DOC_DIR/switch_$k")"
-      else
-        echo "$k: UNDOCUMENTED"
-      fi
-
-      r="${r#?}"
-      k="${r%${r#?}}"
-    done
-    echo
-  fi
-
-  if [ -n "$ARGS_OPTION" ]
-  then
-    echo "OPTION:"
-    for k in $ARGS_OPTION
-    do
-      if [ -f "$DOC_DIR/option_$k" ]
-      then
-        eval echo "$k - \$ARGS_OPTION_$k: $(cat "$DOC_DIR/option_$k")"
-      else
-        eval echo "$k - \$ARGS_OPTION_$k: UNDOCUMENTED"
-      fi
-    done
-    echo
-  fi
-
-  if [ -n "$ARGS_START" ]
-  then
-    echo "START: $ARGS_START"
-    if [ -f "$DOC_DIR/start" ]
-    then
-      cat "$DOC_DIR/fixed"
-    else
-      echo "UNDOCUMENTED"
-    fi
-    echo
-  fi
-
-  echo "ARGUMENTS:"
-  if [ -f "$DOC_DIR/fixed" ]
-  then
-    cat "$DOC_DIR/args"
-  else
-    echo "UNDOCUMENTED"
-  fi
-  echo
-
-  if [ -n "$ARGS_END" ]
-  then
-    echo "END: $ARGS_END"
-    if [ -f "$DOC_DIR/fixed" ]
-    then
-      cat "$DOC_DIR/end"
-    else
-      echo "UNDOCUMENTED"
-    fi
-    echo
-  fi
-
-  if [ -f "$DOC_DIR/examples" ]
-  then
-    echo "EXAMPLES:"
-    cat "$DOC_DIR/examples"
-    echo
-  fi
-
-  if [ -f "$DOC_DIR/conclusion" ]
-  then
-    echo "CONCLUSION:"
-    cat "$DOC_DIR/conclusion"
-    echo
-  fi
-
-  echo
-
-  exit 0
-}
-
-#-------------------------------------------------------------------------------
-
-args_info()
-{
-  args_help | less
-
-  exit 0
-}
-
-#-------------------------------------------------------------------------------
-
-args_version()
-{
-  echo "$(cat "${THIS_DIR%/*}/sys/name")/$(cat "${THIS_DIR%/*}/sys/platform")/$(cat "${THIS_DIR%/*}/sys/version")"
-#  cat "${THIS_DIR%/*}/sys/name"
-#  cat "${THIS_DIR%/*}/sys/platform"
-#  cat "${THIS_DIR%/*}/sys/version"
-  exit 0
 }
 
 #-------------------------------------------------------------------------------
@@ -472,6 +323,14 @@ parse_option()
 }
 
 #-------------------------------------------------------------------------------
+
+if [ "$1" = "--help" ] || [ "$1" = "--info" ] || [ "$1" = "--version" ]
+then
+  . m-args-parse-common-commands.lib.sh
+  "args_${1#--}"
+
+  exit 0
+fi
 
 case "$ARGS_FORMAT" in
   "easy") true;;
