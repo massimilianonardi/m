@@ -23,6 +23,6 @@ ARGS_PARSE="true"
 ARGS_FORMAT="smart"
 ARGS_SWITCH="epqr"
 
-. m.lib.sh
+. m.lib
 
 #-------------------------------------------------------------------------------

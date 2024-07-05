@@ -2,6 +2,8 @@
 
 #-------------------------------------------------------------------------------
 
+ARGS_DOC_FORMAT_smart="smart format"
+
 DOC_DIR="${THIS_DIR%/*}/doc/$THIS_NAME"
 if [ -d "$DOC_DIR/$LANG" ]
 then

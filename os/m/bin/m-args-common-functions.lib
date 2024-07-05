@@ -1,49 +1,89 @@
 #!/bin/sh
 
+. m-array.lib
+
 #-------------------------------------------------------------------------------
 
-[ -z "$LOG_FILTER" ] && log_filter args_parse args_parse_format_easy args_parse_format_smart args_parse_format_strict
+[ -z "$ARGS_SWITCH_ON" ] && ARGS_SWITCH_ON="true"
+[ -z "$ARGS_SWITCH_OFF" ] && ARGS_SWITCH_OFF=""
 
-if [ "$ARGS_PARSE" = "true" ]
+[ -z "$ARGS_OPTION_ON" ] && ARGS_OPTION_ON="true"
+[ -z "$ARGS_OPTION_OFF" ] && ARGS_OPTION_OFF=""
+
+if [ -n "$ARGS_SWITCHES" ]
 then
-  ARGS_DOC_FORMAT_smart="smart format"
-
-#  [ -z "$ARGS_FORMAT" ] && ARGS_FORMAT="easy"
-  [ -z "$ARGS_FORMAT" ] && ARGS_FORMAT="smart"
-
-  [ -z "$ARGS_SWITCH_ON" ] && ARGS_SWITCH_ON="true"
-  [ -z "$ARGS_SWITCH_OFF" ] && ARGS_SWITCH_OFF=""
-
-  [ -z "$ARGS_OPTION_ON" ] && ARGS_OPTION_ON="true"
-  [ -z "$ARGS_OPTION_OFF" ] && ARGS_OPTION_OFF=""
-
-  if [ -n "$ARGS_SWITCH" ]
-  then
-    [ -z "$ARGS_SWITCH_VARIABLE_PREFIX" ] && ARGS_SWITCH_VARIABLE_PREFIX="SWITCH"
-  fi
-
-  if [ -n "$ARGS_OPTION" ]
-  then
-    [ -z "$ARGS_OPTION_VARIABLE_PREFIX" ] && ARGS_OPTION_VARIABLE_PREFIX="OPTION"
-    [ -z "$ARGS_OPTION_FUNCTION_PREFIX" ] && ARGS_OPTION_FUNCTION_PREFIX="option"
-    ARGS_OPTION=" $ARGS_OPTION "
-  fi
-
-  if [ -n "$ARGS_FIXED" ]
-  then
-    [ -z "$ARGS_FIXED_VARIABLE_PREFIX" ] && ARGS_FIXED_VARIABLE_PREFIX="ARG_FIXED"
-  fi
-
-  if [ -n "$ARGS_START" ]
-  then
-    [ -z "$ARGS_START_VARIABLE_PREFIX" ] && ARGS_START_VARIABLE_PREFIX="ARG_START"
-  fi
-
-  if [ -n "$ARGS_END" ]
-  then
-    [ -z "$ARGS_END_VARIABLE_PREFIX" ] && ARGS_END_VARIABLE_PREFIX="ARG_END"
-  fi
+  [ -z "$ARGS_SWITCH_VARIABLE_PREFIX" ] && ARGS_SWITCH_VARIABLE_PREFIX="SWITCH"
 fi
+
+if [ -n "$ARGS_OPTIONS" ]
+then
+  [ -z "$ARGS_OPTION_VARIABLE_PREFIX" ] && ARGS_OPTION_VARIABLE_PREFIX="OPTION"
+  [ -z "$ARGS_OPTION_FUNCTION_PREFIX" ] && ARGS_OPTION_FUNCTION_PREFIX="option"
+  ARGS_OPTION=" $ARGS_OPTION "
+fi
+
+if [ -n "$ARGS_FIXED" ]
+then
+  [ -z "$ARGS_FIXED_VARIABLE_PREFIX" ] && ARGS_FIXED_VARIABLE_PREFIX="ARG_FIXED"
+fi
+
+if [ -n "$ARGS_START" ]
+then
+  [ -z "$ARGS_START_VARIABLE_PREFIX" ] && ARGS_START_VARIABLE_PREFIX="ARG_START"
+fi
+
+if [ -n "$ARGS_END" ]
+then
+  [ -z "$ARGS_END_VARIABLE_PREFIX" ] && ARGS_END_VARIABLE_PREFIX="ARG_END"
+fi
+
+#-------------------------------------------------------------------------------
+
+is_integer()
+{
+  [ "$1" -eq "$1" ] 2>/dev/null
+}
+
+#-------------------------------------------------------------------------------
+
+is_char_in_word()
+{
+  [ "$2" != "${2#*${1}}" ] 2>/dev/null
+}
+
+#-------------------------------------------------------------------------------
+
+parse_args_fixed()
+{
+  if is_integer "$ARGS_FIXED"
+  then
+    i="0"
+    while [ "$i" -lt "$ARGS_FIXED" ]
+    do
+      eval "ARGS_FIXED_${i}=\"\$1\""
+      shift
+      i="$((i + 1))"
+    done
+
+    unset i
+  fi
+}
+
+#-------------------------------------------------------------------------------
+
+parse_switches()
+{
+  echo "parse_switches $@"
+#  args_parse_switch_defaults
+
+  if [ "$1" != "${1#-[:alpha:]}" ]
+  then
+    ARGS_SWITCHES="${1#-}"
+    echo "detected switches: $ARGS_SWITCHES"
+    args_parse_switch "$1" "$PARSE_ARGS_SWITCH"
+    shift
+  fi
+}
 
 #-------------------------------------------------------------------------------
 
@@ -321,25 +361,5 @@ parse_option()
 
   return "$((OPT_COUNT + 1))"
 }
-
-#-------------------------------------------------------------------------------
-
-if [ "$1" = "--help" ] || [ "$1" = "--info" ] || [ "$1" = "--version" ]
-then
-  . m-args-parse-common-commands.lib.sh
-  "args_${1#--}"
-
-  exit 0
-fi
-
-case "$ARGS_FORMAT" in
-  "easy") true;;
-  "smart") true;;
-  "strict") true;;
-  *) exit 1;;
-esac
-
-. m-array.lib.sh
-. m-args-parse-${ARGS_FORMAT}.lib.sh
 
 #-------------------------------------------------------------------------------

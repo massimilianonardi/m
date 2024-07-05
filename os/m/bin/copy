@@ -126,6 +126,6 @@ ARGS_FORMAT="smart"
 ARGS_SWITCH="acfs"
 ARGS_SWITCH_FUNCTION_PREFIX="switch"
 
-. m.lib.sh
+. m.lib
 
 #-------------------------------------------------------------------------------

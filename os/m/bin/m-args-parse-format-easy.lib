@@ -1,5 +1,7 @@
 #!/bin/sh
 
+. m-args-common-functions.lib
+
 #-------------------------------------------------------------------------------
 
 # looks for switches and options and remove them from command line leaving real arguments in the same order

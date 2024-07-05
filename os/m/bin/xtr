@@ -122,6 +122,6 @@ ARGS_PARSE="true"
 ARGS_FORMAT="smart"
 ARGS_SWITCH="cfs"
 
-. m.lib.sh
+. m.lib
 
 #-------------------------------------------------------------------------------

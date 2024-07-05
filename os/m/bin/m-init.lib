@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#INIT_DIR="$(command -v "m.lib.sh")"
+#INIT_DIR="$(command -v "m.lib")"
 INIT_DIR="$(command -v "shell")"
 INIT_DIR="${INIT_DIR%/*}"
 INIT_DIR="$(cd -L -- "$INIT_DIR" && pwd -L)"

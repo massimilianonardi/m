@@ -54,6 +54,7 @@ rec_4()
 
 rec_5()
 {
+  . m-lang.lib
   stack='sta:$2:$3:$1---'
 #  stack='sta'
   lang log_warn "called rec_5" @'stack - $3 - $2 - $1 -' "msg_arg1" "msg_arg2" "msg_arg3"! "test" "test2"
@@ -68,6 +69,10 @@ rec_5()
 
 main()
 {
+  echo "ENVIRONMENT VARIABLES JUST AFTER ARGS PARSING"
+  # env_show
+  env_show | grep "ARG"
+
 #  ENV_END="$(set | sed 's/=.*//g' | sort)"
 #  diff -w --old-line-format="" --unchanged-line-format="" --new-line-format="%L" ./env_start ./env_end
 #  diff -w --old-line-format="" --unchanged-line-format="" --new-line-format="%L" <(echo "$ENV_START") <(echo "$ENV_END")
@@ -100,20 +105,22 @@ LOG_LEVEL="max"
 ARGS_PARSE="true"
 ARGS_FORMAT="easy"
 ARGS_FORMAT="smart"
-# ARGS_FORMAT="strict"
+ARGS_FORMAT="exact"
 
-ARGS_SWITCH="abcflr"
-ARGS_OPTION="test test2 test3"
+ARGS_SWITCHES="abcflr"
+ARGS_OPTIONS="test test2 test3 test-all-name"
 
 ARGS_SWITCH_ON="on"
 ARGS_SWITCH_OFF="off"
 
 ARGS_SWITCH_a="zzz_switch_aaa"
 ARGS_OPTION_test="<3"
+ARGS_OPTION_test_all_name___="2"
 ARGS_OPTION_test_0="zzz_test_arg0"
 ARGS_OPTION_test_2="zzz_test_arg2_personalized"
 
 ARGS_FIXED="<2"
+ARGS_FIXED="2"
 #ARGS_FIXED_VARIABLE="ZZZ_fixed"
 #ARGS_FIXED_FUNCTION="zaz_fixed_func"
 ARGS_FIXED_FUNCTION_PREFIX="zaz_fixed_func_prefix"
@@ -126,9 +133,9 @@ ARGS_START_2="zaz_start2"
 ARGS_END="3"
 ARGS_END_2="zaz_end2"
 
-#. m-exec.lib.sh
+. m-exec.lib
 #env_monitor_start
 
-. m.lib.sh
+. m.lib
 
 #-------------------------------------------------------------------------------

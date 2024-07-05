@@ -979,7 +979,7 @@ main()
   . m-filesystem.lib.sh
   . m-var.lib.sh
   . m-exec.lib.sh
-  
+
   NET_ROOT_DIR=""
   NET_M_PKG_DIR="$NET_ROOT_DIR/m/pkg"
 #  NET_M_SRC_DIR="$NET_ROOT_DIR/m/src"
@@ -1022,6 +1022,6 @@ main()
 
 #-------------------------------------------------------------------------------
 
-. m.lib.sh
+. m.lib
 
 #-------------------------------------------------------------------------------

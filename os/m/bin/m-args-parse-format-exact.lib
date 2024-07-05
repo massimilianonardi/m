@@ -1,0 +1,182 @@
+#!/bin/sh
+
+#. m-args-common-functions.lib
+
+[ -z "$ARGS_FIXED_VARIABLE_PREFIX" ] && ARGS_FIXED_VARIABLE_PREFIX="ARG_FIXED"
+
+[ -z "$ARGS_SWITCH_VARIABLE_PREFIX" ] && ARGS_SWITCH_VARIABLE_PREFIX="SWITCH"
+[ -z "$ARGS_SWITCH_ON" ] && ARGS_SWITCH_ON="true"
+
+[ -z "$ARGS_OPTION_VARIABLE_PREFIX" ] && ARGS_OPTION_VARIABLE_PREFIX="OPTION"
+[ -z "$ARGS_OPTION_ON" ] && ARGS_OPTION_ON="true"
+[ -z "$ARGS_OPTION_DEFAULT_ALLOWED_PARAMS" ] && ARGS_OPTION_DEFAULT_ALLOWED_PARAMS="*"
+
+#-------------------------------------------------------------------------------
+
+is_integer()
+{
+  [ "$1" -eq "$1" ] 2>/dev/null
+}
+
+#-------------------------------------------------------------------------------
+
+is_char_in_word()
+{
+  [ "$2" != "${2#*${1}}" ] 2>/dev/null
+}
+
+#-------------------------------------------------------------------------------
+
+is_word_in_list()
+(
+  WORD="$1"
+  LIST=" $2 "
+  [ "$LIST" != "${LIST#* ${WORD} }" ] 2>/dev/null
+)
+
+#-------------------------------------------------------------------------------
+
+# exact order: n-args fixed into array, then switches, then options with their arguments until --,
+# then args start into array, then regular args, then args end into array.
+# remaining command line has only regular args.
+
+
+
+log_debug "checking for args fixed: ARGS_FIXED=$ARGS_FIXED"
+if is_integer "$ARGS_FIXED"
+then
+  log_debug "parsing args fixed"
+
+  i="0"
+  while [ "$i" -lt "$ARGS_FIXED" ]
+  do
+    log_debug "detected arg fixed: ${ARGS_FIXED_VARIABLE_PREFIX}_${i}=$1"
+    eval "${ARGS_FIXED_VARIABLE_PREFIX}_${i}=\"\$1\""
+    shift
+    i="$((i + 1))"
+  done
+
+  unset i
+fi
+
+
+
+log_debug "checking for allowed switches: ARGS_SWITCHES=$ARGS_SWITCHES"
+if [ "$1" != "${1#-[[:alpha:]]}" ]
+then
+  CMD_LINE_SWITCHES="${1#-}"
+  shift
+
+  log_debug "deteced switches: $CMD_LINE_SWITCHES"
+
+  if [ -z "$ARGS_SWITCHES" ]
+  then
+    log_fatal "switches not allowed - provided: $CMD_LINE_SWITCHES"
+    exit 1
+  fi
+
+  r="${CMD_LINE_SWITCHES#?}"
+  k="${CMD_LINE_SWITCHES%${r}}"
+  unset CMD_LINE_SWITCHES
+
+  while [ -n "$k" ]
+  do
+    log_debug "current switch = $k - remaining $r"
+    if is_char_in_word "$k" "$ARGS_SWITCHES"
+    then
+      log_debug "detected allowed switch '$k': ${ARGS_SWITCH_VARIABLE_PREFIX}_${k}=$ARGS_SWITCH_ON"
+      eval "${ARGS_SWITCH_VARIABLE_PREFIX}_${k}=\"$ARGS_SWITCH_ON\""
+    else
+      log_fatal "switch '$k' forbidden - allowed: $ARGS_SWITCHES"
+      exit 1
+    fi
+    k="${r%${r#?}}"
+    r="${r#?}"
+  done
+
+  unset r
+  unset k
+fi
+
+
+
+log_debug "checking for allowed options: ARGS_OPTIONS=$ARGS_OPTIONS | ${1#--[[:alpha:]]} | $@"
+while [ "$1" != "${1#--[[:alpha:]]}" ]
+do
+  CMD_LINE_OPTION="${1#--}"
+  shift
+
+  log_debug "deteced option: $CMD_LINE_OPTION"
+
+  if [ -z "$ARGS_OPTIONS" ]
+  then
+    log_fatal "options not allowed - provided: $CMD_LINE_OPTION"
+    exit 1
+  fi
+
+  if is_word_in_list "$CMD_LINE_OPTION" "$ARGS_OPTIONS"
+  then
+    log_debug "detected allowed option '$CMD_LINE_OPTION'"
+
+    o="$CMD_LINE_OPTION"
+    while [ "$o" != "${o#*-}" ]
+    do
+      o="${o%%-*}_${o#*-}"
+    done
+    CMD_LINE_OPTION_SAFE_NAME="$o"
+    unset o
+    log_trace "determined option safe name: $CMD_LINE_OPTION_SAFE_NAME"
+
+    eval "${ARGS_OPTION_VARIABLE_PREFIX}_${CMD_LINE_OPTION_SAFE_NAME}=\"$ARGS_OPTION_ON\""
+    eval "p=\"\$ARGS_OPTION_${CMD_LINE_OPTION_SAFE_NAME}\""
+    [ -z "$p" ] && p="$ARGS_OPTION_DEFAULT_ALLOWED_PARAMS"
+    log_trace "determined option number of allowed params: '$p'"
+
+    if [ -n "$p" ]
+    then
+      eval "unset ${ARGS_OPTION_VARIABLE_PREFIX}_${CMD_LINE_OPTION_SAFE_NAME}"
+      NEW_LINE="$(printf '\n ')"
+      NEW_LINE="${NEW_LINE% }"
+      if is_integer "$p"
+      then
+        log_trace "determined option number of allowed params is an integer: '$p'"
+        i="0"
+        while [ "$i" -lt "$p" ]
+        do
+          log_trace "determined param for option $CMD_LINE_OPTION: '$1'"
+          eval "${ARGS_OPTION_VARIABLE_PREFIX}_${CMD_LINE_OPTION_SAFE_NAME}=\"\$${ARGS_OPTION_VARIABLE_PREFIX}_${CMD_LINE_OPTION_SAFE_NAME}${NEW_LINE}\$1\""
+          shift
+          i="$((i + 1))"
+        done
+      elif [ "$p" = "*" ]
+      then
+        log_trace "determined option number of allowed params is automatic: '$p'"
+        while [ "$1" = "${1#--[[:alpha:]]}" ]
+        do
+          log_trace "determined param for option $CMD_LINE_OPTION: '$1'"
+          eval "${ARGS_OPTION_VARIABLE_PREFIX}_${CMD_LINE_OPTION_SAFE_NAME}=\"\$${ARGS_OPTION_VARIABLE_PREFIX}_${CMD_LINE_OPTION_SAFE_NAME}${NEW_LINE}\$1\""
+          shift
+        done
+      else
+        log_fatal "invalid option number of allowed params: '$p'"
+      fi
+      eval "${ARGS_OPTION_VARIABLE_PREFIX}_${CMD_LINE_OPTION_SAFE_NAME}=\"\${${ARGS_OPTION_VARIABLE_PREFIX}_${CMD_LINE_OPTION_SAFE_NAME}#?}\""
+eval "echo \"\$${ARGS_OPTION_VARIABLE_PREFIX}_${CMD_LINE_OPTION_SAFE_NAME}\""
+    fi
+  else
+    log_fatal "option '$CMD_LINE_OPTION' forbidden - allowed: $ARGS_OPTIONS"
+    exit 1
+  fi
+  log_trace "parsed option '$CMD_LINE_OPTION' - remaining args: $@"
+done
+
+
+
+log_debug "checking for terminator"
+if [ "$1" = "--" ]
+then
+  shift
+  log_debug "detected terminator -- remaining args: $@"
+fi
+
+#-------------------------------------------------------------------------------

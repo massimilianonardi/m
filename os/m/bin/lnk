@@ -68,6 +68,6 @@ ARGS_PARSE="true"
 ARGS_FORMAT="smart"
 ARGS_SWITCH="acflrt"
 
-. m.lib.sh
+. m.lib
 
 #-------------------------------------------------------------------------------

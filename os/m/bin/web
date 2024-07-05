@@ -81,6 +81,6 @@ ARGS_OPTION="header"
 ARGS_OPTION_header="1"
 ARGS_OPTION_header_FUNCTION="option_header"
 
-. m.lib.sh
+. m.lib
 
 #-------------------------------------------------------------------------------

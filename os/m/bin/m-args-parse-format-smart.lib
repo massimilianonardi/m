@@ -1,8 +1,10 @@
 #!/bin/sh
 
+. m-args-common-functions.lib
+
 #-------------------------------------------------------------------------------
 
-# strict order: n-args fixed, then switches, then options until --,
+# smart order: n-args fixed, then mixed switches and options until --,
 # then args start into array, then regular args, then args end into array.
 # remaining command line has only regular args.
 
@@ -14,26 +16,45 @@ fi
 
 args_parse_switch_defaults
 
-if [ "$1" != "${1#-?}" ]
-then
-  log_debug "detected switches: $1"
-  args_parse_switch "$1" "$PARSE_ARGS_SWITCH"
-  shift
-fi
-
-while [ "$1" != "${1#--}" ] && [ "$1" != "--" ]
+COUNT="0"
+TOTAL="$#"
+MOVED="0"
+log_trace "TOTAL: $TOTAL"
+while [ "$COUNT" -lt "$TOTAL" ]
 do
-  log_debug "detected option: $1"
-  args_array_set_option "$@"
-  shift "$ARGS_SHIFT"
-  log_trace "parse_option - managed $r arguments as an option - remaining args: $@"
+  if [ "$1" = "--" ]
+  then
+    shift
+    log_debug "detected terminator -- remaining args: $@"
+    break
+  elif [ "$1" != "${1#--}" ]
+  then
+    log_debug "detected option: $1"
+    args_array_set_option "$@"
+    shift "$ARGS_SHIFT"
+    COUNT="$((COUNT + ARGS_SHIFT))"
+    log_trace "parse_option - managed $ARGS_SHIFT arguments as an option - remaining args: $@"
+  elif [ "$1" != "${1#-?}" ]
+  then
+    log_debug "detected switches: $1"
+    args_parse_switch "$1" "$ARGS_SWITCH"
+    shift
+    COUNT="$((COUNT + 1))"
+  else
+    set -- "$@" "$1"
+    shift
+    COUNT="$((COUNT + 1))"
+    MOVED="$((MOVED + 1))"
+  fi
 done
 
-if [ "$1" = "--" ]
-then
+COUNT="$(($# - MOVED))"
+while [ "$COUNT" -gt "0" ]
+do
+  set -- "$@" "$1"
   shift
-  log_debug "detected terminator -- remaining args: $@"
-fi
+  COUNT="$((COUNT - 1))"
+done
 
 if [ -n "$ARGS_START" ]
 then

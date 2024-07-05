@@ -58,8 +58,8 @@ m_conf_local()
 
 m_conf_sys()
 {
-  . m-sys.lib.sh
-  . m-init.lib.sh
+  . m-sys.lib
+  . m-init.lib
 
   if [ "$M_CONTEXT" != "m_os" ]
   then
@@ -103,8 +103,8 @@ m_script___()
   m_conf_local
   m_conf_sys
 
-  . m-filesystem.lib.sh
-  . m-var.lib.sh
+  . m-filesystem.lib
+  . m-var.lib
 
   m_end "$@"
 }
@@ -127,7 +127,7 @@ THIS_DIR="$(cd -P -- "${0%/*}"; pwd)"
 THIS_NAME="${0##*/}"
 THIS_PATH="$THIS_DIR/$THIS_NAME"
 
-. m-log.lib.sh
+. m-log.lib
 
 log_info "********************************************************************************"
 log_info "[START] $THIS_NAME" "$@"
@@ -135,7 +135,7 @@ log_debug "[THIS_DIR] $THIS_DIR [PWD] $PWD"
 
 if [ "$ARGS_PARSE" = "true" ]
 then
-  . m-args-parse.lib.sh
+  . m-args.lib
 fi
 
 trace exec return main "$@"

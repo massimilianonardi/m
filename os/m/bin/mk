@@ -327,6 +327,6 @@ ARGS_OPTION_target_VARIABLE="TARGETS"
 ARGS_FIXED="1"
 ARGS_FIXED_VARIABLE_0="PROJECT"
 
-. m.lib.sh
+. m.lib
 
 #-------------------------------------------------------------------------------
