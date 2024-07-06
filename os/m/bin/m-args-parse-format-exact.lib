@@ -1,6 +1,7 @@
 #!/bin/sh
 
-#. m-args-common-functions.lib
+. m-string.lib
+. m-array.lib
 
 [ -z "$ARGS_FIXED_VARIABLE_PREFIX" ] && ARGS_FIXED_VARIABLE_PREFIX="ARG_FIXED"
 
@@ -13,31 +14,7 @@
 
 #-------------------------------------------------------------------------------
 
-is_integer()
-{
-  [ "$1" -eq "$1" ] 2>/dev/null
-}
-
-#-------------------------------------------------------------------------------
-
-is_char_in_word()
-{
-  [ "$2" != "${2#*${1}}" ] 2>/dev/null
-}
-
-#-------------------------------------------------------------------------------
-
-is_word_in_list()
-(
-  WORD="$1"
-  LIST=" $2 "
-  [ "$LIST" != "${LIST#* ${WORD} }" ] 2>/dev/null
-)
-
-#-------------------------------------------------------------------------------
-
 # exact order: n-args fixed into array, then switches, then options with their arguments until --,
-# then args start into array, then regular args, then args end into array.
 # remaining command line has only regular args.
 
 
@@ -47,16 +24,16 @@ if is_integer "$ARGS_FIXED"
 then
   log_debug "parsing args fixed"
 
-  i="0"
-  while [ "$i" -lt "$ARGS_FIXED" ]
+  ARGS_PARSE_i="0"
+  while [ "$ARGS_PARSE_i" -lt "$ARGS_FIXED" ]
   do
-    log_debug "detected arg fixed: ${ARGS_FIXED_VARIABLE_PREFIX}_${i}=$1"
-    eval "${ARGS_FIXED_VARIABLE_PREFIX}_${i}=\"\$1\""
+    log_debug "detected arg fixed: ${ARGS_FIXED_VARIABLE_PREFIX}_${ARGS_PARSE_i}=$1"
+    array_add "$ARGS_FIXED_VARIABLE_PREFIX" "$1"
     shift
-    i="$((i + 1))"
+    ARGS_PARSE_i="$((ARGS_PARSE_i + 1))"
   done
 
-  unset i
+  unset ARGS_PARSE_i
 fi
 
 
@@ -64,110 +41,109 @@ fi
 log_debug "checking for allowed switches: ARGS_SWITCHES=$ARGS_SWITCHES"
 if [ "$1" != "${1#-[[:alpha:]]}" ]
 then
-  CMD_LINE_SWITCHES="${1#-}"
+  ARGS_PARSE_CMD_LINE_SWITCHES="${1#-}"
   shift
 
-  log_debug "deteced switches: $CMD_LINE_SWITCHES"
+  log_debug "deteced switches: $ARGS_PARSE_CMD_LINE_SWITCHES"
 
   if [ -z "$ARGS_SWITCHES" ]
   then
-    log_fatal "switches not allowed - provided: $CMD_LINE_SWITCHES"
+    log_fatal "switches not allowed - provided: $ARGS_PARSE_CMD_LINE_SWITCHES"
     exit 1
   fi
 
-  r="${CMD_LINE_SWITCHES#?}"
-  k="${CMD_LINE_SWITCHES%${r}}"
-  unset CMD_LINE_SWITCHES
+  ARGS_PARSE_r="${ARGS_PARSE_CMD_LINE_SWITCHES#?}"
+  ARGS_PARSE_k="${ARGS_PARSE_CMD_LINE_SWITCHES%${ARGS_PARSE_r}}"
+  unset ARGS_PARSE_CMD_LINE_SWITCHES
 
-  while [ -n "$k" ]
+  while [ -n "$ARGS_PARSE_k" ]
   do
-    log_debug "current switch = $k - remaining $r"
-    if is_char_in_word "$k" "$ARGS_SWITCHES"
+    log_debug "current switch = $ARGS_PARSE_k - remaining $ARGS_PARSE_r"
+    if is_char_in_word "$ARGS_PARSE_k" "$ARGS_SWITCHES"
     then
-      log_debug "detected allowed switch '$k': ${ARGS_SWITCH_VARIABLE_PREFIX}_${k}=$ARGS_SWITCH_ON"
-      eval "${ARGS_SWITCH_VARIABLE_PREFIX}_${k}=\"$ARGS_SWITCH_ON\""
+      log_debug "detected allowed switch '$ARGS_PARSE_k': ${ARGS_SWITCH_VARIABLE_PREFIX}_${ARGS_PARSE_k}=$ARGS_SWITCH_ON"
+      eval "${ARGS_SWITCH_VARIABLE_PREFIX}_${ARGS_PARSE_k}=\"$ARGS_SWITCH_ON\""
     else
-      log_fatal "switch '$k' forbidden - allowed: $ARGS_SWITCHES"
+      log_fatal "switch '$ARGS_PARSE_k' forbidden - allowed: $ARGS_SWITCHES"
       exit 1
     fi
-    k="${r%${r#?}}"
-    r="${r#?}"
+    ARGS_PARSE_k="${ARGS_PARSE_r%${ARGS_PARSE_r#?}}"
+    ARGS_PARSE_r="${ARGS_PARSE_r#?}"
   done
 
-  unset r
-  unset k
+  unset ARGS_PARSE_r
+  unset ARGS_PARSE_k
 fi
 
 
 
 log_debug "checking for allowed options: ARGS_OPTIONS=$ARGS_OPTIONS | ${1#--[[:alpha:]]} | $@"
-while [ "$1" != "${1#--[[:alpha:]]}" ]
+while [ "$1" != "${1#--[[:alpha:]]}" ] && [ "$1" != "--" ]
 do
-  CMD_LINE_OPTION="${1#--}"
+  ARGS_PARSE_CMD_LINE_OPTION="${1#--}"
   shift
 
-  log_debug "deteced option: $CMD_LINE_OPTION"
+  log_debug "deteced option: $ARGS_PARSE_CMD_LINE_OPTION"
 
   if [ -z "$ARGS_OPTIONS" ]
   then
-    log_fatal "options not allowed - provided: $CMD_LINE_OPTION"
+    log_fatal "options not allowed - provided: $ARGS_PARSE_CMD_LINE_OPTION"
     exit 1
   fi
 
-  if is_word_in_list "$CMD_LINE_OPTION" "$ARGS_OPTIONS"
+  if is_word_in_list "$ARGS_PARSE_CMD_LINE_OPTION" "$ARGS_OPTIONS"
   then
-    log_debug "detected allowed option '$CMD_LINE_OPTION'"
+    log_debug "detected allowed option '$ARGS_PARSE_CMD_LINE_OPTION'"
 
-    o="$CMD_LINE_OPTION"
-    while [ "$o" != "${o#*-}" ]
+    ARGS_PARSE_o="$ARGS_PARSE_CMD_LINE_OPTION"
+    while [ "$ARGS_PARSE_o" != "${ARGS_PARSE_o#*-}" ]
     do
-      o="${o%%-*}_${o#*-}"
+      ARGS_PARSE_o="${ARGS_PARSE_o%%-*}_${ARGS_PARSE_o#*-}"
     done
-    CMD_LINE_OPTION_SAFE_NAME="$o"
-    unset o
-    log_trace "determined option safe name: $CMD_LINE_OPTION_SAFE_NAME"
+    ARGS_PARSE_CMD_LINE_OPTION_SAFE_NAME="$ARGS_PARSE_o"
+    unset ARGS_PARSE_o
+    log_trace "determined option safe name: $ARGS_PARSE_CMD_LINE_OPTION_SAFE_NAME"
 
-    eval "${ARGS_OPTION_VARIABLE_PREFIX}_${CMD_LINE_OPTION_SAFE_NAME}=\"$ARGS_OPTION_ON\""
-    eval "p=\"\$ARGS_OPTION_${CMD_LINE_OPTION_SAFE_NAME}\""
-    [ -z "$p" ] && p="$ARGS_OPTION_DEFAULT_ALLOWED_PARAMS"
-    log_trace "determined option number of allowed params: '$p'"
+    eval "${ARGS_OPTION_VARIABLE_PREFIX}_${ARGS_PARSE_CMD_LINE_OPTION_SAFE_NAME}=\"\$ARGS_OPTION_ON\""
+    eval "ARGS_PARSE_p=\"\$ARGS_OPTION_${ARGS_PARSE_CMD_LINE_OPTION_SAFE_NAME}\""
+    [ -z "$ARGS_PARSE_p" ] && ARGS_PARSE_p="$ARGS_OPTION_DEFAULT_ALLOWED_PARAMS"
+    log_trace "determined option number of allowed params: '$ARGS_PARSE_p'"
 
-    if [ -n "$p" ]
+    if [ -n "$ARGS_PARSE_p" ]
     then
-      eval "unset ${ARGS_OPTION_VARIABLE_PREFIX}_${CMD_LINE_OPTION_SAFE_NAME}"
-      NEW_LINE="$(printf '\n ')"
-      NEW_LINE="${NEW_LINE% }"
-      if is_integer "$p"
+#      eval "unset ${ARGS_OPTION_VARIABLE_PREFIX}_${ARGS_PARSE_CMD_LINE_OPTION_SAFE_NAME}"
+      if is_integer "$ARGS_PARSE_p"
       then
-        log_trace "determined option number of allowed params is an integer: '$p'"
-        i="0"
-        while [ "$i" -lt "$p" ]
+        log_trace "determined option number of allowed params is an integer: '$ARGS_PARSE_p'"
+        while [ "0" -lt "$ARGS_PARSE_p" ]
         do
-          log_trace "determined param for option $CMD_LINE_OPTION: '$1'"
-          eval "${ARGS_OPTION_VARIABLE_PREFIX}_${CMD_LINE_OPTION_SAFE_NAME}=\"\$${ARGS_OPTION_VARIABLE_PREFIX}_${CMD_LINE_OPTION_SAFE_NAME}${NEW_LINE}\$1\""
+          ARGS_PARSE_p="$((ARGS_PARSE_p - 1))"
+          log_trace "determined param for option $ARGS_PARSE_CMD_LINE_OPTION: '$1'"
+          array_add "${ARGS_OPTION_VARIABLE_PREFIX}_${ARGS_PARSE_CMD_LINE_OPTION_SAFE_NAME}" "$1"
           shift
-          i="$((i + 1))"
         done
-      elif [ "$p" = "*" ]
+      elif [ "$ARGS_PARSE_p" = "*" ]
       then
-        log_trace "determined option number of allowed params is automatic: '$p'"
-        while [ "$1" = "${1#--[[:alpha:]]}" ]
+        log_trace "determined option number of allowed params is automatic: '$ARGS_PARSE_p'"
+        while [ "$1" = "${1#--[[:alpha:]]}" ] && [ "$1" != "--" ]
         do
-          log_trace "determined param for option $CMD_LINE_OPTION: '$1'"
-          eval "${ARGS_OPTION_VARIABLE_PREFIX}_${CMD_LINE_OPTION_SAFE_NAME}=\"\$${ARGS_OPTION_VARIABLE_PREFIX}_${CMD_LINE_OPTION_SAFE_NAME}${NEW_LINE}\$1\""
+          log_trace "determined param for option $ARGS_PARSE_CMD_LINE_OPTION: '$1'"
+          array_add "${ARGS_OPTION_VARIABLE_PREFIX}_${ARGS_PARSE_CMD_LINE_OPTION_SAFE_NAME}" "$1"
           shift
         done
       else
-        log_fatal "invalid option number of allowed params: '$p'"
+        log_fatal "invalid option number of allowed params: '$ARGS_PARSE_p'"
+        exit 1
       fi
-      eval "${ARGS_OPTION_VARIABLE_PREFIX}_${CMD_LINE_OPTION_SAFE_NAME}=\"\${${ARGS_OPTION_VARIABLE_PREFIX}_${CMD_LINE_OPTION_SAFE_NAME}#?}\""
-eval "echo \"\$${ARGS_OPTION_VARIABLE_PREFIX}_${CMD_LINE_OPTION_SAFE_NAME}\""
     fi
+    unset ARGS_PARSE_p
   else
-    log_fatal "option '$CMD_LINE_OPTION' forbidden - allowed: $ARGS_OPTIONS"
+    log_fatal "option '$ARGS_PARSE_CMD_LINE_OPTION' forbidden - allowed: $ARGS_OPTIONS"
     exit 1
   fi
-  log_trace "parsed option '$CMD_LINE_OPTION' - remaining args: $@"
+  log_trace "parsed option '$ARGS_PARSE_CMD_LINE_OPTION' - remaining args: $@"
+  unset ARGS_PARSE_CMD_LINE_OPTION
+  unset ARGS_PARSE_CMD_LINE_OPTION_SAFE_NAME
 done
 
 

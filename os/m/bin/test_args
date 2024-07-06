@@ -72,6 +72,11 @@ main()
   echo "ENVIRONMENT VARIABLES JUST AFTER ARGS PARSING"
   # env_show
   env_show | grep "ARG"
+  env_show | grep "SWITCH"
+  env_show | grep "OPTION"
+  . m-array.lib
+  array_unset "OPTION_test_all_name"
+  env_show | grep "OPTION"
 
 #  ENV_END="$(set | sed 's/=.*//g' | sort)"
 #  diff -w --old-line-format="" --unchanged-line-format="" --new-line-format="%L" ./env_start ./env_end
@@ -114,7 +119,7 @@ ARGS_SWITCH_ON="on"
 ARGS_SWITCH_OFF="off"
 
 ARGS_SWITCH_a="zzz_switch_aaa"
-ARGS_OPTION_test="<3"
+ARGS_OPTION_test="0"
 ARGS_OPTION_test_all_name___="2"
 ARGS_OPTION_test_0="zzz_test_arg0"
 ARGS_OPTION_test_2="zzz_test_arg2_personalized"

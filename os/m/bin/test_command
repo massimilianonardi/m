@@ -27,7 +27,9 @@ test_test_args()
 #  log -l max -- test_args aaa bbb --version ccc ddd "eee fff"
 #  test_args aaa bbb --help ccc ddd "eee fff"
 #  test_args aaa bbb --info ccc ddd "eee fff"
-  log -l max -- test_args aaa bbb -abc --test --test-all-name 111 222 333 --help ccc ddd "eee fff"
+  log -l max -- test_args aaa bbb -abc --test --test-all-name 111 222 333 -- ccc ddd "eee fff"
+#  log -l max -- test_args aaa bbb -abc --test --test-all-name 111 222 333 ccc ddd "eee fff"
+#  log -l max -- test_args aaa bbb -abc --test --test-all-name 111 222 333 --help ccc ddd "eee fff"
 }
 
 #-------------------------------------------------------------------------------
