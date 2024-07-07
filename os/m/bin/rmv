@@ -20,8 +20,7 @@ main()
 #-------------------------------------------------------------------------------
 
 ARGS_PARSE="true"
-ARGS_FORMAT="smart"
-ARGS_SWITCH="epqr"
+ARGS_SWITCHES="epqr"
 
 . m.lib
 

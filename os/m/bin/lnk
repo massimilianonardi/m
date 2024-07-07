@@ -65,8 +65,7 @@ main()
 #-------------------------------------------------------------------------------
 
 ARGS_PARSE="true"
-ARGS_FORMAT="smart"
-ARGS_SWITCH="acflrt"
+ARGS_SWITCHES="acflrt"
 
 . m.lib
 

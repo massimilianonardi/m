@@ -5,10 +5,10 @@
 if [ "$1" = "--help" ] || [ "$1" = "--info" ] || [ "$1" = "--version" ]
 then
   . m-args-common-commands.lib
-  COMMAND="args_${1#--}"
+  ARGS_PARSE_COMMAND="args_${1#--}"
   shift
-  set -- "$COMMAND" "$@"
-  unset COMMAND
+  set -- "$ARGS_PARSE_COMMAND" "$@"
+  unset ARGS_PARSE_COMMAND
   "$@"
 
   exit 0
@@ -19,8 +19,6 @@ fi
 [ -z "$ARGS_FORMAT" ] && ARGS_FORMAT="exact"
 
 case "$ARGS_FORMAT" in
-  "easy") true;;
-  "smart") true;;
   "exact") true;;
   *) exit 1;;
 esac

@@ -247,7 +247,6 @@ path_relativize()
 #-------------------------------------------------------------------------------
 
 ARGS_PARSE="true"
-ARGS_FORMAT="smart"
 ARGS_SWITCH="aelLrR"
 ARGS_SWITCH_FUNCTION_PREFIX="switch"
 

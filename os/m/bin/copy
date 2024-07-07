@@ -2,17 +2,6 @@
 
 #-------------------------------------------------------------------------------
 
-switch_error()
-{
-  CP_OPT="$CP_OPT$1"
-  return 0
-
-  log_fatal "unsupported switch $@"
-  exit 1
-}
-
-#-------------------------------------------------------------------------------
-
 dest_overwrite_check()
 {
   if [ -e "$DEST" ] && [ ! -"$1" "$DEST" ]
@@ -122,9 +111,7 @@ main()
 #-------------------------------------------------------------------------------
 
 ARGS_PARSE="true"
-ARGS_FORMAT="smart"
-ARGS_SWITCH="acfs"
-ARGS_SWITCH_FUNCTION_PREFIX="switch"
+ARGS_SWITCHES="acfs"
 
 . m.lib
 

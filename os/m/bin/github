@@ -179,8 +179,7 @@ main()
 #-------------------------------------------------------------------------------
 
 ARGS_PARSE="true"
-ARGS_FORMAT="smart"
-ARGS_SWITCH="x"
+ARGS_SWITCHES="x"
 
 . m.lib
 

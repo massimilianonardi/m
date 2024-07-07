@@ -2,17 +2,6 @@
 
 #-------------------------------------------------------------------------------
 
-switch_error()
-{
-#  MV_OPT="$MV_OPT$1"
-#  return 0
-
-  log_fatal "unsupported switch $@"
-  exit 1
-}
-
-#-------------------------------------------------------------------------------
-
 dest_overwrite_check()
 {
   if [ -e "$DEST" ] && [ ! -"$1" "$DEST" ]
@@ -232,9 +221,7 @@ main()
 #-------------------------------------------------------------------------------
 
 ARGS_PARSE="true"
-ARGS_FORMAT="smart"
-ARGS_SWITCH="acfst"
-ARGS_SWITCH_FUNCTION_PREFIX="switch"
+ARGS_SWITCHES="acfst"
 
 . m.lib
 

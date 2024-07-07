@@ -194,8 +194,7 @@ main()
 #-------------------------------------------------------------------------------
 
 ARGS_PARSE="true"
-ARGS_FORMAT="smart"
-ARGS_SWITCH="jdsptxz"
+ARGS_SWITCHES="jdsptxz"
 
 . m.lib
 

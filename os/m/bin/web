@@ -75,8 +75,7 @@ main()
 #-------------------------------------------------------------------------------
 
 ARGS_PARSE="true"
-ARGS_FORMAT="smart"
-ARGS_SWITCH="q"
+ARGS_SWITCHES="q"
 ARGS_OPTION="header"
 ARGS_OPTION_header="1"
 ARGS_OPTION_header_FUNCTION="option_header"

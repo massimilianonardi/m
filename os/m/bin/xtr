@@ -119,8 +119,7 @@ main()
 #-------------------------------------------------------------------------------
 
 ARGS_PARSE="true"
-ARGS_FORMAT="smart"
-ARGS_SWITCH="cfs"
+ARGS_SWITCHES="cfs"
 
 . m.lib
 
