@@ -19,6 +19,34 @@ test_link()
 
 #-------------------------------------------------------------------------------
 
+test_path()
+{
+  mkdir -p /tmp/aaa/bbb
+  touch /tmp/aaa/bbb/ccc
+  ln -s ../aaa /tmp/aaa/bbb/ddd
+  ln -s ./bbb/ccc /tmp/aaa/eee
+
+  cd /tmp/aaa
+  path -a bbb
+  path -a bbb/ccc
+  path -l bbb/ddd
+  path -l eee
+  path -la bbb
+  path -la bbb/ccc
+#  path -- aaa bbb
+#  path -r aaa ccc
+#  path -- . bbb
+#  path -r . ccc
+#  path -- bbb .
+#  path -r ccc .
+  path -- bbb aaa
+  path -r ccc aaa
+
+  rm -rf /tmp/aaa
+}
+
+#-------------------------------------------------------------------------------
+
 test_test_args()
 {
 #  test_args --version

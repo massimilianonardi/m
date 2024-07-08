@@ -2,105 +2,84 @@
 
 #-------------------------------------------------------------------------------
 
-switch_a()
+readlink()
 {
-  PATH_ABSOLUTE="true"
-}
-
-switch_e()
-{
-  PATH_EXIST="true"
-}
-
-switch_l()
-{
-  PATH_RESOLVE_LINKS="true"
-}
-
-switch_L()
-{
-  PATH_RESOLVE_REFERENCE_LINKS="true"
-}
-
-switch_r()
-{
-  PATH_ABSOLUTE="false"
-}
-
-switch_R()
-{
-  PATH_RELATIVE="true"
+  if [ -L "$1" ]
+  then
+    LINK="$1"
+#    TARGET=$(ls -ld -- "$LINK" 2>/dev/null) || exit 1
+    TARGET=$(ls -ld -- "$LINK")
+    TARGET=${TARGET#*" $LINK -> "}
+  elif [ -e "$1" ]
+  then
+    TARGET="$(dirname -- "$1")/$(basename -- "$1")"
+    if [ "$TARGET" = "${TARGET#/}" ] && [ "$TARGET" = "${TARGET#./}" ] && [ "$TARGET" = "${TARGET#../}" ]
+    then
+      TARGET="./$TARGET"
+    fi
+  else
+    exit 1
+  fi
 }
 
 #-------------------------------------------------------------------------------
 
-main()
-(
-  if [ "$#" -gt "0" ]
+_resolve()
+{
+  FOLLOW_SYMLINKS="$1"
+  shift
+
+  if [ "$TARGET" = "${TARGET#/}" ]
   then
-    PATH_ARG="$1"
-    shift
-    if [ -n "$1" ]
+    if [ -L "$LINK" ] && [ -f "$LINK" ]
     then
-      PATH_ABSOLUTE="false"
-      PATH_REFERENCE="$1"
-    else
-      PATH_REFERENCE="$(pwd)" || exit "$?"
+      TARGET="$(dirname -- "$LINK")/$TARGET"
     fi
+  fi
+
+  if [ -d "$TARGET" ]
+  then
+    TARGET="$(cd $FOLLOW_SYMLINKS -- "$TARGET" && pwd $FOLLOW_SYMLINKS)"
   else
-    echo "missing arguments">&2
-    exit 1
+#    TARGET="$(cd $FOLLOW_SYMLINKS -- "${TARGET%/*}" && pwd $FOLLOW_SYMLINKS)/${TARGET##*/}"
+    TARGET="$(cd $FOLLOW_SYMLINKS -- "$(dirname -- "$TARGET")" && pwd $FOLLOW_SYMLINKS)/$(basename -- "$TARGET")"
   fi
-
-  PATH_CONVERTED="$PATH_ARG"
-
-  if [ -z "$PATH_ABSOLUTE" ]
-  then
-    if [ "$PATH_CONVERTED" = "${PATH_CONVERTED#/}" ]
-    then
-      PATH_ABSOLUTE="false"
-    else
-      PATH_ABSOLUTE="true"
-    fi
-  fi
-
-  PATH_CONVERTED="$(path_absolute "$PATH_CONVERTED")"
-  PATH_CONVERTED="$(path_canonicalize "$PATH_CONVERTED")"
-
-  PATH_REFERENCE="$(path_absolute "$PATH_REFERENCE")"
-  PATH_REFERENCE="$(path_canonicalize "$PATH_REFERENCE")"
-
-  if [ "$PATH_EXIST" = "true" ]
-  then
-    path_exist "$PATH_CONVERTED" && exit 1
-    [ "$PATH_ABSOLUTE" = "false" ] && [ ! -d "$PATH_REFERENCE" ] && echo "reference path does not exist">&2 && exit 1
-  fi
-
-  [ "$PATH_RESOLVE_REFERENCE_LINKS" != "true" ] || PATH_REFERENCE="$(path_resolve_links "$PATH_REFERENCE")" || exit "$?"
-  [ "$PATH_RESOLVE_LINKS" != "true" ] || PATH_CONVERTED="$(path_resolve_links "$PATH_CONVERTED")" || exit "$?"
-
-  [ "$PATH_ABSOLUTE" != "false" ] || PATH_CONVERTED="$(path_relativize "$PATH_CONVERTED" "$PATH_REFERENCE")" || exit "$?"
-
-  [ "$PATH_RELATIVE" != "true" ] || PATH_CONVERTED="${PATH_CONVERTED#./}"
-
-  echo "$PATH_CONVERTED"
-)
+}
 
 #-------------------------------------------------------------------------------
 
 path_absolute()
+{
+  TARGET="$1"
+
+  _resolve -L "$@"
+
+  echo "$TARGET"
+}
+
+#-------------------------------------------------------------------------------
+
+path_resolve_links()
+{
+  readlink "$@"
+
+  _resolve -P "$@"
+
+  echo "$TARGET"
+}
+
+#-------------------------------------------------------------------------------
+
+path_exist()
 (
-  [ -z "$1" ] && pwd && exit 0
-
-  PATH_CONVERTED="$1"
-
-  if [ "$PATH_CONVERTED" = "${PATH_CONVERTED#/}" ]
+#  [ -e "$1" ] 2>/dev/null
+  if [ -f "$1" ] || [ -d "$1" ]
   then
-    PATH_CONVERTED="${PATH_CONVERTED#./}"
-    PATH_CONVERTED="$(pwd)/$PATH_CONVERTED"
+    exit 0
+  else
+    echo "path does not exist">&2
+    exit 1
   fi
-
-  echo "$PATH_CONVERTED"
 )
 
 #-------------------------------------------------------------------------------
@@ -163,56 +142,14 @@ path_canonicalize()
 
 #-------------------------------------------------------------------------------
 
-path_exist()
-(
-  if [ -f "$1" ] || [ -d "$1" ]
-  then
-    exit 0
-  else
-    echo "path does not exist">&2
-    exit 1
-  fi
-)
-
-#-------------------------------------------------------------------------------
-
-path_resolve_links()
-(
-  [ -z "$1" ] && echo "cannot resolve null paths">&2 && exit 1
-
-  PATH_CONVERTED="$1"
-
-  if [ -d "$PATH_CONVERTED" ]
-  then
-    PATH_CONVERTED="$(cd -P -- "$PATH_CONVERTED" && pwd -P)" || exit "$?"
-  elif [ -f "$PATH_CONVERTED" ]
-  then
-    PATH_CONVERTED_PREFIX="${PATH_CONVERTED%/*}"
-    PATH_CONVERTED_SUFFIX="${PATH_CONVERTED#$PATH_CONVERTED_PREFIX/}"
-    PATH_CONVERTED_PREFIX="$(cd -P -- "$PATH_CONVERTED_PREFIX" && pwd -P)" || exit "$?"
-    PATH_CONVERTED="$PATH_CONVERTED_PREFIX/$PATH_CONVERTED_SUFFIX"
-    PATH_CONVERTED_SUFFIX="$(ls -l "$PATH_CONVERTED")"
-    if [ "$PATH_CONVERTED_SUFFIX" != "${PATH_CONVERTED_SUFFIX#* $PATH_CONVERTED -> }" ]
-    then
-      PATH_CONVERTED_SUFFIX="${PATH_CONVERTED_SUFFIX#* $PATH_CONVERTED -> }"
-      PATH_CONVERTED="$PATH_CONVERTED_PREFIX/$PATH_CONVERTED_SUFFIX"
-      PATH_CONVERTED="$(path_canonicalize "$PATH_CONVERTED")" || exit "$?"
-    fi
-  else
-    echo "path does not exist">&2
-  fi
-
-  echo "$PATH_CONVERTED"
-)
-
-#-------------------------------------------------------------------------------
-
 path_relativize()
 (
   [ -z "$1" -o -z "$2" ] && echo "cannot relativize null paths">&2 && exit 1
 
-  PATH_CONVERTED="$1"
-  PATH_REFERENCE="$2"
+#  PATH_CONVERTED="$1"
+#  PATH_REFERENCE="$2"
+  PATH_CONVERTED="$(path_absolute "$1"; echo "$TARGET")"
+  PATH_REFERENCE="$(path_absolute "$2"; echo "$TARGET")"
 
   if [ "$PATH_CONVERTED" != "${PATH_CONVERTED#$PATH_REFERENCE}" ]
   then
@@ -246,9 +183,31 @@ path_relativize()
 
 #-------------------------------------------------------------------------------
 
+main()
+(
+  if [ -n "$SWITCH_r" ] && [ "$#" -lt "2" ]
+  then
+    log_fatal "need 2 arguments to relativize a path"
+    exit 1
+  fi
+
+  [ -n "$SWITCH_e" ] && path_exist "$@"
+
+  [ -n "$SWITCH_a" ] && path_absolute "$1"
+  [ -n "$SWITCH_l" ] && path_resolve_links "$1"
+  [ -n "$SWITCH_L" ] && path_resolve_links "$1"
+
+  [ "$#" = "2" ] && path_relativize "$@"
+  [ -n "$SWITCH_r" ] && path_relativize "$@"
+  [ -n "$SWITCH_R" ] && path_relativize "$@"
+
+  true
+)
+
+#-------------------------------------------------------------------------------
+
 ARGS_PARSE="true"
-ARGS_SWITCH="aelLrR"
-ARGS_SWITCH_FUNCTION_PREFIX="switch"
+ARGS_SWITCHES="aelLrR"
 
 . m.lib
 
