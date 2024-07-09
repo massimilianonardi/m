@@ -10,45 +10,62 @@ path_exist()
 #-------------------------------------------------------------------------------
 
 path_readlink()
-{
+(
   if [ -L "$1" ]
   then
-    LINK="$1"
-#    TARGET=$(ls -ld -- "$LINK" 2>/dev/null) || exit 1
-    TARGET=$(ls -ld -- "$LINK")
-    TARGET=${TARGET#*" $LINK -> "}
+#    TARGET=$(ls -ld -- "$1" 2>/dev/null) || exit 1
+    TARGET=$(ls -ld -- "$1")
+    TARGET=${TARGET#*" $1 -> "}
   elif [ -e "$1" ]
   then
     TARGET="$1"
-#    TARGET="$(dirname -- "$1")/$(basename -- "$1")"
     if [ "$TARGET" = "${TARGET#/}" ] && [ "$TARGET" = "${TARGET#./}" ] && [ "$TARGET" = "${TARGET#../}" ]
     then
       TARGET="./$TARGET"
     fi
   else
+    log_fatal "path doesn't exist!"
     exit 1
   fi
 
   echo "$TARGET"
-}
+)
 
 #-------------------------------------------------------------------------------
 
 _resolve()
-{
+(
+  if [ -d "$2" ]
+  then
+    echo "$(cd $1 -- "$2" && pwd $1)"
+  elif [ -f "$2" ]
+  then
+#    echo "$(cd $1 -- "${2%/*}" && pwd $1)/${2##*/}"
+    echo "$(cd $1 -- "$(dirname -- "$2")" && pwd $1)/$(basename -- "$2")"
+  else
+    log_fatal "path doesn't exist!"
+    exit 1
+  fi
+)
+
+#-------------------------------------------------------------------------------
+
+_resolve____()
+(
   FOLLOW_SYMLINKS="$1"
   shift
 
   TARGET="$1"
   shift
 
-  if [ "$TARGET" = "${TARGET#/}" ]
-  then
-    if [ -L "$LINK" ] && [ -f "$LINK" ]
-    then
-      TARGET="$(dirname -- "$LINK")/$TARGET"
-    fi
-  fi
+  # if [ "$TARGET" = "${TARGET#/}" ]
+  # then
+  #   if [ -L "$LINK" ] && [ -f "$LINK" ]
+  #   then
+  #     exit 5
+  #     TARGET="$(dirname -- "$LINK")/$TARGET"
+  #   fi
+  # fi
 
   if [ -d "$TARGET" ]
   then
@@ -59,7 +76,7 @@ _resolve()
   fi
 
   echo "$TARGET"
-}
+)
 
 #-------------------------------------------------------------------------------
 
@@ -79,67 +96,43 @@ path_resolve_links()
 
 path_clean()
 (
-  return 0
-
-
-
-  [ -z "$1" ] && echo "cannot canonicalize null paths">&2 && exit 1
-
-  PATH_CONVERTED="$1"
-
-  if [ "$PATH_CONVERTED" = "${PATH_CONVERTED#/}" ] && [ "$PATH_CONVERTED" = "${PATH_CONVERTED#./}" ] && [ "$PATH_CONVERTED" = "${PATH_CONVERTED#../}" ]
-  then
-    PATH_CONVERTED="./$PATH_CONVERTED"
-  fi
-
-  while [ "$PATH_CONVERTED" != "${PATH_CONVERTED%//*}" ]
-  do
-    PATH_CONVERTED_PREFIX="${PATH_CONVERTED%//*}"
-    PATH_CONVERTED_SUFFIX="${PATH_CONVERTED#$PATH_CONVERTED_PREFIX//}"
-    PATH_CONVERTED="$PATH_CONVERTED_PREFIX/$PATH_CONVERTED_SUFFIX"
-  done
-
-  PATH_CONVERTED="${PATH_CONVERTED%/}"
-
-  while [ "$PATH_CONVERTED" != "${PATH_CONVERTED%/./*}" ]
-  do
-    PATH_CONVERTED_PREFIX="${PATH_CONVERTED%/./*}"
-    PATH_CONVERTED_SUFFIX="${PATH_CONVERTED#$PATH_CONVERTED_PREFIX/./}"
-    PATH_CONVERTED="$PATH_CONVERTED_PREFIX/$PATH_CONVERTED_SUFFIX"
-  done
-
-  PATH_CONVERTED="${PATH_CONVERTED%/.}"
-
-  PATH_REFERENCE=""
-
-  while [ "$PATH_CONVERTED" != "${PATH_CONVERTED#../}" ]
-  do
-    PATH_CONVERTED="${PATH_CONVERTED#../}"
-    PATH_REFERENCE="../$PATH_REFERENCE"
-  done
-
-  PATH_CONVERTED="$PATH_CONVERTED/"
-
-  while [ "$PATH_CONVERTED" != "${PATH_CONVERTED#*/../}" ]
-  do
-    PATH_CONVERTED_SUFFIX="${PATH_CONVERTED#*/../}"
-    PATH_CONVERTED_PREFIX="${PATH_CONVERTED%/../$PATH_CONVERTED_SUFFIX}"
-    PATH_CONVERTED_PREFIX="${PATH_CONVERTED_PREFIX%/*}"
-    PATH_CONVERTED="$PATH_CONVERTED_PREFIX/$PATH_CONVERTED_SUFFIX"
-  done
-
-  PATH_CONVERTED="${PATH_CONVERTED%/}"
-
-  [ -n "$PATH_REFERENCE" ] && PATH_CONVERTED="$PATH_REFERENCE$PATH_CONVERTED"
-
-  [ -z "$PATH_CONVERTED" ] && PATH_CONVERTED="/"
-
-  echo "$PATH_CONVERTED"
+  true
 )
 
 #-------------------------------------------------------------------------------
 
 path_relativize()
+(
+  # PATH_CONVERTED="$1"
+  # PATH_REFERENCE="$2"
+  PATH_CONVERTED="$(path_absolute "$1")"
+  PATH_REFERENCE="$(path_absolute "$2")"
+
+  if [ "$PATH_CONVERTED" != "${PATH_CONVERTED#$PATH_REFERENCE}" ]
+  then
+    PATH_CONVERTED=".${PATH_CONVERTED#$PATH_REFERENCE}"
+  else
+    PATH_REFERENCE_PREFIX="$PATH_REFERENCE"
+    PATH_CONVERTED_PREFIX=""
+
+    while [ "$PATH_CONVERTED" = "${PATH_CONVERTED#$PATH_REFERENCE_PREFIX}" ]
+    do
+      PATH_REFERENCE_PREFIX="${PATH_REFERENCE_PREFIX%/*}"
+      PATH_CONVERTED_PREFIX="${PATH_CONVERTED_PREFIX}../"
+    done
+
+    PATH_CONVERTED="${PATH_CONVERTED#${PATH_REFERENCE_PREFIX}}"
+    PATH_CONVERTED="${PATH_CONVERTED#/}"
+    PATH_CONVERTED="${PATH_CONVERTED_PREFIX}${PATH_CONVERTED}"
+    PATH_CONVERTED="${PATH_CONVERTED%/}"
+  fi
+
+  echo "${PATH_CONVERTED}"
+)
+
+#-------------------------------------------------------------------------------
+
+path_relativize___()
 (
   [ -z "$1" -o -z "$2" ] && echo "cannot relativize null paths">&2 && exit 1
 
@@ -197,10 +190,19 @@ main()
     exit 1
   elif [ "$#" = "2" ] #&& [ -n "$SWITCH_r" ]
   then
+    if [ ! -e "$1" ] || [ ! -d "$2" ]
+    then
+      log_fatal "first argument '$1' must exist and second argument '$2' must exist and must be a directory"
+      exit 1
+    fi
+
     ARG_1="$1"
     ARG_2="$2"
 
-    [ -n "$SWITCH_l" ] && ARG_1="$(path_readlink "$ARG_1")" && ARG_2="$(path_readlink "$ARG_2")" || exit "$?"
+    if [ -n "$SWITCH_l" ]
+    then
+      ARG_1="$(path_readlink "$ARG_1")" && ARG_2="$(path_readlink "$ARG_2")" || exit "$?"
+    fi
 
     if [ -n "$SWITCH_L" ]
     then

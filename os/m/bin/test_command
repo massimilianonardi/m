@@ -35,6 +35,8 @@ test_path()
   ln -s ../aaa /tmp/aaa/bbb/ddd
   ln -s ./bbb/ccc /tmp/aaa/eee
 
+  find /tmp/aaa
+
   cd /tmp/aaa
 
   _test_path "true" -e bbb
@@ -44,6 +46,8 @@ test_path()
 
   _test_path "/tmp/aaa/bbb" -a bbb
   _test_path "/tmp/aaa/bbb/ccc" -a bbb/ccc
+  _test_path "/tmp/aaa/eee" -a eee
+  _test_path "error - doesn't exist" -a ccc
 
   _test_path "../aaa" -l bbb/ddd
   _test_path "./bbb/ccc" -l eee
@@ -55,10 +59,10 @@ test_path()
   _test_path "/tmp/aaa/bbb/ccc" -lLa eee
   _test_path "error - doesn't exist" -lLa zzz
 
-  _test_path "" -r aaa ccc
-  _test_path "" -r . ccc
-  _test_path "" -r ccc .
-  _test_path "" -r ccc aaa
+  _test_path "../.." -r eee bbb/ccc
+  _test_path "../.." -r . ./bbb/ccc
+  _test_path "./bbb/ccc" -r bbb/ccc .
+  _test_path "./bbb/ccc" -r ccc aaa
   # _test_path "" -- aaa bbb
   # _test_path "" -- . bbb
   # _test_path "" -- bbb .
