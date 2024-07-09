@@ -2,14 +2,7 @@
 
 #-------------------------------------------------------------------------------
 
-path_exist()
-{
-  [ -e "$1" ] 2>/dev/null
-}
-
-#-------------------------------------------------------------------------------
-
-path_readlink()
+readlink()
 {
   if [ -L "$1" ]
   then
@@ -19,8 +12,7 @@ path_readlink()
     TARGET=${TARGET#*" $LINK -> "}
   elif [ -e "$1" ]
   then
-    TARGET="$1"
-#    TARGET="$(dirname -- "$1")/$(basename -- "$1")"
+    TARGET="$(dirname -- "$1")/$(basename -- "$1")"
     if [ "$TARGET" = "${TARGET#/}" ] && [ "$TARGET" = "${TARGET#./}" ] && [ "$TARGET" = "${TARGET#../}" ]
     then
       TARGET="./$TARGET"
@@ -28,8 +20,6 @@ path_readlink()
   else
     exit 1
   fi
-
-  echo "$TARGET"
 }
 
 #-------------------------------------------------------------------------------
@@ -37,9 +27,6 @@ path_readlink()
 _resolve()
 {
   FOLLOW_SYMLINKS="$1"
-  shift
-
-  TARGET="$1"
   shift
 
   if [ "$TARGET" = "${TARGET#/}" ]
@@ -57,32 +44,48 @@ _resolve()
 #    TARGET="$(cd $FOLLOW_SYMLINKS -- "${TARGET%/*}" && pwd $FOLLOW_SYMLINKS)/${TARGET##*/}"
     TARGET="$(cd $FOLLOW_SYMLINKS -- "$(dirname -- "$TARGET")" && pwd $FOLLOW_SYMLINKS)/$(basename -- "$TARGET")"
   fi
-
-  echo "$TARGET"
 }
 
 #-------------------------------------------------------------------------------
 
 path_absolute()
 {
+  TARGET="$1"
+
   _resolve -L "$@"
+
+  echo "$TARGET"
 }
 
 #-------------------------------------------------------------------------------
 
 path_resolve_links()
 {
+  readlink "$@"
+
   _resolve -P "$@"
+
+  echo "$TARGET"
 }
 
 #-------------------------------------------------------------------------------
 
-path_clean()
+path_exist()
 (
-  return 0
+#  [ -e "$1" ] 2>/dev/null
+  if [ -f "$1" ] || [ -d "$1" ]
+  then
+    exit 0
+  else
+    echo "path does not exist">&2
+    exit 1
+  fi
+)
 
+#-------------------------------------------------------------------------------
 
-
+path_canonicalize()
+(
   [ -z "$1" ] && echo "cannot canonicalize null paths">&2 && exit 1
 
   PATH_CONVERTED="$1"
@@ -177,79 +180,31 @@ path_relativize()
 #-------------------------------------------------------------------------------
 
 main()
-{
-  # e exist, a absolute, l readlink, L resolve links, 2-args r relativize, c canonicalize or clean
-  # exist and readlink have only one arg and are incompatible with any other switch.
-  # other switches are applied to first and eventual second arg.
-  # resolve links implies absolute.
-
-  if [ "$#" -gt "2" ]
+(
+  if [ -n "$SWITCH_r" ] && [ "$#" -lt "2" ]
   then
-    log_fatal "wrong number of arguments! maximum 2 arguments, provided: '$#'"
-    exit 1
-  elif [ "$#" = "2" ] && [ -n "$SWITCH_e" ]
-  then
-    log_fatal "wrong number of arguments! this switch requires only 1 arguments, provided: '$#'"
-    exit 1
-  elif [ "$#" = "2" ] && [ -z "$SWITCH_r" ]
-  then
-    log_fatal "wrong number of arguments! 2 arguments requires 'r' switch, provided switches: '$#'"
-    exit 1
-  elif [ "$#" = "2" ] #&& [ -n "$SWITCH_r" ]
-  then
-    ARG_1="$1"
-    ARG_2="$2"
-
-    [ -n "$SWITCH_l" ] && ARG_1="$(path_readlink "$ARG_1")" && ARG_2="$(path_readlink "$ARG_2")" || exit "$?"
-
-    if [ -n "$SWITCH_L" ]
-    then
-      ARG_1="$(path_resolve_links "$ARG_1")" && ARG_2="$(path_resolve_links "$ARG_2")" || exit "$?"
-    else
-      ARG_1="$(path_absolute "$ARG_1")" && ARG_2="$(path_absolute "$ARG_2")" || exit "$?"
-    fi
-
-    path_relativize "$ARG_1" "$ARG_2"
-  elif [ "$#" = "1" ]
-  then
-    ARG_1="$1"
-
-    if [ -n "$SWITCH_l" ]
-    then
-      ARG_1="$(path_readlink "$ARG_1")" || exit "$?"
-    fi
-
-    if [ -n "$SWITCH_L" ]
-    then
-      ARG_1="$(path_resolve_links "$ARG_1")" || exit "$?"
-    elif [ -n "$SWITCH_a" ]
-    then
-      ARG_1="$(path_absolute "$ARG_1")" || exit "$?"
-    elif [ -n "$SWITCH_c" ]
-    then
-      ARG_1="$(path_clean "$ARG_1")" || exit "$?"
-    fi
-
-    if [ -n "$SWITCH_e" ]
-    then
-      path_exist "$ARG_1"
-      exit "$?"
-    fi
-
-    # echo "$1"
-    echo "$ARG_1"
-  else
-    log_fatal "unknown error!"
+    log_fatal "need 2 arguments to relativize a path"
     exit 1
   fi
 
-  # true
-}
+  [ -n "$SWITCH_e" ] && path_exist "$1"
+
+  [ -n "$SWITCH_a" ] && path_absolute "$1"
+  [ -n "$SWITCH_l" ] && path_resolve_links "$1"
+  [ -n "$SWITCH_L" ] && path_resolve_links "$1"
+
+  if [ -n "$SWITCH_r" ] || [ -n "$SWITCH_R" ] || [ "$#" = "2" ]
+  then
+    path_relativize "$@"
+  fi
+
+  true
+)
 
 #-------------------------------------------------------------------------------
 
 ARGS_PARSE="true"
-ARGS_SWITCHES="acelLr"
+ARGS_SWITCHES="aelLrR"
 
 . m.lib
 
