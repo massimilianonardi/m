@@ -44,7 +44,7 @@ args_help()
 
   if [ -n "$ARGS_FIXED" ]
   then
-    echo "FIXED: $ARGS_FIXED"
+    echo "FIXED ARGUMENTS: $ARGS_FIXED"
     if [ -f "$DOC_DIR/fixed" ]
     then
       cat "$DOC_DIR/fixed"
@@ -54,10 +54,10 @@ args_help()
     echo
   fi
 
-  if [ -n "$ARGS_SWITCH" ]
+  if [ -n "$ARGS_SWITCHES" ]
   then
-    echo "SWITCH:"
-    r="$ARGS_SWITCH"
+    echo "SWITCHES:"
+    r="$ARGS_SWITCHES"
     k="${r%${r#?}}"
     while [ -n "$k" ]
     do
@@ -74,11 +74,15 @@ args_help()
     echo
   fi
 
-  if [ -n "$ARGS_OPTION" ]
+  if [ -n "$ARGS_OPTIONS" ]
   then
-    echo "OPTION:"
-    for k in $ARGS_OPTION
+    echo "OPTIONS:"
+    for k in $ARGS_OPTIONS
     do
+      while [ "$k" != "${k#*-}" ]
+      do
+        k="${k%%-*}_${k#*-}"
+      done
       if [ -f "$DOC_DIR/option_$k" ]
       then
         eval echo "$k - \$ARGS_OPTION_$k: $(cat "$DOC_DIR/option_$k")"
@@ -89,38 +93,14 @@ args_help()
     echo
   fi
 
-  if [ -n "$ARGS_START" ]
-  then
-    echo "START: $ARGS_START"
-    if [ -f "$DOC_DIR/start" ]
-    then
-      cat "$DOC_DIR/fixed"
-    else
-      echo "UNDOCUMENTED"
-    fi
-    echo
-  fi
-
   echo "ARGUMENTS:"
-  if [ -f "$DOC_DIR/fixed" ]
+  if [ -f "$DOC_DIR/args" ]
   then
     cat "$DOC_DIR/args"
   else
     echo "UNDOCUMENTED"
   fi
   echo
-
-  if [ -n "$ARGS_END" ]
-  then
-    echo "END: $ARGS_END"
-    if [ -f "$DOC_DIR/fixed" ]
-    then
-      cat "$DOC_DIR/end"
-    else
-      echo "UNDOCUMENTED"
-    fi
-    echo
-  fi
 
   if [ -f "$DOC_DIR/examples" ]
   then

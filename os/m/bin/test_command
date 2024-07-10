@@ -5,7 +5,7 @@
 
 test_link()
 {
-  mkdir -p /tmp/aaa/bbb
+  mkdir -p /tmp/aaa/bbb/mmm/nnn
   touch /tmp/aaa/bbb/ccc
   ln -s ../aaa /tmp/aaa/bbb/ddd
   ln -s ./bbb/ccc /tmp/aaa/eee
@@ -30,7 +30,7 @@ _test_path()
 
 test_path()
 {
-  mkdir -p /tmp/aaa/bbb
+  mkdir -p /tmp/aaa/bbb/mmm/nnn
   touch /tmp/aaa/bbb/ccc
   ln -s ../aaa /tmp/aaa/bbb/ddd
   ln -s ./bbb/ccc /tmp/aaa/eee
@@ -59,10 +59,10 @@ test_path()
   _test_path "/tmp/aaa/bbb/ccc" -lLa eee
   _test_path "error - doesn't exist" -lLa zzz
 
-  _test_path "../.." -r eee bbb/ccc
-  _test_path "../.." -r . ./bbb/ccc
-  _test_path "./bbb/ccc" -r bbb/ccc .
-  _test_path "./bbb/ccc" -r ccc aaa
+  _test_path "error - doesn't exist" -r eee bbb/ccc
+  _test_path "../../.." -r . ./bbb/mmm/nnn
+  _test_path "./bbb/mmm/nnn" -r bbb/mmm/nnn .
+  _test_path "./bbb/ccc" -r bbb/ccc ../aaa
   # _test_path "" -- aaa bbb
   # _test_path "" -- . bbb
   # _test_path "" -- bbb .
@@ -76,7 +76,7 @@ test_path()
 test_test_args()
 {
 #  test_args --version
-#  test_args --help
+  test_args --help
 #  test_args --info
 #  log -l max -- test_args aaa bbb --version ccc ddd "eee fff"
 #  test_args aaa bbb --help ccc ddd "eee fff"
