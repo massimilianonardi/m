@@ -2,8 +2,6 @@
 
 #-------------------------------------------------------------------------------
 
-ARGS_DOC_FORMAT_smart="smart format"
-
 DOC_DIR="${THIS_DIR%/*}/doc/$THIS_NAME"
 if [ -d "$DOC_DIR/$LANG" ]
 then
@@ -18,29 +16,57 @@ fi
 args_version()
 {
   echo "$(cat "${THIS_DIR%/*}/sys/name")/$(cat "${THIS_DIR%/*}/sys/platform")/$(cat "${THIS_DIR%/*}/sys/version")"
-#  cat "${THIS_DIR%/*}/sys/name"
-#  cat "${THIS_DIR%/*}/sys/platform"
-#  cat "${THIS_DIR%/*}/sys/version"
+}
+
+#-------------------------------------------------------------------------------
+
+args_version_name()
+{
+  cat "${THIS_DIR%/*}/sys/name"
+}
+
+#-------------------------------------------------------------------------------
+
+args_version_platform()
+{
+  cat "${THIS_DIR%/*}/sys/platform"
+}
+
+#-------------------------------------------------------------------------------
+
+args_version_number()
+{
+  cat "${THIS_DIR%/*}/sys/version"
 }
 
 #-------------------------------------------------------------------------------
 
 args_help()
 {
-  echo
+  echo "VERSION:"
   (args_version)
   echo
 
-#  cat "$DOC_DIR/format_$ARGS_FORMAT"
-  eval echo "\$ARGS_DOC_FORMAT_$ARGS_FORMAT"
+  echo "COMMAND LINE FORMAT: $ARGS_FORMAT"
+  if [ -f "$DOC_DIR/args_format_${ARGS_FORMAT}" ]
+  then
+    cat "$DOC_DIR/args_format_${ARGS_FORMAT}"
+  elif [ "$ARGS_FORMAT" = "exact" ]
+  then
+    echo "$THIS_NAME [ARGS_FIXED] [SWITCHES] [OPTIONS] [--] [ARGUMENTS]"
+  else
+    echo "UNDOCUMENTED"
+  fi
   echo
 
+  echo "DESCRIPTION:"
   if [ -f "$DOC_DIR/description" ]
   then
-    echo "DESCRIPTION:"
     cat "$DOC_DIR/description"
-    echo
+  else
+    echo "UNDOCUMENTED"
   fi
+  echo
 
   if [ -n "$ARGS_FIXED" ]
   then
@@ -77,6 +103,7 @@ args_help()
   if [ -n "$ARGS_OPTIONS" ]
   then
     echo "OPTIONS:"
+    echo "[OPTION NAME] - [EXACT NUMBER OF ARGUMENTS] or \"*\", \"\" for variable number of arguments):"
     for k in $ARGS_OPTIONS
     do
       while [ "$k" != "${k#*-}" ]

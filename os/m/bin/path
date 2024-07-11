@@ -50,36 +50,6 @@ _resolve()
 
 #-------------------------------------------------------------------------------
 
-_resolve____()
-(
-  FOLLOW_SYMLINKS="$1"
-  shift
-
-  TARGET="$1"
-  shift
-
-  # if [ "$TARGET" = "${TARGET#/}" ]
-  # then
-  #   if [ -L "$LINK" ] && [ -f "$LINK" ]
-  #   then
-  #     exit 5
-  #     TARGET="$(dirname -- "$LINK")/$TARGET"
-  #   fi
-  # fi
-
-  if [ -d "$TARGET" ]
-  then
-    TARGET="$(cd $FOLLOW_SYMLINKS -- "$TARGET" && pwd $FOLLOW_SYMLINKS)"
-  else
-#    TARGET="$(cd $FOLLOW_SYMLINKS -- "${TARGET%/*}" && pwd $FOLLOW_SYMLINKS)/${TARGET##*/}"
-    TARGET="$(cd $FOLLOW_SYMLINKS -- "$(dirname -- "$TARGET")" && pwd $FOLLOW_SYMLINKS)/$(basename -- "$TARGET")"
-  fi
-
-  echo "$TARGET"
-)
-
-#-------------------------------------------------------------------------------
-
 path_absolute()
 {
   _resolve -L "$@"
@@ -96,7 +66,12 @@ path_resolve_links()
 
 path_clean()
 (
-  true
+  if [ "$1" != "${1#/}" ]
+  then
+    path_absolute "$1"
+  else
+    path_relativize "$(path_absolute "$1")" "$(pwd -L)"
+  fi
 )
 
 #-------------------------------------------------------------------------------
@@ -105,45 +80,8 @@ path_relativize()
 (
   # PATH_CONVERTED="$1"
   # PATH_REFERENCE="$2"
-  PATH_CONVERTED="$(path_absolute "$1")"
-  PATH_REFERENCE="$(path_absolute "$2")"
-
-  if [ "$PATH_CONVERTED" != "${PATH_CONVERTED#$PATH_REFERENCE}" ]
-  then
-    PATH_CONVERTED=".${PATH_CONVERTED#$PATH_REFERENCE}"
-  else
-    PATH_REFERENCE_PREFIX="$PATH_REFERENCE"
-    PATH_CONVERTED_PREFIX=""
-
-    while [ "$PATH_CONVERTED" = "${PATH_CONVERTED#$PATH_REFERENCE_PREFIX}" ]
-    do
-      PATH_REFERENCE_PREFIX="${PATH_REFERENCE_PREFIX%/*}"
-      PATH_CONVERTED_PREFIX="${PATH_CONVERTED_PREFIX}../"
-    done
-
-    PATH_CONVERTED="${PATH_CONVERTED#${PATH_REFERENCE_PREFIX}}"
-    PATH_CONVERTED="${PATH_CONVERTED#/}"
-    PATH_CONVERTED="${PATH_CONVERTED_PREFIX}${PATH_CONVERTED}"
-    PATH_CONVERTED="${PATH_CONVERTED%/}"
-  fi
-
-  echo "${PATH_CONVERTED}"
-)
-
-#-------------------------------------------------------------------------------
-
-path_relativize___()
-(
-  [ -z "$1" -o -z "$2" ] && echo "cannot relativize null paths">&2 && exit 1
-
-  # PATH_CONVERTED="$1"
-  # PATH_REFERENCE="$2"
-  # PATH_CONVERTED="$(path_absolute "$1"; echo "$TARGET")"
-  # PATH_REFERENCE="$(path_absolute "$2"; echo "$TARGET")"
-  PATH_CONVERTED="$(path_absolute "$1")"
-  PATH_REFERENCE="$(path_absolute "$2")"
-  # echo "PATH_CONVERTED=$PATH_CONVERTED"
-  # echo "PATH_REFERENCE=$PATH_REFERENCE"
+  PATH_CONVERTED="$(path_absolute "$1")" || exit "$?"
+  PATH_REFERENCE="$(path_absolute "$2")" || exit "$?"
 
   if [ "$PATH_CONVERTED" != "${PATH_CONVERTED#$PATH_REFERENCE}" ]
   then

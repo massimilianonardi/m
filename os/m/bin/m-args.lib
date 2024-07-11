@@ -2,11 +2,18 @@
 
 #-------------------------------------------------------------------------------
 
-if [ "$1" = "--help" ] || [ "$1" = "--info" ] || [ "$1" = "--version" ]
+if [ "$1" = "--help" ] || [ "$1" = "--info" ] || [ "$1" = "--version" ] || [ "$1" = "--version-name" ] || [ "$1" = "--version-platform" ] || [ "$1" = "--version-number" ]
 then
   . m-args-common-commands.lib
+
   ARGS_PARSE_COMMAND="args_${1#--}"
   shift
+
+  while [ "$ARGS_PARSE_COMMAND" != "${ARGS_PARSE_COMMAND#*-}" ]
+  do
+    ARGS_PARSE_COMMAND="${ARGS_PARSE_COMMAND%%-*}_${ARGS_PARSE_COMMAND#*-}"
+  done
+  
   set -- "$ARGS_PARSE_COMMAND" "$@"
   unset ARGS_PARSE_COMMAND
   "$@"

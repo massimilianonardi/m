@@ -39,6 +39,10 @@ test_path()
 
   cd /tmp/aaa
 
+  _test_path "./bbb" -c ./../aaa/./bbb
+  _test_path "/tmp/aaa/eee" -c /tmp/./aaa/../aaa/eee
+  _test_path "error - .// means relative './' or absolute '/'?" -c .//tmp/./aaa/../aaa/eee
+
   _test_path "true" -e bbb
   _test_path "false" -e zzz
   _test_path "true" -eL bbb
