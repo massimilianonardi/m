@@ -161,6 +161,12 @@ move()
 
 main()
 {
+  case "$1" in
+    "copy") true;;
+    "move") true;;
+    *) log_fatal "wrong command: '$1'"; exit 1;;
+  esac
+
   COMMAND="$1"
   shift
 
@@ -169,12 +175,6 @@ main()
     log_fatal "missing arguments"
     exit 1
   fi
-
-  case "$1" in
-    "copy") true;;
-    "move") true;;
-    *) log_fatal "wrong command: '$1'"; exit 1;;
-  esac
 
   COUNT="1"
   for k in "$@"
@@ -186,33 +186,85 @@ main()
   unset k
   unset COUNT
 
+# no rename, dest must be a dir for any num arg, if dest not exist -c switch create it, else if -e it must be empty -s make it empty
+# rename, if already exists dest must be same type of source??? if dest is file -f removes it, if dest is dir -f should remove it???
   log_debug "$COMMAND: SWITCHES:$ARGS_SWITCHES - SOURCES=$@ - DESTINATION=$DEST"
 
   if [ -z "$SWITCH_a" ]
   then
     DEST_DIR="$DEST"
-  elif [ "$#" != "1" ]
-  then
-    log_fatal "rename-as switch can be applied to exactly two args"
-    exit 1
   else
+    if [ "$#" != "1" ]
+    then
+      log_fatal "rename-as switch can be applied to exactly two args"
+      exit 1
+    fi
+
     DEST_DIR="$(dirname "$DEST")"
   fi
 
   if [ -e "$DEST_DIR" ]
   then
-    if [ ! -d "$DEST_DIR" ]
+    if [ -d "$DEST_DIR" ]
     then
+      if [ -n "$SWITCH_e" ] && [ -n "$SWITCH_E" ]
+      then
+        log_fatal "destination directory does exist, but both colliding -e and -E were specified"
+        exit 1
+      elif [ -n "$SWITCH_e" ] && [ -n "$(ls -A "$DEST_DIR")" ]
+      then
+        log_fatal "destination directory does exist, but is not empty and -e was specified"
+        exit 1
+      elif [ -n "$SWITCH_E" ]
+      then
+        # todo make the dir empty by deleting everything inside it
+        true
+        for k in "$DEST_DIR"/*
+        do
+          echo "$DEST_DIR/$k"
+          # rm -rf "$DEST_DIR/$k"
+        done
+      #   for k in "$FIND_DIR"/..?* "$FIND_DIR"/.[!.]* "$FIND_DIR"/*
+      #   do
+      # # todo if option to follow links if -L then resolve, if dir then loop, if file then exec
+      #     if [ -e "$k" ] || [ -L "$k" ]
+      #     then
+      #       "$@" "$k"
+      #     fi
+      #
+      #     if [ -d "$k" ]
+      #     then
+      #       fnd_loop "$k" "$@"
+      #     fi
+      #   done
+      fi
+    else
       log_fatal "destination exists but is not a directory"
       exit 1
     fi
-  elif [ -n "$SWITCH_c" ]
-  then
-    log_trace "destination directory does not exist, but -c was specified. creating destination directory..."
-    mkdir -p "$DEST_DIR"
   else
-    log_fatal "destination directory does not exist and -c was not specified"
-    exit 1
+    if [ -n "$SWITCH_c" ]
+    then
+      log_trace "destination directory does not exist, but -c was specified. creating destination directory..."
+      mkdir -p "$DEST_DIR"
+    else
+      log_fatal "destination directory does not exist and -c was not specified"
+      exit 1
+    fi
+  fi
+
+  if [ -n "$SWITCH_a" ]
+  then
+    if [ -e "$DEST" ]
+    then
+      if [ -n "$SWITCH_f" ]
+      then
+        rm -rf "$DEST"
+      else
+        log_fatal "renamed destination exists and -f was not specified"
+        exit 1
+      fi
+    fi
   fi
 
   "$COMMAND" "$@"
@@ -221,7 +273,7 @@ main()
 #-------------------------------------------------------------------------------
 
 ARGS_PARSE="true"
-ARGS_SWITCHES="acfs"
+ARGS_SWITCHES="aceEf"
 
 . m.lib
 
