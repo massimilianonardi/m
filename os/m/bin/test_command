@@ -2,7 +2,7 @@
 
 #-------------------------------------------------------------------------------
 
-make_test_files()
+test_files_start()
 {
   TEST_DIR="/tmp/_test_files"
 
@@ -12,8 +12,12 @@ make_test_files()
   mkdir -p ./aaa/bbb/ccc
   mkdir -p ./aaa/bbb/ccc/dir_empty
   mkdir -p ./aaa/ddd/eee
+  mkdir -p ./aaa/colliding/fff
+  mkdir -p ./aaa/colliding/sub-colliding
   mkdir -p ./000/111/222
   mkdir -p ./000/333/444
+  mkdir -p ./000/colliding/555
+  mkdir -p ./000/colliding/sub-colliding
 
   touch ./aaa/file_a1
   touch ./aaa/bbb/file_b1
@@ -27,8 +31,12 @@ make_test_files()
   touch ./aaa/bbb/ccc/....file_ch5-not-hidden
   touch ./aaa/ddd/eee/file_e1
   touch ./aaa/ddd/eee/file_e2
+  touch ./aaa/colliding/fff/file_f1
+  echo "inside aaa" > ./aaa/colliding/sub-colliding/file_colliding
   touch ./000/111/222/file_0a
   touch ./000/111/222/file_0b
+  touch ./000/colliding/555/file_5a
+  echo "inside 000" > ./000/colliding/sub-colliding/file_colliding
 
   ln -s ../aaa ./aaa/link-recursive
   ln -s ../aaa ./aaa/bbb/link-broken
@@ -37,12 +45,12 @@ make_test_files()
   ln -s "$TEST_DIR"/000/111/222/file_0b ./aaa/bbb/ccc/link-absolute
 
   echo "--------------------------------------------------------------------------------"
-  echo "TEST_DIR:"
+  echo "TEST_DIR - START:"
   find "$TEST_DIR"
   echo "--------------------------------------------------------------------------------"
 }
 
-remove_test_files()
+test_files_end()
 {
   if [ "$TEST_DIR" = "${TEST_DIR#/tmp/*}" ]
   then
@@ -51,6 +59,11 @@ remove_test_files()
     exit 1
   fi
 
+  echo "--------------------------------------------------------------------------------"
+  echo "TEST_DIR - END:"
+  find "$TEST_DIR"
+  echo "--------------------------------------------------------------------------------"
+
   rm -rf "$TEST_DIR"
 }
 
@@ -58,7 +71,7 @@ remove_test_files()
 
 test_loop()
 {
-  make_test_files
+  test_files_start
 
   # DEST_DIR="${TEST_DIR}/aaa/bbb"
   DEST_DIR="${TEST_DIR}/aaa/bbb/ccc"
@@ -86,7 +99,23 @@ test_loop()
     fi
   done
 
-  remove_test_files
+  test_files_end
+}
+
+#-------------------------------------------------------------------------------
+
+test_cpmv()
+{
+  test_files_start
+
+  touch ./a-copy-transformed
+  cp -rT ./000/colliding/sub-colliding/file_colliding ./a-copy-transformed # replaces file with file
+  cat ./a-copy-transformed
+  cp -rTf ./aaa ./a-copy-transformed # do not replaces existing file with directory
+  cp -rT ./aaa ./000 # merges aaa into 000 replacing colliding files
+  cat ./000/colliding/sub-colliding/file_colliding
+
+  test_files_end
 }
 
 #-------------------------------------------------------------------------------

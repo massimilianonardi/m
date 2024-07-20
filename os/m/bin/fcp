@@ -65,7 +65,7 @@ dest_dir_check()
 
 copy()
 {
-  if [ -n "$SWITCH_a" ]
+  if [ -n "$SWITCH_T" ]
   then
     if [ "$#" != "1" ]
     then
@@ -107,7 +107,7 @@ copy()
 
 move()
 {
-  if [ -n "$SWITCH_a" ]
+  if [ -n "$SWITCH_T" ]
   then
     if [ "$#" != "1" ]
     then
@@ -190,7 +190,7 @@ main()
 # rename, if already exists dest must be same type of source??? if dest is file -f removes it, if dest is dir -f should remove it???
   log_debug "$COMMAND: SWITCHES:$ARGS_SWITCHES - SOURCES=$@ - DESTINATION=$DEST"
 
-  if [ -z "$SWITCH_a" ]
+  if [ -z "$SWITCH_T" ]
   then
     DEST_DIR="$DEST"
   else
@@ -217,26 +217,14 @@ main()
         exit 1
       elif [ -n "$SWITCH_E" ]
       then
-        # todo make the dir empty by deleting everything inside it
-        true
-        for k in "$DEST_DIR"/*
+        log_trace "deleting everything inside directory '$DEST_DIR' because -E was specified"
+        for k in "$DEST_DIR"/..?* "$DEST_DIR"/.[!.]* "$DEST_DIR"/*
         do
-          echo "$DEST_DIR/$k"
-          # rm -rf "$DEST_DIR/$k"
+          if [ -e "$k" ] || [ -L "$k" ]
+          then
+            rm -rf "$k"
+          fi
         done
-      #   for k in "$FIND_DIR"/..?* "$FIND_DIR"/.[!.]* "$FIND_DIR"/*
-      #   do
-      # # todo if option to follow links if -L then resolve, if dir then loop, if file then exec
-      #     if [ -e "$k" ] || [ -L "$k" ]
-      #     then
-      #       "$@" "$k"
-      #     fi
-      #
-      #     if [ -d "$k" ]
-      #     then
-      #       fnd_loop "$k" "$@"
-      #     fi
-      #   done
       fi
     else
       log_fatal "destination exists but is not a directory"
@@ -253,7 +241,7 @@ main()
     fi
   fi
 
-  if [ -n "$SWITCH_a" ]
+  if [ -n "$SWITCH_T" ]
   then
     if [ -e "$DEST" ]
     then
@@ -273,7 +261,7 @@ main()
 #-------------------------------------------------------------------------------
 
 ARGS_PARSE="true"
-ARGS_SWITCHES="aceEf"
+ARGS_SWITCHES="ceEfT"
 
 . m.lib
 
