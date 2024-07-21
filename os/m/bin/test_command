@@ -108,11 +108,27 @@ test_cpmv()
 {
   test_files_start
 
-  touch ./a-copy-transformed
-  cp -rT ./000/colliding/sub-colliding/file_colliding ./a-copy-transformed # replaces file with file
+  # touch ./a-copy-transformed
+  # cp -rT ./000/colliding/sub-colliding/file_colliding ./a-copy-transformed # replaces file with file
+  # cat ./a-copy-transformed
+  # cp -rTf ./aaa ./a-copy-transformed # do not replaces existing file with directory
+  # cp -rT ./aaa ./000 # merges aaa into 000 replacing colliding files
+  # cat ./000/colliding/sub-colliding/file_colliding
+
+  # touch ./a-copy-transformed
+  # mkdir -p ./a-copy-transformed
+  # fcm -fT copy ./000/colliding/sub-colliding/file_colliding ./a-copy-transformed # replaces everything with file
+  # cat ./a-copy-transformed
+  # fcm -Tf copy ./aaa ./a-copy-transformed # replaces everything with directory
+  # fcm copy ./aaa/* ./000 # merges aaa into 000 replacing colliding files
+  # cat ./000/colliding/sub-colliding/file_colliding
+
+  # touch ./a-copy-transformed
+  mkdir -p ./a-copy-transformed
+  fcm -fT move ./000/colliding/sub-colliding/file_colliding ./a-copy-transformed # replaces everything with file
   cat ./a-copy-transformed
-  cp -rTf ./aaa ./a-copy-transformed # do not replaces existing file with directory
-  cp -rT ./aaa ./000 # merges aaa into 000 replacing colliding files
+  # fcm -Tf move ./aaa ./a-copy-transformed # replaces everything with directory
+  fcm move ./aaa/* ./000 # error existing colliding destinations
   cat ./000/colliding/sub-colliding/file_colliding
 
   test_files_end
