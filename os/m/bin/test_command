@@ -104,7 +104,7 @@ test_loop()
 
 #-------------------------------------------------------------------------------
 
-test_cpmv()
+test_cm()
 {
   test_files_start
 
@@ -113,23 +113,28 @@ test_cpmv()
   # cat ./a-copy-transformed
   # cp -rTf ./aaa ./a-copy-transformed # do not replaces existing file with directory
   # cp -rT ./aaa ./000 # merges aaa into 000 replacing colliding files
+  # mv -f --update=all -t ./000 ./aaa/* # error existing colliding destinations
   # cat ./000/colliding/sub-colliding/file_colliding
 
   # touch ./a-copy-transformed
   # mkdir -p ./a-copy-transformed
-  # fcm -fT copy ./000/colliding/sub-colliding/file_colliding ./a-copy-transformed # replaces everything with file
+  # cm -fT copy ./000/colliding/sub-colliding/file_colliding ./a-copy-transformed # replaces everything with file
   # cat ./a-copy-transformed
-  # fcm -Tf copy ./aaa ./a-copy-transformed # replaces everything with directory
-  # fcm copy ./aaa/* ./000 # merges aaa into 000 replacing colliding files
+  # cm -Tf copy ./aaa ./a-copy-transformed # replaces everything with directory
+  # cm copy ./aaa/* ./000 # error existing colliding destinations
   # cat ./000/colliding/sub-colliding/file_colliding
 
   # touch ./a-copy-transformed
-  mkdir -p ./a-copy-transformed
-  fcm -fT move ./000/colliding/sub-colliding/file_colliding ./a-copy-transformed # replaces everything with file
-  cat ./a-copy-transformed
-  # fcm -Tf move ./aaa ./a-copy-transformed # replaces everything with directory
-  fcm move ./aaa/* ./000 # error existing colliding destinations
+  # mkdir -p ./a-copy-transformed
+  # cm -fT move ./000/colliding/sub-colliding/file_colliding ./a-copy-transformed # replaces everything with file
+  # cat ./a-copy-transformed
+  # cm -Tf move ./aaa ./a-copy-transformed # replaces everything with directory
+  cm move ./aaa/* ./000 # error existing colliding destinations
   cat ./000/colliding/sub-colliding/file_colliding
+
+# copy and move must have same behaviour when something exists in destination directory
+# ensure command line form of cp mv with no ambiguities (-t/-T ???)
+# cm will never merge, only replace if -f
 
   test_files_end
 }

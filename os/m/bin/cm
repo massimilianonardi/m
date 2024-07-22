@@ -18,6 +18,30 @@ main()
     exit 1
   fi
 
+  if [ -n "$SWITCH_e" ] && [ -n "$SWITCH_E" ]
+  then
+    log_fatal "colliding switches -e and -E specified"
+    exit 1
+  fi
+
+  if [ -n "$SWITCH_e" ] && [ -n "$SWITCH_T" ]
+  then
+    log_fatal "colliding switches -e and -T specified"
+    exit 1
+  fi
+
+  if [ -n "$SWITCH_T" ] && [ -n "$SWITCH_E" ]
+  then
+    log_fatal "colliding switches -T and -E specified"
+    exit 1
+  fi
+
+  if [ -n "$SWITCH_e" ] && [ -n "$SWITCH_f" ]
+  then
+    log_fatal "colliding switches -e and -f specified"
+    exit 1
+  fi
+
   COUNT="1"
   for k in "$@"
   do
@@ -36,10 +60,9 @@ main()
   else
     if [ "$#" != "1" ]
     then
-      log_fatal "rename-as switch can be applied to exactly two args"
+      log_fatal "transform switch -T can be applied to exactly two args"
       exit 1
     fi
-
     DEST_DIR="$(dirname "$DEST")"
   fi
 
@@ -47,24 +70,40 @@ main()
   then
     if [ -d "$DEST_DIR" ]
     then
-      if [ -n "$SWITCH_e" ] && [ -n "$SWITCH_E" ]
+      if [ -n "$(ls -A "$DEST_DIR")" ]
       then
-        log_fatal "destination directory does exist, but both colliding -e and -E were specified"
-        exit 1
-      elif [ -n "$SWITCH_e" ] && [ -n "$(ls -A "$DEST_DIR")" ]
-      then
-        log_fatal "destination directory '$DEST_DIR' does exist, but is not empty and -e was specified"
-        exit 1
-      elif [ -n "$SWITCH_E" ] && [ -z "$SWITCH_T" ]
-      then
-        log_trace "deleting everything inside directory '$DEST_DIR' because -E was specified"
-        for k in "$DEST_DIR"/..?* "$DEST_DIR"/.[!.]* "$DEST_DIR"/*
-        do
-          if [ -e "$k" ] || [ -L "$k" ]
-          then
-            rm -rf "$k"
-          fi
-        done
+        if [ -n "$SWITCH_e" ]
+        then
+          log_fatal "destination directory '$DEST_DIR' does exist, but is not empty and -e was specified"
+          exit 1
+        elif [ -n "$SWITCH_E" ]
+        then
+          log_info "deleting everything inside directory '$DEST_DIR' because -E was specified"
+          for k in "$DEST_DIR"/..?* "$DEST_DIR"/.[!.]* "$DEST_DIR"/*
+          do
+            if [ -e "$k" ] || [ -L "$k" ]
+            then
+              rm -rf "$k"
+            fi
+          done
+        else
+          for k in "$@"
+          do
+            f="${DEST_DIR}/$(basename "$k")"
+            if [ -e "$f" ]
+            then
+              if [ -n "$SWITCH_f" ]
+              then
+                log_trace "$f exist, but will be replaced because -f"
+                rm -rf "$f"
+              else
+                log_fatal "destination '$f' exists and -f was not specified"
+                exit 1
+              fi
+            fi
+          done
+          unset k
+        fi
       fi
     else
       log_fatal "destination '$DEST_DIR' exists but is not a directory"
@@ -108,15 +147,15 @@ main()
   if [ -n "$SWITCH_T" ]
   then
     COMMAND_SWITCHES="${COMMAND_SWITCHES}T"
-  fi
-
-  if [ -n "$COMMAND_SWITCHES" ]
-  then
     log_trace "$COMMAND -${COMMAND_SWITCHES} $@ $DEST"
     "$COMMAND" -"${COMMAND_SWITCHES}" "$@" "$DEST"
+  elif [ -n "$COMMAND_SWITCHES" ]
+  then
+    log_trace "$COMMAND -${COMMAND_SWITCHES} -t $DEST $@"
+    "$COMMAND" -"${COMMAND_SWITCHES}" -t "$DEST" "$@"
   else
-    log_trace "$COMMAND $@ $DEST"
-    "$COMMAND" "$@" "$DEST"
+    log_trace "$COMMAND -t $DEST $@"
+    "$COMMAND" -t "$DEST" "$@"
   fi
 }
 
