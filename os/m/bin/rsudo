@@ -13,19 +13,19 @@ log()
 execute_remote_command()
 (
   REMOTE_COMMAND="$1"
-  
+
   if [ -z "$REMOTE_COMMAND" ] && [ -t 0 ]
   then
     exit
   fi
-  
+
   if [ -z "$REMOTE_COMMAND" ]
   then
     REMOTE_COMMAND=$(cat)
   fi
-  
+
   REMOTE_COMMAND=$(echo "$REMOTE_COMMAND" | sed 's/["\]/\\&/g')
-  
+
   if [ "$REMOTE_USER" = "root" ]
   then
     setsid ssh -o 'StrictHostKeyChecking no' -l "$REMOTE_USER" "$REMOTE_HOST" "/bin/sh -c \"$REMOTE_COMMAND\""
@@ -39,14 +39,14 @@ execute_remote_command()
 execute_remote_command_as_postgres()
 (
   REMOTE_COMMAND="$1"
-  
+
   if [ -z "$REMOTE_COMMAND" ]
   then
     REMOTE_COMMAND=$(cat)
   fi
-  
+
   REMOTE_COMMAND=$(echo "$REMOTE_COMMAND" | sed 's/["\]/\\&/g')
-  
+
   execute_remote_command "cd / && su postgres --preserve-environment -s /bin/sh -c \"$REMOTE_COMMAND\""
 )
 
@@ -54,13 +54,13 @@ execute_remote_postgres_sql()
 (
   REMOTE_DB="$1"
   SQL_COMMAND="$2"
-  
+
   if [ -z "$SQL_COMMAND" ]
   then
     execute_remote_command_as_postgres "cat | psql '$REMOTE_DB'"
   else
     SQL_COMMAND=$(echo "$SQL_COMMAND" | sed 's/["\]/\\&/g')
-    
+
     execute_remote_command_as_postgres "psql -d '$REMOTE_DB' -c \"$SQL_COMMAND\""
   fi
 )
@@ -68,7 +68,7 @@ execute_remote_postgres_sql()
 get_remote_postgres_db()
 (
   REMOTE_DB="$1"
-  
+
   if [ -t 0 ]
   then
     execute_remote_command_as_postgres "pg_dump '$REMOTE_DB'"
@@ -81,12 +81,12 @@ put_remote_postgres_db()
 (
   REMOTE_DB="$1"
   LOCAL_PATH="$2"
-  
+
   if [ -z "$LOCAL_PATH" ] && [ -t 0 ]
   then
     exit
   fi
-  
+
   if [ -z "$LOCAL_PATH" ]
   then
     execute_remote_command_as_postgres " \
@@ -106,7 +106,7 @@ put_remote_postgres_db()
 delete_remote()
 (
   REMOTE_PATH="$1"
-  
+
   execute_remote_command "rm -rf '$REMOTE_PATH'"
 )
 
@@ -114,7 +114,7 @@ replace_remote_to_local()
 (
   REMOTE_PATH="$1"
   LOCAL_PATH="$2"
-  
+
   REMOTE_PATH_TYPE=$(execute_remote_command "(([ -f '$REMOTE_PATH' ] && echo 'f') || (([ -d '$REMOTE_PATH' ] && echo 'd') || (echo '-1')))") && \
   log REMOTE_PATH_TYPE="$REMOTE_PATH_TYPE" && \
   if [ "$REMOTE_PATH_TYPE" = "f" ]
@@ -123,7 +123,7 @@ replace_remote_to_local()
     LOCAL_PATH_FILE="${LOCAL_PATH##*/}"
     REMOTE_PATH_PARENT="${REMOTE_PATH%/*}"
     REMOTE_PATH_FILE="${REMOTE_PATH##*/}"
-    
+
     rm -rf "$LOCAL_PATH" && \
     mkdir -p "$LOCAL_PATH_PARENT" && \
     cd "$LOCAL_PATH_PARENT" && \
@@ -143,7 +143,7 @@ replace_remote_to_local_scp()
 (
   REMOTE_PATH="$1"
   LOCAL_PATH="$2"
-  
+
   mkdir -p "$LOCAL_PATH"
   rm -rf "$LOCAL_PATH" && \
   setsid scp -r -o 'StrictHostKeyChecking no' ${REMOTE_USER}@${REMOTE_HOST}:"$REMOTE_PATH" "$LOCAL_PATH"
@@ -155,20 +155,20 @@ replace_local_to_remote()
   REMOTE_PATH="$2"
   REMOTE_OWNER_GROUP="$3"
   REMOTE_PERMISSIONS="$4"
-  
+
   if [ -f "$LOCAL_PATH" ]
   then
     LOCAL_PATH_PARENT="${LOCAL_PATH%/*}"
     LOCAL_PATH_FILE="${LOCAL_PATH##*/}"
     REMOTE_PATH_PARENT="${REMOTE_PATH%/*}"
     REMOTE_PATH_FILE="${REMOTE_PATH##*/}"
-    
+
     cd "$LOCAL_PATH_PARENT" && \
     tar -c -f - "$LOCAL_PATH_FILE" | execute_remote_command \
     "rm -rf '$REMOTE_PATH' && \
     mkdir -p '$REMOTE_PATH_PARENT' && \
     cd '$REMOTE_PATH_PARENT' && \
-    tar -x -O -f - > ./'$REMOTE_PATH_FILE'" && \
+    tar -x -f -" && \
     if [ -n "$REMOTE_OWNER_GROUP" ]; then execute_remote_command "chown -R '$REMOTE_OWNER_GROUP' '$REMOTE_PATH'"; fi && \
     if [ -n "$REMOTE_PERMISSIONS" ]; then execute_remote_command "chmod -R '$REMOTE_PERMISSIONS' '$REMOTE_PATH'"; fi
   elif [ -d "$LOCAL_PATH" ]
@@ -190,7 +190,7 @@ replace_remote_to_remote()
 (
   REMOTE_PATH="$1"
   LOCAL_PATH="$2"
-  
+
 #todo
 )
 
