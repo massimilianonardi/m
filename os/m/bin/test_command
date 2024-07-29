@@ -216,6 +216,65 @@ test_path()
 
 #-------------------------------------------------------------------------------
 
+test_rsudo()
+{
+  REMOTE_HOST="localhost"
+  REMOTE_USER="admino"
+  export RSUDO_PASSWORD=""
+
+  test_files_start
+
+  if [ -z "$RSUDO_PASSWORD" ]
+  then
+    if [ -t 0 ]
+    then
+      echo "[test_command rsudo] Enter password for ${REMOTE_HOST}@${REMOTE_USER}:" 1>&2
+      stty -echo
+      read -r RSUDO_PASSWORD
+      stty echo
+    else
+      read -r RSUDO_PASSWORD
+    fi
+    export RSUDO_PASSWORD
+  fi
+
+  # rsudo execute "$REMOTE_HOST" "$REMOTE_USER" "ls -ld"
+  # echo "$RSUDO_PASSWORD" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" "ls -ld"
+
+  # rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/*" # not working because globbin must be outside quotes on server
+  # rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}\"/*\"" # force glob outside quotes
+  # rm -rfv -- "${TEST_DIR}"/*
+  # solve delete globbing support??? -> no use execute if globbins is needed
+
+  # upload/download dir, file, link
+  rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/link-recursive" "${TEST_DIR}/upload/link-aaa-recursive"
+  rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/bbb/ccc/link-absolute" "${TEST_DIR}/upload/link-absolute"
+  rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/bbb/ccc/link-absolute" "${TEST_DIR}/upload/link-absolute"
+  rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/file_a1" "${TEST_DIR}/upload/file_a1"
+  rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/colliding/sub-colliding/file_colliding" "${TEST_DIR}/upload/file_colliding"
+  rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/upload/000" "admino:admino" "777"
+  rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/upload/0-0-0"
+  rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/upload/0-0-0"
+
+  rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/link-recursive" "${TEST_DIR}/download/link-aaa-recursive"
+  rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/bbb/ccc/link-absolute" "${TEST_DIR}/download/link-absolute"
+  rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/bbb/ccc/link-absolute" "${TEST_DIR}/download/link-absolute"
+  rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/file_a1" "${TEST_DIR}/download/file_a1"
+  rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/colliding/sub-colliding/file_colliding" "${TEST_DIR}/download/file_colliding"
+  rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/download/000"
+  rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/download/0-0-0"
+  rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/download/0-0-0"
+
+  ls -lA "${TEST_DIR}/upload"
+  ls -lA "${TEST_DIR}/download"
+
+  test_files_end
+
+  rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}"
+}
+
+#-------------------------------------------------------------------------------
+
 test_test_args()
 {
 #  test_args --version

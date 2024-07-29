@@ -10,7 +10,7 @@ log()
 
 #------------------------------------------------------------------------------
 
-execute()
+execute_remote_command()
 (
   REMOTE_COMMAND="$1"
 
@@ -103,94 +103,93 @@ put_remote_postgres_db()
 
 #------------------------------------------------------------------------------
 
-delete()
+delete_remote()
 (
   REMOTE_PATH="$1"
 
-  execute_remote_command "rm -rf -- \"$REMOTE_PATH\""
+  execute_remote_command "rm -rf '$REMOTE_PATH'"
 )
 
-get()
+replace_remote_to_local()
 (
   REMOTE_PATH="$1"
   LOCAL_PATH="$2"
 
-  # REMOTE_PATH_TYPE="$(execute_remote_command "if [ -L '$REMOTE_PATH' ]; then echo 'L'; elif [ -f '$REMOTE_PATH' ]; then echo 'f'; elif [ -d '$REMOTE_PATH' ];then echo 'd'; else echo '-1'; fi")"
-  REMOTE_PATH_TYPE="$(execute_remote_command "ls -ld '$REMOTE_PATH' | cut -c 1 | tr '-' 'f' | tr 'l' 'L'")"
-
-  if [ ! "$?" -eq "0" ]
+  REMOTE_PATH_TYPE=$(execute_remote_command "(([ -f '$REMOTE_PATH' ] && echo 'f') || (([ -d '$REMOTE_PATH' ] && echo 'd') || (echo '-1')))") && \
+  log REMOTE_PATH_TYPE="$REMOTE_PATH_TYPE" && \
+  if [ "$REMOTE_PATH_TYPE" = "f" ]
   then
-    exit 1
-  fi
+    LOCAL_PATH_PARENT="${LOCAL_PATH%/*}"
+    LOCAL_PATH_FILE="${LOCAL_PATH##*/}"
+    REMOTE_PATH_PARENT="${REMOTE_PATH%/*}"
+    REMOTE_PATH_FILE="${REMOTE_PATH##*/}"
 
-  log REMOTE_PATH_TYPE="$REMOTE_PATH_TYPE"
-
-  if [ "$REMOTE_PATH_TYPE" = "L" ]
-  then
-    TARGET="$(execute_remote_command "ls -ld -- '$REMOTE_PATH'")"
-    TARGET=${TARGET#*" $REMOTE_PATH -> "}
-    rm -rf "$LOCAL_PATH" && mkdir -p "${LOCAL_PATH%/*}" && ln -s "$TARGET" "$LOCAL_PATH"
-  elif [ "$REMOTE_PATH_TYPE" = "f" ]
-  then
-    rm -rf "$LOCAL_PATH" && mkdir -p "${LOCAL_PATH%/*}" && execute_remote_command \
-    "cat '$REMOTE_PATH'" | cat > "$LOCAL_PATH"
+    rm -rf "$LOCAL_PATH" && \
+    mkdir -p "$LOCAL_PATH_PARENT" && \
+    cd "$LOCAL_PATH_PARENT" && \
+    execute_remote_command "cd '$REMOTE_PATH_PARENT' && tar -c -f - '$REMOTE_PATH_FILE'" | tar -x -f -
   elif [ "$REMOTE_PATH_TYPE" = "d" ]
   then
-    rm -rf "$LOCAL_PATH" && mkdir -p "$LOCAL_PATH" && cd "$LOCAL_PATH" && execute_remote_command \
-    "cd '$REMOTE_PATH' && tar -c -f - ." | tar -x -f -
+    rm -rf "$LOCAL_PATH" && \
+    mkdir -p "$LOCAL_PATH" && \
+    cd "$LOCAL_PATH" && \
+    execute_remote_command "cd '$REMOTE_PATH' && tar -c -f - ." | tar -x -f -
   else
-    log "get: $REMOTE_PATH doesn't exists"
-    exit 1
+    log "replace_remote_to_local: $REMOTE_PATH doesn't exists"
   fi
 )
 
-put()
+replace_remote_to_local_scp()
+(
+  REMOTE_PATH="$1"
+  LOCAL_PATH="$2"
+
+  mkdir -p "$LOCAL_PATH"
+  rm -rf "$LOCAL_PATH" && \
+  setsid scp -r -o 'StrictHostKeyChecking no' ${REMOTE_USER}@${REMOTE_HOST}:"$REMOTE_PATH" "$LOCAL_PATH"
+)
+
+replace_local_to_remote()
 (
   LOCAL_PATH="$1"
   REMOTE_PATH="$2"
   REMOTE_OWNER_GROUP="$3"
   REMOTE_PERMISSIONS="$4"
 
-  if [ -L "$LOCAL_PATH" ]
+  if [ -f "$LOCAL_PATH" ]
   then
-    TARGET=$(ls -ld -- "$LOCAL_PATH")
-    TARGET=${TARGET#*" $LOCAL_PATH -> "}
-    execute_remote_command \
-    "rm -rf '$REMOTE_PATH' && mkdir -p '${REMOTE_PATH%/*}' && ln -s '$TARGET' '$REMOTE_PATH'"
-  elif [ -f "$LOCAL_PATH" ]
-  then
-    cat "$LOCAL_PATH" | execute_remote_command \
-    "rm -rf '$REMOTE_PATH' && mkdir -p '${REMOTE_PATH%/*}' && cat > '$REMOTE_PATH'"
+    LOCAL_PATH_PARENT="${LOCAL_PATH%/*}"
+    LOCAL_PATH_FILE="${LOCAL_PATH##*/}"
+    REMOTE_PATH_PARENT="${REMOTE_PATH%/*}"
+    REMOTE_PATH_FILE="${REMOTE_PATH##*/}"
+
+    cd "$LOCAL_PATH_PARENT" && \
+    tar -c -f - "$LOCAL_PATH_FILE" | execute_remote_command \
+    "rm -rf '$REMOTE_PATH' && \
+    mkdir -p '$REMOTE_PATH_PARENT' && \
+    cd '$REMOTE_PATH_PARENT' && \
+    tar -x -f -" && \
+    if [ -n "$REMOTE_OWNER_GROUP" ]; then execute_remote_command "chown -R '$REMOTE_OWNER_GROUP' '$REMOTE_PATH'"; fi && \
+    if [ -n "$REMOTE_PERMISSIONS" ]; then execute_remote_command "chmod -R '$REMOTE_PERMISSIONS' '$REMOTE_PATH'"; fi
   elif [ -d "$LOCAL_PATH" ]
   then
-    cd "$LOCAL_PATH" && tar -c -f - . | execute_remote_command \
-    "rm -rf '$REMOTE_PATH' && mkdir -p '$REMOTE_PATH' && cd '$REMOTE_PATH' && tar -x -f -"
+    cd "$LOCAL_PATH" && \
+    tar -c -f - . | execute_remote_command \
+    "rm -rf '$REMOTE_PATH' && \
+    mkdir -p '$REMOTE_PATH' && \
+    cd '$REMOTE_PATH' && \
+    tar -x -f -" && \
+    if [ -n "$REMOTE_OWNER_GROUP" ]; then execute_remote_command "chown -R '$REMOTE_OWNER_GROUP' '$REMOTE_PATH'"; fi && \
+    if [ -n "$REMOTE_PERMISSIONS" ]; then execute_remote_command "chmod -R '$REMOTE_PERMISSIONS' '$REMOTE_PATH'"; fi
   else
-    log "put: $LOCAL_PATH doesn't exists"
-    exit 1
+    log "replace_local_to_remote: $LOCAL_PATH doesn't exists"
   fi
-
-  if [ ! "$?" -eq "0" ]
-  then
-    exit 1
-  fi
-
-  if [ -n "$REMOTE_OWNER_GROUP" ]; then execute_remote_command "chown -R '$REMOTE_OWNER_GROUP' '$REMOTE_PATH'"; fi && \
-  if [ -n "$REMOTE_PERMISSIONS" ]; then execute_remote_command "chmod -R '$REMOTE_PERMISSIONS' '$REMOTE_PATH'"; fi
 )
 
-s2s_direct()
+replace_remote_to_remote()
 (
-  SOURCE_PATH="$1"
-  DEST_PATH="$2"
-
-#todo
-)
-
-s2s_proxy()
-(
-  SOURCE_PATH="$1"
-  DEST_PATH="$2"
+  REMOTE_PATH="$1"
+  LOCAL_PATH="$2"
 
 #todo
 )
