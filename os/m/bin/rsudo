@@ -12,92 +12,108 @@ log()
 
 execute()
 (
-  REMOTE_COMMAND="$1"
-
-  if [ -z "$REMOTE_COMMAND" ] && [ -t 0 ]
+  if [ "$#" -eq "0" ] || [ -z "$*" ]
   then
-    exit
+    if [ -t 0 ]
+    then
+      exit 1
+    fi
+
+    set -- /bin/sh -s
   fi
 
-  if [ -z "$REMOTE_COMMAND" ]
-  then
-    REMOTE_COMMAND=$(cat)
-  fi
-
-  REMOTE_COMMAND=$(echo "$REMOTE_COMMAND" | sed 's/["\]/\\&/g')
+  for k in "$@"
+  do
+    shift
+    set -- "$@" \""$k"\"
+  done
 
   if [ "$REMOTE_USER" = "root" ]
   then
-    setsid ssh -o 'StrictHostKeyChecking no' -l "$REMOTE_USER" "$REMOTE_HOST" "/bin/sh -c \"$REMOTE_COMMAND\""
+    setsid ssh -o 'StrictHostKeyChecking no' -l "$REMOTE_USER" "$REMOTE_HOST" cd /\; "$@"
   else
-    (echo "$RSUDO_PASSWORD"; [ ! -t 0 ] && cat) | setsid ssh -o 'StrictHostKeyChecking no' -l "$REMOTE_USER" "$REMOTE_HOST" "sudo -k -S -p '' /bin/sh -c \"$REMOTE_COMMAND\""
+    (echo "$RSUDO_PASSWORD"; [ ! -t 0 ] && cat) | setsid ssh -o 'StrictHostKeyChecking no' -l "$REMOTE_USER" "$REMOTE_HOST" cd /\; sudo -k -S --prompt='' -- "$@"
   fi
 )
 
 #------------------------------------------------------------------------------
 
-execute_remote_command_as_postgres()
+execute_as()
 (
-  REMOTE_COMMAND="$1"
+  EXECUTE_AS="$1"
+  shift
 
-  if [ -z "$REMOTE_COMMAND" ]
+  if [ "$#" -eq "0" ] || [ -z "$*" ]
   then
-    REMOTE_COMMAND=$(cat)
+    if [ -t 0 ]
+    then
+      exit 1
+    fi
+
+    set -- /bin/sh -s
   fi
 
-  REMOTE_COMMAND=$(echo "$REMOTE_COMMAND" | sed 's/["\]/\\&/g')
+  for k in "$@"
+  do
+    shift
+    set -- "$@" \""$k"\"
+  done
 
-  execute_remote_command "cd / && su postgres --preserve-environment -s /bin/sh -c \"$REMOTE_COMMAND\""
+  if [ "$REMOTE_USER" = "root" ]
+  then
+    setsid ssh -o 'StrictHostKeyChecking no' -l "$REMOTE_USER" "$REMOTE_HOST" cd /\; sudo --prompt='' --user="$EXECUTE_AS" -- "$@"
+  else
+    (echo "$RSUDO_PASSWORD"; [ ! -t 0 ] && cat) | setsid ssh -o 'StrictHostKeyChecking no' -l "$REMOTE_USER" "$REMOTE_HOST" cd /\; sudo -k -S --prompt='' --user="$EXECUTE_AS" -- "$@"
+  fi
 )
 
-execute_remote_postgres_sql()
+#------------------------------------------------------------------------------
+
+sql()
 (
   REMOTE_DB="$1"
-  SQL_COMMAND="$2"
+  shift
+
+  SQL_COMMAND="$@"
 
   if [ -z "$SQL_COMMAND" ]
   then
-    execute_remote_command_as_postgres "cat | psql '$REMOTE_DB'"
+    execute_as postgres psql "$REMOTE_DB"
   else
-    SQL_COMMAND=$(echo "$SQL_COMMAND" | sed 's/["\]/\\&/g')
-
-    execute_remote_command_as_postgres "psql -d '$REMOTE_DB' -c \"$SQL_COMMAND\""
+    execute_as postgres psql "$REMOTE_DB" -c "$SQL_COMMAND"
   fi
 )
 
-get_remote_postgres_db()
+getdb()
 (
   REMOTE_DB="$1"
 
-  if [ -t 0 ]
+  if [ ! -t 0 ]
   then
-    execute_remote_command_as_postgres "pg_dump '$REMOTE_DB'"
-  else
-    execute_remote_command_as_postgres "cat; pg_dump '$REMOTE_DB'"
+    cat
   fi
+
+  execute_as postgres pg_dump "$REMOTE_DB"
 )
 
-put_remote_postgres_db()
+putdb()
 (
   REMOTE_DB="$1"
   LOCAL_PATH="$2"
 
   if [ -z "$LOCAL_PATH" ] && [ -t 0 ]
   then
-    exit
+    exit 1
   fi
+
+  sql "" "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$REMOTE_DB' AND pid <> pg_backend_pid();" 1>/dev/null 2>/dev/null
+  execute_as postgres dropdb --if-exists "$REMOTE_DB" 1>/dev/null 2>/dev/null
 
   if [ -z "$LOCAL_PATH" ]
   then
-    execute_remote_command_as_postgres " \
-      psql -d '$REMOTE_DB' -c \"SELECT pg_terminate_backend(pg_stat_activity.procpid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$REMOTE_DB' AND procpid <> pg_backend_pid();\"; \
-      psql -d '$REMOTE_DB' -c \"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$REMOTE_DB' AND pid <> pg_backend_pid();\"; \
-      dropdb '$REMOTE_DB' && createdb '$REMOTE_DB' && (cat | psql '$REMOTE_DB')"
+    execute_as postgres sh -c "createdb '$REMOTE_DB' && psql '$REMOTE_DB'"
   else
-    cat "$LOCAL_PATH" | execute_remote_command_as_postgres " \
-      psql -d '$REMOTE_DB' -c \"SELECT pg_terminate_backend(pg_stat_activity.procpid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$REMOTE_DB' AND procpid <> pg_backend_pid();\"; \
-      psql -d '$REMOTE_DB' -c \"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$REMOTE_DB' AND pid <> pg_backend_pid();\"; \
-      dropdb '$REMOTE_DB' && createdb '$REMOTE_DB' && (cat | psql '$REMOTE_DB')"
+    cat "$LOCAL_PATH" | execute_as postgres sh -c "createdb '$REMOTE_DB' && psql '$REMOTE_DB'"
   fi
 )
 

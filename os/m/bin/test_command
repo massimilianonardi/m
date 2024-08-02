@@ -222,7 +222,9 @@ test_rsudo()
   REMOTE_USER="admino"
   export RSUDO_PASSWORD=""
 
-  test_files_start
+  REMOTE_HOST="172.25.0.51"
+  REMOTE_USER="root"
+  export RSUDO_PASSWORD=""
 
   if [ -z "$RSUDO_PASSWORD" ]
   then
@@ -238,39 +240,65 @@ test_rsudo()
     export RSUDO_PASSWORD
   fi
 
-  # rsudo execute "$REMOTE_HOST" "$REMOTE_USER" "ls -ld"
-  # echo "$RSUDO_PASSWORD" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" "ls -ld"
+  # rsudo execute "$REMOTE_HOST" "$REMOTE_USER" "ls -ld" # ask for password if not available in env
+  # echo "$RSUDO_PASSWORD" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" "ls -ld" # command from arg
+  # echo "ls -lA" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" "" # command from pipe converted into arg
+  # rsudo execute "$REMOTE_HOST" "$REMOTE_USER" "" # error no command from arg or pipe
+  # echo "ls -lA" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" "pwd; cat" # command from arg wich receive input from pipe
+#   echo "ls -lA" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" << EOF # command from heredoc are streamed through pipe (converted manually by rsudo into arg), thus input from pipe is discarded
+# pwd; cat
+# EOF
+#   (echo "ls -lA"; cat << EOF) | rsudo execute "$REMOTE_HOST" "$REMOTE_USER"
+# pwd; cat
+# echo "end of cat"
+# EOF
+# #   (echo "ls -lA"; cat /dev/stdin << EOF) | cat
+# #   test
+# # EOF
+  # rsudo execute "$REMOTE_HOST" "$REMOTE_USER" sh -c "ls -ld"
+  # rsudo execute_as "$REMOTE_HOST" "$REMOTE_USER" postgres psql
+  # echo "select * from auth.roles;" | rsudo sql "$REMOTE_HOST" "$REMOTE_USER" system
+  # rsudo sql "$REMOTE_HOST" "$REMOTE_USER" system "select * from auth.roles;"
+  # rsudo sql "$REMOTE_HOST" "$REMOTE_USER" system select \* from auth.roles\;
+  # rsudo getdb "$REMOTE_HOST" "$REMOTE_USER" system | less
+  # echo "sql prefix" | rsudo getdb "$REMOTE_HOST" "$REMOTE_USER" system | less
+  # echo "sql prefix" | rsudo getdb "$REMOTE_HOST" "$REMOTE_USER" system > /tmp/!db.sql
+  # rsudo getdb "$REMOTE_HOST" "$REMOTE_USER" system | rsudo putdb "$REMOTE_HOST" "$REMOTE_USER" system_duplicate
+  # rsudo getdb "$REMOTE_HOST" "$REMOTE_USER" system > /tmp/!db.sql
+  # rsudo putdb "$REMOTE_HOST" "$REMOTE_USER" system_duplicate /tmp/!db.sql
+  # rm /tmp/!db.sql
 
+  # test_files_start
+  #
   # rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/*" # not working because globbin must be outside quotes on server
   # rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}\"/*\"" # force glob outside quotes
   # rm -rfv -- "${TEST_DIR}"/*
   # solve delete globbing support??? -> no use execute if globbins is needed
-
-  # upload/download dir, file, link
-  rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/link-recursive" "${TEST_DIR}/upload/link-aaa-recursive"
-  rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/bbb/ccc/link-absolute" "${TEST_DIR}/upload/link-absolute"
-  rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/bbb/ccc/link-absolute" "${TEST_DIR}/upload/link-absolute"
-  rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/file_a1" "${TEST_DIR}/upload/file_a1"
-  rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/colliding/sub-colliding/file_colliding" "${TEST_DIR}/upload/file_colliding"
-  rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/upload/000" "admino:admino" "777"
-  rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/upload/0-0-0"
-  rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/upload/0-0-0"
-
-  rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/link-recursive" "${TEST_DIR}/download/link-aaa-recursive"
-  rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/bbb/ccc/link-absolute" "${TEST_DIR}/download/link-absolute"
-  rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/bbb/ccc/link-absolute" "${TEST_DIR}/download/link-absolute"
-  rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/file_a1" "${TEST_DIR}/download/file_a1"
-  rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/colliding/sub-colliding/file_colliding" "${TEST_DIR}/download/file_colliding"
-  rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/download/000"
-  rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/download/0-0-0"
-  rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/download/0-0-0"
-
-  ls -lA "${TEST_DIR}/upload"
-  ls -lA "${TEST_DIR}/download"
-
-  test_files_end
-
-  rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}"
+  #
+  # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/link-recursive" "${TEST_DIR}/upload/link-aaa-recursive"
+  # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/bbb/ccc/link-absolute" "${TEST_DIR}/upload/link-absolute"
+  # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/bbb/ccc/link-absolute" "${TEST_DIR}/upload/link-absolute"
+  # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/file_a1" "${TEST_DIR}/upload/file_a1"
+  # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/colliding/sub-colliding/file_colliding" "${TEST_DIR}/upload/file_colliding"
+  # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/upload/000" "admino:admino" "777"
+  # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/upload/0-0-0"
+  # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/upload/0-0-0"
+  #
+  # rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/link-recursive" "${TEST_DIR}/download/link-aaa-recursive"
+  # rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/bbb/ccc/link-absolute" "${TEST_DIR}/download/link-absolute"
+  # rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/bbb/ccc/link-absolute" "${TEST_DIR}/download/link-absolute"
+  # rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/file_a1" "${TEST_DIR}/download/file_a1"
+  # rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/colliding/sub-colliding/file_colliding" "${TEST_DIR}/download/file_colliding"
+  # rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/download/000"
+  # rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/download/0-0-0"
+  # rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/download/0-0-0"
+  #
+  # ls -lA "${TEST_DIR}/upload"
+  # ls -lA "${TEST_DIR}/download"
+  #
+  # test_files_end
+  #
+  # rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}"
 }
 
 #-------------------------------------------------------------------------------
