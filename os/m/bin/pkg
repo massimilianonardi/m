@@ -973,12 +973,10 @@ loop_find()
 
 main()
 {
-  m_conf_local
-  m_conf_sys
-
-  . m-filesystem.lib.sh
-  . m-var.lib.sh
-  . m-exec.lib.sh
+  . m-conf.lib
+  . m-filesystem.lib
+  . m-var.lib
+  . m-exec.lib
 
   NET_ROOT_DIR=""
   NET_M_PKG_DIR="$NET_ROOT_DIR/m/pkg"

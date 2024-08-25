@@ -56,7 +56,7 @@ main()
 
   if [ -n "$SWITCH_r" ]
   then
-    TARGET="$(path -- "$1" "${2%/*}")"
+    TARGET="$(path -r "$1" "${2%/*}")"
   fi
 
   ln -fs "$TARGET" "$2"

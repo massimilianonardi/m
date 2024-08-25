@@ -229,7 +229,7 @@ get()
   fi
 
   log_debug net store - get: "$STORE_DIR/$1" "- copy to ->" "$2"
-  copy -ac "$CACHE_DIR/$1" "$2"
+  cm -cT copy "$CACHE_DIR/$1" "$2"
 )
 
 #-------------------------------------------------------------------------------
@@ -329,6 +329,7 @@ download()
 
 #  TMP_FILE="$TMP_DIR/dl_$(date +"[%Y-%m-%d_%H-%M-%S]")_$RANDOM.tmp"
   TMP_FILE="$CACHE_DIR/${1#$STORE_DIR/}"
+  mkdir -p "$(dirname "$TMP_FILE")"
   log_debug web get "$LINK" "$TMP_FILE"
   rm "$TMP_FILE"
   if [ -z "$LINK_HEADER" ]
@@ -472,7 +473,7 @@ cache()
     exit 1
   fi
 
-  copy -ac "$STORE_DIR/$1" "$CACHE_DIR/$1"
+  cm -cT copy "$STORE_DIR/$1" "$CACHE_DIR/$1"
   fnd "$STORE_DIR/$1" dl_loop
 )
 
@@ -487,7 +488,7 @@ refresh()
   fi
 
   rm -Rf "$CACHE_DIR/$1"
-  copy -ac "$STORE_DIR/$1" "$CACHE_DIR/$1"
+  cm -cT copy "$STORE_DIR/$1" "$CACHE_DIR/$1"
 #  fnd "$STORE_DIR/$1" rf_loop
   fnd "$STORE_DIR/$1" dl_loop
 )
@@ -496,11 +497,9 @@ refresh()
 
 main()
 {
-  m_conf_local
-  m_conf_sys
-
-  . m-filesystem.lib.sh
-  . m-var.lib.sh
+  . m-conf.lib
+  . m-filesystem.lib
+  . m-var.lib
 
   STORE_DIR="$THIS_DIR/net_store"
   CACHE_DIR="$DATA_DIR/cache"

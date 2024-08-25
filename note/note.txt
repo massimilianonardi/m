@@ -11,6 +11,32 @@ git rebase -i HEAD~3
 git push origin +master
 git log -10
 
+
+
+XRDP:
+
+sudo apt install xrdp -y
+sudo systemctl status xrdp
+sudo adduser xrdp ssl-cert
+sudo systemctl restart xrdp
+
+sudo ufw allow from 192.168.0.0/24 to any port 3389
+sudo ufw allow 3389/tcp
+sudo ufw reload
+
+change port:
+sudo nano /etc/xrdp/xrdp.ini
+
+enable multi user mode:
+sudo apt-get install dbus-x11
+sudo nano /etc/xrdp/startwm.sh
+add the following line before last line: "exec /bin/sh /etc/X11/Xsession"
+test -x /etc/X11/Xsession && exec /etc/X11/Xsession.
+sudo nano /etc/X11/Xsession
+add the following line at beginning just after shebang line
+export $(dbus-launch)
+sudo reboot
+
 --------------------------------------------------------------------------------
 
 https://192.168.253.136:8443/m/authenticator.id

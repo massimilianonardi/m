@@ -9,11 +9,11 @@ lnr()
   [ -z "$TARGET" ] && exit 1
   [ -z "$NAME" ] && exit 1
   if [ -f "$NAME" ] || [ -d "$NAME" ]; then log_fatal "link cannot replace existing file or directory: $NAME"; exit 1; fi
-  
+
   DEST_DIR="$(dirname "$NAME")"
   [ ! -d "$DEST_DIR" ] && mkdir -p "$DEST_DIR"
 #  ln -fs "$(realpath --relative-to="$DEST_DIR" "$TARGET")" "$NAME"
-  ln -fs "$(path -- "$TARGET" "$DEST_DIR")" "$NAME"
+  ln -fs "$(path -r "$TARGET" "$DEST_DIR")" "$NAME"
 )
 
 #-------------------------------------------------------------------------------
@@ -25,7 +25,7 @@ lna()
   [ -z "$TARGET" ] && exit 1
   [ -z "$NAME" ] && exit 1
   if [ -f "$NAME" ] || [ -d "$NAME" ]; then log_fatal "link cannot replace existing file or directory: $NAME"; exit 1; fi
-  
+
   DEST_DIR="$(dirname "$NAME")"
   [ ! -d "$DEST_DIR" ] && mkdir -p "$DEST_DIR"
   ln -fs "$TARGET" "$NAME"
@@ -52,7 +52,7 @@ cpr()
   [ -z "$TARGET" ] && exit 1
   [ -z "$NAME" ] && exit 1
   [ -f "$TARGET" ] && [ -d "$NAME" ] && exit 1
-  
+
   DEST_DIR="$(dirname "$NAME")"
   [ ! -d "$DEST_DIR" ] && mkdir -p "$DEST_DIR"
   [ -d "$NAME" ] && NAME="$DEST_DIR"
@@ -64,9 +64,9 @@ cpr()
 cpd()
 (
   [ "$#" -lt "2" ] && exit 1
-  
+
 #  eval 'DEST_DIR="${'$#'}"'
-  
+
   COUNT="1"
   for k in "$@"
   do
@@ -74,7 +74,7 @@ cpd()
     shift
     COUNT="$((COUNT + 1))"
   done
-  
+
   [ ! -d "$DEST_DIR" ] && mkdir -p "$DEST_DIR"
   cp -R -L -f "$@" "$DEST_DIR"
 )
@@ -140,14 +140,14 @@ newer()
 (
   [ "$#" -lt "2" ] && exit 2
   [ ! -d "$2" ] && exit 3
-  
+
   [ ! -f "$1" ] && exit 0
-  
+
   for k in $(find "$2" -newer "$1" -print)
   do
     exit 0
   done
-  
+
   exit 1
 )
 
@@ -159,7 +159,7 @@ fnd___()
   then
     eval "$2 \"\$k\""
   fi
-  
+
   fnd_loop___ "$@"
 #  cd -P -- "$1"
 #  [ $# -lt 3 ] || [ "$PWD" = "$3" ] || exit 1
@@ -190,10 +190,10 @@ fnd()
 (
   [ "$#" -lt "2" ] && exit 2
   [ ! -d "$1" ] && exit 3
-  
+
   FIND_DIR="$(path -al "$1")"
   shift
-  
+
   fnd_loop "$FIND_DIR" "$@"
 )
 
@@ -202,10 +202,10 @@ fnd()
 fnd_loop()
 (
   [ -z "$1" ] && exit 2
-  
+
   FIND_DIR="$1"
   shift
-  
+
   for k in "$FIND_DIR"/..?* "$FIND_DIR"/.[!.]* "$FIND_DIR"/*
   do
 # todo if option to follow links if -L then resolve, if dir then loop, if file then exec
@@ -213,7 +213,7 @@ fnd_loop()
     then
       "$@" "$k"
     fi
-    
+
     if [ -d "$k" ]
     then
       fnd_loop "$k" "$@"
@@ -226,10 +226,10 @@ fnd_loop()
 fnd_loop_()
 (
   [ -z "$1" ] && exit 2
-  
+
   FIND_DIR="$1"
   shift
-  
+
   for k in "$FIND_DIR"/..?* "$FIND_DIR"/.[!.]* "$FIND_DIR"/*
   do
     if [ "$k" = "$FIND_DIR/..?*" ] || [ "$k" = "$FIND_DIR/.[!.]*" ] || [ "$k" = "$FIND_DIR/*" ]
@@ -240,7 +240,7 @@ echo BAD "$k"
 echo EXEC "$k"
       echo "$@" "$k"
     fi
-    
+
     if [ -d "$k" ]
     then
 echo LOOP "$k"

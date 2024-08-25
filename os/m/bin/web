@@ -55,7 +55,7 @@ get()
     set -- "--header" "$OPT_HEADER" "$@"
   fi
 
-  log_debug "ARGS: $@"
+  log_debug "CMD: $CMD $@"
 
   "$CMD" "$@"
 }
