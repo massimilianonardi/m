@@ -30,6 +30,134 @@ find_pkg()
 
 #-------------------------------------------------------------------------------
 
+parse_pkg()
+{
+#  if [ "$1" != "${1#/}" ]
+#  then
+#    set -- "${1#/*/*/}"
+#  fi
+
+  PACKAGE="$1"
+
+  PKG_NAME="${1%%/*}"
+  PKG_PLATFORM="${1#"$PKG_NAME"}"
+  PKG_PLATFORM="${PKG_PLATFORM#/}"
+  PKG_PLATFORM="${PKG_PLATFORM%%/*}"
+  PKG_VERSION="${1#"$PKG_NAME"}"
+  PKG_VERSION="${PKG_VERSION#/}"
+  PKG_VERSION="${PKG_VERSION#"$PKG_PLATFORM"}"
+  PKG_VERSION="${PKG_VERSION#/}"
+
+  if [ -z "$PKG_PLATFORM" ]
+  then
+    log_warn "package platform not specified autodetecting: all, $PLATFORM"
+    PKG_PLATFORM="all"
+    if [ -z "$(find "$PKG_NAME/$PKG_PLATFORM")" ]
+    then
+      PKG_PLATFORM="$PLATFORM"
+      if [ -z "$(find "$PKG_NAME/$PKG_PLATFORM")" ]
+      then
+        log_fatal "cannot determine platform"
+        return 1
+      fi
+    fi
+    log_info "package platform autodetected: $PKG_PLATFORM"
+  fi
+
+  if [ -z "$PKG_VERSION" ]
+  then
+    log_warn "package version not specified autodetecting latest available"
+    for k in $(find "$PKG_NAME/$PKG_PLATFORM/*")
+    do
+      k="${k##*/}"
+      PKG_VERSION="$(echo | awk "{print (\"$PKG_VERSION\" <= \"$k\") ? \"$k\" : \"$PKG_VERSION\"}")"
+    done
+    if [ -z "$PKG_VERSION" ]
+    then
+      log_fatal "cannot determine version"
+      return 1
+    fi
+    log_info "package version autodetected: $PKG_VERSION"
+  fi
+
+  PACKAGE="$PKG_NAME"
+  if [ -n "$PKG_PLATFORM" ] && [ "$PKG_PLATFORM" != "all" ]
+  then
+    PACKAGE="$PACKAGE-$PKG_PLATFORM"
+  fi
+  if [ -n "$PKG_VERSION" ] && [ "$PKG_VERSION" != "latest" ]
+  then
+    PACKAGE="$PACKAGE-$PKG_VERSION"
+  fi
+
+  INSTALL_DIR="$PKG_DIR/$PACKAGE"
+
+  log_debug "ARG: $1 - PKG_NAME: $PKG_NAME - PKG_PLATFORM: $PKG_PLATFORM - PKG_VERSION: $PKG_VERSION - PACKAGE: $PACKAGE - INSTALL_DIR: $INSTALL_DIR"
+}
+
+#-------------------------------------------------------------------------------
+
+parse_pkg_installed()
+{
+  if [ -z "$1" ]
+  then
+    log_fatal "missing arguments"
+    exit 1
+  fi
+
+  PACKAGE="$1"
+  INSTALL_DIR="$PKG_DIR/$PACKAGE"
+
+  if [ ! -d "$INSTALL_DIR" ]
+  then
+    log_fatal "package $1 is not installed: $INSTALL_DIR"
+    exit 1
+  fi
+
+  if [ ! -f "$INSTALL_DIR/sys/name" ]
+  then
+    log_fatal "package system file is not present: $INSTALL_DIR/sys/name"
+#    exit 1
+  else
+    PKG_NAME="$(cat "$INSTALL_DIR/sys/name")"
+    if [ -z "$PKG_NAME" ]
+    then
+      log_fatal "package system file is not correct: PKG_NAME=$PKG_NAME"
+      exit 1
+    fi
+  fi
+
+  if [ ! -f "$INSTALL_DIR/sys/platform" ]
+  then
+    log_fatal "package system file is not present: $INSTALL_DIR/sys/platform"
+#    exit 1
+  else
+    PKG_PLATFORM="$(cat "$INSTALL_DIR/sys/platform")"
+    if [ -z "$PKG_PLATFORM" ]
+    then
+      log_fatal "package system file is not correct: PKG_PLATFORM=$PKG_PLATFORM"
+      exit 1
+    fi
+  fi
+
+  if [ ! -f "$INSTALL_DIR/sys/version" ]
+  then
+    log_fatal "package system file is not present: $INSTALL_DIR/sys/version"
+#    exit 1
+  else
+    PKG_VERSION="$(cat "$INSTALL_DIR/sys/version")"
+    if [ -z "$PKG_VERSION" ]
+    then
+      log_fatal "package system file is not correct: PKG_VERSION=$PKG_VERSION"
+      exit 1
+    fi
+  fi
+
+  log_debug "ARG: $1 - PKG_NAME: $PKG_NAME - PKG_PLATFORM: $PKG_PLATFORM - PKG_VERSION: $PKG_VERSION - PACKAGE: $PACKAGE - INSTALL_DIR: $INSTALL_DIR"
+}
+
+#-------------------------------------------------------------------------------
+
 parse_pkg_ver_range()
 {
 #  if [ "$1" != "${1#/}" ]
@@ -152,6 +280,66 @@ update()
 
 #-------------------------------------------------------------------------------
 
+install()
+(
+  parse_pkg "$1"
+
+  if [ -d "$INSTALL_DIR" ] && [ "$PKG_PLATFORM" != "all" ]
+  then
+    log_warn "package already installed: $PACKAGE"
+
+    if [ -n "$2" ]
+    then
+      lnk -cr "$DEP_DIR/$PACKAGE" "$DEP_DIR/$2/$PACKAGE"
+      lnk -cr "$DEPREV_DIR/$2" "$DEPREV_DIR/$PACKAGE/$2"
+    fi
+  else
+    mkdir -p "$DEP_DIR/$PACKAGE"
+    mkdir -p "$DEPREV_DIR/$PACKAGE"
+
+    if [ -n "$2" ]
+    then
+      lnk -cr "$DEP_DIR/$PACKAGE" "$DEP_DIR/$2/$PACKAGE"
+      lnk -cr "$DEPREV_DIR/$2" "$DEPREV_DIR/$PACKAGE/$2"
+    fi
+
+    for k in $(net stream "$NET_M_PKG_DIR/$PKG_NAME/$PKG_PLATFORM/$PKG_VERSION/sys/depend")
+    do
+      install "$(depend_match_installed "$k")" "$PACKAGE"
+    done
+
+    if [ -d "$INSTALL_DIR" ] && [ "$PKG_PLATFORM" = "all" ]
+    then
+      log_info "platform independent package was already installed from another platform: $PACKAGE"
+      exit 0
+    fi
+
+    net get "$NET_M_PKG_DIR/$PKG_NAME/$PKG_PLATFORM/$PKG_VERSION" "$INSTALL_DIR"
+
+    if [ "$PKG_NAME" != "$(exec_export_var "PKG_NAME" parse_pkg_installed "$PACKAGE")" ]
+    then
+      log_fatal "package declaration do not match catalog path: $PKG_NAME != $(exec_export_var "PKG_NAME" parse_pkg_installed "$PACKAGE")"
+      exit 1
+    fi
+
+    if [ "$PKG_PLATFORM" != "$(exec_export_var "PKG_PLATFORM" parse_pkg_installed "$PACKAGE")" ]
+    then
+      log_fatal "package declaration do not match catalog path: $PKG_PLATFORM != $(exec_export_var "PKG_PLATFORM" parse_pkg_installed "$PACKAGE")"
+      exit 1
+    fi
+
+    if [ "$PKG_VERSION" != "$(exec_export_var "PKG_VERSION" parse_pkg_installed "$PACKAGE")" ]
+    then
+      log_fatal "package declaration do not match catalog path: $PKG_NAME != $(exec_export_var "PKG_VERSION" parse_pkg_installed "$PACKAGE")"
+      exit 1
+    fi
+
+    integrate "$PACKAGE"
+  fi
+)
+
+#-------------------------------------------------------------------------------
+
 installed()
 (
   if [ "$#" -lt "1" ]
@@ -251,283 +439,6 @@ uninstall()
 # remove dep links
   rm -Rf "$DEP_DIR/$1"
 )
-
-#-------------------------------------------------------------------------------
-
-reset()
-(
-  reset_conf "$@"
-  reset_data "$@"
-  reset_home "$@"
-)
-
-#-------------------------------------------------------------------------------
-
-reset_conf()
-(
-#  parse_pkg_installed "$1"
-  PACKAGE="$1"
-  INSTALL_DIR="$PKG_DIR/$PACKAGE"
-
-# todo instead of 'work "$PACKAGE"', work dirs should be parametric because of possible compatibility across some versions, or import previous version conf, etc.
-  if [ -d "$INSTALL_DIR/def/conf" ]
-  then
-    work "$PACKAGE"
-    copy -acfs "$INSTALL_DIR/def/conf" "$CONF_DIR"
-  fi
-)
-
-#-------------------------------------------------------------------------------
-
-reset_data()
-(
-#  parse_pkg_installed "$1"
-  PACKAGE="$1"
-  INSTALL_DIR="$PKG_DIR/$PACKAGE"
-
-# todo instead of 'work "$PACKAGE"', work dirs should be parametric because of possible compatibility across some versions, or import previous version conf, etc.
-  if [ -d "$INSTALL_DIR/def/data" ]
-  then
-    work "$PACKAGE"
-    copy -acfs "$INSTALL_DIR/def/data" "$DATA_DIR"
-  fi
-)
-
-#-------------------------------------------------------------------------------
-
-reset_home()
-(
-#  parse_pkg_installed "$1"
-  PACKAGE="$1"
-  INSTALL_DIR="$PKG_DIR/$PACKAGE"
-
-# todo instead of 'work "$PACKAGE"', work dirs should be parametric because of possible compatibility across some versions, or import previous version conf, etc.
-  if [ -d "$INSTALL_DIR/def/home" ]
-  then
-    work "$PACKAGE"
-    copy -acfs "$INSTALL_DIR/def/home" "$HOME_DIR"
-  fi
-)
-
-#-------------------------------------------------------------------------------
-
-clean()
-(
-  PACKAGE="$1"
-  INSTALL_DIR="$PKG_DIR/$PACKAGE"
-
-  for k in "$WRK_DIR"/*/"$PACKAGE"
-  do
-    log_debug "pkg clean work $k"
-    [ -d "$k" ] && rm -Rf "$k"
-  done
-)
-
-#-------------------------------------------------------------------------------
-
-clean_conf()
-(
-#  parse_pkg_installed "$1"
-  PACKAGE="$1"
-  INSTALL_DIR="$PKG_DIR/$PACKAGE"
-
-  work "$PACKAGE"
-  if [ -d "$CONF_DIR" ]
-  then
-    rm -Rf "$CONF_DIR"
-  fi
-)
-
-#-------------------------------------------------------------------------------
-
-clean_data()
-(
-#  parse_pkg_installed "$1"
-  PACKAGE="$1"
-  INSTALL_DIR="$PKG_DIR/$PACKAGE"
-
-  work "$PACKAGE"
-  if [ -d "$DATA_DIR" ]
-  then
-    rm -Rf "$DATA_DIR"
-  fi
-)
-
-#-------------------------------------------------------------------------------
-
-clean_home()
-(
-#  parse_pkg_installed "$1"
-  PACKAGE="$1"
-  INSTALL_DIR="$PKG_DIR/$PACKAGE"
-
-  work "$PACKAGE"
-  if [ -d "$HOME_DIR" ]
-  then
-    rm -Rf "$HOME_DIR"
-  fi
-)
-
-#-------------------------------------------------------------------------------
-
-loop_simple()
-(
-  if [ "$#" -lt "2" ] || [ -z "$1" ]
-  then
-    log_fatal "wrong arguments: $@"
-    exit 1
-  fi
-
-  COMMAND="$1"
-  shift
-  for k in "$@"
-  do
-    "$COMMAND" "$k"
-  done
-)
-
-#-------------------------------------------------------------------------------
-
-loop_find()
-(
-  if [ "$#" -lt "3" ] || [ -z "$1" ] || [ -z "$2" ]
-  then
-    log_fatal "wrong arguments: $@"
-    exit 1
-  fi
-
-  LIST_COMMAND="$1"
-  shift
-  COMMAND="$1"
-  shift
-  for k in $("$LIST_COMMAND" "$@")
-  do
-    "$COMMAND" "$k"
-  done
-)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#-------------------------------------------------------------------------------
-
-parse_pkg()
-{
-  PACKAGE="$1"
-
-  PKG_NAME="${1%%/*}"
-
-  PKG_PLATFORM="${1#"$PKG_NAME"}"
-  PKG_PLATFORM="${PKG_PLATFORM#/}"
-  PKG_PLATFORM="${PKG_PLATFORM%%/*}"
-
-  PKG_VERSION="${1#"$PKG_NAME"}"
-  PKG_VERSION="${PKG_VERSION#/}"
-  PKG_VERSION="${PKG_VERSION#"$PKG_PLATFORM"}"
-  PKG_VERSION="${PKG_VERSION#/}"
-
-  PACKAGE="$PKG_NAME"
-  if [ -n "$PKG_PLATFORM" ] && [ "$PKG_PLATFORM" != "all" ]
-  then
-    PACKAGE="$PACKAGE-$PKG_PLATFORM"
-  fi
-  if [ -n "$PKG_VERSION" ] && [ "$PKG_VERSION" != "latest" ]
-  then
-    PACKAGE="$PACKAGE-$PKG_VERSION"
-  fi
-
-  INSTALL_DIR="$PKG_DIR/$PACKAGE"
-
-  log_debug "parse_pkg - ARG: $1 - PKG_NAME: $PKG_NAME - PKG_PLATFORM: $PKG_PLATFORM - PKG_VERSION: $PKG_VERSION - PACKAGE: $PACKAGE - INSTALL_DIR: $INSTALL_DIR"
-}
-
-#-------------------------------------------------------------------------------
-
-match_available_pkg()
-{
-  true
-}
-
-#-------------------------------------------------------------------------------
-
-parse_pkg_installed()
-{
-  if [ -z "$1" ]
-  then
-    log_fatal "missing arguments"
-    exit 1
-  fi
-
-  PACKAGE="$1"
-  INSTALL_DIR="$PKG_DIR/$PACKAGE"
-
-  if [ ! -d "$INSTALL_DIR" ]
-  then
-    log_fatal "package $1 is not installed: $INSTALL_DIR"
-    exit 1
-  fi
-
-  if [ ! -f "$INSTALL_DIR/sys/name" ]
-  then
-    log_fatal "package system file is not present: $INSTALL_DIR/sys/name"
-#    exit 1
-  else
-    PKG_NAME="$(cat "$INSTALL_DIR/sys/name")"
-    if [ -z "$PKG_NAME" ]
-    then
-      log_fatal "package system file is not correct: PKG_NAME=$PKG_NAME"
-      exit 1
-    fi
-  fi
-
-  if [ ! -f "$INSTALL_DIR/sys/platform" ]
-  then
-    log_fatal "package system file is not present: $INSTALL_DIR/sys/platform"
-#    exit 1
-  else
-    PKG_PLATFORM="$(cat "$INSTALL_DIR/sys/platform")"
-    if [ -z "$PKG_PLATFORM" ]
-    then
-      log_fatal "package system file is not correct: PKG_PLATFORM=$PKG_PLATFORM"
-      exit 1
-    fi
-  fi
-
-  if [ ! -f "$INSTALL_DIR/sys/version" ]
-  then
-    log_fatal "package system file is not present: $INSTALL_DIR/sys/version"
-#    exit 1
-  else
-    PKG_VERSION="$(cat "$INSTALL_DIR/sys/version")"
-    if [ -z "$PKG_VERSION" ]
-    then
-      log_fatal "package system file is not correct: PKG_VERSION=$PKG_VERSION"
-      exit 1
-    fi
-  fi
-
-  log_debug "ARG: $1 - PKG_NAME: $PKG_NAME - PKG_PLATFORM: $PKG_PLATFORM - PKG_VERSION: $PKG_VERSION - PACKAGE: $PACKAGE - INSTALL_DIR: $INSTALL_DIR"
-}
 
 #-------------------------------------------------------------------------------
 
@@ -870,133 +781,241 @@ deintegrate()
 
 #-------------------------------------------------------------------------------
 
-install()
+reset()
 (
-  # parse pkg request
-  parse_pkg "$1"
-
-  # check: if required version is not specified and any version is already installed, then done with warning, else
-  if [ -z "$PKG_VERSION" ]
-  then
-    log_warn "no version specified and at leas one already installed for this platform"
-  fi
-
-  # match pkg against m-pkg-store (m-store) to determine exact version to install
-  match_available_pkg
-
-  # download m-pkg from m-store without bin into pkg-dir
-  log_trace "reading required package from: $DATA_DIR/$PKG_NAME/ver/$PKG_PLATFORM/$PKG_VERSION/package"
-  M_PKG="$(cat "$DATA_DIR/$PKG_NAME/ver/$PKG_PLATFORM/$PKG_VERSION/package")"
-  log_trace "copying package: $DATA_DIR/$PKG_NAME/pkg/$M_PKG -> $PKG_DIR/$PACKAGE"
-  cm -cT copy "$DATA_DIR/$PKG_NAME/pkg/$M_PKG" "$PKG_DIR/$PACKAGE"
-  echo "$PKG_NAME" > "$PKG_DIR/$PACKAGE/sys/name"
-  echo "$PKG_PLATFORM" > "$PKG_DIR/$PACKAGE/sys/platform"
-  echo "$PKG_VERSION" > "$PKG_DIR/$PACKAGE/sys/version"
-
-  # download bin from vendor website into m-pkg
-  . "$DATA_DIR/$PKG_NAME/ver/$PKG_PLATFORM/$PKG_VERSION/link"
-  if [ -z "$LINK" ]
-  then
-    log_fatal "download link is null"
-    exit 1
-  fi
-  BIN_PATH="$PKG_DIR/$PACKAGE/bin"
-  log_debug web get "$LINK" "$BIN_PATH"
-  rm "$BIN_PATH"
-  if [ -z "$LINK_HEADER" ]
-  then
-    web get "$LINK" "$BIN_PATH"
-  else
-    web --header "$LINK_HEADER" -- get "$LINK" "$BIN_PATH"
-  fi
-
-  # extract bin into m-pkg
-  TMP_XTR="$BIN_PATH.xtr"
-  log_debug "extract: LINK_EXTRACT=$LINK_EXTRACT - $BIN_PATH -> $TMP_XTR"
-  if [ -z "$LINK_EXTRACT" ]
-  then
-    xtr -cs "$BIN_PATH" "$TMP_XTR"
-  elif [ "$LINK_EXTRACT" = "none" ]
-  then
-    true
-  elif [ "$LINK_EXTRACT" = "exact" ]
-  then
-    xtr -c "$BIN_PATH" "$TMP_XTR"
-  elif [ "$LINK_EXTRACT" = "link" ]
-  then
-    xtr -c "$BIN_PATH" "$BIN_PATH.orig"
-    lnk -r "$BIN_PATH.orig"/* "$TMP_XTR"
-  else
-    log_fatal "unrecognized LINK_EXTRACT=$LINK_EXTRACT"
-    exit 1
-  fi
-  rm "$BIN_PATH"
-  cm -T move "$TMP_XTR" "$BIN_PATH"
-
-  # read and install dependencies
-  DEPEND="$(cat "$PKG_DIR/$PACKAGE/sys/depend")"
-  if [ -n "$DEPEND" ]
-  then
-    pkg install $DEPEND
-  fi
-
-  # integrate m-pkg
-  integrate "$PACKAGE"
+  reset_conf "$@"
+  reset_data "$@"
+  reset_home "$@"
 )
 
 #-------------------------------------------------------------------------------
 
-main()
-{
+reset_conf()
+(
+  if [ -z "$1" ]
+  then
+    log_fatal "missing arguments"
+    exit 1
+  fi
+
+#  parse_pkg_installed "$1"
+  PACKAGE="$1"
+  INSTALL_DIR="$PKG_DIR/$PACKAGE"
+
+# todo instead of 'work "$PACKAGE"', work dirs should be parametric because of possible compatibility across some versions, or import previous version conf, etc.
+  if [ -d "$INSTALL_DIR/def/conf" ]
+  then
+    work "$PACKAGE"
+    copy -acfs "$INSTALL_DIR/def/conf" "$CONF_DIR"
+  fi
+)
+
+#-------------------------------------------------------------------------------
+
+reset_data()
+(
+  if [ -z "$1" ]
+  then
+    log_fatal "missing arguments"
+    exit 1
+  fi
+
+#  parse_pkg_installed "$1"
+  PACKAGE="$1"
+  INSTALL_DIR="$PKG_DIR/$PACKAGE"
+
+# todo instead of 'work "$PACKAGE"', work dirs should be parametric because of possible compatibility across some versions, or import previous version conf, etc.
+  if [ -d "$INSTALL_DIR/def/data" ]
+  then
+    work "$PACKAGE"
+    copy -acfs "$INSTALL_DIR/def/data" "$DATA_DIR"
+  fi
+)
+
+#-------------------------------------------------------------------------------
+
+reset_home()
+(
+  if [ -z "$1" ]
+  then
+    log_fatal "missing arguments"
+    exit 1
+  fi
+
+#  parse_pkg_installed "$1"
+  PACKAGE="$1"
+  INSTALL_DIR="$PKG_DIR/$PACKAGE"
+
+# todo instead of 'work "$PACKAGE"', work dirs should be parametric because of possible compatibility across some versions, or import previous version conf, etc.
+  if [ -d "$INSTALL_DIR/def/home" ]
+  then
+    work "$PACKAGE"
+    copy -acfs "$INSTALL_DIR/def/home" "$HOME_DIR"
+  fi
+)
+
+#-------------------------------------------------------------------------------
+
+clean()
+(
+  PACKAGE="$1"
+  INSTALL_DIR="$PKG_DIR/$PACKAGE"
+
+  for k in "$WRK_DIR"/*/"$PACKAGE"
+  do
+    log_debug "pkg clean work $k"
+    [ -d "$k" ] && rm -Rf "$k"
+  done
+)
+
+#-------------------------------------------------------------------------------
+
+clean_conf()
+(
+  if [ -z "$1" ]
+  then
+    log_fatal "missing arguments"
+    exit 1
+  fi
+
+#  parse_pkg_installed "$1"
+  PACKAGE="$1"
+  INSTALL_DIR="$PKG_DIR/$PACKAGE"
+
+  work "$PACKAGE"
+  if [ -d "$CONF_DIR" ]
+  then
+    rm -Rf "$CONF_DIR"
+  fi
+)
+
+#-------------------------------------------------------------------------------
+
+clean_data()
+(
+  if [ -z "$1" ]
+  then
+    log_fatal "missing arguments"
+    exit 1
+  fi
+
+#  parse_pkg_installed "$1"
+  PACKAGE="$1"
+  INSTALL_DIR="$PKG_DIR/$PACKAGE"
+
+  work "$PACKAGE"
+  if [ -d "$DATA_DIR" ]
+  then
+    rm -Rf "$DATA_DIR"
+  fi
+)
+
+#-------------------------------------------------------------------------------
+
+clean_home()
+(
+  if [ -z "$1" ]
+  then
+    log_fatal "missing arguments"
+    exit 1
+  fi
+
+#  parse_pkg_installed "$1"
+  PACKAGE="$1"
+  INSTALL_DIR="$PKG_DIR/$PACKAGE"
+
+  work "$PACKAGE"
+  if [ -d "$HOME_DIR" ]
+  then
+    rm -Rf "$HOME_DIR"
+  fi
+)
+
+#-------------------------------------------------------------------------------
+
+loop_simple()
+(
   if [ "$#" -lt "2" ] || [ -z "$1" ]
   then
     log_fatal "wrong arguments: $@"
     exit 1
   fi
 
+  COMMAND="$1"
+  shift
+  for k in "$@"
+  do
+    "$COMMAND" "$k"
+  done
+)
+
+#-------------------------------------------------------------------------------
+
+loop_find()
+(
+  if [ "$#" -lt "3" ] || [ -z "$1" ] || [ -z "$2" ]
+  then
+    log_fatal "wrong arguments: $@"
+    exit 1
+  fi
+
+  LIST_COMMAND="$1"
+  shift
+  COMMAND="$1"
+  shift
+  for k in $("$LIST_COMMAND" "$@")
+  do
+    "$COMMAND" "$k"
+  done
+)
+
+#-------------------------------------------------------------------------------
+
+main()
+{
+  . m-conf.lib
+  . m-filesystem.lib
+  . m-var.lib
+  . m-exec.lib
+
+  NET_ROOT_DIR=""
+  NET_M_PKG_DIR="$NET_ROOT_DIR/m/pkg"
+#  NET_M_SRC_DIR="$NET_ROOT_DIR/m/src"
+#  NET_MAVEN_PKG_DIR="$NET_ROOT_DIR/maven/pkg"
+#  NET_MAVEN_SRC_DIR="$NET_ROOT_DIR/maven/src"
+#  NET_GITHUB_PKG_DIR="$NET_ROOT_DIR/github/pkg"
+#  NET_GITHUB_SRC_DIR="$NET_ROOT_DIR/github/src"
+#  NET_NPM_PKG_DIR="$NET_ROOT_DIR/npm/pkg"
+#  NET_NPM_SRC_DIR="$NET_ROOT_DIR/npm/src"
+
   case "$1" in
     "find") true;;
-    "findver") true;;
-    "depend") true;;
+    "findver") loop_simple "$@"; exit 0;;
+    "depend") loop_find "find" "$@"; exit 0;;
 
-    "dependinstalled") true;;
-    "install") true;;
-    "installmissing") true;;
-    "update") true;;
+    "dependinstalled") loop_find "find" "$@"; exit 0;;
+    "install") loop_find "find" "$@"; exit 0;;
+#    "install") loop_find "depend" "$@"; exit 0;;
+    "installmissing") shift; loop_find "find_missing" install "$@"; exit 0;;
+    "update") loop_find "installed" "$@"; exit 0;;
 
     "installed") true;;
     "missing") true;;
-    "uninstall") true;;
-    "integrate") true;;
-    "deintegrate") true;;
-    "reset") true;;
-    "reset_conf") true;;
-    "reset_data") true;;
-    "reset_home") true;;
-    "clean") true;;
-    "clean_conf") true;;
-    "clean_data") true;;
-    "clean_home") true;;
-   *) exit 1;;
+    "uninstall") loop_find "installed" "$@"; exit 0;;
+    "integrate") loop_find "installed" "$@"; exit 0;;
+    "deintegrate") loop_find "installed" "$@"; exit 0;;
+    "reset") loop_find "installed" "$@"; exit 0;;
+    "reset_conf") loop_find "installed" "$@"; exit 0;;
+    "reset_data") loop_find "installed" "$@"; exit 0;;
+    "reset_home") loop_find "installed" "$@"; exit 0;;
+    "clean") loop_find "installed" "$@"; exit 0;;
+    "clean_conf") loop_find "installed" "$@"; exit 0;;
+    "clean_data") loop_find "installed" "$@"; exit 0;;
+    "clean_home") loop_find "installed" "$@"; exit 0;;
+#    *) exit 1;;
   esac
 
-  . m-sys.lib
-  work "m/pkg"
-  log_debug "CONF_DIR=$CONF_DIR - DATA_DIR=$DATA_DIR - HOME_DIR=$HOME_DIR - LOG_DIR=$LOG_DIR - PID_DIR=$PID_DIR - TMP_DIR=$TMP_DIR"
-
-  COMMAND="$1"
-  shift
-
-  while [ "$#" -gt "0" ]
-  do
-    if [ -z "$1" ]
-    then
-      log_fatal "missing arguments"
-      exit 1
-    fi
-    "$COMMAND" "$1"
-    shift
-  done
+  "$@"
 }
 
 #-------------------------------------------------------------------------------
