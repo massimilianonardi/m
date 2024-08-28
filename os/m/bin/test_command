@@ -227,7 +227,12 @@ test_path()
 
 test_pkg()
 {
-  log -l all -- pkg install item1/all/latest item2 item3
+  # log -l all -- pkg install item1/all/latest item2 item3
+  pkg installed .
+  log -l all -- pkg installed linux
+  log -l all -- pkg installed pulsar-linux-x86_64
+  log -l all -- pkg installed pulsar-*-x86_64
+  log -l all -- pkg installed pulsar-*
 }
 
 #-------------------------------------------------------------------------------

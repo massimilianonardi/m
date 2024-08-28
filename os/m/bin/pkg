@@ -152,39 +152,6 @@ update()
 
 #-------------------------------------------------------------------------------
 
-installed()
-(
-  if [ "$#" -lt "1" ]
-  then
-    for k in "$PKG_DIR/"*
-    do
-      if [ "$k" = "$PKG_DIR/*" ]
-      then
-        log_trace "no pkg installed!"
-        break
-      fi
-      echo "${k#$PKG_DIR/}"
-    done
-  fi
-
-  for k in "$@"
-  do
-#    for h in "$PKG_DIR/"*"$k"*
-    for h in "$PKG_DIR/"$k
-    do
-#      if [ "$h" = "$PKG_DIR/*${k}*" ]
-      if [ ! -e "$h" ]
-      then
-        log_trace "pkg search did not match *${k}*"
-        break
-      fi
-      echo "${h#$PKG_DIR/}"
-    done
-  done
-)
-
-#-------------------------------------------------------------------------------
-
 find_missing()
 (
   find $(missing "$@")
@@ -463,6 +430,13 @@ parse_pkg()
 
 #-------------------------------------------------------------------------------
 
+match_installed_pkg()
+{
+  true
+}
+
+#-------------------------------------------------------------------------------
+
 match_available_pkg()
 {
   true
@@ -528,6 +502,41 @@ parse_pkg_installed()
 
   log_debug "ARG: $1 - PKG_NAME: $PKG_NAME - PKG_PLATFORM: $PKG_PLATFORM - PKG_VERSION: $PKG_VERSION - PACKAGE: $PACKAGE - INSTALL_DIR: $INSTALL_DIR"
 }
+
+#-------------------------------------------------------------------------------
+
+installed()
+(
+  log_debug "installed $@"
+  if [ "$#" = "1" ] && [ "$1" = "." ]
+  then
+    for k in "$PKG_DIR/"*
+    do
+      if [ "$k" = "$PKG_DIR/*" ]
+      then
+        log_trace "no pkg installed!"
+        break
+      fi
+      echo "${k#$PKG_DIR/}"
+    done
+  else
+    for k in "$@"
+    do
+     for h in "$PKG_DIR/"*${k}*
+     # for h in "$PKG_DIR/"*"$k"*
+      # for h in "$PKG_DIR/"$k
+      do
+       # if [ "$h" = "$PKG_DIR/*${k}*" ]
+        if [ ! -e "$h" ]
+        then
+          log_trace "pkg search did not match *${k}*"
+          break
+        fi
+        echo "${h#$PKG_DIR/}"
+      done
+    done
+  fi
+)
 
 #-------------------------------------------------------------------------------
 
@@ -875,6 +884,10 @@ install()
   # parse pkg request
   parse_pkg "$1"
 
+  # match request against installed
+  match_installed_pkg
+  
+  # match only requested name against installed only for warning
   # check: if required version is not specified and any version is already installed, then done with warning, else
   if [ -z "$PKG_VERSION" ]
   then
@@ -887,11 +900,11 @@ install()
   # download m-pkg from m-store without bin into pkg-dir
   log_trace "reading required package from: $DATA_DIR/$PKG_NAME/ver/$PKG_PLATFORM/$PKG_VERSION/package"
   M_PKG="$(cat "$DATA_DIR/$PKG_NAME/ver/$PKG_PLATFORM/$PKG_VERSION/package")"
-  log_trace "copying package: $DATA_DIR/$PKG_NAME/pkg/$M_PKG -> $PKG_DIR/$PACKAGE"
-  cm -cT copy "$DATA_DIR/$PKG_NAME/pkg/$M_PKG" "$PKG_DIR/$PACKAGE"
-  echo "$PKG_NAME" > "$PKG_DIR/$PACKAGE/sys/name"
-  echo "$PKG_PLATFORM" > "$PKG_DIR/$PACKAGE/sys/platform"
-  echo "$PKG_VERSION" > "$PKG_DIR/$PACKAGE/sys/version"
+  log_trace "copying package: $DATA_DIR/$PKG_NAME/pkg/$M_PKG -> $INSTALL_DIR"
+  cm -cT copy "$DATA_DIR/$PKG_NAME/pkg/$M_PKG" "$INSTALL_DIR"
+  echo "$PKG_NAME" > "$INSTALL_DIR/sys/name"
+  echo "$PKG_PLATFORM" > "$INSTALL_DIR/sys/platform"
+  echo "$PKG_VERSION" > "$INSTALL_DIR/sys/version"
 
   # download bin from vendor website into m-pkg
   . "$DATA_DIR/$PKG_NAME/ver/$PKG_PLATFORM/$PKG_VERSION/link"
@@ -900,7 +913,7 @@ install()
     log_fatal "download link is null"
     exit 1
   fi
-  BIN_PATH="$PKG_DIR/$PACKAGE/bin"
+  BIN_PATH="$INSTALL_DIR/bin"
   log_debug web get "$LINK" "$BIN_PATH"
   rm "$BIN_PATH"
   if [ -z "$LINK_HEADER" ]
@@ -934,7 +947,7 @@ install()
   cm -T move "$TMP_XTR" "$BIN_PATH"
 
   # read and install dependencies
-  DEPEND="$(cat "$PKG_DIR/$PACKAGE/sys/depend")"
+  DEPEND="$(cat "$INSTALL_DIR/sys/depend")"
   if [ -n "$DEPEND" ]
   then
     pkg install $DEPEND
@@ -948,7 +961,7 @@ install()
 
 main()
 {
-  if [ "$#" -lt "2" ] || [ -z "$1" ]
+  if [ "$#" -lt "1" ] || [ -z "$1" ]
   then
     log_fatal "wrong arguments: $@"
     exit 1
