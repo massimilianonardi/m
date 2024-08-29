@@ -228,11 +228,33 @@ test_path()
 test_pkg()
 {
   # log -l all -- pkg install item1/all/latest item2 item3
-  pkg installed .
-  log -l all -- pkg installed linux
-  log -l all -- pkg installed pulsar-linux-x86_64
-  log -l all -- pkg installed pulsar-*-x86_64
-  log -l all -- pkg installed pulsar-*
+  # pkg installed .
+  # log -l all -- pkg installed linux
+  # log -l all -- pkg installed pulsar-linux-x86_64
+  # log -l all -- pkg installed pulsar-*-x86_64
+  # log -l all -- pkg installed pulsar-*
+  # log -l all -- pkg installed "*"
+  # pkg installed pulsar-*-x86_64
+  # pkg installed pulsar-*
+  # for k in $(pkg installed "*")
+  # do
+  #   echo "loop $k ok"
+  # done
+  # log -l all -- pkg dependinstalled "*"
+  # pkg dependinstalled "*"
+  # log -l all -- pkg dependmissing "*"
+  # pkg dependmissing "*"
+  pkg parse_pkg pulsar/linux/1.0
+  # pkg parse_pkg pulsar/linux/1.0:2.0
+  # pkg parse_pkg pulsar/linux/1.0:
+  # pkg parse_pkg pulsar/linux/:2.0
+  # pkg parse_pkg pulsar/linux/:
+  # pkg parse_pkg pulsar/*/*
+  # pkg parse_pkg pulsar/*/
+  # pkg parse_pkg pulsar//*
+  # pkg parse_pkg pulsar//
+  # pkg parse_pkg pulsar/*
+  # pkg parse_pkg pulsar
 }
 
 #-------------------------------------------------------------------------------

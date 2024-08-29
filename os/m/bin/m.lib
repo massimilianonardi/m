@@ -19,9 +19,14 @@ log_info "**********************************************************************
 log_info "[START] $THIS_NAME" "$@"
 log_debug "[THIS_DIR] $THIS_DIR [PWD] $PWD [THIS_DIR_REAL] $THIS_DIR_REAL"
 
-if [ "$CONF_PARSE" = "true" ]
+if [ "$CONF" = "true" ]
 then
   . m-conf.lib
+fi
+
+if [ "$INCLUDE" = "true" ]
+then
+  . m-include.lib
 fi
 
 if [ "$ARGS_PARSE" = "true" ]
