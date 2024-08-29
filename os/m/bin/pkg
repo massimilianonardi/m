@@ -18,10 +18,10 @@ main()
     # "installmissing") true;;
     # "update") true;;
     # "uninstall") true;;
+    # "dependuninstall") true;;
 
     "find") true;;
 
-    "parse_pkg") true;;
     "installed") true;;
     # "depend") true;;
     "dependinstalled") true;;

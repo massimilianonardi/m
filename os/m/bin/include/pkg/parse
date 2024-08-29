@@ -2,11 +2,15 @@
 
 #-------------------------------------------------------------------------------
 
-___parse_pkg()
+parse_pkg()
 {
-  PACKAGE="$1"
-
   PKG_NAME="${1%%/*}"
+  if [ "$PKG_NAME" = "$1" ]
+  then
+    PKG_FORMAT="name"
+  else
+    PKG_FORMAT="name+platform"
+  fi
 
   PKG_PLATFORM="${1#"$PKG_NAME"}"
   PKG_PLATFORM="${PKG_PLATFORM#/}"
@@ -17,46 +21,14 @@ ___parse_pkg()
   PKG_VERSION="${PKG_VERSION#"$PKG_PLATFORM"}"
   PKG_VERSION="${PKG_VERSION#/}"
 
-  PACKAGE="$PKG_NAME"
-  if [ -n "$PKG_PLATFORM" ] && [ "$PKG_PLATFORM" != "all" ]
+  if [ "$1" = "$PKG_NAME/$PKG_PLATFORM/$PKG_VERSION" ]
   then
-    PACKAGE="$PACKAGE-$PKG_PLATFORM"
-  fi
-  if [ -n "$PKG_VERSION" ] && [ "$PKG_VERSION" != "latest" ]
-  then
-    PACKAGE="$PACKAGE-$PKG_VERSION"
+    PKG_FORMAT="exact"
   fi
 
-  INSTALL_DIR="$PKG_DIR/$PACKAGE"
-
-  log_debug "parse_pkg - ARG: $1 - PKG_NAME: $PKG_NAME - PKG_PLATFORM: $PKG_PLATFORM - PKG_VERSION: $PKG_VERSION - PACKAGE: $PACKAGE - INSTALL_DIR: $INSTALL_DIR"
-}
-
-#-------------------------------------------------------------------------------
-
-parse_pkg()
-{
-  PKG_NAME="${1%%/*}"
-  if [ "$PKG_NAME" = "$1" ]
+  if [ -z "$PKG_PLATFORM" ] || [ "$PKG_PLATFORM" = "*" ]
   then
-    log_fatal "parse_pkg - wrong format! provided: $1 - required: name/platform/version"
-    exit 1
-  fi
-
-  PKG_PLATFORM="${1#"$PKG_NAME"/}"
-  PKG_VERSION="$PKG_PLATFORM"
-
-  PKG_PLATFORM="${PKG_VERSION%%/*}"
-  if [ "$PKG_PLATFORM" = "$PKG_VERSION" ]
-  then
-    log_fatal "parse_pkg - wrong format! provided: $1 - required: name/platform/version"
-    exit 1
-  fi
-  PKG_VERSION="${PKG_VERSION#"$PKG_PLATFORM"/}"
-
-  if [ "$PKG_PLATFORM" = "*" ]
-  then
-    PKG_PLATFORM=""
+    PKG_PLATFORM="$PLATFORM"
   fi
 
   if [ "$PKG_VERSION" = "*" ]
@@ -66,9 +38,10 @@ parse_pkg()
 
   PKG_VER_MIN="${PKG_VERSION%:*}"
   PKG_VER_MAX="${PKG_VERSION#*:}"
-  # if [ "$PKG_VERSION" != "$PKG_VER_MIN" ]
+
   if [ "$PKG_VERSION" = "${PKG_VER_MIN}:${PKG_VER_MAX}" ]
   then
+    PKG_FORMAT="range"
     PKG_VERSION="$PKG_VER_MAX"
 
     if [ -z "$PKG_VER_MIN" ]
@@ -83,12 +56,10 @@ parse_pkg()
   fi
 
   PACKAGE="$PKG_NAME"
-
   if [ -n "$PKG_PLATFORM" ] && [ "$PKG_PLATFORM" != "all" ]
   then
     PACKAGE="$PACKAGE-$PKG_PLATFORM"
   fi
-
   if [ -n "$PKG_VERSION" ] && [ "$PKG_VERSION" != "latest" ]
   then
     PACKAGE="$PACKAGE-$PKG_VERSION"
@@ -96,51 +67,35 @@ parse_pkg()
 
   INSTALL_DIR="$PKG_DIR/$PACKAGE"
 
-  log_debug "parse_pkg - ARG: $1 - PKG_NAME: $PKG_NAME - PKG_PLATFORM: $PKG_PLATFORM - PKG_VERSION: $PKG_VERSION - PACKAGE: $PACKAGE - INSTALL_DIR: $INSTALL_DIR"
+  log_debug "parse_pkg - ARG: $1 - PACKAGE: $PACKAGE - INSTALL_DIR: $INSTALL_DIR - PKG_NAME: $PKG_NAME - PKG_PLATFORM: $PKG_PLATFORM - PKG_VERSION: $PKG_VERSION - PKG_VER_MIN: $PKG_VER_MIN - PKG_VER_MAX: $PKG_VER_MAX - PKG_FORMAT: $PKG_FORMAT"
 
-  set | sed '/XDG/q' | grep PKG
+  # set | sed '/XDG/q' | grep PKG
 }
 
 #-------------------------------------------------------------------------------
 
-parse_pkg_ver_range()
+parse_pkg_exact()
 {
-  PKG_NAME="${1%\#*}"
-  PKG_VER_MIN="${1#"$PKG_NAME"}"
-  PKG_VER_MIN="${PKG_VER_MIN#\#}"
-  PKG_VER_MAX="${PKG_VER_MIN#*:}"
-  PKG_VER_MIN="${PKG_VER_MIN%:*}"
+  parse_pkg "$@"
 
-  if [ -z "$PKG_VER_MIN" ]
+  if [ "$PKG_FORMAT" != "exact" ]
   then
-    PKG_VER_MIN="0"
+    log_fatal "parse_pkg_range - package format is not 'exact' - PKG_FORMAT=$PKG_FORMAT"
+    exit 1
   fi
+}
 
-  if [ -z "$PKG_VER_MAX" ]
-  then
-    PKG_VER_MAX="latest"
-  fi
+#-------------------------------------------------------------------------------
 
-  if [ "$PKG_NAME" != "${PKG_NAME%/*}" ] && [ -n "${PKG_NAME#*/}" ]
+parse_pkg_range()
+{
+  parse_pkg "$@"
+
+  if [ "$PKG_FORMAT" != "range" ]
   then
-    PKG_PLATFORM="${PKG_NAME#*/}"
-    PKG_NAME="${PKG_NAME%/*}"
-  else
-    log_warn "package platform not specified autodetecting: all, $PLATFORM"
-    PKG_NAME="${PKG_NAME%/*}"
-    PKG_PLATFORM="all"
-    if [ -z "$(find "$PKG_NAME/$PKG_PLATFORM")" ]
-    then
-      PKG_PLATFORM="$PLATFORM"
-      if [ -z "$(find "$PKG_NAME/$PKG_PLATFORM")" ]
-      then
-        log_fatal "cannot determine platform"
-        return 1
-      fi
-    fi
-    log_info "package platform autodetected: $PKG_PLATFORM"
+    log_fatal "parse_pkg_range - package format is not 'range' - PKG_FORMAT=$PKG_FORMAT"
+    exit 1
   fi
-  log_debug "PKG_NAME: $PKG_NAME - PKG_PLATFORM: $PKG_PLATFORM - PKG_VER_MIN: $PKG_VER_MIN - PKG_VER_MAX: $PKG_VER_MAX"
 }
 
 #-------------------------------------------------------------------------------

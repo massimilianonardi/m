@@ -81,11 +81,6 @@ uninstall()
 # uninstall pkg then for each direct dep look if its deprev is empty then uninstall it
 # if some dep were installed manually then they should probably be kept, or interactive ask for uninstalling deps
 # need more commands: full auto, interactive (full list, ask if global action or one by one), just this no dep, force
-  if [ -z "$1" ]
-  then
-    log_fatal "missing arguments"
-    exit 1
-  fi
 
 # if not required by anyone proceed but keep dep links
 #  parse_pkg "$1"
