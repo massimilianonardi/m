@@ -1,1 +1,1 @@
-export PACKAGE_HOME="$PKG_DIR/${PACKAGE}/bin"
+export TEMPLATE_HOME="$PKG_DIR/${PACKAGE}/bin"

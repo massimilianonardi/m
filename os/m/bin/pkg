@@ -5,6 +5,7 @@
 main()
 {
   . m-sys.lib
+  . m-exec.lib
 
   if [ "$#" -lt "1" ] || [ -z "$1" ]
   then
@@ -38,7 +39,8 @@ main()
     # "clean_conf") true;;
     # "clean_data") true;;
     # "clean_home") true;;
-   *) exit 1;;
+
+   # *) exit 1;;
   esac
 
   work "m/pkg"

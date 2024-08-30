@@ -7,7 +7,7 @@ install()
   if [ -n "$(match_installed_pkg "$1")" ]
   then
     log_warn "install - package already installed - REQUESTED: $1 - MATCHED: $PACKAGE - INSTALL_DIR: $INSTALL_DIR"
-    exit 0
+    return 0
   fi
 
   match_pkg "$1"
@@ -69,20 +69,38 @@ install()
   fi
 
   # integrate m-pkg
-  integrate "$PACKAGE"
+  # integrate "$PACKAGE"
+  integrate
 )
 
 #-------------------------------------------------------------------------------
 
 uninstall()
 (
+  match_installed_pkg "$1"
+
+  # deintegrate m-pkg, if fails because some other pkg depends on it return 1 (not exit)
+  deintegrate "$PACKAGE"
+
+  # uninstall unneeded dependencies
+  # uninstalldepend "$PACKAGE"
+  DEPEND="$(cat "$INSTALL_DIR/sys/depend")"
+  if [ -n "$DEPEND" ]
+  then
+    pkg uninstall $DEPEND
+  fi
+
+  # delete package from pkg dir
+  rm -rf "$INSTALL_DIR"
+
+
+
 # todo uninstall only if there are no packages that still require that version and do not support updated one
 # if pkg is not required uninstall package and all dependencies if no other use them
 # uninstall pkg then for each direct dep look if its deprev is empty then uninstall it
 # if some dep were installed manually then they should probably be kept, or interactive ask for uninstalling deps
 # need more commands: full auto, interactive (full list, ask if global action or one by one), just this no dep, force
 
-# if not required by anyone proceed but keep dep links
 #  parse_pkg "$1"
   log_info "reverse dependencies: $(ls -qA "$DEPREV_DIR/$1")"
   if [ -n "$(ls -qA "$DEPREV_DIR/$1")" ]
@@ -122,6 +140,13 @@ update()
 #-------------------------------------------------------------------------------
 
 installdepend()
+{
+  true
+}
+
+#-------------------------------------------------------------------------------
+
+uninstalldepend()
 {
   true
 }
