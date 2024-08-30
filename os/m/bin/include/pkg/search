@@ -32,7 +32,22 @@ find_pkg()
 
 match_pkg()
 {
+  log_debug "match_pkg $@"
+
   parse_pkg "$1"
+
+  for k in "$DATA_DIR/$PKG_NAME/ver/$PKG_PLATFORM"/*
+  do
+    TMP_VERSION="${k##*/}"
+    log_trace "match_pkg - $k - TMP_VERSION=$TMP_VERSION"
+    if [ "$TMP_VERSION" -gt "$PKG_VER_MIN" ] || [ "$TMP_VERSION" = "$PKG_VER_MIN" ]
+    then
+      if [ "$PKG_VER_MAX" = "latest" ] || [ "$TMP_VERSION" -lt "$PKG_VER_MAX" ] || [ "$TMP_VERSION" = "$PKG_VER_MAX" ]
+      then
+        echo "$TMP_NAME-$TMP_PLATFORM-$TMP_VERSION"
+      fi
+    fi
+  done
 }
 
 #-------------------------------------------------------------------------------
