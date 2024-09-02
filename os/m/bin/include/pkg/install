@@ -47,7 +47,8 @@ install()
     xtr -cs "$BIN_PATH" "$TMP_XTR"
   elif [ "$LINK_EXTRACT" = "none" ]
   then
-    true
+    log_trace "cm -T move $BIN_PATH $TMP_XTR"
+    cm -T move "$BIN_PATH" "$TMP_XTR"
   elif [ "$LINK_EXTRACT" = "exact" ]
   then
     xtr -c "$BIN_PATH" "$TMP_XTR"
@@ -69,7 +70,6 @@ install()
     pkg install $DEPEND
   fi
 
-  exit 0
   # integrate m-pkg
   # integrate "$PACKAGE"
   integrate

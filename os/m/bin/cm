@@ -90,13 +90,15 @@ main()
           for k in "$@"
           do
             f="${DEST_DIR}/$(basename "$k")"
+            log_fatal "dest dir is not empty ARGS: $@, k=$k, now checking if destination '$f' exists"
             if [ -e "$f" ]
             then
               if [ -n "$SWITCH_f" ]
               then
                 log_trace "$f exist, but will be replaced because -f"
                 rm -rf "$f"
-              else
+              elif [ -z "$SWITCH_T" ]
+              then
                 log_fatal "destination '$f' exists and -f was not specified"
                 exit 1
               fi

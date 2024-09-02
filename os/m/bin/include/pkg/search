@@ -36,6 +36,12 @@ match_pkg()
 
   parse_pkg "$1"
 
+  if [ ! -d "$DATA_DIR/$PKG_NAME" ]
+  then
+    log_fatal "match_pkg - requested package not available: $@ - PKG_NAME=$PKG_NAME"
+    exit 1
+  fi
+
   if [ -z "$PKG_PLATFORM" ]
   then
     if [ -d "$DATA_DIR/$PKG_NAME/ver/all" ]
@@ -45,7 +51,7 @@ match_pkg()
     then
       PKG_PLATFORM="$PLATFORM"
     else
-      log_fatal "match_pkg - requested package/platform not available: $@ $(ls -lA "$DATA_DIR/$PKG_NAME/ver")"
+      log_fatal "match_pkg - requested platform not available: $@ $(ls -lA "$DATA_DIR/$PKG_NAME/ver")"
       exit 1
     fi
   fi
