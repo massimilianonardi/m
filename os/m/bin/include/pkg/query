@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #-------------------------------------------------------------------------------
 
@@ -209,21 +209,19 @@ match_installed_pkg()
 
   for k in $(installed "$PKG_NAME*")
   do
-    log_trace "match_installed_pkg - $k"
     # echo "$(cat "$PKG_DIR/$k/sys/name")-$(cat "$PKG_DIR/$k/sys/platform")-$(cat "$PKG_DIR/$k/sys/version")"
     TMP_NAME="$(cat "$PKG_DIR/$k/sys/name")"
     TMP_PLATFORM="$(cat "$PKG_DIR/$k/sys/platform")"
     TMP_VERSION="$(cat "$PKG_DIR/$k/sys/version")"
+    log_trace "match_installed_pkg - $k - TMP_NAME=$TMP_NAME - TMP_PLATFORM=$TMP_PLATFORM - TMP_VERSION=$TMP_VERSION"
     if [ "$TMP_NAME" = "$PKG_NAME" ]
     then
-      if [ -n "$PKG_PLATFORM" ] && [ "$TMP_PLATFORM" = "$PKG_PLATFORM" ]
+      if [ "$TMP_PLATFORM" = "$PKG_PLATFORM" ] || [ "$TMP_PLATFORM" = "all" ]
       then
-        if [ "$TMP_VERSION" -gt "$PKG_VER_MIN" ] || [ "$TMP_VERSION" = "$PKG_VER_MIN" ]
+        if [ "$(compare_versions "$PKG_VER_MIN" "$TMP_VERSION")" -gt "-1" ] && [ "$(compare_versions "$TMP_VERSION" "$PKG_VER_MAX")" -gt "-1" ]
         then
-          if [ "$PKG_VER_MAX" = "latest" ] || [ "$TMP_VERSION" -lt "$PKG_VER_MAX" ] || [ "$TMP_VERSION" = "$PKG_VER_MAX" ]
-          then
-            echo "$TMP_NAME-$TMP_PLATFORM-$TMP_VERSION"
-          fi
+          log_trace "match_installed_pkg - MATCH - $k - $TMP_NAME-$TMP_PLATFORM-$TMP_VERSION"
+          echo "$TMP_NAME-$TMP_PLATFORM-$TMP_VERSION"
         fi
       fi
     fi

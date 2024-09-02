@@ -244,7 +244,7 @@ test_pkg()
   # pkg dependinstalled "*"
   # log -l all -- pkg dependmissing "*"
   # pkg dependmissing "*"
-  pkg parse_pkg pulsar/linux/1.0
+  # pkg parse_pkg pulsar/linux/1.0
   # pkg parse_pkg pulsar/linux/1.0:2.0
   # pkg parse_pkg pulsar/linux/1.0:
   # pkg parse_pkg pulsar/linux/:2.0
@@ -255,6 +255,7 @@ test_pkg()
   # pkg parse_pkg pulsar//
   # pkg parse_pkg pulsar/*
   # pkg parse_pkg pulsar
+  log -l all -- pkg install testpkg/all/latest
 }
 
 #-------------------------------------------------------------------------------

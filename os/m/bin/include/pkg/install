@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #-------------------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ install()
   fi
 
   match_pkg "$1"
+  log_debug "install - REQUESTED: $1 - MATCHED: $PACKAGE - INSTALL_DIR: $INSTALL_DIR - PKG_NAME: $PKG_NAME - PKG_PLATFORM: $PKG_PLATFORM - PKG_VERSION: $PKG_VERSION"
 
   # download m-pkg from m-store without bin into pkg-dir
   log_trace "reading required package from: $DATA_DIR/$PKG_NAME/ver/$PKG_PLATFORM/$PKG_VERSION/package"
@@ -68,6 +69,7 @@ install()
     pkg install $DEPEND
   fi
 
+  exit 0
   # integrate m-pkg
   # integrate "$PACKAGE"
   integrate

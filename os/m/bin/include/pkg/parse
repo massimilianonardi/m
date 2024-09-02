@@ -1,4 +1,111 @@
-#!/bin/bash
+#!/bin/sh
+
+#-------------------------------------------------------------------------------
+
+compare_versions()
+(
+  if [ "$#" -lt "2" ]
+  then
+    log_fatal "compare_versions - wrong arguments: $@"
+    exit 1
+  fi
+
+  if [ "$1" = "$2" ]
+  then
+    echo "0"
+    return 0
+  elif [ "$1" = "latest" ]
+  then
+    echo "-1"
+    return 0
+  elif [ "$2" = "latest" ]
+  then
+    echo "1"
+    return 0
+  fi
+
+  MAJ_1="${1%%"."*}"
+  MAJ_2="${2%%"."*}"
+  log_trace "compare_versions - $@ - MAJ_1=$MAJ_1 - MAJ_2=$MAJ_2"
+  if is_integer "$MAJ_1" && is_integer "$MAJ_2"
+  then
+    if [ "$MAJ_1" -lt "$MAJ_2" ]
+    then
+      echo "1"
+    elif [ "$MAJ_1" -gt "$MAJ_2" ]
+    then
+      echo "-1"
+    elif [ "$MAJ_1" -eq "$MAJ_2" ]
+    then
+      MIN_1="${1#$MAJ_1}"
+      MIN_2="${2#$MAJ_2}"
+      MIN_1="${MIN_1#"."}"
+      MIN_2="${MIN_2#"."}"
+      MIN_1="${MIN_1%%"."*}"
+      MIN_2="${MIN_2%%"."*}"
+      log_trace "compare_versions - $@ - MIN_1=$MIN_1 - MIN_2=$MIN_2"
+      if is_integer "$MIN_1" && is_integer "$MIN_2"
+      then
+        if [ "$MIN_1" -lt "$MIN_2" ]
+        then
+          echo "1"
+        elif [ "$MIN_1" -gt "$MIN_2" ]
+        then
+          echo "-1"
+        elif [ "$MIN_1" -eq "$MIN_2" ]
+        then
+          BUILD_1="${1#${MAJ_1}"."$MIN_1}"
+          BUILD_2="${2#${MAJ_2}"."$MIN_2}"
+          BUILD_1="${BUILD_1#"."}"
+          BUILD_2="${BUILD_2#"."}"
+          BUILD_1="${BUILD_1%%-*}"
+          BUILD_2="${BUILD_2%%-*}"
+          log_trace "compare_versions - $@ - BUILD_1=$BUILD_1 - BUILD_2=$BUILD_2"
+          if is_integer "$BUILD_1" && is_integer "$BUILD_2"
+          then
+            if [ "$BUILD_1" -lt "$BUILD_2" ]
+            then
+              echo "1"
+            elif [ "$BUILD_1" -gt "$BUILD_2" ]
+            then
+              echo "-1"
+            elif [ "$BUILD_1" -eq "$BUILD_2" ]
+            then
+              echo "0"
+            fi
+          elif [ -z "$BUILD_1" ] && [ -z "$BUILD_2" ]
+          then
+            echo "0"
+          elif [ -z "$BUILD_1" ]
+          then
+            echo "1"
+          elif [ -z "$BUILD_2" ]
+          then
+            echo "-1"
+          else
+            log_fatal "compare_versions - wrong arguments (BUILD): $@ - MIN_1=$MIN_1 - MIN_2=$MIN_2"
+            exit 1
+          fi
+        fi
+      elif [ -z "$MIN_1" ] && [ -z "$MIN_2" ]
+      then
+        echo "0"
+      elif [ -z "$MIN_1" ]
+      then
+        echo "1"
+      elif [ -z "$MIN_2" ]
+      then
+        echo "-1"
+      else
+        log_fatal "compare_versions - wrong arguments (MIN): $@ - MIN_1=$MIN_1 - MIN_2=$MIN_2"
+        exit 1
+      fi
+    fi
+  else
+    log_fatal "compare_versions - wrong arguments (not numeric): $@"
+    exit 1
+  fi
+)
 
 #-------------------------------------------------------------------------------
 
@@ -26,7 +133,11 @@ parse_pkg()
     PKG_FORMAT="exact"
   fi
 
-  if [ -z "$PKG_PLATFORM" ] || [ "$PKG_PLATFORM" = "*" ]
+  # if [ -z "$PKG_PLATFORM" ] || [ "$PKG_PLATFORM" = "*" ]
+  # then
+  #   PKG_PLATFORM="$PLATFORM"
+  # fi
+  if [ "$PKG_PLATFORM" = "*" ]
   then
     PKG_PLATFORM="$PLATFORM"
   fi
@@ -44,15 +155,25 @@ parse_pkg()
     PKG_FORMAT="range"
     PKG_VERSION="$PKG_VER_MAX"
 
-    if [ -z "$PKG_VER_MIN" ]
-    then
-      PKG_VER_MIN="0"
-    fi
+    # if [ -z "$PKG_VER_MIN" ]
+    # then
+    #   PKG_VER_MIN="0"
+    # fi
+    #
+    # if [ -z "$PKG_VER_MAX" ]
+    # then
+    #   PKG_VER_MAX="latest"
+    # fi
+  fi
 
-    if [ -z "$PKG_VER_MAX" ]
-    then
-      PKG_VER_MAX="latest"
-    fi
+  if [ -z "$PKG_VER_MIN" ]
+  then
+    PKG_VER_MIN="0"
+  fi
+
+  if [ -z "$PKG_VER_MAX" ]
+  then
+    PKG_VER_MAX="latest"
   fi
 
   PACKAGE="$PKG_NAME"
