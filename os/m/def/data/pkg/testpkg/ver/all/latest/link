@@ -1,8 +1,5 @@
 
 LINK_EXTRACT="none"
-LINK_EXTRACT="exact"
-LINK_EXTRACT="link"
-LINK_EXTRACT=""
 
 link_auto()
 (

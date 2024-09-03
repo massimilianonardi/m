@@ -48,7 +48,8 @@ install()
   elif [ "$LINK_EXTRACT" = "none" ]
   then
     log_trace "cm -T move $BIN_PATH $TMP_XTR"
-    cm -T move "$BIN_PATH" "$TMP_XTR"
+    # cm -T move "$BIN_PATH" "$TMP_XTR"
+    cm -c move "$BIN_PATH" "$TMP_XTR"
   elif [ "$LINK_EXTRACT" = "exact" ]
   then
     xtr -c "$BIN_PATH" "$TMP_XTR"

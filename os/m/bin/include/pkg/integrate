@@ -36,61 +36,38 @@ integrate_postinstall()
 
 #-------------------------------------------------------------------------------
 
-integrate_profile()
-{
-  work "$PACKAGE"
-  [ -z "$(ls -qA "$CONF_DIR")" ] && reset_conf "$1"
-  [ -z "$(ls -qA "$DATA_DIR")" ] && reset_data "$1"
-  [ -z "$(ls -qA "$HOME_DIR")" ] && reset_home "$1"
-  true
-}
-
-#-------------------------------------------------------------------------------
-
 rebuild_global_pkg_path()
 {
-  PKG_PATH_FILE_GLOBAL="$SYS_DIR/path/global_pkg_path"
+  PKG_PATH_FILE_GLOBAL="$SYS_DIR/path/.path"
+
   mkdir -p "$SYS_DIR/path"
-  if [ -z "$(ls -qA "$SYS_DIR/path")" ]
-  then
-    return 0
-  fi
-
-  cat "$SYS_DIR/path"/* > "$PKG_PATH_FILE_GLOBAL"
-  (
-    PATH=""
-    . "$PKG_PATH_FILE_GLOBAL"
-      echo "PATH=$PATH:\$PATH" > "$PKG_PATH_FILE_GLOBAL"
-  )
-}
-
-#-------------------------------------------------------------------------------
-
-rebuild_global_pkg_env()
-{
-  PKG_ENV_FILE_GLOBAL="$SYS_DIR/env/global_pkg_env"
-  mkdir -p "$SYS_DIR/env"
-  if [ -z "$(ls -qA "$SYS_DIR/env")" ]
-  then
-    return 0
-  fi
-
-  cat "$SYS_DIR/env"/* > "$PKG_ENV_FILE_GLOBAL"
+  printf '%s' "PATH=$PATH:" > "$PKG_PATH_FILE_GLOBAL"
+  for k in $(ls -tr "$SYS_DIR/path")
+  do
+    log_trace "rebuild_global_pkg_path - file: $k"
+    for h in $(cat "$SYS_DIR/path/$k")
+    do
+      log_trace "rebuild_global_pkg_path - file: $k - item: $h"
+      printf '%s' "$h:" >> "$PKG_PATH_FILE_GLOBAL"
+    done
+  done
+  echo "\$PATH" >> "$PKG_PATH_FILE_GLOBAL"
 }
 
 #-------------------------------------------------------------------------------
 
 integrate_path()
 {
+  PKG_PATH_FILE="$SYS_DIR/path/${PACKAGE}.path"
+
   if [ -f "$INSTALL_DIR/sys/path" ]
   then
     log_debug "processing package system file: $INSTALL_DIR/sys/path"
     mkdir -p "$SYS_DIR/path"
-    PKG_PATH_FILE="$SYS_DIR/path/$PACKAGE"
     for k in $(cat "$INSTALL_DIR/sys/path")
     do
       log_trace "add PATH: \$PKG_DIR/$PACKAGE/$k"
-      echo "PATH=\$PKG_DIR/$PACKAGE/$k:\$PATH">>"$PKG_PATH_FILE"
+      echo "\$PKG_DIR/$PACKAGE/$k" >> "$PKG_PATH_FILE"
     done
   else
     log_debug "package system file is not present: $INSTALL_DIR/sys/path"
@@ -101,14 +78,25 @@ integrate_path()
 
 #-------------------------------------------------------------------------------
 
+rebuild_global_pkg_env()
+{
+  PKG_ENV_FILE_GLOBAL="$SYS_DIR/env/.env"
+
+  mkdir -p "$SYS_DIR/env"
+  cat "$SYS_DIR/env"/* > "$PKG_ENV_FILE_GLOBAL"
+}
+
+#-------------------------------------------------------------------------------
+
 integrate_env()
 {
+  PKG_ENV_FILE="$SYS_DIR/env/${PACKAGE}.env"
+
   if [ -f "$INSTALL_DIR/sys/env" ]
   then
     log_debug "processing package system file: $INSTALL_DIR/sys/env"
     mkdir -p "$SYS_DIR/env"
-    PKG_ENV_FILE="$SYS_DIR/env/$PACKAGE"
-    cat "$INSTALL_DIR/sys/env" | sed "s/\$PACKAGE/$PACKAGE/g" | sed "s/\${PACKAGE}/$PACKAGE/g">>"$PKG_ENV_FILE"
+    cat "$INSTALL_DIR/sys/env" | sed "s|\$INSTALL_DIR|\$PKG_DIR/$PACKAGE|g" | sed "s|\${INSTALL_DIR}|\$PKG_DIR/$PACKAGE|g" | sed "s|\$PACKAGE|$PACKAGE|g" | sed "s|\${PACKAGE}|$PACKAGE|g" >> "$PKG_ENV_FILE"
   else
     log_debug "package system file is not present: $INSTALL_DIR/sys/env"
   fi
@@ -120,14 +108,14 @@ integrate_env()
 
 integrate_command()
 {
-  IFS_ORIG="$IFS"
+  # IFS_ORIG="$IFS"
   if [ -f "$INSTALL_DIR/sys/command" ]
   then
     log_debug "processing package system file: $INSTALL_DIR/sys/command"
-    IFS=$'\n'
+    # IFS=$'\n'
     for k in $(cat "$INSTALL_DIR/sys/command")
     do
-      IFS="$IFS_ORIG"
+      # IFS="$IFS_ORIG"
       CMD_PATH="${k#*=}"
       CMD_ALIAS="${k%"$CMD_PATH"}"
       CMD_ALIAS="${CMD_ALIAS%=}"
@@ -144,9 +132,9 @@ integrate_command()
         log_trace "link $INSTALL_DIR/$CMD_PATH - $CMD_DIR/$PKG_PLATFORM/$CMD_ALIAS"
         lnk -cr "$INSTALL_DIR/$CMD_PATH" "$CMD_DIR/$PKG_PLATFORM/$CMD_ALIAS"
       fi
-      IFS=$'\n'
+      # IFS=$'\n'
     done
-    IFS="$IFS_ORIG"
+    # IFS="$IFS_ORIG"
   else
     log_debug "package system file is not present: $INSTALL_DIR/sys/command"
   fi
@@ -159,10 +147,10 @@ integrate_app()
   if [ -f "$INSTALL_DIR/sys/app" ]
   then
     log_debug "processing package system file: $INSTALL_DIR/sys/app"
-    IFS=$'\n'
+    # IFS=$'\n'
     for k in $(cat "$INSTALL_DIR/sys/app")
     do
-      IFS="$IFS_ORIG"
+      # IFS="$IFS_ORIG"
       APP_PATH="${k#*=}"
       APP_ALIAS="${k%"$APP_PATH"}"
       APP_ALIAS="${APP_ALIAS%=}"
@@ -179,9 +167,9 @@ integrate_app()
         log_trace "link $INSTALL_DIR/$APP_PATH - $APP_DIR/$PKG_PLATFORM/$APP_ALIAS"
         lnk -cr "$INSTALL_DIR/$APP_PATH" "$APP_DIR/$PKG_PLATFORM/$APP_ALIAS"
       fi
-      IFS=$'\n'
+      # IFS=$'\n'
     done
-    IFS="$IFS_ORIG"
+    # IFS="$IFS_ORIG"
   else
     log_debug "package system file is not present: $INSTALL_DIR/sys/app"
   fi
@@ -266,12 +254,22 @@ integrate_depend()
 
 #-------------------------------------------------------------------------------
 
+integrate_profile()
+{
+  work "$PACKAGE"
+  [ -z "$(ls -qA "$CONF_DIR")" ] && reset_conf "$1"
+  [ -z "$(ls -qA "$DATA_DIR")" ] && reset_data "$1"
+  [ -z "$(ls -qA "$HOME_DIR")" ] && reset_home "$1"
+  true
+}
+
+#-------------------------------------------------------------------------------
+
 integrate()
 (
   # parse_pkg_installed "$1"
 
   integrate_postdownload
-  # integrate_profile
   integrate_path
   integrate_env
   integrate_command
@@ -279,13 +277,14 @@ integrate()
   # integrate_srv
   # integrate_lib
   # integrate_depend
+  # integrate_profile
   integrate_postinstall
 )
 
 #-------------------------------------------------------------------------------
 
 deintegrate()
-(
+{
   parse_pkg_installed "$1"
 
 #  work "$PACKAGE"
@@ -447,6 +446,6 @@ deintegrate()
   else
     log_debug "package system file is not present: $INSTALL_DIR/sys/lib"
   fi
-)
+}
 
 #-------------------------------------------------------------------------------
