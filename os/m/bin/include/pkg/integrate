@@ -108,14 +108,12 @@ integrate_env()
 
 integrate_command()
 {
-  # IFS_ORIG="$IFS"
   if [ -f "$INSTALL_DIR/sys/command" ]
   then
     log_debug "processing package system file: $INSTALL_DIR/sys/command"
-    # IFS=$'\n'
-    for k in $(cat "$INSTALL_DIR/sys/command")
+    # while IFS="" read -r k <&3 || [ -n "$k" ]
+    while IFS="" read -r k <&3
     do
-      # IFS="$IFS_ORIG"
       CMD_PATH="${k#*=}"
       CMD_ALIAS="${k%"$CMD_PATH"}"
       CMD_ALIAS="${CMD_ALIAS%=}"
@@ -132,9 +130,7 @@ integrate_command()
         log_trace "link $INSTALL_DIR/$CMD_PATH - $CMD_DIR/$PKG_PLATFORM/$CMD_ALIAS"
         lnk -cr "$INSTALL_DIR/$CMD_PATH" "$CMD_DIR/$PKG_PLATFORM/$CMD_ALIAS"
       fi
-      # IFS=$'\n'
-    done
-    # IFS="$IFS_ORIG"
+    done 3< "$INSTALL_DIR/sys/command"
   else
     log_debug "package system file is not present: $INSTALL_DIR/sys/command"
   fi
@@ -147,10 +143,8 @@ integrate_app()
   if [ -f "$INSTALL_DIR/sys/app" ]
   then
     log_debug "processing package system file: $INSTALL_DIR/sys/app"
-    # IFS=$'\n'
-    for k in $(cat "$INSTALL_DIR/sys/app")
+    while IFS="" read -r k <&3
     do
-      # IFS="$IFS_ORIG"
       APP_PATH="${k#*=}"
       APP_ALIAS="${k%"$APP_PATH"}"
       APP_ALIAS="${APP_ALIAS%=}"
@@ -167,9 +161,7 @@ integrate_app()
         log_trace "link $INSTALL_DIR/$APP_PATH - $APP_DIR/$PKG_PLATFORM/$APP_ALIAS"
         lnk -cr "$INSTALL_DIR/$APP_PATH" "$APP_DIR/$PKG_PLATFORM/$APP_ALIAS"
       fi
-      # IFS=$'\n'
-    done
-    # IFS="$IFS_ORIG"
+    done 3< "$INSTALL_DIR/sys/app"
   else
     log_debug "package system file is not present: $INSTALL_DIR/sys/app"
   fi
