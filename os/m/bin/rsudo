@@ -38,6 +38,13 @@ execute()
 
 #------------------------------------------------------------------------------
 
+cmd()
+(
+  execute /bin/sh -c "$@"
+)
+
+#------------------------------------------------------------------------------
+
 execute_as()
 (
   EXECUTE_AS="$1"
@@ -65,6 +72,16 @@ execute_as()
   else
     (echo "$RSUDO_PASSWORD"; [ ! -t 0 ] && cat) | setsid ssh -o 'StrictHostKeyChecking no' -l "$REMOTE_USER" "$REMOTE_HOST" cd /\; sudo -k -S --prompt='' --user="$EXECUTE_AS" -- "$@"
   fi
+)
+
+#------------------------------------------------------------------------------
+
+cmd_as()
+(
+  EXECUTE_AS="$1"
+  shift
+
+  execute_as "$EXECUTE_AS" /bin/sh -c "$@"
 )
 
 #------------------------------------------------------------------------------
@@ -111,9 +128,9 @@ putdb()
 
   if [ -z "$LOCAL_PATH" ]
   then
-    execute_as postgres sh -c "createdb '$REMOTE_DB' && psql '$REMOTE_DB'"
+    cmd_as postgres "createdb '$REMOTE_DB' && psql '$REMOTE_DB'"
   else
-    cat "$LOCAL_PATH" | execute_as postgres sh -c "createdb '$REMOTE_DB' && psql '$REMOTE_DB'"
+    cat "$LOCAL_PATH" | cmd_as postgres "createdb '$REMOTE_DB' && psql '$REMOTE_DB'"
   fi
 )
 
@@ -123,7 +140,7 @@ delete()
 (
   REMOTE_PATH="$1"
 
-  execute_remote_command "rm -rf -- \"$REMOTE_PATH\""
+  execute rm -rf -- "$REMOTE_PATH"
 )
 
 get()
@@ -131,8 +148,8 @@ get()
   REMOTE_PATH="$1"
   LOCAL_PATH="$2"
 
-  # REMOTE_PATH_TYPE="$(execute_remote_command "if [ -L '$REMOTE_PATH' ]; then echo 'L'; elif [ -f '$REMOTE_PATH' ]; then echo 'f'; elif [ -d '$REMOTE_PATH' ];then echo 'd'; else echo '-1'; fi")"
-  REMOTE_PATH_TYPE="$(execute_remote_command "ls -ld '$REMOTE_PATH' | cut -c 1 | tr '-' 'f' | tr 'l' 'L'")"
+  # REMOTE_PATH_TYPE="$(cmd "if [ -L '$REMOTE_PATH' ]; then echo 'L'; elif [ -f '$REMOTE_PATH' ]; then echo 'f'; elif [ -d '$REMOTE_PATH' ];then echo 'd'; else echo '-1'; fi")"
+  REMOTE_PATH_TYPE="$(cmd "ls -ld '$REMOTE_PATH' | cut -c 1 | tr '-' 'f' | tr 'l' 'L'")"
 
   if [ ! "$?" -eq "0" ]
   then
@@ -143,17 +160,15 @@ get()
 
   if [ "$REMOTE_PATH_TYPE" = "L" ]
   then
-    TARGET="$(execute_remote_command "ls -ld -- '$REMOTE_PATH'")"
+    TARGET="$(execute ls -ld -- "$REMOTE_PATH")"
     TARGET=${TARGET#*" $REMOTE_PATH -> "}
     rm -rf "$LOCAL_PATH" && mkdir -p "${LOCAL_PATH%/*}" && ln -s "$TARGET" "$LOCAL_PATH"
   elif [ "$REMOTE_PATH_TYPE" = "f" ]
   then
-    rm -rf "$LOCAL_PATH" && mkdir -p "${LOCAL_PATH%/*}" && execute_remote_command \
-    "cat '$REMOTE_PATH'" | cat > "$LOCAL_PATH"
+    rm -rf "$LOCAL_PATH" && mkdir -p "${LOCAL_PATH%/*}" && execute cat "$REMOTE_PATH" | cat > "$LOCAL_PATH"
   elif [ "$REMOTE_PATH_TYPE" = "d" ]
   then
-    rm -rf "$LOCAL_PATH" && mkdir -p "$LOCAL_PATH" && cd "$LOCAL_PATH" && execute_remote_command \
-    "cd '$REMOTE_PATH' && tar -c -f - ." | tar -x -f -
+    rm -rf "$LOCAL_PATH" && mkdir -p "$LOCAL_PATH" && cd "$LOCAL_PATH" && cmd "cd '$REMOTE_PATH' && tar -c -f - ." | tar -x -f -
   else
     log "get: $REMOTE_PATH doesn't exists"
     exit 1
@@ -171,16 +186,13 @@ put()
   then
     TARGET=$(ls -ld -- "$LOCAL_PATH")
     TARGET=${TARGET#*" $LOCAL_PATH -> "}
-    execute_remote_command \
-    "rm -rf '$REMOTE_PATH' && mkdir -p '${REMOTE_PATH%/*}' && ln -s '$TARGET' '$REMOTE_PATH'"
+    cmd "rm -rf '$REMOTE_PATH' && mkdir -p '${REMOTE_PATH%/*}' && ln -s '$TARGET' '$REMOTE_PATH'"
   elif [ -f "$LOCAL_PATH" ]
   then
-    cat "$LOCAL_PATH" | execute_remote_command \
-    "rm -rf '$REMOTE_PATH' && mkdir -p '${REMOTE_PATH%/*}' && cat > '$REMOTE_PATH'"
+    cat "$LOCAL_PATH" | cmd "rm -rf '$REMOTE_PATH' && mkdir -p '${REMOTE_PATH%/*}' && cat > '$REMOTE_PATH'"
   elif [ -d "$LOCAL_PATH" ]
   then
-    cd "$LOCAL_PATH" && tar -c -f - . | execute_remote_command \
-    "rm -rf '$REMOTE_PATH' && mkdir -p '$REMOTE_PATH' && cd '$REMOTE_PATH' && tar -x -f -"
+    cd "$LOCAL_PATH" && tar -c -f - . | cmd "rm -rf '$REMOTE_PATH' && mkdir -p '$REMOTE_PATH' && cd '$REMOTE_PATH' && tar -x -f -"
   else
     log "put: $LOCAL_PATH doesn't exists"
     exit 1
@@ -191,8 +203,8 @@ put()
     exit 1
   fi
 
-  if [ -n "$REMOTE_OWNER_GROUP" ]; then execute_remote_command "chown -R '$REMOTE_OWNER_GROUP' '$REMOTE_PATH'"; fi && \
-  if [ -n "$REMOTE_PERMISSIONS" ]; then execute_remote_command "chmod -R '$REMOTE_PERMISSIONS' '$REMOTE_PATH'"; fi
+  if [ -n "$REMOTE_OWNER_GROUP" ]; then execute chown -R "$REMOTE_OWNER_GROUP" "$REMOTE_PATH"; fi && \
+  if [ -n "$REMOTE_PERMISSIONS" ]; then execute chmod -R "$REMOTE_PERMISSIONS" "$REMOTE_PATH"; fi
 )
 
 s2s_direct()
