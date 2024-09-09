@@ -264,7 +264,7 @@ test_pkg()
 
 test_rsudo()
 {
-  . /m/cmd/#rsudo_test_include
+  . "/m/cmd/#rsudo_test_include"
 
   if [ -z "$RSUDO_PASSWORD" ]
   then
