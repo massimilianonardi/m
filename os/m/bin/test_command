@@ -15,6 +15,7 @@ test_files_start()
   mkdir -p ./aaa/colliding/fff
   mkdir -p ./aaa/colliding/sub-colliding
   mkdir -p ./000/111/222
+  mkdir -p ./000/111/222/file_dir
   mkdir -p ./000/333/444
   mkdir -p ./000/colliding/555
   mkdir -p ./000/colliding/sub-colliding
@@ -35,6 +36,7 @@ test_files_start()
   echo "inside aaa" > ./aaa/colliding/sub-colliding/file_colliding
   touch ./000/111/222/file_0a
   touch ./000/111/222/file_0b
+  touch ./000/111/222/xxx_file_xxx
   touch ./000/colliding/555/file_5a
   echo "inside 000" > ./000/colliding/sub-colliding/file_colliding
 
@@ -262,13 +264,7 @@ test_pkg()
 
 test_rsudo()
 {
-  REMOTE_HOST="localhost"
-  REMOTE_USER="admino"
-  export RSUDO_PASSWORD=""
-
-  REMOTE_HOST="172.25.0.51"
-  REMOTE_USER="root"
-  export RSUDO_PASSWORD=""
+  . /m/cmd/#rsudo_test_include
 
   if [ -z "$RSUDO_PASSWORD" ]
   then
@@ -300,6 +296,7 @@ test_rsudo()
 # #   test
 # # EOF
   # rsudo execute "$REMOTE_HOST" "$REMOTE_USER" sh -c "ls -ld"
+  #
   # rsudo execute_as "$REMOTE_HOST" "$REMOTE_USER" postgres psql
   # echo "select * from auth.roles;" | rsudo sql "$REMOTE_HOST" "$REMOTE_USER" system
   # rsudo sql "$REMOTE_HOST" "$REMOTE_USER" system "select * from auth.roles;"
@@ -311,30 +308,26 @@ test_rsudo()
   # rsudo getdb "$REMOTE_HOST" "$REMOTE_USER" system > /tmp/!db.sql
   # rsudo putdb "$REMOTE_HOST" "$REMOTE_USER" system_duplicate /tmp/!db.sql
   # rm /tmp/!db.sql
-
+  #
   # test_files_start
   #
   # rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/*" # not working because globbin must be outside quotes on server
   # rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}\"/*\"" # force glob outside quotes
-  # rm -rfv -- "${TEST_DIR}"/*
-  # solve delete globbing support??? -> no use execute if globbins is needed
+  # rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000/111/222/file_\"*\"" # force server glob by surrounding * with escaped quotes
+  # solve simpler delete globbing support??? -> not easy
   #
   # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/link-recursive" "${TEST_DIR}/upload/link-aaa-recursive"
   # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/bbb/ccc/link-absolute" "${TEST_DIR}/upload/link-absolute"
-  # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/bbb/ccc/link-absolute" "${TEST_DIR}/upload/link-absolute"
   # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/file_a1" "${TEST_DIR}/upload/file_a1"
-  # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/colliding/sub-colliding/file_colliding" "${TEST_DIR}/upload/file_colliding"
+  # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/colliding/sub-colliding/file_colliding" "${TEST_DIR}/upload/file_colliding_renamed"
   # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/upload/000" "admino:admino" "777"
-  # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/upload/0-0-0"
   # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/upload/0-0-0"
   #
   # rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/link-recursive" "${TEST_DIR}/download/link-aaa-recursive"
   # rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/bbb/ccc/link-absolute" "${TEST_DIR}/download/link-absolute"
-  # rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/bbb/ccc/link-absolute" "${TEST_DIR}/download/link-absolute"
   # rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/file_a1" "${TEST_DIR}/download/file_a1"
-  # rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/colliding/sub-colliding/file_colliding" "${TEST_DIR}/download/file_colliding"
+  # rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/colliding/sub-colliding/file_colliding" "${TEST_DIR}/download/file_colliding_renamed"
   # rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/download/000"
-  # rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/download/0-0-0"
   # rsudo get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/download/0-0-0"
   #
   # ls -lA "${TEST_DIR}/upload"

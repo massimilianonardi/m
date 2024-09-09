@@ -38,15 +38,13 @@ execute()
 
 #------------------------------------------------------------------------------
 
-cmd()
-(
-  execute /bin/sh -c "$@"
-)
-
-#------------------------------------------------------------------------------
-
 execute_as()
 (
+  if [ -z "$1" ]
+  then
+    exit 1
+  fi
+
   EXECUTE_AS="$1"
   shift
 
@@ -76,10 +74,32 @@ execute_as()
 
 #------------------------------------------------------------------------------
 
-cmd_as()
+shell()
 (
+  if [ "$#" -eq "0" ] || [ -z "$*" ]
+  then
+    exit 1
+  fi
+
+  execute /bin/sh -c "$@"
+)
+
+#------------------------------------------------------------------------------
+
+shell_as()
+(
+  if [ -z "$1" ]
+  then
+    exit 1
+  fi
+
   EXECUTE_AS="$1"
   shift
+
+  if [ "$#" -eq "0" ] || [ -z "$*" ]
+  then
+    exit 1
+  fi
 
   execute_as "$EXECUTE_AS" /bin/sh -c "$@"
 )
@@ -88,6 +108,11 @@ cmd_as()
 
 sql()
 (
+  if [ -z "$1" ]
+  then
+    exit 1
+  fi
+
   REMOTE_DB="$1"
   shift
 
@@ -103,6 +128,11 @@ sql()
 
 getdb()
 (
+  if [ -z "$1" ]
+  then
+    exit 1
+  fi
+
   REMOTE_DB="$1"
 
   if [ ! -t 0 ]
@@ -115,6 +145,11 @@ getdb()
 
 putdb()
 (
+  if [ -z "$1" ]
+  then
+    exit 1
+  fi
+
   REMOTE_DB="$1"
   LOCAL_PATH="$2"
 
@@ -128,9 +163,9 @@ putdb()
 
   if [ -z "$LOCAL_PATH" ]
   then
-    cmd_as postgres "createdb '$REMOTE_DB' && psql '$REMOTE_DB'"
+    shell_as postgres "createdb '$REMOTE_DB' && psql '$REMOTE_DB'"
   else
-    cat "$LOCAL_PATH" | cmd_as postgres "createdb '$REMOTE_DB' && psql '$REMOTE_DB'"
+    cat "$LOCAL_PATH" | shell_as postgres "createdb '$REMOTE_DB' && psql '$REMOTE_DB'"
   fi
 )
 
@@ -138,6 +173,11 @@ putdb()
 
 delete()
 (
+  if [ -z "$1" ]
+  then
+    exit 1
+  fi
+
   REMOTE_PATH="$1"
 
   execute rm -rf -- "$REMOTE_PATH"
@@ -145,11 +185,15 @@ delete()
 
 get()
 (
+  if [ -z "$1" ] || [ -z "$2" ]
+  then
+    exit 1
+  fi
+
   REMOTE_PATH="$1"
   LOCAL_PATH="$2"
 
-  # REMOTE_PATH_TYPE="$(cmd "if [ -L '$REMOTE_PATH' ]; then echo 'L'; elif [ -f '$REMOTE_PATH' ]; then echo 'f'; elif [ -d '$REMOTE_PATH' ];then echo 'd'; else echo '-1'; fi")"
-  REMOTE_PATH_TYPE="$(cmd "ls -ld '$REMOTE_PATH' | cut -c 1 | tr '-' 'f' | tr 'l' 'L'")"
+  REMOTE_PATH_TYPE="$(execute ls -ld "$REMOTE_PATH" | cut -c 1 | tr '-' 'f' | tr 'l' 'L')"
 
   if [ ! "$?" -eq "0" ]
   then
@@ -162,13 +206,13 @@ get()
   then
     TARGET="$(execute ls -ld -- "$REMOTE_PATH")"
     TARGET=${TARGET#*" $REMOTE_PATH -> "}
-    rm -rf "$LOCAL_PATH" && mkdir -p "${LOCAL_PATH%/*}" && ln -s "$TARGET" "$LOCAL_PATH"
+    rm -rf -- "$LOCAL_PATH" && mkdir -p "${LOCAL_PATH%/*}" && ln -s "$TARGET" "$LOCAL_PATH"
   elif [ "$REMOTE_PATH_TYPE" = "f" ]
   then
-    rm -rf "$LOCAL_PATH" && mkdir -p "${LOCAL_PATH%/*}" && execute cat "$REMOTE_PATH" | cat > "$LOCAL_PATH"
+    rm -rf -- "$LOCAL_PATH" && mkdir -p "${LOCAL_PATH%/*}" && execute cat "$REMOTE_PATH" > "$LOCAL_PATH"
   elif [ "$REMOTE_PATH_TYPE" = "d" ]
   then
-    rm -rf "$LOCAL_PATH" && mkdir -p "$LOCAL_PATH" && cd "$LOCAL_PATH" && cmd "cd '$REMOTE_PATH' && tar -c -f - ." | tar -x -f -
+    rm -rf -- "$LOCAL_PATH" && mkdir -p "$LOCAL_PATH" && cd "$LOCAL_PATH" && shell "cd '$REMOTE_PATH' && tar -c -f - ." | tar -x -f -
   else
     log "get: $REMOTE_PATH doesn't exists"
     exit 1
@@ -177,6 +221,11 @@ get()
 
 put()
 (
+  if [ -z "$1" ] || [ -z "$2" ]
+  then
+    exit 1
+  fi
+
   LOCAL_PATH="$1"
   REMOTE_PATH="$2"
   REMOTE_OWNER_GROUP="$3"
@@ -186,13 +235,13 @@ put()
   then
     TARGET=$(ls -ld -- "$LOCAL_PATH")
     TARGET=${TARGET#*" $LOCAL_PATH -> "}
-    cmd "rm -rf '$REMOTE_PATH' && mkdir -p '${REMOTE_PATH%/*}' && ln -s '$TARGET' '$REMOTE_PATH'"
+    shell "rm -rf -- '$REMOTE_PATH' && mkdir -p '${REMOTE_PATH%/*}' && ln -s '$TARGET' '$REMOTE_PATH'"
   elif [ -f "$LOCAL_PATH" ]
   then
-    cat "$LOCAL_PATH" | cmd "rm -rf '$REMOTE_PATH' && mkdir -p '${REMOTE_PATH%/*}' && cat > '$REMOTE_PATH'"
+    cat "$LOCAL_PATH" | shell "rm -rf -- '$REMOTE_PATH' && mkdir -p '${REMOTE_PATH%/*}' && cat > '$REMOTE_PATH'"
   elif [ -d "$LOCAL_PATH" ]
   then
-    cd "$LOCAL_PATH" && tar -c -f - . | cmd "rm -rf '$REMOTE_PATH' && mkdir -p '$REMOTE_PATH' && cd '$REMOTE_PATH' && tar -x -f -"
+    cd "$LOCAL_PATH" && tar -c -f - . | shell "rm -rf -- '$REMOTE_PATH' && mkdir -p '$REMOTE_PATH' && cd '$REMOTE_PATH' && tar -x -f -"
   else
     log "put: $LOCAL_PATH doesn't exists"
     exit 1
@@ -209,18 +258,32 @@ put()
 
 s2s_direct()
 (
+  if [ -z "$1" ] || [ -z "$2" ]
+  then
+    exit 1
+  fi
+
   SOURCE_PATH="$1"
   DEST_PATH="$2"
+  REMOTE_OWNER_GROUP="$3"
+  REMOTE_PERMISSIONS="$4"
 
-#todo
+  #todo
 )
 
 s2s_proxy()
 (
+  if [ -z "$1" ] || [ -z "$2" ]
+  then
+    exit 1
+  fi
+
   SOURCE_PATH="$1"
   DEST_PATH="$2"
+  REMOTE_OWNER_GROUP="$3"
+  REMOTE_PERMISSIONS="$4"
 
-#todo
+  #todo
 )
 
 #------------------------------------------------------------------------------
