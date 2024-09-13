@@ -100,6 +100,9 @@ add the following line at beginning just after shebang line
 export $(dbus-launch)
 sudo reboot
 
+vm mount shared folder with host:
+sudo vmhgfs-fuse .host:/shared /mnt/hgfs/shared -o allow_other -o uid=1000
+
 --------------------------------------------------------------------------------
 
 https://192.168.253.136:8443/m/authenticator.id
