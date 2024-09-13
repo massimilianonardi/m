@@ -21,7 +21,7 @@ reset_conf()
   if [ -d "$INSTALL_DIR/def/conf" ]
   then
     work "$PACKAGE"
-    copy -acfs "$INSTALL_DIR/def/conf" "$CONF_DIR"
+    cm -cfT copy "$INSTALL_DIR/def/conf" "$CONF_DIR"
   fi
 )
 
@@ -37,7 +37,7 @@ reset_data()
   if [ -d "$INSTALL_DIR/def/data" ]
   then
     work "$PACKAGE"
-    copy -acfs "$INSTALL_DIR/def/data" "$DATA_DIR"
+    cm -cfT copy "$INSTALL_DIR/def/data" "$DATA_DIR"
   fi
 )
 
@@ -53,7 +53,7 @@ reset_home()
   if [ -d "$INSTALL_DIR/def/home" ]
   then
     work "$PACKAGE"
-    copy -acfs "$INSTALL_DIR/def/home" "$HOME_DIR"
+    cm -cfT copy "$INSTALL_DIR/def/home" "$HOME_DIR"
   fi
 )
 

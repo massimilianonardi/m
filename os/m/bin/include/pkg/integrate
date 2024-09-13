@@ -249,9 +249,9 @@ integrate_depend()
 integrate_profile()
 {
   work "$PACKAGE"
-  [ -z "$(ls -qA "$CONF_DIR")" ] && reset_conf "$1"
-  [ -z "$(ls -qA "$DATA_DIR")" ] && reset_data "$1"
-  [ -z "$(ls -qA "$HOME_DIR")" ] && reset_home "$1"
+  [ -z "$(ls -qA "$CONF_DIR")" ] && reset_conf "$PACKAGE"
+  [ -z "$(ls -qA "$DATA_DIR")" ] && reset_data "$PACKAGE"
+  [ -z "$(ls -qA "$HOME_DIR")" ] && reset_home "$PACKAGE"
   true
 }
 
@@ -269,7 +269,7 @@ integrate()
   # integrate_srv
   # integrate_lib
   # integrate_depend
-  # integrate_profile
+  integrate_profile
   integrate_postinstall
 )
 
