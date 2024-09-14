@@ -4,6 +4,8 @@
 
 install()
 (
+  # even if package is installed check and install also for dependencies:
+  # check broken dep and pkg for all ver that depend on pkg specific to platform (eg java)
   if [ -n "$(match_installed_pkg "$1")" ]
   then
     log_warn "install - package already installed - REQUESTED: $1 - MATCHED: $PACKAGE - INSTALL_DIR: $INSTALL_DIR"

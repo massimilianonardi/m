@@ -1,7 +1,7 @@
 postinstall()
 (
-  echo postinstall_function > "$INSTALL_DIR/bin/postinstall_function"
+  FILE="$INSTALL_DIR/bin/chrome-sandbox"
+  sudo chown "root:root" "$FILE"
+  sudo chmod 4755 "$FILE"
 )
-
-echo postinstall > "$INSTALL_DIR/bin/postinstall"
 

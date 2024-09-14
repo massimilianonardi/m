@@ -1,3 +1,2 @@
-command1=cmd/command1
-command2=cmd/command2
-
+geoserver-start=cmd/geoserver-start
+geoserver-stop=cmd/geoserver-stop
