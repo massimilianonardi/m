@@ -1,4 +1,4 @@
-LINK_EXTRACT="true"
+LINK_EXTRACT=""
 
 link_auto()
 (
@@ -13,4 +13,5 @@ link_auto()
 )
 
 LINK="$(link_auto)"
+LINK="https://nodejs.org/dist/v22.8.0/node-v22.8.0-linux-x64.tar.xz"
 

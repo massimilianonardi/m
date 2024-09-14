@@ -258,7 +258,6 @@ test_pkg()
   # pkg parse_pkg pulsar/*
   # pkg parse_pkg pulsar
   log -l all -- pkg install testpkg/all/latest
-  # links not working: geoserver, graalvm, java8, nodejs, netbeans
 }
 
 #-------------------------------------------------------------------------------

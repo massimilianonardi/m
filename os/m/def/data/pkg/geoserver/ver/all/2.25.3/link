@@ -3,7 +3,7 @@ LINK_EXTRACT=""
 link_auto()
 (
   LINK_ROOT="http://geoserver.org/release/stable/"
-  LINK_INDEX="http://geoserver.org/release/stable/"
+  LINK_INDEX="https://sourceforge.net/projects/geoserver/files/GeoServer/"
   LINK_PLATFORM="geoserver-.*-bin.zip"
   LINK_PLATFORM=".*bin.zip"
   LINK_HASH_ALG="SHA256"
@@ -18,4 +18,5 @@ link_auto()
 )
 
 LINK="$(link_auto)"
+LINK="https://sourceforge.net/projects/geoserver/files/GeoServer/2.25.3/geoserver-2.25.3-bin.zip/download"
 

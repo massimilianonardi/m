@@ -1,4 +1,4 @@
-LINK_EXTRACT="true"
+LINK_EXTRACT=""
 
 link_auto()
 (
@@ -20,4 +20,5 @@ link_auto()
 )
 
 LINK="$(link_auto)"
+LINK="https://dlcdn.apache.org/netbeans/netbeans/22/netbeans-22-bin.zip"
 
