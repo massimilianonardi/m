@@ -1,13 +1,41 @@
 
+var electron = require("electron");
 var {app, BrowserWindow, Menu, MenuItem, Tray, getCurrentWindow, globalShortcut} = require("electron");
 var {exec} = require("child_process");
-var electron = require("electron");
+var https = require("https");
 
 var win = null;
-var tray = null;
 
 var loadFavList = function()
 {
+  // win.loadURL("https://www.vinted.it");
+  // https://www.reddit.com/r/popular.json
+  let url = "https://www.reddit.com/r/popular.json";
+
+https.get(url,(res) => {
+    let body = "";
+
+    res.on("data", (chunk) => {
+        body += chunk;
+    });
+
+    res.on("end", () => {
+        try {
+            console.log(body);
+            let json = JSON.parse(body);
+            // do something with JSON
+            console.log(json);
+        } catch (error) {
+            console.error(error.message);
+        };
+    });
+
+}).on("error", (error) => {
+    console.error(error.message);
+});
+
+win.webContents.openDevTools();
+
 };
 
 app.on("ready", function()
@@ -19,7 +47,6 @@ app.on("ready", function()
   win = new BrowserWindow({width: w, height: h});
   // win.loadURL("https://www.vinted.it");
   win.loadURL("https://www.vinted.it/member/items/favourite_list");
-  // win.webContents.openDevTools();
   win.on("closed", () =>
   {
     win = null;
@@ -44,43 +71,19 @@ app.on("ready", function()
 
   var actionsMenu = Menu.buildFromTemplate(
   [
-    {label: "Item1", type: "radio", click: function(){win.loadURL("https://www.vinted.it");}},
-    {label: "Item2", type: "radio"},
-    {label: "Item3", type: "radio", checked: true}
+    {label: "Load Favourite List", type: "normal", click: loadFavList}
   ]);
+
   var actionsMenuItem = new MenuItem(
   {
     type: "submenu",
     label: "Actions",
     submenu: actionsMenu
   });
+
   var mainMenu = Menu.getApplicationMenu();
   mainMenu.append(actionsMenuItem);
   Menu.setApplicationMenu(mainMenu);
-//   tray = new Tray(app.getAppPath() + "/icon-systray.png");
-//   tray.setToolTip("This is my application.");
-//   var contextMenu = Menu.buildFromTemplate(
-//   [
-//     {label: "Item1", type: "radio"},
-//     {label: "Item2", type: "radio"},
-//     {label: "Item3", type: "radio", checked: true},
-//     {label: "Item4", type: "radio"}
-//   ]);
-//   tray.setContextMenu(contextMenu);
-//   tray.on("click", (event) =>
-//   {
-// //    win.isVisible() ? win.hide() : win.show();
-//     console.log(event);
-//     exec("/bin/ls -la", function(error, stdout, stderr)
-//     {
-//       console.log("done");
-//       console.log(error, stdout, stderr);
-//     });
-// //    tray.emit("right-click");
-// //    mainMenu.popup();
-// //    tray.popUpContextMenu(mainMenu);
-//   });
-
 });
 
 app.on("window-all-closed", function()
