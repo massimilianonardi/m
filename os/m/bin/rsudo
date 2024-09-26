@@ -158,8 +158,10 @@ putdb()
     exit 1
   fi
 
-  sql "" "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$REMOTE_DB' AND pid <> pg_backend_pid();" 1>/dev/null 2>/dev/null
-  execute_as postgres dropdb --if-exists "$REMOTE_DB" 1>/dev/null 2>/dev/null
+  # sql "" "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$REMOTE_DB' AND pid <> pg_backend_pid();" 1>/dev/null 2>/dev/null
+  # execute_as postgres dropdb --if-exists "$REMOTE_DB" 1>/dev/null 2>/dev/null
+  execute service postgresql restart
+  execute_as postgres dropdb "$REMOTE_DB" 1>/dev/null 2>/dev/null
 
   if [ -z "$LOCAL_PATH" ]
   then

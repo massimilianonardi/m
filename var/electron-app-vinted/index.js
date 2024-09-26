@@ -33,6 +33,8 @@ function parseFavDump()
     }
   }
 }
+// https://www.vinted.it/api/v2/users/25943425/items?page=1&per_page=21&cond=active&selected_item_id=5105638873
+// https://www.vinted.it/api/v2/users/155761817/items?page=1&per_page=21&cond=active&selected_item_id=4170366942
 
 var processFavChunk = function(url, i, lastChunk)
 {
