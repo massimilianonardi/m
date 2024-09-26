@@ -1,4 +1,8 @@
 
+// https://www.vinted.it/api/v2/users/25943425/items?page=1&per_page=21&cond=active&selected_item_id=5105638873
+// https://www.vinted.it/api/v2/users/155761817/items?page=1&per_page=21&cond=active&selected_item_id=4170366942
+// https://www.vinted.it/api/v2/users/155761817/items/favourites?page=0&include_sold=true&per_page=90
+
 var electron = require("electron");
 var {app, BrowserWindow, Menu, MenuItem, Tray, getCurrentWindow, globalShortcut} = require("electron");
 var {exec} = require("child_process");
@@ -33,8 +37,6 @@ function parseFavDump()
     }
   }
 }
-// https://www.vinted.it/api/v2/users/25943425/items?page=1&per_page=21&cond=active&selected_item_id=5105638873
-// https://www.vinted.it/api/v2/users/155761817/items?page=1&per_page=21&cond=active&selected_item_id=4170366942
 
 var processFavChunk = function(url, i, lastChunk)
 {
@@ -80,7 +82,6 @@ var loadFavList = function()
   var lastIndex = 35;
   for(var i = 0; i < lastIndex; i++)
   {
-    // https://www.vinted.it/api/v2/users/155761817/items/favourites?page=0&include_sold=true&per_page=90
     var url = "https://www.vinted.it/api/v2/users/155761817/items/favourites?page=" + i + "&include_sold=true&per_page=20";
     processFavChunk(url, i, i === lastIndex);
   }
