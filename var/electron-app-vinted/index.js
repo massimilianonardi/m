@@ -3,40 +3,79 @@
 // https://www.vinted.it/api/v2/users/155761817/items?page=1&per_page=21&cond=active&selected_item_id=4170366942
 // https://www.vinted.it/api/v2/users/155761817/items/favourites?page=0&include_sold=true&per_page=90
 
-var electron = require("electron");
-var {app, BrowserWindow, Menu, MenuItem, Tray, getCurrentWindow, globalShortcut} = require("electron");
-var {exec} = require("child_process");
-var https = require("https");
-var fs = require("fs");
-var path = require("path");
-// var url = require("url");
+const electron = require("electron");
+const {app, BrowserWindow, Menu, MenuItem, Tray, getCurrentWindow, globalShortcut} = require("electron");
+const {exec} = require("child_process");
+// const url = require("url");
+const https = require("https");
+const fs = require("fs");
+const path = require("path");
+
+//------------------------------------------------------------------------------
+
+const appPath = app.getAppPath();
+
+const dataPath = "/m/_vinted";
+const itemIndexPath = path.join(dataPath, "item", "index");
+const favDumpPath = path.join(dataPath, "dump", "fav");
 
 var win = null;
-var dataPath = app.getAppPath() + "/data"
+
+//------------------------------------------------------------------------------
+
+mkdir(dataPath);
+mkdir(itemIndexPath);
+mkdir(favDumpPath);
+
+//------------------------------------------------------------------------------
+
+function mkdir(dir)
+{
+  if(!fs.existsSync(dir))
+  {
+    fs.mkdirSync(dir, {recursive: true});
+  }
+}
+
+//------------------------------------------------------------------------------
 
 function parseFavDump()
 {
-  var dumppath = dataPath + "/fav_dump";
-
-  var lastIndex = 99;
-  for(var i = 0; i < lastIndex; i++)
+  fs.readdirSync(favDumpPath).forEach(fileName =>
   {
-    var fn = dumppath + "/favourites_" + i + ".json";
-    if(fs.existsSync(fn))
+    var fn = path.join(favDumpPath, fileName);
+    console.log(fn);
+    var json = JSON.parse(fs.readFileSync(fn));
+    var items = json.items;
+    for(var j = 0; j < items.length; j++)
     {
-      var text = fs.readFileSync(fn);
-      var json = JSON.parse(text);
-      console.log(fn);
-      var items = json.items;
-      for(var j = 0; j < items.length; j++)
+      var item = items[j];
+      var id = "" + item.id;
+      if(typeof id !== "string" || id === "")
       {
-        var item = items[j];
-        var itemfn = dataPath + item.path;
-        fs.writeFileSync(itemfn, JSON.stringify(item), "utf-8");
+        console.log("id null", id, item);
+        // throw new Exception();
       }
+      var itemPath = path.join(itemIndexPath, id);
+      if(fs.existsSync(itemPath))
+      {
+        console.log("id exists", id, item.path);
+        // console.log("id exists", id, item.path, item);
+        // throw new Exception();
+      }
+      mkdir(itemPath);
+      fs.writeFileSync(path.join(itemPath, "item.json"), JSON.stringify(item, null, 2), "utf-8");
+      // todo: download hires images (item.photos, photo.url, photo.full_size_url)
     }
-  }
+    var sold = json.sold;
+    if(sold != null)
+    {
+      console.log(sold);
+    }
+  });
 }
+
+//------------------------------------------------------------------------------
 
 var processFavChunk = function(url, i, lastChunk)
 {
