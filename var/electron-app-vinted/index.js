@@ -20,6 +20,7 @@ const itemIndexPath = path.join(dataPath, "item", "index");
 const favDumpPath = path.join(dataPath, "dump", "fav");
 
 var win = null;
+var photoQueue = [];
 
 //------------------------------------------------------------------------------
 
@@ -47,9 +48,9 @@ function parseFavDump()
     console.log(fn);
     var json = JSON.parse(fs.readFileSync(fn));
     var items = json.items;
-    for(var j = 0; j < items.length; j++)
+    for(var i = 0; i < items.length; i++)
     {
-      var item = items[j];
+      var item = items[i];
       var id = "" + item.id;
       if(typeof id !== "string" || id === "")
       {
@@ -65,13 +66,53 @@ function parseFavDump()
       }
       mkdir(itemPath);
       fs.writeFileSync(path.join(itemPath, "item.json"), JSON.stringify(item, null, 2), "utf-8");
+      var photosPath = path.join(itemPath, "photos");
+      mkdir(photosPath);
+
       // todo: download hires images (item.photos, photo.url, photo.full_size_url)
+      var photos = item.photos;
+      for(var j = 0; j < photos.length; j++)
+      {
+        var photo = photos[j];
+        var photoPath = path.join(photosPath, "img_" + j + ".jpg");
+        photoQueue.push({url: photo.full_size_url, path: photoPath});
+      }
     }
     var sold = json.sold;
     if(sold != null)
     {
       console.log(sold);
     }
+  });
+
+  console.log("processing photo download queue. #photos:" + photoQueue.length);
+  processPhotoQueue(0);
+  console.log("processing photo download completed! #photos:" + photoQueue.length);
+}
+
+//------------------------------------------------------------------------------
+
+function processPhotoQueue(index)
+{
+  var photoPath = photoQueue[index].path;
+  var url = photoQueue[index].url;
+  console.log("photo", index, photoPath, url);
+
+  var fstream = fs.createWriteStream(photoPath);
+  var req = https.get(url,(res) =>
+  {
+    res.pipe(fstream);
+    // res.on("data", (chunk) => {body += chunk;});
+    res.on("end", () =>
+    {
+      if(index + 1 < photoQueue.length)
+      {
+        processPhotoQueue(index + 1);
+      };
+    });
+  }).on("error", (error) =>
+  {
+    console.error(error.message);
   });
 }
 
