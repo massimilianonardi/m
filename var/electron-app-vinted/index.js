@@ -87,7 +87,6 @@ function parseFavDump()
 
   console.log("processing photo download queue. #photos:" + photoQueue.length);
   processPhotoQueue(0);
-  console.log("processing photo download completed! #photos:" + photoQueue.length);
 }
 
 //------------------------------------------------------------------------------
@@ -98,22 +97,42 @@ function processPhotoQueue(index)
   var url = photoQueue[index].url;
   console.log("photo", index, photoPath, url);
 
+  if(fs.existsSync(photoPath))
+  {
+    console.log("photo -> skipped, already exists!", index, photoPath, url);
+    processNextPhotoQueue(index);
+    return;
+  }
+
   var fstream = fs.createWriteStream(photoPath);
   var req = https.get(url,(res) =>
   {
     res.pipe(fstream);
     // res.on("data", (chunk) => {body += chunk;});
-    res.on("end", () =>
-    {
-      if(index + 1 < photoQueue.length)
-      {
-        processPhotoQueue(index + 1);
-      };
-    });
+    res.on("end", () => {processNextPhotoQueue(index);});
   }).on("error", (error) =>
   {
     console.error(error.message);
   });
+}
+
+function processNextPhotoQueue(index)
+{
+  if(index + 1 < photoQueue.length)
+  {
+    processPhotoQueue(index + 1);
+  }
+  else
+  {
+    console.log("processing photo download completed! #photos:" + photoQueue.length);
+    photoQueue = [];
+  }
+}
+
+//------------------------------------------------------------------------------
+
+function viewFavList()
+{
 }
 
 //------------------------------------------------------------------------------
@@ -174,8 +193,9 @@ app.on("ready", function()
   var h = parseInt(height);
 
   win = new BrowserWindow({width: w, height: h});
+  win.loadFile("index.html");
   // win.loadURL("https://mail.google.com");
-  win.loadURL("https://www.vinted.it");
+  // win.loadURL("https://www.vinted.it");
   // win.loadURL("https://www.vinted.it/member/items/favourite_list");
   win.on("closed", () =>
   {
@@ -201,7 +221,8 @@ app.on("ready", function()
   var actionsMenu = Menu.buildFromTemplate(
   [
     {label: "Load Favourite List", type: "normal", click: loadFavList},
-    {label: "Parse Favourite List", type: "normal", click: parseFavDump}
+    {label: "Parse Favourite List", type: "normal", click: parseFavDump},
+    {label: "View Favourite List", type: "normal", click: viewFavList}
   ]);
 
   var actionsMenuItem = new MenuItem(
