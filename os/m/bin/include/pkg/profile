@@ -53,7 +53,7 @@ reset_home()
   if [ -d "$INSTALL_DIR/def/home" ]
   then
     work "$PACKAGE"
-    cm -cfT copy "$INSTALL_DIR/def/home" "$HOME_DIR"
+    cm -cf copy "$INSTALL_DIR"/def/home/* "$HOME_DIR"
   fi
 )
 

@@ -20,6 +20,12 @@ PKG_DIR="$ROOT_DIR/pkg"
 mkdir -p "$SRC_DIR"
 mkdir -p "$PKG_DIR"
 
+WRK_DIR="$ROOT_DIR/wrk"
+WORK_DIR="$ROOT_DIR/wrk"
+DATA_DIR="$ROOT_DIR/wrk/data"
+
+mkdir -p "$DATA_DIR"
+
 rm -rf "$PKG_DIR/m"
 rm -f "$ROOT_DIR/m"
 
@@ -27,8 +33,10 @@ if [ "$1" = "dev" ] || [ "$2" = "dev" ]
 then
   ln -s "$M_SRC_DIR" "$PKG_DIR/m"
   ln -s "$INSTALL_DIR/m" "$ROOT_DIR/m"
+  ln -s "$M_SRC_DIR/def/data" "$DATA_DIR/m"
 else
   cp -R "$M_SRC_DIR" "$PKG_DIR"
   cp -R "$INSTALL_DIR/m" "$ROOT_DIR"
   rm -Rf "$PKG_DIR/m/.mk"
+  cp -RT "$M_SRC_DIR/def/data" "$DATA_DIR/m"
 fi
