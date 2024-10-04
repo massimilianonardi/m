@@ -73,6 +73,7 @@ test_files_end()
 
 test_linenum()
 {
+  # not working
   set -x
   echo "line: $LINENO"
   set +x
@@ -170,15 +171,55 @@ test_link()
 #-------------------------------------------------------------------------------
 
 _test_path()
-{
+(
   EXPECTED="$1"
   shift
-  echo -n "path $@ --- EXPECTED: $EXPECTED --- RESULT: "
-  path "$@"
-  echo "EXIT CODE: '$?'"
-}
+  RESULT="$(path "$@" 2>/dev/null)"
+  EXIT_CODE="$?"
+  echo "EXIT CODE: '$EXIT_CODE' --- path $@ --- RESULT: $RESULT --- EXPECTED: $EXPECTED"
+)
 
 test_path()
+{
+  test_files_start
+
+  _test_path "./aaa/bbb" -c ./aaa/../aaa/./bbb
+  _test_path "$TEST_DIR/aaa/bbb" -c $TEST_DIR/./aaa/../aaa/bbb
+  _test_path "error - .// means relative './' or absolute '/'?" -c .//$TEST_DIR/aaa/../aaa/./bbb
+
+  _test_path "true" -e aaa
+  _test_path "false" -e zzz
+  _test_path "true" -eL ./aaa/link-recursive
+  _test_path "false" -eL zzz
+
+  _test_path "$TEST_DIR/aaa" -a aaa
+  _test_path "$TEST_DIR/aaa/bbb/ccc" -a aaa/bbb/ccc
+  _test_path "error - doesn't exist" -a ccc
+
+  _test_path "./aaa/file_a1" -l link-deeper
+  _test_path "../aaa" -l ./aaa/link-recursive
+  _test_path "$TEST_DIR/aaa/file_a1" -L link-deeper
+  _test_path "$TEST_DIR/aaa" -L ./aaa/link-recursive
+  _test_path "$TEST_DIR/000/111/222/file_0a" -L ./aaa/bbb/ccc/link-outer
+  _test_path "$TEST_DIR/000/111/222/file_0b" -L ./aaa/bbb/ccc/link-absolute
+
+  # _test_path "/tmp/aaa/bbb/ccc" -lLa bbb/ccc
+  # _test_path "/tmp/aaa/bbb/ccc" -lLa eee
+  # _test_path "error - doesn't exist" -lLa zzz
+  #
+  # _test_path "error - doesn't exist" -r eee bbb/ccc
+  # _test_path "../../.." -r . ./bbb/mmm/nnn
+  # _test_path "./bbb/mmm/nnn" -r bbb/mmm/nnn .
+  # _test_path "./bbb/ccc" -r bbb/ccc ../aaa
+  # _test_path "" -- aaa bbb
+  # _test_path "" -- . bbb
+  # _test_path "" -- bbb .
+  # _test_path "" -- bbb aaa
+
+  test_files_end
+}
+
+test_path___()
 {
   mkdir -p /tmp/aaa/bbb/mmm/nnn
   touch /tmp/aaa/bbb/ccc
