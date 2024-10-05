@@ -33,27 +33,8 @@ path_readlink()
 
 #-------------------------------------------------------------------------------
 
-_resolve()
-(
-  if [ -d "$2" ]
-  then
-    # echo "$(cd $1 -- "$2" && pwd $1)"
-    cd $1 -- "$2" && pwd $1
-  elif [ -f "$2" ]
-  then
-#    echo "$(cd $1 -- "${2%/*}" && pwd $1)/${2##*/}"
-    echo "$(cd $1 -- "$(dirname -- "$2")" && pwd $1)/$(basename -- "$2")"
-  else
-    log_fatal "path doesn't exist!"
-    exit 1
-  fi
-)
-
-#-------------------------------------------------------------------------------
-
 path_absolute()
 {
-  # _resolve -L "$@"
   if [ -d "$1" ]
   then
     cd -L -- "$1" && pwd -L
@@ -71,17 +52,6 @@ path_absolute()
 
 path_resolve_links_absolute()
 (
-  # _resolve -P "$@"
-  #
-  # if [ -L "$1" ]
-  # then
-  #   _resolve -P "$(dirname -- "$1")"/"$(path_readlink "$1")"
-  # else
-  #   _resolve -P "$@"
-  # fi
-
-  # todo relativize if source was relative
-
   if [ -d "$1" ]
   then
     cd -P -- "$1" && pwd -P
@@ -170,9 +140,7 @@ main()
   # l readlink, 1-arg, incompatible with any other switch, just reads the link "content"
   # L resolve links, resolves path and basename links an gives the real path relative-canonicalized or absolute depending on source
   # r relativize 2-args
-  # exist and readlink have only one arg and are incompatible with any other switch.
-  # other switches are applied to first and eventual second arg.
-  # resolve links implies absolute.
+  # todo: "recursive L" -> 'R' with infinite loop detection
 
   if [ "$#" -gt "2" ]
   then
@@ -261,8 +229,6 @@ main()
     log_fatal "unknown error!"
     exit 1
   fi
-
-  # true
 }
 
 #-------------------------------------------------------------------------------
