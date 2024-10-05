@@ -69,7 +69,7 @@ path_absolute()
 
 #-------------------------------------------------------------------------------
 
-path_resolve_links()
+path_resolve_links_absolute()
 (
   # _resolve -P "$@"
   #
@@ -101,6 +101,19 @@ path_resolve_links()
   else
     log_fatal "path doesn't exist!"
     exit 1
+  fi
+)
+
+#-------------------------------------------------------------------------------
+
+path_resolve_links()
+(
+  if [ "$1" != "${1#/}" ]
+  then
+    path_resolve_links_absolute "$1"
+  else
+    # path_relativize "$(path_resolve_links_absolute "$1")" "$(pwd -P)"
+    path_relativize "$(path_resolve_links_absolute "$1")" "$(pwd -L)"
   fi
 )
 
