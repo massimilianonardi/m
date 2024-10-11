@@ -5,25 +5,43 @@ var win = null;
 
 //------------------------------------------------------------------------------
 
-app.on("ready", function(event, launchInfo)
+app.on("ready", function()
 {
-  console.log(event, launchInfo, arguments);
   var { width, height } = electron.screen.getPrimaryDisplay().workAreaSize;
   var w = parseInt(width);
   var h = parseInt(height);
 
-  win = new BrowserWindow({width: w, height: h});
-  // win.loadFile("index.html");
-  // win.loadURL("https://mail.google.com");
-  // win.loadURL("https://www.vinted.it");
+  win = new BrowserWindow(
+  {
+    width: w,
+    height: h,
+    webPreferences:
+    {
+      preload: path.join(app.getAppPath(), "preload.js"),
+      contextIsolation: false,
+      devTools: true,
+      nodeIntegration: true,
+      nodeIntegrationInWorker: true,
+      nodeIntegrationInSubFrames: true,
+      webSecurity: false,
+      allowRunningInsecureContent: true,
+      sandbox: false
+    }
+  });
+
   // win.loadURL("https://www.vinted.it/member/items/favourite_list");
   win.loadFile("index.html").then(function()
   {
     win.webContents.openDevTools();
-    console.log(event, launchInfo, arguments);
-    win.webContents.console.log(event, launchInfo, arguments);
+    win.webContents.executeJavaScript('console.log("hello from main");');
+    win.webContents.send("message", "my message");
+    win.webContents.send("message", arguments[0]);
+    console.log(global.zzz);
+    console.log(global.xxx);
   });
-  win.webContents.send("message", arguments);
+
+  // win.webContents.send("message", "my message");
+
   win.on("closed", () =>
   {
     win = null;
@@ -34,16 +52,9 @@ app.on("ready", function(event, launchInfo)
 //    getCurrentWindow().reload();
     win.reload();
   }
+
   globalShortcut.register("F5", reload);
   globalShortcut.register("CommandOrControl+R", reload);
-
-  // winfav = new BrowserWindow({width: 800, height: 600});
-  // winfav.loadURL("https://www.vinted.it/member/items/favourite_list");
-  // // winfav.webContents.openDevTools();
-  // winfav.on("closed", () =>
-  // {
-  //   winfav = null;
-  // });
 
   var actionsMenu = Menu.buildFromTemplate(
   [

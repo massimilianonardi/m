@@ -10,7 +10,15 @@ const path = require("path");
 const https = require("https");
 
 const electron = require("electron");
-const {app, BrowserWindow, Menu, MenuItem, Tray, getCurrentWindow, globalShortcut} = require("electron");
+const {app, ipcMain, ipcRenderer, shell, clipboard, globalShortcut, BrowserWindow, Menu, MenuItem, Tray, getCurrentWindow} = require("electron");
+
+// const {autoUpdater, BaseWindow, BrowserView,
+//   contentTracing, crashReporter, desktopCapturer, dialog, inAppPurchase,
+//   MessageChannelMain, MessagePortMain, nativeImage, nativeTheme,
+//   net, netLog, Notification, parentPort, powerMonitor, powerSaveBlocker,
+//   protocol, pushNotifications, safeStorage, screen, session, ShareMenu,
+//   systemPreferences, TouchBar, utilityProcess, webContents, WebContentsView, webFrameMain, View
+// } = require("electron");
 
 //------------------------------------------------------------------------------
 
