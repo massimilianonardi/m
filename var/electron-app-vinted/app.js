@@ -32,47 +32,16 @@ app.on("ready", function()
   // win.loadURL("https://www.vinted.it/member/items/favourite_list");
   win.loadFile("index.html").then(function()
   {
-    win.webContents.openDevTools();
-    win.webContents.executeJavaScript('console.log("hello from main");');
-    win.webContents.send("message", "my message");
-    win.webContents.send("message", arguments[0]);
-    console.log(global.zzz);
-    console.log(global.xxx);
+    var jsFileName = "page_ready.js";
+    var jsFilePath = path.resolve(path.join(app.getAppPath(), jsFileName));
+    console.log("executing javascript file:", jsFilePath);
+    eval(fs.readFileSync(jsFilePath, "utf-8"));
   });
-
-  // win.webContents.send("message", "my message");
 
   win.on("closed", () =>
   {
-    win = null;
+    // win = null;
   });
-
-  function reload()
-  {
-//    getCurrentWindow().reload();
-    win.reload();
-  }
-
-  globalShortcut.register("F5", reload);
-  globalShortcut.register("CommandOrControl+R", reload);
-
-  var actionsMenu = Menu.buildFromTemplate(
-  [
-    {label: "Load Favourite List", type: "normal", click: loadFavList},
-    {label: "Parse Favourite List", type: "normal", click: parseFavDump},
-    {label: "View Favourite List", type: "normal", click: viewFavList}
-  ]);
-
-  var actionsMenuItem = new MenuItem(
-  {
-    type: "submenu",
-    label: "Actions",
-    submenu: actionsMenu
-  });
-
-  var mainMenu = Menu.getApplicationMenu();
-  mainMenu.append(actionsMenuItem);
-  Menu.setApplicationMenu(mainMenu);
 });
 
 //------------------------------------------------------------------------------
