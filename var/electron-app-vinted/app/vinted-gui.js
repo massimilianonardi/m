@@ -1,10 +1,4 @@
 
-function reload()
-{
-//    getCurrentWindow().reload();
-  win.reload();
-}
-
 // globalShortcut.register("F5", reload);
 // globalShortcut.register("CommandOrControl+R", reload);
 //
