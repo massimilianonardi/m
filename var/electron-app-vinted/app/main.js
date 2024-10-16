@@ -13,39 +13,54 @@ function reload()
 
 //------------------------------------------------------------------------------
 
-function main()
+function log()
 {
+  win.webContents.send("log", ...arguments);
+  // if(arguments.length === 1)
+  // {
+  //   win.webContents.send("log", arguments[0]);
+  // }
+  // else if(1 < arguments.length)
+  // {
+  //   // win.webContents.send("log", JSON.parse(JSON.stringify(arguments)));
+  //   win.webContents.send("log", ...arguments);
+  //   // win.webContents.send("log", Array.from(arguments));
+  // }
 }
 
 //------------------------------------------------------------------------------
 
 function buildMenu()
 {
-  var actionsMenu = Menu.buildFromTemplate(
-  [
-    {label: "Load Favourite List", type: "normal", click: loadFavList},
-    {label: "Parse Favourite List", type: "normal", click: parseFavDump},
-    {label: "View Favourite List", type: "normal", click: viewFavList}
-  ]);
-
-  var actionsMenuItem = new MenuItem(
+  if(!fs.existsSync(menuConfPath))
   {
-    type: "submenu",
-    label: "Actions",
-    submenu: actionsMenu
-  });
+    return;
+  }
 
-  var mainMenu = Menu.getApplicationMenu();
-  mainMenu.append(actionsMenuItem);
-  Menu.setApplicationMenu(mainMenu);
+  var menuConf = fs.readFileSync(menuConfPath, "utf-8");
+  log("menu", menuConf);
+  var menu = Menu.buildFromTemplate(eval(menuConf));
+  Menu.setApplicationMenu(menu);
 }
 
 //------------------------------------------------------------------------------
 
 function buildShortcuts()
 {
-  globalShortcut.register("F5", reload);
-  globalShortcut.register("CommandOrControl+R", reload);
+  if(!fs.existsSync(shortcutConfPath))
+  {
+    return;
+  }
+
+  var shortcutConf = fs.readFileSync(shortcutConfPath, "utf-8");
+  log("shortcuts", shortcutConf);
+  eval("var json = " + shortcutConf + ";");
+  // var json = eval(shortcutConf);
+  // console.log(json);
+  for(var k in json)
+  {
+    globalShortcut.register(k, json[k]);
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -53,10 +68,9 @@ function buildShortcuts()
 function buildGUI()
 {
   win.webContents.openDevTools();
-  console.log(arguments);
-  win.webContents.executeJavaScript('console.log("hello executed from main");');
-  win.webContents.send("message", "my message");
-  win.webContents.send("message", arguments[0]);
+  win.webContents.executeJavaScript('console.log("javascript executed from main");');
+  log("arg_unique");
+  log("arg0", "arg1");
 }
 
 //------------------------------------------------------------------------------
