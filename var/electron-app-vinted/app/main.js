@@ -67,6 +67,7 @@ function buildShortcuts()
 
 function buildGUI()
 {
+  // toolbar (or menu???!!!) with main pages: dump, organize dumped, search
   win.webContents.openDevTools();
   win.webContents.executeJavaScript('console.log("javascript executed from main");');
   log("arg_unique");

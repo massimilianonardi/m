@@ -9,7 +9,7 @@ const path = require("path");
 const https = require("https");
 
 const electron = require("electron");
-const {app, ipcMain, ipcRenderer, shell, clipboard, globalShortcut} = require("electron");
+const {app, ipcMain, shell, clipboard, globalShortcut} = require("electron");
 const {BrowserWindow, Menu, MenuItem, Tray, getCurrentWindow} = require("electron");
 
 //------------------------------------------------------------------------------

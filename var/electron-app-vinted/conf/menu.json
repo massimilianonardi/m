@@ -11,6 +11,9 @@
     {type: "separator"},
     {role: "togglefullscreen"}
   ]},
+  {label: "Update", type: "normal", click: updateGUI},
+  {label: "Organize", type: "normal", click: organizeGUI},
+  {label: "Search", type: "normal", click: searchGUI},
   {label: "Load Favourite List", type: "normal", click: loadFavList},
   {label: "Parse Favourite List", type: "normal", click: parseFavDump},
   {label: "View Favourite List", type: "normal", click: viewFavList}
