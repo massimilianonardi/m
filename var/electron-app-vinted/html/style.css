@@ -1,4 +1,33 @@
 body
 {
-  background-color: green;
+  /* background-color: green; */
+}
+
+.item-list
+{
+  width: fit-content;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.item
+{
+  width: fit-content;
+  padding: 10px;
+}
+
+.description
+{
+  font-family: sans-serif;
+  font-size: x-small;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.description > .price
+{
+  font-size: large;
 }
