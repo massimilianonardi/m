@@ -24,3 +24,11 @@ function searchGUI()
 }
 
 //------------------------------------------------------------------------------
+
+function processFavDump()
+{
+  // win.webContents.executeJavaScript('processFavDump()');
+  win.webContents.send("execute", 'processFavDump()');
+}
+
+//------------------------------------------------------------------------------

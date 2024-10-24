@@ -16,10 +16,6 @@ const uncategorizedTagPath = path.join(tagPath, "uncategorized");
 
 //------------------------------------------------------------------------------
 
-var sections = {};
-
-//------------------------------------------------------------------------------
-
 function mkdir(dir)
 {
   if(!fs.existsSync(dir))
@@ -32,75 +28,28 @@ function mkdir(dir)
 
 function buildHRImage(parent, url)
 {
-  var e = document.createElement("img");
-  if(typeof url === "string") e.src = url;
-  e.classList.add("hr-image");
-
-  parent.appendChild(e);
-
-  return e;
+  return buildImage(parent, url, null, "hr-image");
 }
 
 //------------------------------------------------------------------------------
 
-function buildImage(parent, url)
+function buildThumbnail(parent, url)
 {
-  var e = document.createElement("img");
-  if(typeof url === "string") e.src = url;
-  e.classList.add("thumbnail");
-
-  parent.appendChild(e);
-
-  return e;
+  return buildImage(parent, url, null, "thumbnail");
 }
 
 //------------------------------------------------------------------------------
 
-function buildElem(parent, id, css_class, text)
+function addThumbnailToItemElem(parent, itemID, url, clickCallback)
 {
-  var e = document.createElement("div");
-  if(typeof id === "string") e.id = id;
-  if(typeof css_class === "string") e.classList.add(css_class);
-  if(typeof text === "string") e.innerText = text;
-
-  parent.appendChild(e);
-
-  return e;
-}
-
-//------------------------------------------------------------------------------
-
-function addItemToPage(parent, itemPath)
-{
-  var itemFullPath = path.join(itemIndexPath, itemPath);
-  var item = JSON.parse(fs.readFileSync(path.join(itemFullPath, "item.json")));
-  var e = buildElem(parent, item.id, "item");
-  e.vintedItem = item;
-
-  // brand city country created_at label title description id path photos price_numeric service_fee total_item_price status url user_login
-  // instant_buy is_closed is_for_sell is_hidden is_reserved is_visible
-
-  var desc = buildElem(e, null, "description");
-  buildElem(desc, null, "user", item.user_login);
-  buildElem(desc, null, "price", "" + parseInt(parseFloat(item.price_numeric) + 0.5) + " €");
-  buildElem(desc, null, "price", "" + parseInt(parseFloat(item.total_item_price) + 0.5) + " €");
-  // buildElem(desc, null, "price", "€" + item.price_numeric);
-  // buildElem(desc, null, "price", "€" + item.total_item_price);
-
-  var desc = buildElem(e, null, "description");
-  buildElem(desc, null, null, item.title);
-
+  var itemFullPath = path.join(itemIndexPath, itemID);
   var thPath = path.join(itemFullPath, "thumbnail.jpg");
-  var img = buildImage(e);
-  img.onclick = function()
-  {
-    console.log("clicked");
-    // window.open(item.url);
-    shell.openExternal(item.url);
-  };
+
+  var img = buildThumbnail(parent);
+  img.onclick = clickCallback;
+
   if(!fs.existsSync(thPath) || fs.statSync(thPath).size === 0)
   {
-    var url = item.photos[0].thumbnails[2].url;
     var fstream = fs.createWriteStream(thPath);
     var req = https.get(url, (res) =>
     {
@@ -116,20 +65,46 @@ function addItemToPage(parent, itemPath)
   {
     img.src = thPath;
   }
-
-  // buildImage(e, item.photos[0].full_size_url);
-  // buildImage(e, item.photos[0].thumbnails[0].url);
 }
 
 //------------------------------------------------------------------------------
 
-function addListToPage(parent, items)
+function addItemToListElem(parent, itemID)
 {
-  console.log("addListToPage", items);
-  var p = buildElem(parent, null, "item-list");
+  var itemFullPath = path.join(itemIndexPath, itemID);
+  var item = JSON.parse(fs.readFileSync(path.join(itemFullPath, "item.json")));
+
+  var itemElem = buildDivElem(parent, item.id, "item");
+  itemElem.vintedItem = item;
+
+  // brand city country created_at label title description id path photos price_numeric service_fee total_item_price status url user_login
+  // instant_buy is_closed is_for_sell is_hidden is_reserved is_visible
+  // buildImage(itemElem, item.photos[0].full_size_url);
+  // buildImage(itemElem, item.photos[0].thumbnails[0].url);
+
+  var desc_1 = buildDivElem(itemElem, null, "description");
+  buildDivElem(desc_1, null, "user", item.user_login);
+  buildDivElem(desc_1, null, "price", "" + parseInt(parseFloat(item.price_numeric) + 0.5) + " €");
+  buildDivElem(desc_1, null, "price", "" + parseInt(parseFloat(item.total_item_price) + 0.5) + " €");
+
+  var desc_2 = buildDivElem(itemElem, null, "description");
+  buildDivElem(desc_2, null, null, item.title);
+
+  addThumbnailToItemElem(itemElem, itemID, item.photos[0].thumbnails[2].url, function()
+  {
+    // window.open(item.url);
+    shell.openExternal(item.url);
+  });
+}
+
+//------------------------------------------------------------------------------
+
+function buildListElem(parent, items, id)
+{
+  var listElem = buildDivElem(parent, id, "item-list");
   for(var i = 0; i < items.length; i++)
   {
-    addItemToPage(p, items[i]);
+    addItemToListElem(listElem, items[i]);
   }
 }
 
@@ -150,11 +125,34 @@ function getTagList(tag)
 
 //------------------------------------------------------------------------------
 
-function parseFavDump()
+function updateItem(item)
+{
+}
+
+//------------------------------------------------------------------------------
+
+function updateItems(items)
+{
+  if(Array.isArray(items))
+  {
+    for(var i = 0; i < items.length; i++)
+    {
+      updateItem(items[i]);
+    }
+  }
+  else
+  {
+    updateItem(items);
+  }
+}
+
+//------------------------------------------------------------------------------
+
+function processFavDump()
 {
   fs.readdirSync(favDumpPath).forEach(fileName =>
   {
-    console.log("parseFavDump", fileName);
+    console.log("processFavDump", fileName);
 
     var fn = path.join(favDumpPath, fileName);
     var json = JSON.parse(fs.readFileSync(fn));
@@ -188,10 +186,10 @@ function parseFavDump()
 
 function buildSectionGUIupdate(parent)
 {
-  parseFavDump();
+  // processFavDump();
   var items = getTagList("uncategorized");
   console.log("buildSectionGUIupdate", items);
-  addListToPage(parent, items);
+  buildListElem(parent, items, "update");
 }
 
 //------------------------------------------------------------------------------
@@ -204,64 +202,6 @@ function buildSectionGUIorganize(parent)
 
 function buildSectionGUIsearch(parent)
 {
-}
-
-//------------------------------------------------------------------------------
-
-function buildSection(name, resetFunction)
-{
-  var section = document.createElement("div");
-  section.id = name;
-  section.resetFunction = resetFunction;
-  section.classList.add("section");
-  section.style.display = "none";
-
-  document.body.appendChild(section);
-  sections[name] = section;
-
-  resetSection(name);
-
-  return sections[name];
-}
-
-//------------------------------------------------------------------------------
-
-function getSection(name)
-{
-  return sections[name];
-}
-
-//------------------------------------------------------------------------------
-
-function clearSection(name)
-{
-  sections[name].innerHTML = "";
-
-  return sections[name];
-}
-
-//------------------------------------------------------------------------------
-
-function resetSection(name)
-{
-  clearSection(name);
-  sections[name].resetFunction(sections[name]);
-
-  return sections[name];
-}
-
-//------------------------------------------------------------------------------
-
-function switchSection(name)
-{
-  for(var k in sections)
-  {
-    sections[k].style.display = "none";
-  }
-
-  sections[name].style.display = "block";
-
-  return sections[name];
 }
 
 //------------------------------------------------------------------------------

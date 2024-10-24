@@ -16,16 +16,6 @@ function reload()
 function log()
 {
   win.webContents.send("log", ...arguments);
-  // if(arguments.length === 1)
-  // {
-  //   win.webContents.send("log", arguments[0]);
-  // }
-  // else if(1 < arguments.length)
-  // {
-  //   // win.webContents.send("log", JSON.parse(JSON.stringify(arguments)));
-  //   win.webContents.send("log", ...arguments);
-  //   // win.webContents.send("log", Array.from(arguments));
-  // }
 }
 
 //------------------------------------------------------------------------------
@@ -38,7 +28,7 @@ function buildMenu()
   }
 
   var menuConf = fs.readFileSync(menuConfPath, "utf-8");
-  log("menu", menuConf);
+  // log("menu", menuConf);
   var menu = Menu.buildFromTemplate(eval(menuConf));
   Menu.setApplicationMenu(menu);
 }
@@ -53,10 +43,8 @@ function buildShortcuts()
   }
 
   var shortcutConf = fs.readFileSync(shortcutConfPath, "utf-8");
-  log("shortcuts", shortcutConf);
+  // log("shortcuts", shortcutConf);
   eval("var json = " + shortcutConf + ";");
-  // var json = eval(shortcutConf);
-  // console.log(json);
   for(var k in json)
   {
     globalShortcut.register(k, json[k]);
@@ -67,11 +55,7 @@ function buildShortcuts()
 
 function buildGUI()
 {
-  // toolbar (or menu???!!!) with main pages: dump, organize dumped, search
   win.webContents.openDevTools();
-  win.webContents.executeJavaScript('console.log("javascript executed from main");');
-  log("arg_unique");
-  log("arg0", "arg1");
 }
 
 //------------------------------------------------------------------------------
@@ -116,7 +100,6 @@ function appReady()
     // win = null;
   });
 
-  // win.loadURL("https://www.vinted.it/member/items/favourite_list");
   win.loadFile(path.join(htmlDir, "index.html")).then(pageReady);
 }
 
