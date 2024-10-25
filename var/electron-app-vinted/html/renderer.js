@@ -85,6 +85,21 @@ function addItemToListElem(parent, itemID)
   // buildImage(itemElem, item.photos[0].thumbnails[0].url);
 
   var desc_1 = buildDivElem(itemElem, null, "description");
+  buildCheckbox(desc_1, null, "selector", false, function(event)
+  {
+    // console.log(event);
+    if(event.srcElement.checked)
+    {
+      // console.log(itemID, true);
+      parent.selection[itemID] = true;
+    }
+    else
+    {
+      // console.log(itemID, false);
+      delete parent.selection[itemID];
+    }
+    // console.log(parent.selection);
+  });
   buildDivElem(desc_1, null, "user", item.user_login);
   buildDivElem(desc_1, null, "price", "" + parseInt(parseFloat(item.price_numeric) + 0.5) + " €");
   buildDivElem(desc_1, null, "price", "" + parseInt(parseFloat(item.total_item_price) + 0.5) + " €");
@@ -104,6 +119,7 @@ function addItemToListElem(parent, itemID)
 function buildListElem(parent, items, id)
 {
   var listElem = buildDivElem(parent, id, "item-list");
+  listElem.selection = {};
   for(var i = 0; i < items.length; i++)
   {
     addItemToListElem(listElem, items[i]);
@@ -209,7 +225,7 @@ function buildSectionGUIupdate(parent)
   // processFavDump();
   var items = getTagList(uncategorizedTag);
   console.log("buildSectionGUIupdate", items);
-  buildListElem(parent, items, "update");
+  buildListElem(parent, items, "update_list");
 }
 
 //------------------------------------------------------------------------------

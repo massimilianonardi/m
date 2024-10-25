@@ -5,6 +5,18 @@ var sections = {};
 
 //------------------------------------------------------------------------------
 
+function buildCheckbox(parent, id, css_class, selected, changeFunction)
+{
+  var e = buildElem("input", parent, id, css_class);
+  e.type = "checkbox";
+  if(selected === true) e.checked = true;
+  if(typeof changeFunction === "function") e.addEventListener("change", changeFunction);
+
+  return e;
+}
+
+//------------------------------------------------------------------------------
+
 function buildImage(parent, url, id, css_class)
 {
   var e = buildElem("img", parent, id, css_class);

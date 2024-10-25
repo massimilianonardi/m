@@ -9,12 +9,18 @@ body
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 .item
 {
   width: fit-content;
   padding: 10px;
+  margin: 5px;
+  border-color: darkgray;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 10px;
 }
 
 .description
@@ -25,9 +31,16 @@ body
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: space-between;
+  padding-bottom: 10px;
+  max-width: 320px;
 }
 
 .description > .price
 {
   font-size: large;
+}
+
+.description > .selector
+{
+  transform: scale(2.0);
 }
