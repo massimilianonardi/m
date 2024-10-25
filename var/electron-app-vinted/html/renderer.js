@@ -12,7 +12,9 @@ const dataPath = "/m/_vinted";
 const favDumpPath = path.join(dataPath, "dump", "fav");
 const itemIndexPath = path.join(dataPath, "item", "index");
 const tagPath = path.join(dataPath, "tag");
-const uncategorizedTagPath = path.join(tagPath, "uncategorized");
+
+const uncategorizedTag = "uncategorized";
+const uncategorizedTagPath = path.join(tagPath, uncategorizedTag);
 
 //------------------------------------------------------------------------------
 
@@ -110,6 +112,26 @@ function buildListElem(parent, items, id)
 
 //------------------------------------------------------------------------------
 
+function addItemToTag(itemID, tag)
+{
+  var thisTagPath = path.join(tagPath, tag);
+  var itemPath = path.join(itemIndexPath, itemID);
+
+  mkdir(thisTagPath);
+  var link = path.relative(thisTagPath, itemPath);
+  var target = path.join(thisTagPath, itemID);
+  if(!fs.existsSync(target)) fs.symlink(link, target, function(error){if(error) console.log(error);});
+  // todo reverse link to query tags of a particular item (put into item dir??? yes!)
+}
+
+//------------------------------------------------------------------------------
+
+function remItemToTag(item, tag)
+{
+}
+
+//------------------------------------------------------------------------------
+
 function getTagList(tag)
 {
   var items = [];
@@ -169,15 +191,13 @@ function processFavDump()
       var itemPath = path.join(itemIndexPath, id);
       if(fs.existsSync(itemPath))
       {
-        // console.log("parseFavDump id exists", id, item.path);
+        console.log("parseFavDump id exists", id, item.path);
+        continue;
       }
       mkdir(itemPath);
       var itemJSONPath = path.join(itemPath, "item.json");
       fs.writeFileSync(itemJSONPath, JSON.stringify(item, null, 2), "utf-8");
-      mkdir(uncategorizedTagPath);
-      var link = path.relative(uncategorizedTagPath, itemPath);
-      var target = path.join(uncategorizedTagPath, id);
-      if(!fs.existsSync(target)) fs.symlink(link, target, function(error){if(error) console.log(error);});
+      addItemToTag(id, uncategorizedTag);
     }
   });
 }
@@ -187,7 +207,7 @@ function processFavDump()
 function buildSectionGUIupdate(parent)
 {
   // processFavDump();
-  var items = getTagList("uncategorized");
+  var items = getTagList(uncategorizedTag);
   console.log("buildSectionGUIupdate", items);
   buildListElem(parent, items, "update");
 }
