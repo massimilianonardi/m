@@ -92,13 +92,15 @@ function addItemToListElem(parent, itemID)
     {
       // console.log(itemID, true);
       parent.selection[itemID] = true;
+      parent.selectionOrder.push(itemID);
     }
     else
     {
       // console.log(itemID, false);
       delete parent.selection[itemID];
+      parent.selectionOrder.splice(parent.selectionOrder.indexOf(itemID), 1);
     }
-    // console.log(parent.selection);
+    console.log(parent.selection, parent.selectionOrder);
   });
   buildDivElem(desc_1, null, "user", item.user_login);
   buildDivElem(desc_1, null, "price", "" + parseInt(parseFloat(item.price_numeric) + 0.5) + " €");
@@ -116,10 +118,19 @@ function addItemToListElem(parent, itemID)
 
 //------------------------------------------------------------------------------
 
+function clearSelection(listElem)
+{
+  listElem.selection = {};
+  listElem.selectionOrder = [];
+}
+
+//------------------------------------------------------------------------------
+
 function buildListElem(parent, items, id)
 {
   var listElem = buildDivElem(parent, id, "item-list");
   listElem.selection = {};
+  listElem.selectionOrder = [];
   for(var i = 0; i < items.length; i++)
   {
     addItemToListElem(listElem, items[i]);
