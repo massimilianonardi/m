@@ -122,6 +122,19 @@ function clearSelection(listElem)
 {
   listElem.selection = {};
   listElem.selectionOrder = [];
+  // var items = listElem.getElementsByTagName("input");
+  var items = listElem.querySelectorAll("input[type='checkbox']");
+  for(var i = 0; i < items.length; i++)
+  {
+    // if(items[i].type === "checkbox") items[i].checked = false;
+    items[i].checked = false;
+  }
+}
+
+//------------------------------------------------------------------------------
+
+function buildPaginatedListElem(parent, items, id, nItemsPerPage)
+{
 }
 
 //------------------------------------------------------------------------------
