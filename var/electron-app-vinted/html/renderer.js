@@ -148,6 +148,8 @@ function buildListElem(parent, items, id)
   {
     addItemToListElem(listElem, items[i]);
   }
+
+  return listElem;
 }
 
 //------------------------------------------------------------------------------
@@ -172,11 +174,26 @@ function remItemToTag(item, tag)
 
 //------------------------------------------------------------------------------
 
+function getTags()
+{
+  var tags = [];
+
+  fs.readdirSync(tagPath).forEach(thisTagPath =>
+  {
+    tags.push(thisTagPath);
+  });
+
+  return tags;
+}
+
+//------------------------------------------------------------------------------
+
 function getTagList(tag)
 {
   var items = [];
 
   var thisTagPath = path.join(tagPath, tag);
+  if(!fs.existsSync(thisTagPath)) return items;
   fs.readdirSync(thisTagPath).forEach(itemPath =>
   {
     items.push(itemPath);
@@ -244,12 +261,88 @@ function processFavDump()
 
 //------------------------------------------------------------------------------
 
+function refreshListElem(listElem)
+{
+  listElem.innerHTML = "";
+  var startIndex = listElem.currentPage * listElem.itemsPerPage;
+  var endIndex = startIndex + listElem.itemsPerPage;
+  var items = listElem.items.slice(startIndex, endIndex);
+  for(var i = 0; i < items.length; i++)
+  {
+    addItemToListElem(listElem, items[i]);
+  }
+}
+
+//------------------------------------------------------------------------------
+
+function addTag(parent, tag)
+{
+  buildButton(parent, "tag", "button", tag, function()
+  {
+    var listElem = getSection("update").listElem;
+    listElem.items = getTagList(tag);
+    refreshListElem(listElem);
+  });
+}
+
+//------------------------------------------------------------------------------
+
+function addTags(parent, tags)
+{
+  for(var i = 0; i < tags.length; i++)
+  {
+    addTag(parent, tags[i]);
+  }
+}
+
+//------------------------------------------------------------------------------
+
 function buildSectionGUIupdate(parent)
 {
-  // processFavDump();
-  var items = getTagList(uncategorizedTag);
-  console.log("buildSectionGUIupdate", items);
-  buildListElem(parent, items, "update_list");
+  var toolbar = buildDivElem(parent, null, "toolbar");
+
+  var currPage = buildButton(toolbar, "current_page", "text-indicator", "0");
+  var prevPage = buildButton(toolbar, "prev_page", "button", "Prev Page", function()
+  {
+    listElem.currentPage--;
+    if(listElem.currentPage < 0) listElem.currentPage = 0;
+    // currPage.innerText = "" + listElem.currentPage;
+    currPage.value = "" + listElem.currentPage;
+    refreshListElem(parent.listElem);
+  });
+  var nextPage = buildButton(toolbar, "next_page", "button", "Next Page", function()
+  {
+    listElem.currentPage++;
+    if(listElem.items.length < listElem.currentPage * listElem.itemsPerPage) listElem.currentPage--;
+    // currPage.innerText = "" + listElem.currentPage;
+    currPage.value = "" + listElem.currentPage;
+    refreshListElem(parent.listElem);
+  });
+
+  var unselectAll = buildButton(toolbar, "unselect_all", "button", "Unselect All", function(){clearSelection(parent.listElem);});
+
+  var orderTime = buildButton(toolbar, "order_time", "button", "Order by Time", function()
+  {
+    listElem.items.sort(function(a, b)
+    {
+      console.log(a, b, a.created_at, b.created_at, a.created_at < b.created_at);
+      if(a.created_at < b.created_at) return -1;
+      if(a.created_at > b.created_at) return 1;
+      return 0;
+    });
+    refreshListElem(parent.listElem);
+  });
+
+  var tags = getTags();
+  addTags(toolbar, tags);
+
+  var listElem = buildDivElem(parent, "update_list", "item-list");
+  parent.listElem = listElem;
+  listElem.selection = {};
+  listElem.selectionOrder = [];
+  listElem.items = [];
+  listElem.itemsPerPage = 999;
+  listElem.currentPage = 0;
 }
 
 //------------------------------------------------------------------------------

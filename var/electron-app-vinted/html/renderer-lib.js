@@ -17,6 +17,30 @@ function buildCheckbox(parent, id, css_class, selected, changeFunction)
 
 //------------------------------------------------------------------------------
 
+function buildButton(parent, id, css_class, text, clickFunction)
+{
+  var e = buildElem("input", parent, id, css_class);
+  e.type = "button";
+  if(typeof text === "string") e.value = text;
+  if(typeof clickFunction === "function") e.addEventListener("click", clickFunction);
+
+  return e;
+}
+
+//------------------------------------------------------------------------------
+
+function buildText(parent, id, css_class, text)
+{
+  var e = buildElem("input", parent, id, css_class);
+  // e.type = "button";
+  if(typeof text === "string") e.value = text;
+  if(typeof clickFunction === "function") e.addEventListener("click", clickFunction);
+
+  return e;
+}
+
+//------------------------------------------------------------------------------
+
 function buildImage(parent, url, id, css_class)
 {
   var e = buildElem("img", parent, id, css_class);
@@ -110,7 +134,7 @@ function switchSection(name)
     sections[k].style.display = "none";
   }
 
-  sections[name].style.display = "block";
+  sections[name].style.display = "flex";
 
   return sections[name];
 }
