@@ -12,6 +12,8 @@ const dataPath = "/m/_vinted";
 const favDumpPath = path.join(dataPath, "dump", "fav");
 const itemIndexPath = path.join(dataPath, "item", "index");
 const tagPath = path.join(dataPath, "tag");
+const orderPath = path.join(dataPath, "order");
+const tagOrderPath = path.join(orderPath, "tag");
 
 const uncategorizedTag = "uncategorized";
 const uncategorizedTagPath = path.join(tagPath, uncategorizedTag);
@@ -191,12 +193,26 @@ function getTags()
 function getTagList(tag)
 {
   var items = [];
+  var orderedItems = {};
 
   var thisTagPath = path.join(tagPath, tag);
   if(!fs.existsSync(thisTagPath)) return items;
+
+  var thisTagOrderPath = path.join(tagOrderPath, tag + ".json");
+  if(fs.existsSync(thisTagOrderPath))
+  {
+    items = JSON.parse(fs.readFileSync(thisTagOrderPath));
+    for(var i = 0; i < items.length; i++)
+    {
+      orderedItems[items[i]] = true;
+    }
+  }
+
   fs.readdirSync(thisTagPath).forEach(itemPath =>
   {
-    items.push(itemPath);
+    // items.push(itemPath);
+    // if(-1 === items.indexOf(itemPath)) items.push(itemPath);
+    if(!orderedItems[itemPath]) items.push(itemPath);
   });
 
   return items;
@@ -223,6 +239,30 @@ function updateItems(items)
   {
     updateItem(items);
   }
+}
+
+//------------------------------------------------------------------------------
+
+function orderListByTime(items)
+{
+  var itemsObj = [];
+  for(var i = 0; i < items.length; i++)
+  {
+    var itemFullPath = path.join(itemIndexPath, items[i]);
+    itemsObj[i] = JSON.parse(fs.readFileSync(path.join(itemFullPath, "item.json")));
+  }
+
+  itemsObj.sort(function(a, b)
+  {
+    console.log(a.created_at_ts, b.created_at_ts, a.created_at_ts < b.created_at_ts);
+    if(a.created_at_ts < b.created_at_ts) return -1;
+    if(a.created_at_ts > b.created_at_ts) return 1;
+    return 0;
+  });
+  console.log(itemsObj);
+  // todo translate itemsObj into items
+
+  return items;
 }
 
 //------------------------------------------------------------------------------
@@ -323,13 +363,7 @@ function buildSectionGUIupdate(parent)
 
   var orderTime = buildButton(toolbar, "order_time", "button", "Order by Time", function()
   {
-    listElem.items.sort(function(a, b)
-    {
-      console.log(a, b, a.created_at, b.created_at, a.created_at < b.created_at);
-      if(a.created_at < b.created_at) return -1;
-      if(a.created_at > b.created_at) return 1;
-      return 0;
-    });
+    listElem.items = orderListByTime(listElem.items);
     refreshListElem(parent.listElem);
   });
 
