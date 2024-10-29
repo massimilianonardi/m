@@ -254,15 +254,21 @@ function orderListByTime(items)
 
   itemsObj.sort(function(a, b)
   {
-    console.log(a.created_at_ts, b.created_at_ts, a.created_at_ts < b.created_at_ts);
+    // console.log(a.created_at_ts, b.created_at_ts, a.created_at_ts < b.created_at_ts);
     if(a.created_at_ts < b.created_at_ts) return -1;
     if(a.created_at_ts > b.created_at_ts) return 1;
     return 0;
   });
-  console.log(itemsObj);
-  // todo translate itemsObj into items
+  // console.log(itemsObj);
 
-  return items;
+  for(var i = 0; i < itemsObj.length; i++)
+  {
+    var itemFullPath = path.join(itemIndexPath, items[i]);
+    itemsObj[i] = "" + itemsObj[i].id;
+  }
+  // console.log(itemsObj);
+
+  return itemsObj;
 }
 
 //------------------------------------------------------------------------------
@@ -375,7 +381,7 @@ function buildSectionGUIupdate(parent)
   listElem.selection = {};
   listElem.selectionOrder = [];
   listElem.items = [];
-  listElem.itemsPerPage = 999;
+  listElem.itemsPerPage = 200;
   listElem.currentPage = 0;
 }
 
