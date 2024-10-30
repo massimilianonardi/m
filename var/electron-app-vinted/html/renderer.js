@@ -120,193 +120,6 @@ function addItemToListElem(parent, itemID)
 
 //------------------------------------------------------------------------------
 
-function clearSelection(listElem)
-{
-  listElem.selection = {};
-  listElem.selectionOrder = [];
-  // var items = listElem.getElementsByTagName("input");
-  var items = listElem.querySelectorAll("input[type='checkbox']");
-  for(var i = 0; i < items.length; i++)
-  {
-    // if(items[i].type === "checkbox") items[i].checked = false;
-    items[i].checked = false;
-  }
-}
-
-//------------------------------------------------------------------------------
-
-function buildPaginatedListElem(parent, items, id, nItemsPerPage)
-{
-}
-
-//------------------------------------------------------------------------------
-
-function buildListElem(parent, items, id)
-{
-  var listElem = buildDivElem(parent, id, "item-list");
-  listElem.selection = {};
-  listElem.selectionOrder = [];
-  for(var i = 0; i < items.length; i++)
-  {
-    addItemToListElem(listElem, items[i]);
-  }
-
-  return listElem;
-}
-
-//------------------------------------------------------------------------------
-
-function addItemToTag(itemID, tag)
-{
-  var thisTagPath = path.join(tagPath, tag);
-  var itemPath = path.join(itemIndexPath, itemID);
-
-  mkdir(thisTagPath);
-  var link = path.relative(thisTagPath, itemPath);
-  var target = path.join(thisTagPath, itemID);
-  if(!fs.existsSync(target)) fs.symlink(link, target, function(error){if(error) console.log(error);});
-  // todo reverse link to query tags of a particular item (put into item dir??? yes!)
-}
-
-//------------------------------------------------------------------------------
-
-function remItemToTag(item, tag)
-{
-}
-
-//------------------------------------------------------------------------------
-
-function getTags()
-{
-  var tags = [];
-
-  fs.readdirSync(tagPath).forEach(thisTagPath =>
-  {
-    tags.push(thisTagPath);
-  });
-
-  return tags;
-}
-
-//------------------------------------------------------------------------------
-
-function getTagList(tag)
-{
-  var items = [];
-  var orderedItems = {};
-
-  var thisTagPath = path.join(tagPath, tag);
-  if(!fs.existsSync(thisTagPath)) return items;
-
-  var thisTagOrderPath = path.join(tagOrderPath, tag + ".json");
-  if(fs.existsSync(thisTagOrderPath))
-  {
-    items = JSON.parse(fs.readFileSync(thisTagOrderPath));
-    for(var i = 0; i < items.length; i++)
-    {
-      orderedItems[items[i]] = true;
-    }
-  }
-
-  fs.readdirSync(thisTagPath).forEach(itemPath =>
-  {
-    // items.push(itemPath);
-    // if(-1 === items.indexOf(itemPath)) items.push(itemPath);
-    if(!orderedItems[itemPath]) items.push(itemPath);
-  });
-
-  return items;
-}
-
-//------------------------------------------------------------------------------
-
-function updateItem(item)
-{
-}
-
-//------------------------------------------------------------------------------
-
-function updateItems(items)
-{
-  if(Array.isArray(items))
-  {
-    for(var i = 0; i < items.length; i++)
-    {
-      updateItem(items[i]);
-    }
-  }
-  else
-  {
-    updateItem(items);
-  }
-}
-
-//------------------------------------------------------------------------------
-
-function orderListByTime(items)
-{
-  var itemsObj = [];
-  for(var i = 0; i < items.length; i++)
-  {
-    var itemFullPath = path.join(itemIndexPath, items[i]);
-    itemsObj[i] = JSON.parse(fs.readFileSync(path.join(itemFullPath, "item.json")));
-  }
-
-  itemsObj.sort(function(a, b)
-  {
-    // console.log(a.created_at_ts, b.created_at_ts, a.created_at_ts < b.created_at_ts);
-    if(a.created_at_ts < b.created_at_ts) return -1;
-    if(a.created_at_ts > b.created_at_ts) return 1;
-    return 0;
-  });
-  // console.log(itemsObj);
-
-  for(var i = 0; i < itemsObj.length; i++)
-  {
-    var itemFullPath = path.join(itemIndexPath, items[i]);
-    itemsObj[i] = "" + itemsObj[i].id;
-  }
-  // console.log(itemsObj);
-
-  return itemsObj;
-}
-
-//------------------------------------------------------------------------------
-
-function processFavDump()
-{
-  fs.readdirSync(favDumpPath).forEach(fileName =>
-  {
-    console.log("processFavDump", fileName);
-
-    var fn = path.join(favDumpPath, fileName);
-    var json = JSON.parse(fs.readFileSync(fn));
-    var items = json.items;
-    for(var i = 0; i < items.length; i++)
-    {
-      var item = items[i];
-      var id = "" + item.id;
-      if(typeof id !== "string" || id === "")
-      {
-        console.log("parseFavDump id null", id, item);
-        continue;
-      }
-      var itemPath = path.join(itemIndexPath, id);
-      if(fs.existsSync(itemPath))
-      {
-        console.log("parseFavDump id exists", id, item.path);
-        continue;
-      }
-      mkdir(itemPath);
-      var itemJSONPath = path.join(itemPath, "item.json");
-      fs.writeFileSync(itemJSONPath, JSON.stringify(item, null, 2), "utf-8");
-      addItemToTag(id, uncategorizedTag);
-    }
-  });
-}
-
-//------------------------------------------------------------------------------
-
 function refreshListElem(listElem)
 {
   listElem.innerHTML = "";
@@ -321,26 +134,21 @@ function refreshListElem(listElem)
 
 //------------------------------------------------------------------------------
 
-function addTag(parent, tag)
+function clearSelection(listElem)
 {
-  buildButton(parent, "tag", "button", tag, function()
+  listElem.selection = {};
+  listElem.selectionOrder = [];
+  // var items = listElem.getElementsByTagName("input");
+  var items = listElem.querySelectorAll("input[type='checkbox']");
+  for(var i = 0; i < items.length; i++)
   {
-    var listElem = getSection("update").listElem;
-    listElem.items = getTagList(tag);
-    refreshListElem(listElem);
-  });
-}
-
-//------------------------------------------------------------------------------
-
-function addTags(parent, tags)
-{
-  for(var i = 0; i < tags.length; i++)
-  {
-    addTag(parent, tags[i]);
+    // if(items[i].type === "checkbox") items[i].checked = false;
+    items[i].checked = false;
   }
 }
 
+//------------------------------------------------------------------------------
+// MAIN GUI
 //------------------------------------------------------------------------------
 
 function buildSectionGUIupdate(parent)
@@ -374,7 +182,7 @@ function buildSectionGUIupdate(parent)
   });
 
   var tags = getTags();
-  addTags(toolbar, tags);
+  addTagsToGUI(toolbar, tags);
 
   var listElem = buildDivElem(parent, "update_list", "item-list");
   parent.listElem = listElem;
