@@ -157,6 +157,14 @@ function buildSectionGUIupdate(parent)
     refreshListElem(parent.listElem);
   });
 
+  var orderUser = buildButton(toolbar, "order_user", "button", "Order by User", function()
+  {
+    listElem.items = orderListByUser(listElem.items);
+    refreshListElem(parent.listElem);
+  });
+
+  // var tagbar = buildDivElem(parent, null, "tagbar");
+
   var tags = getTags();
   addTagsToGUI(toolbar, tags);
 

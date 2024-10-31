@@ -71,6 +71,36 @@ function orderListByTime(items)
 
 //------------------------------------------------------------------------------
 
+function orderListByUser(items)
+{
+  var itemsObj = [];
+  for(var i = 0; i < items.length; i++)
+  {
+    var itemFullPath = path.join(itemIndexPath, items[i]);
+    itemsObj[i] = JSON.parse(fs.readFileSync(path.join(itemFullPath, "item.json")));
+  }
+
+  itemsObj.sort(function(a, b)
+  {
+    // console.log(a.user_login, b.user_login, a.user_login < b.user_login);
+    if(a.user_login < b.user_login) return -1;
+    if(a.user_login > b.user_login) return 1;
+    return 0;
+  });
+  // console.log(itemsObj);
+
+  for(var i = 0; i < itemsObj.length; i++)
+  {
+    var itemFullPath = path.join(itemIndexPath, items[i]);
+    itemsObj[i] = "" + itemsObj[i].id;
+  }
+  // console.log(itemsObj);
+
+  return itemsObj;
+}
+
+//------------------------------------------------------------------------------
+
 function processFavDump()
 {
   fs.readdirSync(favDumpPath).forEach(fileName =>
