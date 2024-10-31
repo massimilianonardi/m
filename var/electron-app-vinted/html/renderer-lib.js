@@ -5,6 +5,16 @@ var sections = {};
 
 //------------------------------------------------------------------------------
 
+function mkdir(dir)
+{
+  if(!fs.existsSync(dir))
+  {
+    fs.mkdirSync(dir, {recursive: true});
+  }
+}
+
+//------------------------------------------------------------------------------
+
 function buildCheckbox(parent, id, css_class, selected, changeFunction)
 {
   var e = buildElem("input", parent, id, css_class);
@@ -37,6 +47,20 @@ function buildText(parent, id, css_class, text)
   if(typeof clickFunction === "function") e.addEventListener("click", clickFunction);
 
   return e;
+}
+
+//------------------------------------------------------------------------------
+
+function buildHRImage(parent, url)
+{
+  return buildImage(parent, url, null, "hr-image");
+}
+
+//------------------------------------------------------------------------------
+
+function buildThumbnail(parent, url)
+{
+  return buildImage(parent, url, null, "thumbnail");
 }
 
 //------------------------------------------------------------------------------

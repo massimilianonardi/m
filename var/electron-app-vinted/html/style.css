@@ -20,6 +20,8 @@ body
 
 .toolbar
 {
+  height: 100vh;
+  overflow: auto;
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;

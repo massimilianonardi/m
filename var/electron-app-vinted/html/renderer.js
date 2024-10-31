@@ -20,30 +20,6 @@ const uncategorizedTagPath = path.join(tagPath, uncategorizedTag);
 
 //------------------------------------------------------------------------------
 
-function mkdir(dir)
-{
-  if(!fs.existsSync(dir))
-  {
-    fs.mkdirSync(dir, {recursive: true});
-  }
-}
-
-//------------------------------------------------------------------------------
-
-function buildHRImage(parent, url)
-{
-  return buildImage(parent, url, null, "hr-image");
-}
-
-//------------------------------------------------------------------------------
-
-function buildThumbnail(parent, url)
-{
-  return buildImage(parent, url, null, "thumbnail");
-}
-
-//------------------------------------------------------------------------------
-
 function addThumbnailToItemElem(parent, itemID, url, clickCallback)
 {
   var itemFullPath = path.join(itemIndexPath, itemID);

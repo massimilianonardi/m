@@ -1,8 +1,20 @@
 
 //------------------------------------------------------------------------------
 
-function addItemToTag(itemID, tag)
+function addItemToTag(itemID, tag, dir)
 {
+  if(!tag || tag === "")
+  {
+    console.log("addItemToTag - invalid tag:" + tag);
+    return;
+  }
+
+  if(dir && dir !== "")
+  {
+    tag = path.join(dir, tag);
+    console.log(tag);
+  }
+
   var thisTagPath = path.join(tagPath, tag);
   var itemPath = path.join(itemIndexPath, itemID);
 

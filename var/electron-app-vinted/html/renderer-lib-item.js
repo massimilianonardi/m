@@ -1,8 +1,13 @@
 
 //------------------------------------------------------------------------------
 
-function updateItem(item)
+function updateItem(id)
 {
+  var itemPath = path.join(itemIndexPath, id);
+  var itemJSONPath = path.join(itemPath, "item.json");
+  var item = JSON.parse(fs.readFileSync(itemJSONPath, "utf-8"));
+  addItemToTag(id, item.brand, "brand");
+  addItemToTag(id, item.user_login, "user");
 }
 
 //------------------------------------------------------------------------------
@@ -20,6 +25,18 @@ function updateItems(items)
   {
     updateItem(items);
   }
+
+  console.log("updateItems - updated:" + items.length);
+}
+
+//------------------------------------------------------------------------------
+
+function updateIndex()
+{
+  var items = [];
+
+  fs.readdirSync(itemIndexPath).forEach(itemID => {items.push(itemID);});
+  updateItems(items);
 }
 
 //------------------------------------------------------------------------------

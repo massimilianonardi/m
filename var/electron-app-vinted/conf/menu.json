@@ -14,5 +14,6 @@
   {label: "Update", type: "normal", click: updateGUI},
   {label: "Organize", type: "normal", click: organizeGUI},
   {label: "Search", type: "normal", click: searchGUI},
+  {label: "Update Index", type: "normal", click: updateIndex},
   {label: "Parse Favourite List", type: "normal", click: processFavDump}
 ]
