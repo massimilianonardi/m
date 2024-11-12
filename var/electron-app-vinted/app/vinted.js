@@ -2,6 +2,9 @@
 // https://www.vinted.it/api/v2/users/25943425/items?page=1&per_page=21&cond=active&selected_item_id=5105638873
 // https://www.vinted.it/api/v2/users/155761817/items?page=1&per_page=21&cond=active&selected_item_id=4170366942
 // https://www.vinted.it/api/v2/users/155761817/items/favourites?page=0&include_sold=true&per_page=90
+// https://www.vinted.it/api/v2/items/4650574236
+// venduto: "item_closing_action": "sold" + "can_be_sold": false + "instant_buy": false + "can_buy": false + "accepted_pay_in_methods": []
+
 /*
 function downloadFile(url, fileName) {
   fetch(url, { method: 'get', mode: 'no-cors', referrerPolicy: 'no-referrer' })

@@ -8,6 +8,8 @@ const {shell} = require("electron");
 
 //------------------------------------------------------------------------------
 
+const itemURLPrefix = "https://www.vinted.it/api/v2/items/";
+
 const dataPath = "/m/_vinted";
 const favDumpPath = path.join(dataPath, "dump", "fav");
 const itemIndexPath = path.join(dataPath, "item", "index");
@@ -61,6 +63,7 @@ function addItemToListElem(parent, itemID)
   // instant_buy is_closed is_for_sell is_hidden is_reserved is_visible
   // buildImage(itemElem, item.photos[0].full_size_url);
   // buildImage(itemElem, item.photos[0].thumbnails[0].url);
+  // venduto: "item_closing_action": "sold" + "can_be_sold": false + "instant_buy": false + "can_buy": false + "accepted_pay_in_methods": []
 
   var desc_1 = buildDivElem(itemElem, null, "description");
   buildCheckbox(desc_1, null, "selector", false, function(event)
@@ -83,6 +86,11 @@ function addItemToListElem(parent, itemID)
   buildDivElem(desc_1, null, "user", item.user_login);
   buildDivElem(desc_1, null, "price", "" + parseInt(parseFloat(item.price_numeric) + 0.5) + " €");
   buildDivElem(desc_1, null, "price", "" + parseInt(parseFloat(item.total_item_price) + 0.5) + " €");
+  if(item.item_closing_action === "sold" || item.can_be_sold === false || item.instant_buy === false || item.can_buy === false)
+  {
+    console.log("SOLD", item.id, "item_closing_action", item.item_closing_action, "can_be_sold", item.can_be_sold, "instant_buy", item.instant_buy, "can_buy", item.can_buy);
+    buildDivElem(desc_1, null, "status", "SOLD");
+  }
 
   var desc_2 = buildDivElem(itemElem, null, "description");
   buildDivElem(desc_2, null, null, item.title);
