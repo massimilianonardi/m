@@ -35,14 +35,7 @@ function remItemToTag(item, tag)
 
 function getTags()
 {
-  var tags = [];
-
-  fs.readdirSync(tagPath).forEach(thisTagPath =>
-  {
-    tags.push(thisTagPath);
-  });
-
-  return tags;
+  return lsdir(tagPath);
 }
 
 //------------------------------------------------------------------------------
@@ -53,7 +46,7 @@ function getTagList(tag)
   var orderedItems = {};
 
   var thisTagPath = path.join(tagPath, tag);
-  if(!fs.existsSync(thisTagPath)) return items;
+  // if(!fs.existsSync(thisTagPath)) return items;
 
   var thisTagOrderPath = path.join(tagOrderPath, tag + ".json");
   if(fs.existsSync(thisTagOrderPath))
@@ -69,7 +62,8 @@ function getTagList(tag)
   {
     // items.push(itemPath);
     // if(-1 === items.indexOf(itemPath)) items.push(itemPath);
-    if(!orderedItems[itemPath]) items.push(itemPath);
+    // if(!orderedItems[itemPath]) items.push(itemPath);
+    if(!orderedItems[itemPath]) if(fs.existsSync(path.join(thisTagPath, itemPath, "item.json"))) items.push(itemPath);
   });
 
   return items;

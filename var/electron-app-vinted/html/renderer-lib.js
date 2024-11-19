@@ -1,16 +1,88 @@
 
 //------------------------------------------------------------------------------
 
-var sections = {};
-
-//------------------------------------------------------------------------------
-
 function mkdir(dir)
 {
   if(!fs.existsSync(dir))
   {
     fs.mkdirSync(dir, {recursive: true});
   }
+}
+
+//------------------------------------------------------------------------------
+
+function lsdir(dir, followLinks)
+{
+  var list = [];
+
+  fs.readdirSync(dir, {recursive: true}).forEach(file =>
+  {
+    var filePath = path.join(dir, file);
+    var stat = fs.lstatSync(filePath);
+    if(stat.isDirectory())
+    {
+      if(stat.isSymbolicLink())
+      {
+        if(followLinks === true) list.push(file);
+      }
+      else list.push(file);
+    }
+  });
+
+  return list;
+}
+
+//------------------------------------------------------------------------------
+
+function lspath(dir, absolute)
+{
+  var list = fs.readdirSync(dir, {recursive: true});
+
+  var root = dir;
+  if(absolute === true) root = path.resolve(dir);
+
+  for(var i = 0; i < list.length; i++)
+  {
+    list[i] = path.join(root, list[i]);
+  }
+
+  return list;
+}
+
+//------------------------------------------------------------------------------
+
+function downloadFile(url, fileName, force)
+{
+  if(fs.existsSync(fileName))
+  {
+    if(force === true) fs.rmSync(fileName)
+    else return;
+  }
+
+  var fstream = fs.createWriteStream(fileName);
+  var req = https.get(url, (res) =>
+  {
+    res.pipe(fstream);
+  })
+  .on("error", (error) => {console.error(error.message);});
+}
+
+//------------------------------------------------------------------------------
+
+function downloadFileHTML(url, fileName)
+{
+  fetch(url, {method: "get", mode: "no-cors", referrerPolicy: "no-referrer"})
+  .then(res => res.blob())
+  .then(res =>
+  {
+    var aElement = document.createElement("a");
+    aElement.setAttribute("download", fileName);
+    var href = URL.createObjectURL(res);
+    aElement.href = href;
+    aElement.setAttribute("target", "_blank");
+    aElement.click();
+    URL.revokeObjectURL(href);
+  });
 }
 
 //------------------------------------------------------------------------------
@@ -103,64 +175,6 @@ function buildElem(tag, parent, id, css_class, text)
   parent.appendChild(e);
 
   return e;
-}
-
-//------------------------------------------------------------------------------
-
-function buildSection(name, resetFunction)
-{
-  var section = document.createElement("div");
-  section.id = name;
-  section.resetFunction = resetFunction;
-  section.classList.add("section");
-  section.style.display = "none";
-
-  document.body.appendChild(section);
-  sections[name] = section;
-
-  resetSection(name);
-
-  return sections[name];
-}
-
-//------------------------------------------------------------------------------
-
-function getSection(name)
-{
-  return sections[name];
-}
-
-//------------------------------------------------------------------------------
-
-function clearSection(name)
-{
-  sections[name].innerHTML = "";
-
-  return sections[name];
-}
-
-//------------------------------------------------------------------------------
-
-function resetSection(name)
-{
-  clearSection(name);
-  sections[name].resetFunction(sections[name]);
-
-  return sections[name];
-}
-
-//------------------------------------------------------------------------------
-
-function switchSection(name)
-{
-  for(var k in sections)
-  {
-    sections[k].style.display = "none";
-  }
-
-  sections[name].style.display = "flex";
-
-  return sections[name];
 }
 
 //------------------------------------------------------------------------------

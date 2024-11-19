@@ -4,6 +4,7 @@
 // https://www.vinted.it/api/v2/users/155761817/items/favourites?page=0&include_sold=true&per_page=90
 // https://www.vinted.it/api/v2/items/4650574236
 // venduto: "item_closing_action": "sold" + "can_be_sold": false + "instant_buy": false + "can_buy": false + "accepted_pay_in_methods": []
+// search: https://www.vinted.it/api/v2/catalog/items?page=1&per_page=96&time=1732028313&search_text=hot+wheels&catalog_ids=&size_ids=&brand_ids=&status_ids=&color_ids=&material_ids=
 
 /*
 function downloadFile(url, fileName) {
