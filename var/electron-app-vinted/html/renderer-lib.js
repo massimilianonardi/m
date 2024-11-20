@@ -51,6 +51,47 @@ function lspath(dir, absolute)
 
 //------------------------------------------------------------------------------
 
+function downloadText(url, callback)
+{
+  var req = https.get(url, (res) =>
+  {
+    var body = "";
+    res.on("data", (chunk) => {body += chunk;});
+    res.on("end", () => {if(typeof callback === "function") callback(body);});
+  })
+  .on("error", (error) => {console.error(error.message);});
+}
+
+//------------------------------------------------------------------------------
+
+// function downloadText___(url)
+// {
+//   var text = "";
+//       var body = "";
+//
+//   async function get()
+//   {
+//     return new Promise((resolve) =>
+//     {
+//       var req = https.get(url, (res) =>
+//       {
+//         res.on("data", (chunk) => {body += chunk;});
+//         res.on("end", () => {console.log("downloadText"); resolve(body);});
+//       })
+//       .on("error", (error) => {console.error(error.message);});
+//     });
+//   }
+//
+//   // (async () => {await get(); console.log("get", body);})();
+//   async function get2() {await get(); console.log("get", body);};
+//   await get2();
+//
+//   return body;
+//   // return text;
+// }
+
+//------------------------------------------------------------------------------
+
 function downloadFile(url, fileName, force)
 {
   if(fs.existsSync(fileName))
