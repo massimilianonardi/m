@@ -5,17 +5,19 @@ function updateItem(id)
 {
   var itemPath = path.join(itemIndexPath, id);
   var itemJSONPath = path.join(itemPath, "item.json");
-  downloadFile(itemURLPrefix + id, itemJSONPath, true);
-  var item = JSON.parse(fs.readFileSync(itemJSONPath, "utf-8"));
-  console.log(item);
-
-  var soldFile = path.join(itemPath, "SOLD");
-  if(item.item_closing_action === "sold" || item.can_be_sold === false || item.instant_buy === false || item.can_buy === false)
+  downloadFile(itemURLPrefix + id, itemJSONPath, true, () =>
   {
-    console.log("SOLD", item.id, "item_closing_action", item.item_closing_action, "can_be_sold", item.can_be_sold, "instant_buy", item.instant_buy, "can_buy", item.can_buy);
-    fs.writeFileSync(soldFile, "");
-  }
-  else if(fs.existsSync(soldFile)) fs.rmSync(soldFile);
+    var item = JSON.parse(fs.readFileSync(itemJSONPath, "utf-8"));
+    console.log(item);
+
+    var soldFile = path.join(itemPath, "SOLD");
+    if(item.item_closing_action === "sold" || item.can_be_sold === false || item.instant_buy === false || item.can_buy === false)
+    {
+      console.log("SOLD", item.id, "item_closing_action", item.item_closing_action, "can_be_sold", item.can_be_sold, "instant_buy", item.instant_buy, "can_buy", item.can_buy);
+      fs.writeFileSync(soldFile, "");
+    }
+    else if(fs.existsSync(soldFile)) fs.rmSync(soldFile);
+  });
 }
 
 //------------------------------------------------------------------------------

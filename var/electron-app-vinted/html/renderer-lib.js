@@ -64,35 +64,7 @@ function downloadText(url, callback)
 
 //------------------------------------------------------------------------------
 
-// function downloadText___(url)
-// {
-//   var text = "";
-//       var body = "";
-//
-//   async function get()
-//   {
-//     return new Promise((resolve) =>
-//     {
-//       var req = https.get(url, (res) =>
-//       {
-//         res.on("data", (chunk) => {body += chunk;});
-//         res.on("end", () => {console.log("downloadText"); resolve(body);});
-//       })
-//       .on("error", (error) => {console.error(error.message);});
-//     });
-//   }
-//
-//   // (async () => {await get(); console.log("get", body);})();
-//   async function get2() {await get(); console.log("get", body);};
-//   await get2();
-//
-//   return body;
-//   // return text;
-// }
-
-//------------------------------------------------------------------------------
-
-function downloadFile(url, fileName, force)
+function downloadFile(url, fileName, force, callback)
 {
   if(fs.existsSync(fileName))
   {
@@ -104,6 +76,7 @@ function downloadFile(url, fileName, force)
   var req = https.get(url, (res) =>
   {
     res.pipe(fstream);
+    res.on("end", () => {if(typeof callback === "function") callback();});
   })
   .on("error", (error) => {console.error(error.message);});
 }
@@ -191,15 +164,6 @@ function buildImage(parent, url, id, css_class)
 function buildDivElem(parent, id, css_class, text)
 {
   return buildElem("div", parent, id, css_class, text);
-
-  // var e = document.createElement("div");
-  // if(typeof id === "string") e.id = id;
-  // if(typeof css_class === "string") e.classList.add(css_class);
-  // if(typeof text === "string") e.innerText = text;
-  //
-  // parent.appendChild(e);
-  //
-  // return e;
 }
 
 //------------------------------------------------------------------------------

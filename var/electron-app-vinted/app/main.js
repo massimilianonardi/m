@@ -100,7 +100,8 @@ function appReady()
     // win = null;
   });
 
-  win.loadFile(path.join(htmlDir, "index.html")).then(pageReady);
+  win.loadURL("https://vinted.it");
+  // win.loadFile(path.join(htmlDir, "index.html")).then(pageReady);
 }
 
 //------------------------------------------------------------------------------
