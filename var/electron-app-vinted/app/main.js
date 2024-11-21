@@ -100,8 +100,30 @@ function appReady()
     // win = null;
   });
 
-  win.loadURL("https://vinted.it");
-  // win.loadFile(path.join(htmlDir, "index.html")).then(pageReady);
+  // win.loadURL("https://vinted.it");
+  // win.loadURL("https://www.vinted.it/member/signup/select_type");
+  win.loadFile(path.join(htmlDir, "index.html")).then(pageReady);
+
+  var winVinted = new BrowserWindow(
+  {
+    width: w,
+    height: h,
+    webPreferences:
+    {
+      contextIsolation: false,
+      devTools: true,
+      nodeIntegration: true,
+      nodeIntegrationInWorker: true,
+      nodeIntegrationInSubFrames: true,
+      webSecurity: false,
+      allowRunningInsecureContent: true,
+      sandbox: false
+    }
+  });
+
+  // winVinted.loadURL("https://vinted.it");
+  winVinted.loadURL("https://www.vinted.it/member/signup/select_type");
+  winVinted.webContents.openDevTools();
 }
 
 //------------------------------------------------------------------------------

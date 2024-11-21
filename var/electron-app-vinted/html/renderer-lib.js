@@ -83,6 +83,15 @@ function downloadFile(url, fileName, force, callback)
 
 //------------------------------------------------------------------------------
 
+function downloadURL(url, callback)
+{
+  fetch(url, {method: "get", mode: "no-cors", referrerPolicy: "no-referrer"})
+  .then((response) => response.text())
+  .then(text => {if(typeof callback === "function") callback(text);});
+}
+
+//------------------------------------------------------------------------------
+
 function downloadFileHTML(url, fileName)
 {
   fetch(url, {method: "get", mode: "no-cors", referrerPolicy: "no-referrer"})
