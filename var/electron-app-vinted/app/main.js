@@ -56,6 +56,9 @@ function buildShortcuts()
 function buildGUI()
 {
   win.webContents.openDevTools();
+  win.webContents.send("log", "test log");
+  win.webContents.send("execute", "console.log('test execute');");
+  // create two windows the second with different preload loads a vinted page and then can make vinted downloads by javascript
 }
 
 //------------------------------------------------------------------------------
@@ -102,28 +105,29 @@ function appReady()
 
   // win.loadURL("https://vinted.it");
   // win.loadURL("https://www.vinted.it/member/signup/select_type");
-  win.loadFile(path.join(htmlDir, "index.html")).then(pageReady);
+  win.loadURL("https://www.vinted.it/member/signup/select_type").then(pageReady);
+  // win.loadFile(path.join(htmlDir, "index.html")).then(pageReady);
 
-  var winVinted = new BrowserWindow(
-  {
-    width: w,
-    height: h,
-    webPreferences:
-    {
-      contextIsolation: false,
-      devTools: true,
-      nodeIntegration: true,
-      nodeIntegrationInWorker: true,
-      nodeIntegrationInSubFrames: true,
-      webSecurity: false,
-      allowRunningInsecureContent: true,
-      sandbox: false
-    }
-  });
-
-  // winVinted.loadURL("https://vinted.it");
-  winVinted.loadURL("https://www.vinted.it/member/signup/select_type");
-  winVinted.webContents.openDevTools();
+  // var winVinted = new BrowserWindow(
+  // {
+  //   width: w,
+  //   height: h,
+  //   webPreferences:
+  //   {
+  //     contextIsolation: false,
+  //     devTools: true,
+  //     nodeIntegration: true,
+  //     nodeIntegrationInWorker: true,
+  //     nodeIntegrationInSubFrames: true,
+  //     webSecurity: false,
+  //     allowRunningInsecureContent: true,
+  //     sandbox: false
+  //   }
+  // });
+  //
+  // // winVinted.loadURL("https://vinted.it");
+  // winVinted.loadURL("https://www.vinted.it/member/signup/select_type");
+  // winVinted.webContents.openDevTools();
 }
 
 //------------------------------------------------------------------------------

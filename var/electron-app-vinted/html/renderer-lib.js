@@ -92,6 +92,15 @@ function downloadURL(url, callback)
 
 //------------------------------------------------------------------------------
 
+function downloadAsBrowser(url, callback)
+{
+  // var iframe = buildElem("iframe", document.body, "iframe_downloader");
+  // iframe.src = url;
+  window.open(url);
+}
+
+//------------------------------------------------------------------------------
+
 function downloadFileHTML(url, fileName)
 {
   fetch(url, {method: "get", mode: "no-cors", referrerPolicy: "no-referrer"})

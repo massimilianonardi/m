@@ -189,6 +189,7 @@ function buildSectionGUIupdate(parent)
 
 function buildSectionGUIorganize(parent)
 {
+  // window.open("https://www.vinted.it/member/signup/select_type");
 }
 
 //------------------------------------------------------------------------------
