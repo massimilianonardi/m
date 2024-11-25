@@ -29,3 +29,9 @@ function downloadURLPromise(url)
 }
 
 //------------------------------------------------------------------------------
+
+// var cookieElem = document.getElementById("onetrust-consent-sdk");
+var cookieElem = document.getElementById("onetrust-pc-sdk");
+console.log("cookieElem", cookieElem, cookieElem.firstChild);
+
+//------------------------------------------------------------------------------

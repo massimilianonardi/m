@@ -21,6 +21,24 @@ function log()
 
 //------------------------------------------------------------------------------
 
+function browserDownloadJSON(url, filePath, force, callback)
+{
+  browserDownloadURL(url, text =>
+  {
+    if(fs.existsSync(filePath))
+    {
+      if(force === true) fs.rmSync(filePath)
+      else return;
+    }
+
+    fs.writeFileSync(filePath, text, "utf-8");
+
+    if(typeof callback === "function") callback(JSON.parse(text));
+  });
+}
+
+//------------------------------------------------------------------------------
+
 function browserDownloadFile(url, filePath, force, callback)
 {
   browserDownloadURL(url, text =>
@@ -129,9 +147,10 @@ function buildGUI()
     winBrowserDownloader.webContents.executeJavaScript(fs.readFileSync(path.resolve(path.join(htmlDir, "vinted.js")), "utf-8"))
     .then((res) =>
     {
-      var url = "https://www.vinted.it/api/v2/catalog/items?page=1&per_page=96&time=1732028313&search_text=hot+wheels&catalog_ids=&size_ids=&brand_ids=&status_ids=&color_ids=&material_ids=";
+      // var url = "https://www.vinted.it/api/v2/catalog/items?page=1&per_page=96&time=1732028313&search_text=hot+wheels&catalog_ids=&size_ids=&brand_ids=&status_ids=&color_ids=&material_ids=";
       // browserDownloadURL(url, res => {log("browserDownloadURL: ", res)});
-      browserDownloadFile(url, "/m/_vinted/zzz-test.json", true, res => {log("browserDownloadFile: ", res);});
+      // browserDownloadFile(url, "/m/_vinted/zzz-test.json", true, res => {log("browserDownloadFile: ", res);});
+      // browserDownloadJSON(url, "/m/_vinted/zzz-test.json", true, res => {log("browserDownloadJSON: ", res);});
     });
   });
 }
