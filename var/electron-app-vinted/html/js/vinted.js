@@ -1,13 +1,47 @@
 
 //------------------------------------------------------------------------------
 
+function dloadJSON_p(url)
+{
+  return invoke("browserDownloadJSONPromise", url);
+}
+
+//------------------------------------------------------------------------------
+
+function dloadURL_p(url)
+{
+  return invoke("browserDownloadURLPromise", url);
+}
+
+//------------------------------------------------------------------------------
+
+function dloadFile_p(url, filePath, force)
+{
+  return invoke("browserDownloadURLPromise", url)
+  .then(text =>
+  {
+    if(fs.existsSync(filePath))
+    {
+      if(force === true) fs.rmSync(filePath)
+      else return;
+    }
+
+    fs.writeFileSync(filePath, text, "utf-8");
+
+    return text;
+  });
+}
+
+//------------------------------------------------------------------------------
+
 function updateItem(id)
 {
   var itemPath = path.join(itemIndexPath, id);
   var itemJSONPath = path.join(itemPath, "item.json");
-  downloadFile(itemURLPrefix + id, itemJSONPath, true, () =>
+  dloadFile_p(itemURLPrefix + id, itemJSONPath, true)
+  .then(text =>
   {
-    var item = JSON.parse(fs.readFileSync(itemJSONPath, "utf-8"));
+    var item = JSON.parse(text);
     console.log(item);
 
     var soldFile = path.join(itemPath, "SOLD");

@@ -16,6 +16,7 @@ const {BrowserWindow, Menu, MenuItem, Tray, getCurrentWindow} = require("electro
 
 const appDir = path.join(app.getAppPath(), "app");
 const htmlDir = path.join(app.getAppPath(), "html");
+const jsDir = path.join(htmlDir, "js");
 const confDir = path.join(app.getAppPath(), "conf");
 
 const menuConfPath = path.join(confDir, "menu.json");
