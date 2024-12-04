@@ -21,6 +21,28 @@ function log()
 
 //------------------------------------------------------------------------------
 
+// async function asyncEval(functionName, ...args)
+// {
+//   return new Promise((resolve) =>
+//   {
+//     eval(functionName)(...args)
+//     .then(res => {resolve(res);});
+//   });
+// }
+//
+// function doSomething() {
+//   return new Promise((resolve) => {
+//     setTimeout(() => {
+//       // Other things to do before completion of the promise
+//       console.log("Did something");
+//       // The fulfillment value of the promise
+//       resolve("https://example.com/");
+//     }, 200);
+//   });
+// }
+
+//------------------------------------------------------------------------------
+
 function browserDownloadJSON(url, filePath, force, callback)
 {
   browserDownloadURL(url, text =>
@@ -61,6 +83,20 @@ function browserDownloadURL(url, callback)
 {
   winBrowserDownloader.webContents.executeJavaScript("downloadURLPromise('" + url + "');")
   .then(text => {if(typeof callback === "function") callback(text);});
+}
+
+//------------------------------------------------------------------------------
+
+function browserDownloadJSONPromise(url)
+{
+  return winBrowserDownloader.webContents.executeJavaScript("downloadJSONPromise('" + url + "');");
+}
+
+//------------------------------------------------------------------------------
+
+function browserDownloadURLPromise(url)
+{
+  return winBrowserDownloader.webContents.executeJavaScript("downloadURLPromise('" + url + "');");
 }
 
 //------------------------------------------------------------------------------
@@ -117,11 +153,11 @@ function buildShortcuts()
 
 function buildGUI()
 {
+  win.webContents.openDevTools();
+
   var { width, height } = electron.screen.getPrimaryDisplay().workAreaSize;
   var w = parseInt(width);
   var h = parseInt(height);
-
-  win.webContents.openDevTools();
 
   winBrowserDownloader = new BrowserWindow(
   {
@@ -129,7 +165,7 @@ function buildGUI()
     height: h,
     webPreferences:
     {
-      preload: path.join(appDir, "preload.js"),
+      // preload: path.join(appDir, "preload.js"),
       contextIsolation: false,
       devTools: true,
       nodeIntegration: true,
@@ -170,6 +206,16 @@ function pageReady()
 
 function appReady()
 {
+  ipcMain.handle("execute", (event, functionName, ...args) =>
+  {
+    return eval(functionName)(...args);
+  });
+
+  // ipcMain.handle("executeAsync", (event, functionName, ...args) =>
+  // {
+  //   return asyncEval(functionName, ...args);
+  // });
+
   var { width, height } = electron.screen.getPrimaryDisplay().workAreaSize;
   var w = parseInt(width);
   var h = parseInt(height);

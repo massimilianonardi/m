@@ -92,11 +92,16 @@ function downloadURL(url, callback)
 
 //------------------------------------------------------------------------------
 
-function downloadAsBrowser(url, callback)
+function downloadJSONPromise(url)
 {
-  // var iframe = buildElem("iframe", document.body, "iframe_downloader");
-  // iframe.src = url;
-  window.open(url);
+  return invoke("browserDownloadJSONPromise", url);
+}
+
+//------------------------------------------------------------------------------
+
+function downloadURLPromise(url)
+{
+  return invoke("browserDownloadURLPromise", url);
 }
 
 //------------------------------------------------------------------------------
