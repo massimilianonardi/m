@@ -1,6 +1,25 @@
 
 //------------------------------------------------------------------------------
 
+// dump
+// - fav
+// - search
+// index / [id]
+// - item.json
+// - thumbnail.jpg
+// - photo / [hi-res-photos]
+// group
+// - brand
+// - country
+// - user
+// order
+// - tag
+// - time
+// tag
+// - uncategorized
+
+//------------------------------------------------------------------------------
+
 function dloadJSON_p(url)
 {
   return invoke("browserDownloadJSONPromise", url);
@@ -30,6 +49,43 @@ function dloadFile_p(url, filePath, force)
 
     return text;
   });
+}
+
+//------------------------------------------------------------------------------
+
+function getItem(id)
+{
+  return JSON.parse(fs.readFileSync(path.join(itemIndexPath, id, "item.json")));
+}
+
+//------------------------------------------------------------------------------
+
+function itemIsSold(item)
+{
+  if(item.item_closing_action === "sold" || item.can_be_sold === false || item.instant_buy === false || item.can_buy === false) return true
+  else return false;
+}
+
+//------------------------------------------------------------------------------
+
+function dloadThumbnail(item)
+{
+  var itemFullPath = path.join(itemIndexPath, item.id);
+  var thPath = path.join(itemFullPath, "thumbnail.jpg");
+
+  if(!fs.existsSync(thPath) || fs.statSync(thPath).size === 0)
+  {
+    var fstream = fs.createWriteStream(thPath);
+    var req = https.get(url, (res) =>
+    {
+      res.pipe(fstream);
+      res.on("end", () =>
+      {
+        img.src = thPath;
+      });
+    })
+    .on("error", (error) => {console.error(error.message);});
+  }
 }
 
 //------------------------------------------------------------------------------
