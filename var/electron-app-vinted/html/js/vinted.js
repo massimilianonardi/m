@@ -70,34 +70,36 @@ function itemIsSold(item)
 
 function dloadItemPhoto_p(item, i, force)
 {
-  return dloadImage_p(item.photos[i].full_size_url, path.join(itemIndexPath, item.id, "photos", "img_" + j + ".jpg"), force);
+  return dloadImage_p(item.photos[i].full_size_url, path.join(itemIndexPath, "" + item.id, "photos", "img_" + i + ".jpg"), force);
 }
 
 //------------------------------------------------------------------------------
 
 function dloadItemPhotos_p(item, force)
 {
-  // todo: put downloads into a queue, return a promise for all downloads complete
-  // todo: promises queue
+  var q = new Queue();
   var photos = item.photos;
+  mkdir(path.join(itemIndexPath, "" + item.id, "photos"));
   for(var i = 0; i < photos.length; i++)
   {
-    dloadItemPhoto_p(item, i, force)
+    q.add(dloadItemPhoto_p, [item, i, force]);
   }
+
+  return q.exec();
 }
 
 //------------------------------------------------------------------------------
 
 function dloadItemThumbnail_p(item)
 {
-  return dloadImage_p(item.photos[0].thumbnails[2].url, path.join(itemIndexPath, item.id, "thumbnail.jpg"), true);
+  return dloadImage_p(item.photos[0].thumbnails[2].url, path.join(itemIndexPath, "" + item.id, "thumbnail.jpg"), true);
 }
 
 //------------------------------------------------------------------------------
 
 function dloadImage_p(url, filePath, force)
 {
-  return new Promise((resolve, reject), =>
+  return new Promise((resolve, reject) =>
   {
     if(fs.existsSync(filePath))
     {
