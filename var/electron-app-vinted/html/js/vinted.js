@@ -68,24 +68,66 @@ function itemIsSold(item)
 
 //------------------------------------------------------------------------------
 
-function dloadThumbnail(item)
+function dloadItemPhoto_p(item, i, force)
 {
-  var itemFullPath = path.join(itemIndexPath, item.id);
-  var thPath = path.join(itemFullPath, "thumbnail.jpg");
+  return dloadImage_p(item.photos[i].full_size_url, path.join(itemIndexPath, item.id, "photos", "img_" + j + ".jpg"), force);
+}
 
-  if(!fs.existsSync(thPath) || fs.statSync(thPath).size === 0)
+//------------------------------------------------------------------------------
+
+function dloadItemPhotos_p(item, force)
+{
+  // todo: put downloads into a queue, return a promise for all downloads complete
+  // todo: promises queue
+  var photos = item.photos;
+  for(var i = 0; i < photos.length; i++)
   {
-    var fstream = fs.createWriteStream(thPath);
+    dloadItemPhoto_p(item, i, force)
+  }
+}
+
+//------------------------------------------------------------------------------
+
+function dloadItemThumbnail_p(item)
+{
+  return dloadImage_p(item.photos[0].thumbnails[2].url, path.join(itemIndexPath, item.id, "thumbnail.jpg"), true);
+}
+
+//------------------------------------------------------------------------------
+
+function dloadImage_p(url, filePath, force)
+{
+  return new Promise((resolve, reject), =>
+  {
+    if(fs.existsSync(filePath))
+    {
+      if(force === true || fs.statSync(thPath).size === 0) fs.rmSync(filePath)
+      else return;
+    }
+
     var req = https.get(url, (res) =>
     {
-      res.pipe(fstream);
-      res.on("end", () =>
+      if(res.statusCode !== 200)
       {
-        img.src = thPath;
+        reject("Status Code: " + res.statusCode + "; Status Message: " + res.statusMessage);
+      }
+
+      var fstream = fs.createWriteStream(filePath);
+      fstream.on("finish", () =>
+      {
+        resolve();
       });
+
+      res.pipe(fstream);
+      // res.on("end", () =>
+      // {
+      // });
     })
-    .on("error", (error) => {console.error(error.message);});
-  }
+    .on("error", (error) =>
+    {
+      reject(error.message);
+    });
+  });
 }
 
 //------------------------------------------------------------------------------
