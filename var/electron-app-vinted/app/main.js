@@ -143,7 +143,7 @@ function buildGUI()
     height: h,
     webPreferences:
     {
-      // preload: path.join(appDir, "preload.js"),
+      // preload: path.resolve(path.join(jsDir, "vinted-downloader.js")),
       contextIsolation: false,
       devTools: true,
       nodeIntegration: true,
@@ -155,10 +155,16 @@ function buildGUI()
     }
   });
 
+  winBrowserDownloader.webContents.on("did-start-loading", () =>
+  {
+    log("did-start-loading");
+    winBrowserDownloader.webContents.executeJavaScript(fs.readFileSync(path.resolve(path.join(jsDir, "vinted-downloader.js")), "utf-8"));
+  });
+
   winBrowserDownloader.loadURL("https://www.vinted.it/member/signup/select_type").then(() =>
   {
     winBrowserDownloader.webContents.openDevTools();
-    winBrowserDownloader.webContents.executeJavaScript(fs.readFileSync(path.resolve(path.join(jsDir, "vinted-downloader.js")), "utf-8"));
+    // winBrowserDownloader.webContents.executeJavaScript(fs.readFileSync(path.resolve(path.join(jsDir, "vinted-downloader.js")), "utf-8"));
   });
 }
 

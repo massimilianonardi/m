@@ -8,8 +8,6 @@ const {shell} = require("electron");
 
 //------------------------------------------------------------------------------
 
-const itemURLPrefix = "https://www.vinted.it/api/v2/items/";
-
 const dataPath = "/m/_vinted";
 const favDumpPath = path.join(dataPath, "dump", "fav");
 const itemIndexPath = path.join(dataPath, "item", "index");
@@ -19,6 +17,9 @@ const tagOrderPath = path.join(orderPath, "tag");
 
 const uncategorizedTag = "uncategorized";
 const uncategorizedTagPath = path.join(tagPath, uncategorizedTag);
+
+const soldTag = "sold";
+const soldTagPath = path.join(tagPath, uncategorizedTag);
 
 //------------------------------------------------------------------------------
 
