@@ -26,6 +26,7 @@ const defaultVintedUserID = "155761817";
 
 const itemURLTemplate = "https://www.vinted.it/api/v2/items/${itemID}";
 const userFavouriteURLTemplate = "https://www.vinted.it/api/v2/users/${userID}/items/favourites?page=${page}&include_sold=true&per_page=90";
+const searchURLTemplate = "https://www.vinted.it/api/v2/catalog/items?page=${page}&per_page=96&time=1732028313&search_text=hot+wheels&catalog_ids=&size_ids=&brand_ids=&status_ids=&color_ids=&material_ids=";
 
 //------------------------------------------------------------------------------
 
@@ -48,18 +49,20 @@ function saveTextFile(text, filePath, force)
   if(fs.existsSync(filePath))
   {
     if(force === true) fs.rmSync(filePath)
-    else return;
+    else return false;
   }
 
   mkdir(path.dirname(filePath));
   fs.writeFileSync(filePath, text, "utf-8");
+
+  return true
 }
 
 //------------------------------------------------------------------------------
 
 function saveJSONFile(json, filePath, force)
 {
-  saveTextFile(JSON.stringify(json, null, 2), filePath, force);
+  return saveTextFile(JSON.stringify(json, null, 2), filePath, force);
 }
 
 //------------------------------------------------------------------------------
@@ -94,6 +97,13 @@ function getFavouriteURL(page)
 function getFavouritePage_p(page)
 {
   return dloadJSON_p(getFavouriteURL(page));
+}
+
+//------------------------------------------------------------------------------
+
+function getSearchPage_p(page)
+{
+  return dloadJSON_p(searchURLTemplate.replace("${page}", page));
 }
 
 //------------------------------------------------------------------------------
@@ -186,18 +196,17 @@ function dloadItemPhotos_p(item, force)
 function updateItemFiles(item, force)
 {
   // todo check what to update, but keep it sync: json, thumb, photos, tags, etc.
-  // returns true if has updated overwriting, false if skipped because existing and nothing changed
 
-  saveJSONFile(item, filePath, force);
+  if(!saveJSONFile(item, getItemFilePath(item.id), force)) return false;
 
-  if(itemIsSold(item))
-  {
-    addItemToTag(item.id, soldTag);
-  }
-
-  addItemToTag(id, uncategorizedTag);
-  addItemToTag(id, item.brand, "brand");
-  addItemToTag(id, item.user_login, "user");
+  // if(itemIsSold(item))
+  // {
+  //   addItemToTag(item.id, soldTag);
+  // }
+  //
+  // addItemToTag(id, uncategorizedTag);
+  // addItemToTag(id, item.brand, "brand");
+  // addItemToTag(id, item.user_login, "user");
 
   return true;
 }
@@ -217,22 +226,19 @@ function updateItem_p(id)
 
 //------------------------------------------------------------------------------
 
-function updateItems(ids)
+function updateItems_p(ids, recursionIndex)
 {
-  // todo promisify with queue
   if(Array.isArray(ids))
   {
-    for(var i = 0; i < ids.length; i++)
-    {
-      updateItem_p(ids[i]);
-    }
+    var index = 0;
+    if(typeof recursionIndex !== "undefined") index = recursionIndex;
+    if(index < ids.length) return updateItem_p(ids[index]).then((res) => {return updateItems_p(ids, index + 1);})
+    else return true;
   }
   else
   {
-    updateItem_p(ids);
+    return updateItem_p(ids);
   }
-
-  console.log("updateItems - updated:" + ids.length);
 }
 
 //------------------------------------------------------------------------------
@@ -288,139 +294,31 @@ function orderItemsByUser(ids)
 
 //------------------------------------------------------------------------------
 
-async function dumpPage_p(getPagePromise_p)
+function dumpPages_p(getPageFunction_p, startPage, endPage, force, quitOnExisting)
 {
-  return await getPagePromise_p.then((page) =>
+  if(startPage <= endPage) return getPageFunction_p(startPage).then((page) =>
   {
     var items = page.items;
-    console.log("dumpPage_p", items, page);
+    console.log("dumpPage_p", [items], page);
 
-    if(items.length === 0) return false;
+    if(typeof items === "undefined" || items.length === 0) return true;
 
-    // for(var j = 0; j < items.length; j++)
-    // {
-    //   var item = items[j];
-    //   if(!updateItemFiles(item, force)) return false;
-    // }
-  });
-}
-
-//------------------------------------------------------------------------------
-
-async function dumpPages_p(getPagePromise_p, numPagesMax, force)
-{
-  return new Promise((resolve, reject) =>
-  {
-    var hasMore = true;
-    for(var i = 50; hasMore; i++)
+    for(var j = 0; j < items.length; j++)
     {
-      console.log("dumpPages_p", i);
-
-      hasMore = dumpPage_p(getPagePromise_p(i))
-
-      console.log("dumpPages_p- return", hasMore);
+      var item = items[j];
+      console.log("dumpPage_p - item", item, page);
+      if(quitOnExisting && !updateItemFiles(item, force)) return false;
     }
 
-    resolve();
+    return dumpPage_p(getPageFunction_p, startPage + 1, endPage, force);
   });
 }
 
 //------------------------------------------------------------------------------
 
-async function dumpFavourites_p(force)
+function dumpFavourites_p(force)
 {
-  return new Promise((resolve, reject) =>
-  {
-    var hasMore = true;
-    for(var i = 0; hasMore; i++)
-    {
-      // var page = await getFavouritePage_p(i);
-      var items = page.items;
-      // console.log("dumpFavourites", i, items, page);
-
-      if(items.length === 0) break;
-
-      for(var j = 0; j < items.length; j++)
-      {
-        var item = items[j];
-        if(!updateItemFiles(item, force)) hasMore = false;
-      }
-    }
-
-    resolve();
-  });
+  return dumpPages_p(getFavouritePage_p, 0, 99, force, false);
 }
-
-//------------------------------------------------------------------------------
-
-// function processSearchDump(search)
-// {
-//   fs.readdirSync(favDumpPath).forEach(fileName =>
-//   {
-//     console.log("processFavDump", fileName);
-//
-//     var fn = path.join(favDumpPath, fileName);
-//     var json = JSON.parse(fs.readFileSync(fn));
-//     var items = json.items;
-//     for(var i = 0; i < items.length; i++)
-//     {
-//       var item = items[i];
-//       var id = "" + item.id;
-//       if(typeof id !== "string" || id === "")
-//       {
-//         console.log("parseFavDump id null", id, item);
-//         continue;
-//       }
-//       var itemPath = path.join(itemIndexPath, id);
-//       if(fs.existsSync(itemPath))
-//       {
-//         console.log("parseFavDump id exists", id, item.path);
-//         continue;
-//       }
-//       mkdir(itemPath);
-//       var itemJSONPath = path.join(itemPath, "item.json");
-//       fs.writeFileSync(itemJSONPath, JSON.stringify(item, null, 2), "utf-8");
-//       addItemToTag(id, uncategorizedTag);
-//       addItemToTag(id, item.brand, "brand");
-//       addItemToTag(id, item.user_login, "user");
-//     }
-//   });
-// }
-
-//------------------------------------------------------------------------------
-
-// function processFavDump()
-// {
-//   fs.readdirSync(favDumpPath).forEach(fileName =>
-//   {
-//     console.log("processFavDump", fileName);
-//
-//     var fn = path.join(favDumpPath, fileName);
-//     var json = JSON.parse(fs.readFileSync(fn));
-//     var items = json.items;
-//     for(var i = 0; i < items.length; i++)
-//     {
-//       var item = items[i];
-//       var id = "" + item.id;
-//       if(typeof id !== "string" || id === "")
-//       {
-//         console.log("parseFavDump id null", id, item);
-//         continue;
-//       }
-//       var itemPath = path.join(itemIndexPath, id);
-//       if(fs.existsSync(itemPath))
-//       {
-//         console.log("parseFavDump id exists", id, item.path);
-//         continue;
-//       }
-//       mkdir(itemPath);
-//       var itemJSONPath = path.join(itemPath, "item.json");
-//       fs.writeFileSync(itemJSONPath, JSON.stringify(item, null, 2), "utf-8");
-//       addItemToTag(id, uncategorizedTag);
-//       addItemToTag(id, item.brand, "brand");
-//       addItemToTag(id, item.user_login, "user");
-//     }
-//   });
-// }
 
 //------------------------------------------------------------------------------
