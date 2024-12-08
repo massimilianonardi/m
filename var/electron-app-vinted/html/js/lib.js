@@ -57,3 +57,70 @@ Queue.prototype.exec = function()
 };
 
 //------------------------------------------------------------------------------
+
+function PromisesQueue()
+{
+  if(!(this instanceof PromisesQueue)) throw new ReferenceError();
+
+  this.queue = [];
+}
+
+PromisesQueue.prototype.add = function(callbackReturningPromise, args, callbackThen, callbackCatch)
+{
+  if(typeof callbackReturningPromise === "undefined" || callbackReturningPromise === null)
+  {
+    throw new ReferenceError();
+  }
+
+  if(typeof callbackReturningPromise !== "function")
+  {
+    throw new TypeError();
+  }
+
+  if(typeof callbackThen !== "undefined" && callbackThen !== null && typeof callbackThen !== "function")
+  {
+    throw new TypeError();
+  }
+
+  if(typeof callbackCatch !== "undefined" && callbackCatch !== null && typeof callbackCatch !== "function")
+  {
+    throw new TypeError();
+  }
+
+  this.queue.push({callback: callbackReturningPromise, args: args, callbackThen: callbackThen, callbackCatch: callbackCatch});
+
+  return this;
+};
+
+PromisesQueue.prototype.exec = function()
+{
+  var _this = this;
+
+  return new Promise((resolve, reject) =>
+  {
+    var f = function()
+    {
+      if(_this.queue.length === 0)
+      {
+        resolve();
+        return;
+      }
+
+      var obj = _this.queue.splice(0, 1)[0];
+      try
+      {
+        obj.callback.apply(global, obj.args)
+        .then(() => f())
+        .catch(() => f());
+      }
+      catch(error)
+      {
+        console.error(error);
+        f();
+      }
+    };
+    f();
+  });
+};
+
+//------------------------------------------------------------------------------
