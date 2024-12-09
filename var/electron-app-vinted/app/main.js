@@ -155,17 +155,24 @@ function buildGUI()
     }
   });
 
-  winBrowserDownloader.webContents.on("did-start-loading", () =>
+  // winBrowserDownloader.webContents.on("did-start-loading", () =>
+  // {
+  //   log("did-start-loading");
+  //   winBrowserDownloader.webContents.executeJavaScript(fs.readFileSync(path.resolve(path.join(jsDir, "vinted-downloader.js")), "utf-8"));
+  // });
+
+  winBrowserDownloader.webContents.on("did-finish-load", () =>
   {
-    log("did-start-loading");
+    log("did-finish-load");
     winBrowserDownloader.webContents.executeJavaScript(fs.readFileSync(path.resolve(path.join(jsDir, "vinted-downloader.js")), "utf-8"));
   });
 
-  winBrowserDownloader.loadURL("https://www.vinted.it/member/signup/select_type").then(() =>
-  {
-    winBrowserDownloader.webContents.openDevTools();
-    // winBrowserDownloader.webContents.executeJavaScript(fs.readFileSync(path.resolve(path.join(jsDir, "vinted-downloader.js")), "utf-8"));
-  });
+  winBrowserDownloader.loadURL("https://www.vinted.it/member/signup/select_type");
+  // winBrowserDownloader.loadURL("https://www.vinted.it/member/signup/select_type").then(() =>
+  // {
+  //   winBrowserDownloader.webContents.openDevTools();
+  //   // winBrowserDownloader.webContents.executeJavaScript(fs.readFileSync(path.resolve(path.join(jsDir, "vinted-downloader.js")), "utf-8"));
+  // });
 }
 
 //------------------------------------------------------------------------------

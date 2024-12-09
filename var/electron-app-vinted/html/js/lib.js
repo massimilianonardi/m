@@ -110,8 +110,8 @@ PromisesQueue.prototype.exec = function()
       try
       {
         obj.callback.apply(global, obj.args)
-        .then(() => f())
-        .catch(() => f());
+        .then((...args) => {obj.callbackThen.apply(global, ...args); f();})
+        .catch((...args) => {obj.callbackCatch.apply(global, ...args); f();});
       }
       catch(error)
       {

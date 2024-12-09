@@ -294,15 +294,17 @@ function orderItemsByUser(ids)
 
 //------------------------------------------------------------------------------
 
-// todo load and check last saved page with fuzzy match to understand when to stop
-// because further pages where already processed in the past
-function ___dumpPages_p(getPageFunction_p, pageDir, startPage, endPage, force, quitOnExisting, jobID)
+function ______dumpPages_p(getPageFunction_p, pageDir, startPage, endPage, force, quitOnExisting, jobID)
 {
   var _jobID = jobID;
   if(typeof _jobID !== "string" && typeof _jobID !== "number") _jobID = new Date().getMilliseconds();
 
+  // todo load last saved page to be checked against every pagewith fuzzy match to understand when to stop
+  // because further pages where already processed in the past
   if(startPage <= endPage) return getPageFunction_p(startPage).then((page) =>
   {
+    // todo check last saved page with fuzzy match to understand when to stop
+    // because further pages where already processed in the past
     var pageName = "dumpItemsPage_" + _jobID + "_" + (999 - startPage);
     saveJSONFile(page, path.join(pageDir, pageName), false);
 
@@ -324,7 +326,35 @@ function ___dumpPages_p(getPageFunction_p, pageDir, startPage, endPage, force, q
 
 //------------------------------------------------------------------------------
 
-function dumpPages_p(getPageFunction_p, startPage, endPage, force, quitOnExisting)
+function dumpPages_p(getPageFunction_p, pageDir, startPage, endPage, force, quitOnExisting, jobID)
+{
+  var _jobID = jobID;
+  if(typeof _jobID !== "string" && typeof _jobID !== "number") _jobID = new Date().getMilliseconds();
+
+  if(startPage <= endPage) return getPageFunction_p(startPage).then((page) =>
+  {
+    var pageName = "dumpItemsPage_" + _jobID + "_" + (999 - startPage);
+    saveJSONFile(page, path.join(pageDir, pageName), false);
+
+    var items = page.items;
+    console.log("dumpPage_p", [items], page);
+
+    if(typeof items === "undefined" || items.length === 0) return true;
+
+    for(var j = 0; j < items.length; j++)
+    {
+      var item = items[j];
+      console.log("dumpPage_p - item", item, page);
+      if(quitOnExisting && !updateItemFiles(item, force)) return false;
+    }
+
+    return dumpPages_p(getPageFunction_p, pageDir, startPage + 1, endPage, force, quitOnExisting, _jobID);
+  });
+}
+
+//------------------------------------------------------------------------------
+
+function ___dumpPages_p(getPageFunction_p, startPage, endPage, force, quitOnExisting)
 {
   if(startPage <= endPage) return getPageFunction_p(startPage).then((page) =>
   {
@@ -340,7 +370,7 @@ function dumpPages_p(getPageFunction_p, startPage, endPage, force, quitOnExistin
       if(quitOnExisting && !updateItemFiles(item, force)) return false;
     }
 
-    return dumpPage_p(getPageFunction_p, startPage + 1, endPage, force, quitOnExisting);
+    return dumpPages_p(getPageFunction_p, startPage + 1, endPage, force, quitOnExisting);
   });
 }
 
@@ -348,7 +378,8 @@ function dumpPages_p(getPageFunction_p, startPage, endPage, force, quitOnExistin
 
 function dumpFavourites_p(force)
 {
-  return dumpPages_p(getFavouritePage_p, 0, 99, force, false);
+  return dumpPages_p(getFavouritePage_p, favDumpPath, 0, 99, force, false);
+  // return dumpPages_p(getFavouritePage_p, 0, 99, force, false);
 }
 
 //------------------------------------------------------------------------------
