@@ -3,7 +3,7 @@
 
 // dump
 // - fav
-// - search
+// - search / [named-searches]
 // index / [id]
 // - item.json
 // - thumbnail.jpg
@@ -12,11 +12,42 @@
 // - brand
 // - country
 // - user
-// order
-// - tag
-// - time
-// tag
-// - uncategorized
+// - status / sold, uncategorized/untagged
+// - tag / [tags] + sold + uncategorized
+
+//------------------------------------------------------------------------------
+
+const dataPath = "/m/_vinted";
+
+const dumpPath = path.join(dataPath, "dump");
+const favDumpPath = path.join(dumpPath, "fav");
+const searchDumpPath = path.join(dumpPath, "search");
+
+const itemIndexPath = path.join(dataPath, "index");
+
+const groupPath = path.join(dataPath, "group");
+
+const brandGroupPath = path.join(groupPath, "brand");
+const countryGroupPath = path.join(groupPath, "country");
+const userGroupPath = path.join(groupPath, "user");
+const tagGroupPath = path.join(groupPath, "tag");
+const statusGroupPath = path.join(groupPath, "status");
+
+const soldStatusGroupPath = path.join(statusGroupPath, "sold");
+const untaggedStatusGroupPath = path.join(statusGroupPath, "untagged");
+// const uncategorizedStatusGroupPath = path.join(statusGroupPath, "uncategorized");
+
+const tagPath = tagGroupPath;
+
+// const tagPath = path.join(dataPath, "tag");
+// const orderPath = path.join(dataPath, "order");
+// const tagOrderPath = path.join(orderPath, "tag");
+//
+// const uncategorizedTag = "uncategorized";
+// const uncategorizedTagPath = path.join(tagPath, uncategorizedTag);
+//
+// const soldTag = "sold";
+// const soldTagPath = path.join(tagPath, uncategorizedTag);
 
 //------------------------------------------------------------------------------
 
@@ -28,6 +59,8 @@ const itemURLTemplate = "https://www.vinted.it/api/v2/items/${itemID}";
 const userFavouriteURLTemplate = "https://www.vinted.it/api/v2/users/${userID}/items/favourites?page=${page}&include_sold=true&per_page=90";
 const searchURLTemplate = "https://www.vinted.it/api/v2/catalog/items?page=${page}&per_page=96&time=1732028313&search_text=hot+wheels&catalog_ids=&size_ids=&brand_ids=&status_ids=&color_ids=&material_ids=";
 
+//------------------------------------------------------------------------------
+// PROXY FUNCTIONS TO DEDICATED VINTED WINDOW
 //------------------------------------------------------------------------------
 
 function dloadJSON_p(url)
@@ -42,6 +75,8 @@ function dloadURL_p(url)
   return invoke("browserDownloadURLPromise", url);
 }
 
+//------------------------------------------------------------------------------
+// DOWNLOAD
 //------------------------------------------------------------------------------
 
 function saveTextFile(text, filePath, force)
@@ -79,6 +114,8 @@ function dloadFile_p(url, filePath, force)
 }
 
 //------------------------------------------------------------------------------
+// FAVOURITES AND SEARCH
+//------------------------------------------------------------------------------
 
 function getUserFavouriteURL(userID, page)
 {
@@ -101,11 +138,20 @@ function getFavouritePage_p(page)
 
 //------------------------------------------------------------------------------
 
-function getSearchPage_p(page)
+// function getSearchPage_p(page)
+// {
+//   return dloadJSON_p(searchURLTemplate.replace("${page}", page));
+// }
+
+//------------------------------------------------------------------------------
+
+function getSearchPagePromiseCallback(searchURL)
 {
-  return dloadJSON_p(searchURLTemplate.replace("${page}", page));
+  return function(page){dloadJSON_p(searchURL.replace("${page}", page));};
 }
 
+//------------------------------------------------------------------------------
+// ITEM
 //------------------------------------------------------------------------------
 
 function getItemPath(id)
@@ -165,6 +211,14 @@ function itemIsSold(item)
 
 //------------------------------------------------------------------------------
 
+// todo
+function itemIsUntagged(item)
+{
+  return true;
+}
+
+//------------------------------------------------------------------------------
+
 function dloadItemThumbnail_p(item)
 {
   return downloadFile_p(item.photos[0].thumbnails[2].url, getItemThumbnailFilePath(item.id), true);
@@ -192,21 +246,69 @@ function dloadItemPhotos_p(item, force)
 }
 
 //------------------------------------------------------------------------------
+// GROUPS AND TAGS
+//------------------------------------------------------------------------------
+
+function getTags()
+{
+  return lsdir(tagPath);
+}
+
+//------------------------------------------------------------------------------
+
+function getTagItems(tag)
+{
+  var items = [];
+  var orderedItems = {};
+
+  var thisTagPath = path.join(tagPath, tag);
+  // if(!fs.existsSync(thisTagPath)) return items;
+
+  var thisTagOrderPath = path.join(tagOrderPath, tag + ".json");
+  if(fs.existsSync(thisTagOrderPath))
+  {
+    items = JSON.parse(fs.readFileSync(thisTagOrderPath));
+    for(var i = 0; i < items.length; i++)
+    {
+      orderedItems[items[i]] = true;
+    }
+  }
+
+  fs.readdirSync(thisTagPath).forEach(itemPath =>
+  {
+    // items.push(itemPath);
+    // if(-1 === items.indexOf(itemPath)) items.push(itemPath);
+    // if(!orderedItems[itemPath]) items.push(itemPath);
+    if(!orderedItems[itemPath]) if(fs.existsSync(path.join(thisTagPath, itemPath, "item.json"))) items.push(itemPath);
+  });
+
+  return items;
+}
+
+//------------------------------------------------------------------------------
+
+
+
+//------------------------------------------------------------------------------
+// UPDATE
+//------------------------------------------------------------------------------
 
 function updateItemFiles(item, force)
 {
-  // todo check what to update, but keep it sync: json, thumb, photos, tags, etc.
-
   if(!saveJSONFile(item, getItemFilePath(item.id), force)) return false;
 
-  // if(itemIsSold(item))
-  // {
-  //   addItemToTag(item.id, soldTag);
-  // }
-  //
-  // addItemToTag(id, uncategorizedTag);
-  // addItemToTag(id, item.brand, "brand");
-  // addItemToTag(id, item.user_login, "user");
+  if(itemIsSold(item))
+  {
+    addItemToGroupStatusSold(item.id);
+  }
+
+  if(itemIsUntagged(item))
+  {
+    addItemToGroupStatusUntagged(item.id);
+  }
+
+  addItemToGroupBrand(item.brand, id);
+  addItemToGroupUser(item.user_login, id);
 
   return true;
 }
@@ -248,6 +350,8 @@ function updateIndex()
   updateItems(fs.readdirSync(itemIndexPath));
 }
 
+//------------------------------------------------------------------------------
+// ORDER
 //------------------------------------------------------------------------------
 
 function orderItemsBy(ids, orderingFunction)
@@ -293,11 +397,13 @@ function orderItemsByUser(ids)
 }
 
 //------------------------------------------------------------------------------
+// DUMP
+//------------------------------------------------------------------------------
 
-function ______dumpPages_p(getPageFunction_p, pageDir, startPage, endPage, force, quitOnExisting, jobID)
+function _dumpPages_p(getPageFunction_p, pageDir, startPage, endPage, force, quitOnExisting, jobID)
 {
   var _jobID = jobID;
-  if(typeof _jobID !== "string" && typeof _jobID !== "number") _jobID = new Date().getMilliseconds();
+  if(typeof _jobID !== "string" && typeof _jobID !== "number") _jobID = new Date().now().getMilliseconds();
 
   // todo load last saved page to be checked against every pagewith fuzzy match to understand when to stop
   // because further pages where already processed in the past
@@ -329,7 +435,7 @@ function ______dumpPages_p(getPageFunction_p, pageDir, startPage, endPage, force
 function dumpPages_p(getPageFunction_p, pageDir, startPage, endPage, force, quitOnExisting, jobID)
 {
   var _jobID = jobID;
-  if(typeof _jobID !== "string" && typeof _jobID !== "number") _jobID = new Date().getMilliseconds();
+  if(typeof _jobID !== "string" && typeof _jobID !== "number") _jobID = new Date().now().getMilliseconds();
 
   if(startPage <= endPage) return getPageFunction_p(startPage).then((page) =>
   {
@@ -354,32 +460,9 @@ function dumpPages_p(getPageFunction_p, pageDir, startPage, endPage, force, quit
 
 //------------------------------------------------------------------------------
 
-function ___dumpPages_p(getPageFunction_p, startPage, endPage, force, quitOnExisting)
-{
-  if(startPage <= endPage) return getPageFunction_p(startPage).then((page) =>
-  {
-    var items = page.items;
-    console.log("dumpPage_p", [items], page);
-
-    if(typeof items === "undefined" || items.length === 0) return true;
-
-    for(var j = 0; j < items.length; j++)
-    {
-      var item = items[j];
-      console.log("dumpPage_p - item", item, page);
-      if(quitOnExisting && !updateItemFiles(item, force)) return false;
-    }
-
-    return dumpPages_p(getPageFunction_p, startPage + 1, endPage, force, quitOnExisting);
-  });
-}
-
-//------------------------------------------------------------------------------
-
 function dumpFavourites_p(force)
 {
   return dumpPages_p(getFavouritePage_p, favDumpPath, 0, 99, force, false);
-  // return dumpPages_p(getFavouritePage_p, 0, 99, force, false);
 }
 
 //------------------------------------------------------------------------------

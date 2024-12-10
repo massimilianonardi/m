@@ -33,13 +33,6 @@ function remItemToTag(item, tag)
 
 //------------------------------------------------------------------------------
 
-function getTags()
-{
-  return lsdir(tagPath);
-}
-
-//------------------------------------------------------------------------------
-
 function getTagList(tag)
 {
   var items = [];
