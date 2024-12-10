@@ -14,6 +14,12 @@
 // - user
 // - status / sold, uncategorized/untagged
 // - tag / [tags] + sold + uncategorized
+// order
+// - brand
+// - country
+// - user
+// - status
+// - tag
 
 //------------------------------------------------------------------------------
 
@@ -39,9 +45,15 @@ const untaggedStatusGroupPath = path.join(statusGroupPath, "untagged");
 
 const tagPath = tagGroupPath;
 
+const orderPath = path.join(dataPath, "order");
+
+const brandOrderPath = path.join(orderPath, "brand");
+const countryOrderPath = path.join(orderPath, "country");
+const userOrderPath = path.join(orderPath, "user");
+const tagOrderPath = path.join(orderPath, "tag");
+const statusOrderPath = path.join(orderPath, "status");
+
 // const tagPath = path.join(dataPath, "tag");
-// const orderPath = path.join(dataPath, "order");
-// const tagOrderPath = path.join(orderPath, "tag");
 //
 // const uncategorizedTag = "uncategorized";
 // const uncategorizedTagPath = path.join(tagPath, uncategorizedTag);

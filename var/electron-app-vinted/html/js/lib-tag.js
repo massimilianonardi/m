@@ -33,37 +33,6 @@ function remItemToTag(item, tag)
 
 //------------------------------------------------------------------------------
 
-function getTagList(tag)
-{
-  var items = [];
-  var orderedItems = {};
-
-  var thisTagPath = path.join(tagPath, tag);
-  // if(!fs.existsSync(thisTagPath)) return items;
-
-  var thisTagOrderPath = path.join(tagOrderPath, tag + ".json");
-  if(fs.existsSync(thisTagOrderPath))
-  {
-    items = JSON.parse(fs.readFileSync(thisTagOrderPath));
-    for(var i = 0; i < items.length; i++)
-    {
-      orderedItems[items[i]] = true;
-    }
-  }
-
-  fs.readdirSync(thisTagPath).forEach(itemPath =>
-  {
-    // items.push(itemPath);
-    // if(-1 === items.indexOf(itemPath)) items.push(itemPath);
-    // if(!orderedItems[itemPath]) items.push(itemPath);
-    if(!orderedItems[itemPath]) if(fs.existsSync(path.join(thisTagPath, itemPath, "item.json"))) items.push(itemPath);
-  });
-
-  return items;
-}
-
-//------------------------------------------------------------------------------
-
 function addTagToGUI(parent, tag)
 {
   buildButton(parent, "tag", "button", tag, function()
