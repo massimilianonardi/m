@@ -43,7 +43,7 @@ const soldStatusGroupPath = path.join(statusGroupPath, "sold");
 const untaggedStatusGroupPath = path.join(statusGroupPath, "untagged");
 // const uncategorizedStatusGroupPath = path.join(statusGroupPath, "uncategorized");
 
-const tagPath = tagGroupPath;
+var tagPath = tagGroupPath;
 
 const orderPath = path.join(dataPath, "order");
 
@@ -194,6 +194,13 @@ function getItemPhotoFilePath(id, i)
 
 //------------------------------------------------------------------------------
 
+function getItemTagPath(id, tag)
+{
+  return path.join(getItemPath(id), "tags", tag);
+}
+
+//------------------------------------------------------------------------------
+
 function getItem(id)
 {
   return JSON.parse(fs.readFileSync(getItemFilePath(id)));
@@ -223,10 +230,9 @@ function itemIsSold(item)
 
 //------------------------------------------------------------------------------
 
-// todo
-function itemIsUntagged(item)
+function itemIsUntagged(id)
 {
-  return true;
+  return fs.readdirSync(getItemTagPath(id, "")).length === 0;
 }
 
 //------------------------------------------------------------------------------
@@ -261,6 +267,139 @@ function dloadItemPhotos_p(item, force)
 // GROUPS AND TAGS
 //------------------------------------------------------------------------------
 
+function getGroupPath(group, name)
+{
+  return path.join(groupPath, group, name);
+}
+
+//------------------------------------------------------------------------------
+
+function getBrandGroupPath(brand)
+{
+  return path.join(brandGroupPath, brand);
+}
+
+//------------------------------------------------------------------------------
+
+function getCountryGroupPath(country)
+{
+  return path.join(countryGroupPath, country);
+}
+
+//------------------------------------------------------------------------------
+
+function getUserGroupPath(user)
+{
+  return path.join(userGroupPath, user);
+}
+
+//------------------------------------------------------------------------------
+
+function getStatusGroupPath(status)
+{
+  return path.join(statusGroupPath, status);
+}
+
+//------------------------------------------------------------------------------
+
+function addItemToGroup(id, group, name)
+{
+  var thisGroupPath = getGroupPath(group, name);
+  var itemPath = getItemPath(id);
+
+  mkdir(thisGroupPath);
+  var link = path.relative(thisGroupPath, itemPath);
+  var target = path.join(thisGroupPath, id);
+  if(!fs.existsSync(target)) fs.symlink(link, target, function(error){if(error) console.log(error);});
+}
+
+//------------------------------------------------------------------------------
+
+function remItemToGroup(id, group, name)
+{
+  var target = path.join(getGroupPath(group, name), id);
+  if(fs.existsSync(target)) fs.rmSync(target);
+}
+
+//------------------------------------------------------------------------------
+
+function getTagPath(tag)
+{
+  return path.join(tagPath, tag);
+}
+
+//------------------------------------------------------------------------------
+
+function getTagOrderedItemsPath(tag)
+{
+  return path.join(tagOrderPath, tag + ".json");
+}
+
+//------------------------------------------------------------------------------
+
+function getTagOrderedItems(tag)
+{
+  var items = [];
+
+  var thisTagOrderPath = getTagOrderedItemsPath(tag);
+  if(fs.existsSync(thisTagOrderPath)) items = JSON.parse(fs.readFileSync(thisTagOrderPath));
+
+  return items;
+}
+
+//------------------------------------------------------------------------------
+
+function setTagOrderedItems(tag, items)
+{
+  return saveJSONFile(items, getTagOrderedItemsPath(tag), true);
+}
+
+//------------------------------------------------------------------------------
+
+function addItemToTag(id, tag)
+{
+  if(!tag || tag === "")
+  {
+    console.log("addItemToTag - invalid tag:" + tag);
+    return;
+  }
+
+  var thisTagPath = getTagPath(tag);
+  var itemPath = getItemPath(id);
+
+  mkdir(thisTagPath);
+  var link = path.relative(thisTagPath, itemPath);
+  var target = path.join(thisTagPath, id);
+  if(!fs.existsSync(target)) fs.symlink(link, target, function(error){if(error) console.log(error);});
+
+  // reverse link from item index to tag
+  link = path.relative(itemPath, thisTagPath);
+  target = getItemTagPath(id, tag);
+  if(!fs.existsSync(target)) fs.symlink(link, target, function(error){if(error) console.log(error);});
+}
+
+//------------------------------------------------------------------------------
+
+function remItemToTag(id, tag)
+{
+  if(!tag || tag === "")
+  {
+    console.log("addItemToTag - invalid tag:" + tag);
+    return;
+  }
+
+  var thisTagPath = getTagPath(tag);
+
+  var target = path.join(thisTagPath, id);
+  if(fs.existsSync(target)) fs.rmSync(target);
+
+  // reverse link from item index to tag
+  target = getItemTagPath(id, tag);
+  if(fs.existsSync(target)) fs.rmSync(target);
+}
+
+//------------------------------------------------------------------------------
+
 function getTags()
 {
   return lsdir(tagPath);
@@ -273,33 +412,27 @@ function getTagItems(tag)
   var items = [];
   var orderedItems = {};
 
-  var thisTagPath = path.join(tagPath, tag);
+  var thisTagPath = getTagPath(tag);
   // if(!fs.existsSync(thisTagPath)) return items;
 
-  var thisTagOrderPath = path.join(tagOrderPath, tag + ".json");
-  if(fs.existsSync(thisTagOrderPath))
+  items = getTagOrderedItems(tag);
+  // fill temp object for faster searches during dir read for not ordered items
+  for(var i = 0; i < items.length; i++)
   {
-    items = JSON.parse(fs.readFileSync(thisTagOrderPath));
-    for(var i = 0; i < items.length; i++)
-    {
-      orderedItems[items[i]] = true;
-    }
+    orderedItems[items[i]] = true;
   }
 
-  fs.readdirSync(thisTagPath).forEach(itemPath =>
+  fs.readdirSync(thisTagPath).forEach(id =>
   {
-    // items.push(itemPath);
-    // if(-1 === items.indexOf(itemPath)) items.push(itemPath);
-    // if(!orderedItems[itemPath]) items.push(itemPath);
-    if(!orderedItems[itemPath]) if(fs.existsSync(path.join(thisTagPath, itemPath, "item.json"))) items.push(itemPath);
+    // items.push(id);
+    // if(-1 === items.indexOf(id)) items.push(id);
+    // if(!orderedItems[id]) items.push(id);
+    // if(!orderedItems[id]) if(fs.existsSync(path.join(thisTagPath, id, "item.json"))) items.push(id);
+    if(!orderedItems[id]) items.push(id);
   });
 
   return items;
 }
-
-//------------------------------------------------------------------------------
-
-
 
 //------------------------------------------------------------------------------
 // UPDATE
@@ -311,16 +444,20 @@ function updateItemFiles(item, force)
 
   if(itemIsSold(item))
   {
-    addItemToGroupStatusSold(item.id);
+    // addItemToGroupStatusSold(item.id);
+    addItemToGroup(item.id, "status", "sold");
   }
 
   if(itemIsUntagged(item))
   {
-    addItemToGroupStatusUntagged(item.id);
+    // addItemToGroupStatusUntagged(item.id);
+    addItemToGroup(item.id, "status", "untagged");
   }
 
-  addItemToGroupBrand(item.brand, id);
-  addItemToGroupUser(item.user_login, id);
+  // addItemToGroupBrand(item.brand, id);
+  // addItemToGroupUser(item.user_login, id);
+  addItemToGroup(item.id, "brand", item.brand);
+  addItemToGroup(item.id, "user", item.user_login);
 
   return true;
 }
@@ -359,7 +496,7 @@ function updateItems_p(ids, recursionIndex)
 
 function updateIndex()
 {
-  updateItems(fs.readdirSync(itemIndexPath));
+  updateItems_p(fs.readdirSync(itemIndexPath));
 }
 
 //------------------------------------------------------------------------------

@@ -33,10 +33,11 @@ function updateIndex()
 
 //------------------------------------------------------------------------------
 
-function processFavDump()
+function dumpFavourites()
 {
   // win.webContents.executeJavaScript('processFavDump();');
-  win.webContents.send("execute", 'processFavDump();');
+  win.webContents.send("execute", 'dumpFavourites_p();')
+  .then((...args) => {log("favourites completely processed!!!")});
 }
 
 //------------------------------------------------------------------------------

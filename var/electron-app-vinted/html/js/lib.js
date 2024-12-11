@@ -1,6 +1,13 @@
 
 //------------------------------------------------------------------------------
 
+const fs = require("fs");
+const path = require("path");
+const https = require("https");
+const {shell} = require("electron");
+
+//------------------------------------------------------------------------------
+
 function Queue()
 {
   if(!(this instanceof Queue)) throw new ReferenceError();
