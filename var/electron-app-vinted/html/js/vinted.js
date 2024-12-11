@@ -232,7 +232,9 @@ function itemIsSold(item)
 
 function itemIsUntagged(id)
 {
-  return fs.readdirSync(getItemTagPath(id, "")).length === 0;
+  // todo
+  return true;
+  // return fs.readdirSync(getItemTagPath(id, "")).length === 0;
 }
 
 //------------------------------------------------------------------------------
@@ -309,7 +311,7 @@ function addItemToGroup(id, group, name)
 
   mkdir(thisGroupPath);
   var link = path.relative(thisGroupPath, itemPath);
-  var target = path.join(thisGroupPath, id);
+  var target = path.join(thisGroupPath, "" + id);
   if(!fs.existsSync(target)) fs.symlink(link, target, function(error){if(error) console.log(error);});
 }
 
@@ -317,7 +319,7 @@ function addItemToGroup(id, group, name)
 
 function remItemToGroup(id, group, name)
 {
-  var target = path.join(getGroupPath(group, name), id);
+  var target = path.join(getGroupPath(group, name), "" + id);
   if(fs.existsSync(target)) fs.rmSync(target);
 }
 
@@ -390,7 +392,7 @@ function remItemToTag(id, tag)
 
   var thisTagPath = getTagPath(tag);
 
-  var target = path.join(thisTagPath, id);
+  var target = path.join(thisTagPath, "" + id);
   if(fs.existsSync(target)) fs.rmSync(target);
 
   // reverse link from item index to tag
@@ -552,7 +554,7 @@ function orderItemsByUser(ids)
 function _dumpPages_p(getPageFunction_p, pageDir, startPage, endPage, force, quitOnExisting, jobID)
 {
   var _jobID = jobID;
-  if(typeof _jobID !== "string" && typeof _jobID !== "number") _jobID = new Date().now().getMilliseconds();
+  if(typeof _jobID !== "string" && typeof _jobID !== "number") _jobID = new Date().getTime();
 
   // todo load last saved page to be checked against every pagewith fuzzy match to understand when to stop
   // because further pages where already processed in the past
@@ -584,7 +586,7 @@ function _dumpPages_p(getPageFunction_p, pageDir, startPage, endPage, force, qui
 function dumpPages_p(getPageFunction_p, pageDir, startPage, endPage, force, quitOnExisting, jobID)
 {
   var _jobID = jobID;
-  if(typeof _jobID !== "string" && typeof _jobID !== "number") _jobID = new Date().now().getMilliseconds();
+  if(typeof _jobID !== "string" && typeof _jobID !== "number") _jobID = new Date().getTime();
 
   if(startPage <= endPage) return getPageFunction_p(startPage).then((page) =>
   {
@@ -600,7 +602,7 @@ function dumpPages_p(getPageFunction_p, pageDir, startPage, endPage, force, quit
     {
       var item = items[j];
       console.log("dumpPage_p - item", item, page);
-      if(quitOnExisting && !updateItemFiles(item, force)) return false;
+      if(!updateItemFiles(item, force) && quitOnExisting) return false;
     }
 
     return dumpPages_p(getPageFunction_p, pageDir, startPage + 1, endPage, force, quitOnExisting, _jobID);
@@ -611,7 +613,8 @@ function dumpPages_p(getPageFunction_p, pageDir, startPage, endPage, force, quit
 
 function dumpFavourites_p(force)
 {
-  return dumpPages_p(getFavouritePage_p, favDumpPath, 0, 99, force, false);
+  return dumpPages_p(getFavouritePage_p, favDumpPath, 0, 1, force, false);
+  // return dumpPages_p(getFavouritePage_p, favDumpPath, 0, 99, force, false);
 }
 
 //------------------------------------------------------------------------------

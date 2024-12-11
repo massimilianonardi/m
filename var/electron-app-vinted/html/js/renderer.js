@@ -41,8 +41,8 @@ function buildSectionGUIupdate(parent)
 
   // var tagbar = buildDivElem(parent, null, "tagbar");
 
-  var tags = getTags();
-  addTagsToGUI(toolbar, tags);
+  // var tags = getTags();
+  // addTagsToGUI(toolbar, tags);
 
   var listElem = buildDivElem(parent, "update_list", "item-list");
   parent.listElem = listElem;
