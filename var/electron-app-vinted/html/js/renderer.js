@@ -3,6 +3,21 @@
 // MAIN GUI
 //------------------------------------------------------------------------------
 
+function buildSectionGUIItemBrowser(parent)
+{
+  var itemListBrowser = new ItemListBrowser(parent);
+  var items = getTagItems("untagged");
+  console.log(items);
+  itemListBrowser.setItems(items);
+
+  // var toolbar = buildDivElem(parent, null, "toolbar");
+  // // todo: build group/tag browsing gui to control item list to show in itemListBrowser
+  //
+  // var itemListBrowser = buildItemList(parent);
+}
+
+//------------------------------------------------------------------------------
+
 function buildSectionGUIupdate(parent)
 {
   var toolbar = buildDivElem(parent, null, "toolbar");
@@ -72,6 +87,7 @@ function main()
 {
   console.log("main");
 
+  buildSection("item-browser-section", buildSectionGUIItemBrowser);
   buildSection("update", buildSectionGUIupdate);
   buildSection("organize", buildSectionGUIorganize);
   buildSection("search", buildSectionGUIsearch);

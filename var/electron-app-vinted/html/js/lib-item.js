@@ -1,4 +1,99 @@
 
+function ItemListBrowser(parent)
+{
+  if(!(this instanceof ItemListBrowser)) throw new ReferenceError();
+
+  this.selection = {};
+  this.selectionOrder = [];
+  this.items = [];
+  this.itemsPerPage = 200;
+  this.currentPage = 0;
+
+  this.main = buildDivElem(parent, null, "item-browser");
+
+  this.editToolbar = this.buildEditToolbar(this.main);
+
+  this.browser = this.buildBrowser(this.main);
+}
+
+ItemListBrowser.prototype.buildEditToolbar = function(parent)
+{
+  var toolbar = buildDivElem(parent, null, "toolbar");
+  // todo: build group/tag browsing gui to control item list to show in itemListBrowser
+  var testbutton = buildButton(toolbar, "testbutton", "text-testbutton", "testbutton");
+  var testbutton = buildButton(toolbar, "testbutton", "text-testbutton", "testbutton");
+  var testbutton = buildButton(toolbar, "testbutton", "text-testbutton", "testbutton");
+
+  return toolbar;
+}
+
+ItemListBrowser.prototype.buildBrowser = function(parent)
+{
+  var _this = this;
+
+  var browser = buildDivElem(parent, null, "paged-browser");
+
+  var toolbar = buildDivElem(browser, null, "toolbar");
+
+  var currPage = buildButton(toolbar, "current_page", "text-indicator", "0");
+
+  var prevPage = buildButton(toolbar, "prev_page", "button", "Prev Page", function()
+  {
+    _this.currentPage--;
+    if(_this.currentPage < 0) _this.currentPage = 0;
+    currPage.value = "" + _this.currentPage;
+    refreshListElem(parent._this);
+  });
+
+  var nextPage = buildButton(toolbar, "next_page", "button", "Next Page", function()
+  {
+    _this.currentPage++;
+    if(_this.items.length < _this.currentPage * _this.itemsPerPage) _this.currentPage--;
+    currPage.value = "" + _this.currentPage;
+    refreshListElem(parent._this);
+  });
+
+  var unselectAll = buildButton(toolbar, "unselect_all", "button", "Unselect All", function(){clearSelection(parent._this);});
+
+  var orderTime = buildButton(toolbar, "order_time", "button", "Order by Time", function()
+  {
+    _this.items = orderItemsByTime(_this.items);
+    refreshListElem(parent._this);
+  });
+
+  var orderUser = buildButton(toolbar, "order_user", "button", "Order by User", function()
+  {
+    _this.items = orderItemsByUser(_this.items);
+    refreshListElem(parent._this);
+  });
+
+  // var orderBrand = buildButton(toolbar, "order_brand", "button", "Order by Brand", function()
+  // {
+  //   _this.items = orderItemsByBrand(_this.items);
+  //   refreshListElem(parent._this);
+  // });
+
+  var listElemBrowser = buildDivElem(browser, null, "item-list");
+  // buildDivElem(listElemBrowser, null, "item-list-test").innerHTML = "TEST";
+
+  return listElemBrowser;
+};
+
+ItemListBrowser.prototype.setItems = function(items)
+{
+  this.items = items;
+  this.browser.innerHTML = "";
+  var startIndex = this.currentPage * this.itemsPerPage;
+  var endIndex = startIndex + this.itemsPerPage;
+  var items = this.items.slice(startIndex, endIndex);
+  for(var i = 0; i < items.length; i++)
+  {
+    addItemToListElem(this.browser, items[i]);
+  }
+}
+
+//------------------------------------------------------------------------------
+
 function addThumbnailToItemElem(parent, itemID, url, clickCallback)
 {
   var itemFullPath = path.join(itemIndexPath, itemID);
@@ -110,6 +205,8 @@ function clearSelection(listElem)
 
 //------------------------------------------------------------------------------
 
+// everything except group/tag browsing. group/tag browsing may reset this object
+// everything about visualization of current item list, but not editing or save which is job of outer toolbar
 function buildItemList(parent)
 {
   var toolbar = buildDivElem(parent, null, "toolbar");
@@ -120,7 +217,6 @@ function buildItemList(parent)
   {
     listElem.currentPage--;
     if(listElem.currentPage < 0) listElem.currentPage = 0;
-    // currPage.innerText = "" + listElem.currentPage;
     currPage.value = "" + listElem.currentPage;
     refreshListElem(parent.listElem);
   });
@@ -129,7 +225,6 @@ function buildItemList(parent)
   {
     listElem.currentPage++;
     if(listElem.items.length < listElem.currentPage * listElem.itemsPerPage) listElem.currentPage--;
-    // currPage.innerText = "" + listElem.currentPage;
     currPage.value = "" + listElem.currentPage;
     refreshListElem(parent.listElem);
   });
@@ -148,7 +243,9 @@ function buildItemList(parent)
     refreshListElem(parent.listElem);
   });
 
-  var listElem = buildDivElem(parent, "update_list", "item-list");
+  var listElemBrowser = buildDivElem(parent, "item-list-viewer", "item-list");
+
+  var listElem = {};
   parent.listElem = listElem;
   listElem.selection = {};
   listElem.selectionOrder = [];

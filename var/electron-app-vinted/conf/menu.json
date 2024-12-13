@@ -11,6 +11,7 @@
     {type: "separator"},
     {role: "togglefullscreen"}
   ]},
+  {label: "Browse", type: "normal", click: browseGUI},
   {label: "Update", type: "normal", click: updateGUI},
   {label: "Organize", type: "normal", click: organizeGUI},
   {label: "Search", type: "normal", click: searchGUI},

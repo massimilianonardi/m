@@ -1,39 +1,55 @@
-body
-{
-  border: 0;
-  margin: 0;
-  padding: 0;
-}
-
-.section
+body, .section, .item-browser
 {
   border: 0;
   margin: 0;
   padding: 0;
 
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
-  max-width: 100%;
-}
+  position: relative;
+  top: 0;
+  left: 0;
 
-.toolbar
-{
+  width: 100%;
   height: 100vh;
-  overflow: auto;
+  overflow: hidden;
+}
+
+.item-browser
+{
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
   justify-content: flex-start;
-  max-width: 100%;
 }
 
-.item-list
+.item-browser > .toolbar, .paged-browser > .toolbar
 {
-  height: 100vh;
-  overflow: auto;
+  max-width: 100%;
+  height: fit-content;
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.item-browser > .paged-browser
+{
+  max-width: 100%;
+  height: -webkit-fill-available;
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+}
+
+.item-browser > .paged-browser > .item-list
+{
   width: fit-content;
+  height: -webkit-fill-available;
+  overflow: auto;
+  
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;

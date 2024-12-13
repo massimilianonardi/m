@@ -1,6 +1,14 @@
 
 //------------------------------------------------------------------------------
 
+function browseGUI()
+{
+  // win.webContents.executeJavaScript('switchSection("item-browser-section");');
+  win.webContents.send("execute", 'switchSection("item-browser-section");');
+}
+
+//------------------------------------------------------------------------------
+
 function updateGUI()
 {
   // win.webContents.executeJavaScript('switchSection("update");');
