@@ -20,6 +20,8 @@ function buildSectionGUIItemBrowser(parent)
 
 function buildSectionGUIupdate(parent)
 {
+  // window.open("https://www.vinted.it/member/signup/select_type");
+
   var toolbar = buildDivElem(parent, null, "toolbar");
 
   var currPage = buildButton(toolbar, "current_page", "text-indicator", "0");
@@ -70,27 +72,14 @@ function buildSectionGUIupdate(parent)
 
 //------------------------------------------------------------------------------
 
-function buildSectionGUIorganize(parent)
-{
-  // window.open("https://www.vinted.it/member/signup/select_type");
-}
-
-//------------------------------------------------------------------------------
-
-function buildSectionGUIsearch(parent)
-{
-}
-
-//------------------------------------------------------------------------------
-
 function main()
 {
   console.log("main");
 
   buildSection("item-browser-section", buildSectionGUIItemBrowser);
   buildSection("update", buildSectionGUIupdate);
-  buildSection("organize", buildSectionGUIorganize);
-  buildSection("search", buildSectionGUIsearch);
+
+  switchSection("item-browser-section");
 }
 
 //------------------------------------------------------------------------------

@@ -255,9 +255,9 @@ var photoQueue = [];
 
 //------------------------------------------------------------------------------
 
-mkdir(dataPath);
-mkdir(itemIndexPath);
-mkdir(favDumpPath);
+// mkdir(dataPath);
+// mkdir(itemIndexPath);
+// mkdir(favDumpPath);
 
 //------------------------------------------------------------------------------
 

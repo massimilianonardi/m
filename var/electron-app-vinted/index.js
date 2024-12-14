@@ -26,9 +26,6 @@ const shortcutConfPath = path.join(confDir, "shortcut.json");
 
 const jsModuleFiles =
 [
-  "common.js",
-  "vinted.js",
-  "vinted-gui.js",
   "main.js",
   "app.js",
   null

@@ -35,67 +35,6 @@ function browserDownloadURLPromise(url)
 
 //------------------------------------------------------------------------------
 
-// function browserDownloadJSON(url, filePath, force, callback)
-// {
-//   browserDownloadURL(url, text =>
-//   {
-//     if(fs.existsSync(filePath))
-//     {
-//       if(force === true) fs.rmSync(filePath)
-//       else return;
-//     }
-//
-//     fs.writeFileSync(filePath, text, "utf-8");
-//
-//     if(typeof callback === "function") callback(JSON.parse(text));
-//   });
-// }
-//
-// //------------------------------------------------------------------------------
-//
-// function browserDownloadFile(url, filePath, force, callback)
-// {
-//   browserDownloadURL(url, text =>
-//   {
-//     if(fs.existsSync(filePath))
-//     {
-//       if(force === true) fs.rmSync(filePath)
-//       else return;
-//     }
-//
-//     fs.writeFileSync(filePath, text, "utf-8");
-//
-//     if(typeof callback === "function") callback(text);
-//   });
-// }
-//
-// //------------------------------------------------------------------------------
-//
-// function browserDownloadURL(url, callback)
-// {
-//   winBrowserDownloader.webContents.executeJavaScript("downloadURLPromise('" + url + "');")
-//   .then(text => {if(typeof callback === "function") callback(text);});
-// }
-//
-// //------------------------------------------------------------------------------
-//
-// function browseAndDownload(url, filePath, force, callback)
-// {
-//   winBrowserDownloader.loadURL(url).then(() =>
-//   {
-//     if(fs.existsSync(filePath))
-//     {
-//       if(force === true) fs.rmSync(filePath)
-//       else return;
-//     }
-//
-//     winBrowserDownloader.webContents.savePage(filePath, "HTMLOnly")
-//     .then(() => {if(typeof callback === "function") callback();});
-//   });
-// }
-
-//------------------------------------------------------------------------------
-
 function buildMenu()
 {
   if(!fs.existsSync(menuConfPath))
@@ -129,61 +68,11 @@ function buildShortcuts()
 
 //------------------------------------------------------------------------------
 
-function buildGUI()
-{
-  win.webContents.openDevTools();
-
-  var { width, height } = electron.screen.getPrimaryDisplay().workAreaSize;
-  var w = parseInt(width);
-  var h = parseInt(height);
-
-  winBrowserDownloader = new BrowserWindow(
-  {
-    width: w,
-    height: h,
-    webPreferences:
-    {
-      // preload: path.resolve(path.join(jsDir, "vinted-downloader.js")),
-      contextIsolation: false,
-      devTools: true,
-      nodeIntegration: true,
-      nodeIntegrationInWorker: true,
-      nodeIntegrationInSubFrames: true,
-      webSecurity: false,
-      allowRunningInsecureContent: true,
-      sandbox: false
-    }
-  });
-
-  // winBrowserDownloader.webContents.on("did-start-loading", () =>
-  // {
-  //   log("did-start-loading");
-  //   winBrowserDownloader.webContents.executeJavaScript(fs.readFileSync(path.resolve(path.join(jsDir, "vinted-downloader.js")), "utf-8"));
-  // });
-
-  winBrowserDownloader.webContents.on("did-finish-load", () =>
-  {
-    log("did-finish-load");
-    winBrowserDownloader.webContents.executeJavaScript(fs.readFileSync(path.resolve(path.join(jsDir, "vinted-downloader.js")), "utf-8"));
-  });
-
-  winBrowserDownloader.loadURL("https://www.vinted.it/member/signup/select_type");
-  // winBrowserDownloader.loadURL("https://www.vinted.it/member/signup/select_type").then(() =>
-  // {
-  //   winBrowserDownloader.webContents.openDevTools();
-  //   // winBrowserDownloader.webContents.executeJavaScript(fs.readFileSync(path.resolve(path.join(jsDir, "vinted-downloader.js")), "utf-8"));
-  // });
-}
-
-//------------------------------------------------------------------------------
-
 function pageReady()
 {
   console.log("pageReady");
 
-  buildMenu();
-  buildShortcuts();
-  buildGUI();
+  win.webContents.openDevTools();
 }
 
 //------------------------------------------------------------------------------
@@ -222,7 +111,36 @@ function appReady()
     // win = null;
   });
 
+  buildMenu();
+  buildShortcuts();
+
   win.loadFile(path.join(htmlDir, "index.html")).then(pageReady);
+
+  winBrowserDownloader = new BrowserWindow(
+  {
+    width: w,
+    height: h,
+    webPreferences:
+    {
+      // preload: path.resolve(path.join(jsDir, "vinted-downloader.js")),
+      contextIsolation: false,
+      devTools: true,
+      nodeIntegration: true,
+      nodeIntegrationInWorker: true,
+      nodeIntegrationInSubFrames: true,
+      webSecurity: false,
+      allowRunningInsecureContent: true,
+      sandbox: false
+    }
+  });
+
+  winBrowserDownloader.webContents.on("did-finish-load", () =>
+  {
+    log("did-finish-load", "reloading vinted-downloader.js");
+    winBrowserDownloader.webContents.executeJavaScript(fs.readFileSync(path.resolve(path.join(jsDir, "vinted-downloader.js")), "utf-8"));
+  });
+
+  winBrowserDownloader.loadURL("https://www.vinted.it/member/signup/select_type");
 }
 
 //------------------------------------------------------------------------------

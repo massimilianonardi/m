@@ -11,10 +11,6 @@
     {type: "separator"},
     {role: "togglefullscreen"}
   ]},
-  {label: "Browse", type: "normal", click: browseGUI},
-  {label: "Update", type: "normal", click: updateGUI},
-  {label: "Organize", type: "normal", click: organizeGUI},
-  {label: "Search", type: "normal", click: searchGUI},
-  {label: "Update Index", type: "normal", click: updateIndex},
-  {label: "Parse Favourite List", type: "normal", click: dumpFavourites}
+  {label: "Test_01", type: "normal", click: function(){console.log('Test_01');}},
+  {label: "Test_02", type: "normal", click: function(){console.log('Test_02');}}
 ]

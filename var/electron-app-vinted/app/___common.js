@@ -1,12 +1,12 @@
 
 //------------------------------------------------------------------------------
 
-function mkdir(dir)
-{
-  if(!fs.existsSync(dir))
-  {
-    fs.mkdirSync(dir, {recursive: true});
-  }
-}
+// function mkdir(dir)
+// {
+//   if(!fs.existsSync(dir))
+//   {
+//     fs.mkdirSync(dir, {recursive: true});
+//   }
+// }
 
 //------------------------------------------------------------------------------

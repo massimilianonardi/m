@@ -10,16 +10,17 @@ function ItemListBrowser(parent)
   this.currentPage = 0;
 
   this.main = buildDivElem(parent, null, "item-browser");
+  this.main._this = this;
 
   this.editToolbar = this.buildEditToolbar(this.main);
 
   this.browser = this.buildBrowser(this.main);
 }
 
+// todo: build group/tag browsing gui to control item list to show in itemListBrowser
 ItemListBrowser.prototype.buildEditToolbar = function(parent)
 {
   var toolbar = buildDivElem(parent, null, "toolbar");
-  // todo: build group/tag browsing gui to control item list to show in itemListBrowser
   var testbutton = buildButton(toolbar, "testbutton", "text-testbutton", "testbutton");
   var testbutton = buildButton(toolbar, "testbutton", "text-testbutton", "testbutton");
   var testbutton = buildButton(toolbar, "testbutton", "text-testbutton", "testbutton");
@@ -42,7 +43,7 @@ ItemListBrowser.prototype.buildBrowser = function(parent)
     _this.currentPage--;
     if(_this.currentPage < 0) _this.currentPage = 0;
     currPage.value = "" + _this.currentPage;
-    refreshListElem(parent._this);
+    _this.setItems(_this.items);
   });
 
   var nextPage = buildButton(toolbar, "next_page", "button", "Next Page", function()
@@ -50,7 +51,7 @@ ItemListBrowser.prototype.buildBrowser = function(parent)
     _this.currentPage++;
     if(_this.items.length < _this.currentPage * _this.itemsPerPage) _this.currentPage--;
     currPage.value = "" + _this.currentPage;
-    refreshListElem(parent._this);
+    _this.setItems(_this.items);
   });
 
   var unselectAll = buildButton(toolbar, "unselect_all", "button", "Unselect All", function(){clearSelection(parent._this);});
@@ -58,19 +59,19 @@ ItemListBrowser.prototype.buildBrowser = function(parent)
   var orderTime = buildButton(toolbar, "order_time", "button", "Order by Time", function()
   {
     _this.items = orderItemsByTime(_this.items);
-    refreshListElem(parent._this);
+    _this.setItems(_this.items);
   });
 
   var orderUser = buildButton(toolbar, "order_user", "button", "Order by User", function()
   {
     _this.items = orderItemsByUser(_this.items);
-    refreshListElem(parent._this);
+    _this.setItems(_this.items);
   });
 
   // var orderBrand = buildButton(toolbar, "order_brand", "button", "Order by Brand", function()
   // {
   //   _this.items = orderItemsByBrand(_this.items);
-  //   refreshListElem(parent._this);
+  //   _this.setItems(_this.items);
   // });
 
   var listElemBrowser = buildDivElem(browser, null, "item-list");
@@ -176,17 +177,17 @@ function addItemToListElem(parent, itemID)
 
 //------------------------------------------------------------------------------
 
-function refreshListElem(listElem)
-{
-  listElem.innerHTML = "";
-  var startIndex = listElem.currentPage * listElem.itemsPerPage;
-  var endIndex = startIndex + listElem.itemsPerPage;
-  var items = listElem.items.slice(startIndex, endIndex);
-  for(var i = 0; i < items.length; i++)
-  {
-    addItemToListElem(listElem, items[i]);
-  }
-}
+// function refreshListElem(listElem)
+// {
+//   listElem.innerHTML = "";
+//   var startIndex = listElem.currentPage * listElem.itemsPerPage;
+//   var endIndex = startIndex + listElem.itemsPerPage;
+//   var items = listElem.items.slice(startIndex, endIndex);
+//   for(var i = 0; i < items.length; i++)
+//   {
+//     addItemToListElem(listElem, items[i]);
+//   }
+// }
 
 //------------------------------------------------------------------------------
 
