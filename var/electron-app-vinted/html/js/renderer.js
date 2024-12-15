@@ -6,8 +6,9 @@
 function buildSectionGUIItemBrowser(parent)
 {
   var itemListBrowser = new ItemListBrowser(parent);
-  var items = getTagItems("untagged");
-  console.log(items);
+  var ids = getTagItems("untagged");
+  var items = getItems(ids);
+  console.log(ids, items);
   itemListBrowser.setItems(items);
 
   // var toolbar = buildDivElem(parent, null, "toolbar");

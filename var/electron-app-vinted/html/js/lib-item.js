@@ -3,18 +3,69 @@ function ItemListBrowser(parent)
 {
   if(!(this instanceof ItemListBrowser)) throw new ReferenceError();
 
-  this.selection = {};
-  this.selectionOrder = [];
   this.items = [];
   this.itemsPerPage = 200;
   this.currentPage = 0;
 
+  this.selection = {};
+  this.selectionOrder = [];
+
   this.main = buildDivElem(parent, null, "item-browser");
   this.main._this = this;
 
+  var _this = this;
+
   this.editToolbar = this.buildEditToolbar(this.main);
 
-  this.browser = this.buildBrowser(this.main);
+  // this.browser = this.buildBrowser(this.main);
+  this.browser = buildDivElem(this.main, null, "paged-browser");
+  this.toolbar = buildDivElem(this.browser, null, "toolbar");
+  this.currPage = buildButton(this.toolbar, "current_page", "text-indicator", "0");
+  this.prevPage = buildButton(this.toolbar, "prev_page", "button", "Prev Page", function()
+  {
+    _this.currentPage--;
+    if(_this.currentPage < 0) _this.currentPage = 0;
+    _this.currPage.value = "" + _this.currentPage;
+    _this.setItems(_this.items);
+  });
+  this.nextPage = buildButton(this.toolbar, "next_page", "button", "Next Page", function()
+  {
+    _this.currentPage++;
+    if(_this.items.length < _this.currentPage * _this.itemsPerPage) _this.currentPage--;
+    _this.currPage.value = "" + _this.currentPage;
+    _this.setItems(_this.items);
+  });
+
+  this.unselectAll = buildButton(this.toolbar, "unselect_all", "button", "Unselect All", function()
+  {
+    _this.selection = {};
+    _this.selectionOrder = [];
+    var items = _this.itemList.querySelectorAll("input[type='checkbox']");
+    for(var i = 0; i < items.length; i++)
+    {
+      items[i].checked = false;
+    }
+  });
+
+  this.orderTime = buildButton(this.toolbar, "order_time", "button", "Order by Time", function()
+  {
+    _this.items = orderItemsByTime(_this.items);
+    _this.setItems(_this.items);
+  });
+
+  this.orderUser = buildButton(this.toolbar, "order_user", "button", "Order by User", function()
+  {
+    _this.items = orderItemsByUser(_this.items);
+    _this.setItems(_this.items);
+  });
+
+  // this.orderBrand = buildButton(this.toolbar, "order_brand", "button", "Order by Brand", function()
+  // {
+  //   _this.items = orderItemsByBrand(_this.items);
+  //   _this.setItems(_this.items);
+  // });
+
+  this.itemList = buildDivElem(this.browser, null, "item-list");
 }
 
 // todo: build group/tag browsing gui to control item list to show in itemListBrowser
@@ -28,16 +79,14 @@ ItemListBrowser.prototype.buildEditToolbar = function(parent)
   return toolbar;
 }
 
+// todo build itemsperpage input box
 ItemListBrowser.prototype.buildBrowser = function(parent)
 {
   var _this = this;
 
   var browser = buildDivElem(parent, null, "paged-browser");
-
   var toolbar = buildDivElem(browser, null, "toolbar");
-
   var currPage = buildButton(toolbar, "current_page", "text-indicator", "0");
-
   var prevPage = buildButton(toolbar, "prev_page", "button", "Prev Page", function()
   {
     _this.currentPage--;
@@ -45,7 +94,6 @@ ItemListBrowser.prototype.buildBrowser = function(parent)
     currPage.value = "" + _this.currentPage;
     _this.setItems(_this.items);
   });
-
   var nextPage = buildButton(toolbar, "next_page", "button", "Next Page", function()
   {
     _this.currentPage++;
@@ -83,21 +131,72 @@ ItemListBrowser.prototype.buildBrowser = function(parent)
 ItemListBrowser.prototype.setItems = function(items)
 {
   this.items = items;
-  this.browser.innerHTML = "";
+  this.itemList.innerHTML = "";
   var startIndex = this.currentPage * this.itemsPerPage;
   var endIndex = startIndex + this.itemsPerPage;
   var items = this.items.slice(startIndex, endIndex);
   for(var i = 0; i < items.length; i++)
   {
-    addItemToListElem(this.browser, items[i]);
+    this.addItemToListElem(items[i]);
   }
+}
+
+ItemListBrowser.prototype.addItemToListElem = function(item)
+{
+  var _this = this;
+  var parent = this.itemList;
+
+  var itemElem = buildDivElem(parent, item.id, "item");
+  itemElem.vintedItem = item;
+
+  // brand city country created_at label title description id path photos price_numeric service_fee total_item_price status url user_login
+  // instant_buy is_closed is_for_sell is_hidden is_reserved is_visible
+  // buildImage(itemElem, item.photos[0].full_size_url);
+  // buildImage(itemElem, item.photos[0].thumbnails[0].url);
+  // venduto: "item_closing_action": "sold" + "can_be_sold": false + "instant_buy": false + "can_buy": false + "accepted_pay_in_methods": []
+
+  var desc_1 = buildDivElem(itemElem, null, "description");
+  buildCheckbox(desc_1, null, "selector", false, function(event)
+  {
+    // console.log(event);
+    if(event.srcElement.checked)
+    {
+      // console.log(item.id, true);
+      _this.selection[item.id] = true;
+      _this.selectionOrder.push(item.id);
+    }
+    else
+    {
+      // console.log(item.id, false);
+      delete _this.selection[item.id];
+      _this.selectionOrder.splice(this.selectionOrder.indexOf(item.id), 1);
+    }
+    console.log(_this.selection, _this.selectionOrder);
+  });
+  buildDivElem(desc_1, null, "user", item.user_login);
+  buildDivElem(desc_1, null, "price", "" + parseInt(parseFloat(item.price_numeric) + 0.5) + " €");
+  buildDivElem(desc_1, null, "price", "" + parseInt(parseFloat(item.total_item_price) + 0.5) + " €");
+  if(item.item_closing_action === "sold" || item.can_be_sold === false || item.instant_buy === false || item.can_buy === false)
+  {
+    console.log("SOLD", item.id, "item_closing_action", item.item_closing_action, "can_be_sold", item.can_be_sold, "instant_buy", item.instant_buy, "can_buy", item.can_buy);
+    buildDivElem(desc_1, null, "status", "SOLD");
+  }
+
+  var desc_2 = buildDivElem(itemElem, null, "description");
+  buildDivElem(desc_2, null, null, item.title);
+
+  addThumbnailToItemElem(itemElem, item.id, item.photos[0].thumbnails[2].url, function()
+  {
+    // window.open(item.url);
+    shell.openExternal(item.url);
+  });
 }
 
 //------------------------------------------------------------------------------
 
 function addThumbnailToItemElem(parent, itemID, url, clickCallback)
 {
-  var itemFullPath = path.join(itemIndexPath, itemID);
+  var itemFullPath = path.join(itemIndexPath, "" + itemID);
   var thPath = path.join(itemFullPath, "thumbnail.jpg");
 
   var img = buildThumbnail(parent);
