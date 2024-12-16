@@ -25,12 +25,12 @@ function buildButton(parent, id, css_class, text, clickFunction)
 
 //------------------------------------------------------------------------------
 
-function buildText(parent, id, css_class, text)
+function buildText(parent, id, css_class, text, changeFunction)
 {
   var e = buildElem("input", parent, id, css_class);
   // e.type = "button";
   if(typeof text === "string") e.value = text;
-  if(typeof clickFunction === "function") e.addEventListener("click", clickFunction);
+  if(typeof changeFunction === "function") e.addEventListener("change", changeFunction);
 
   return e;
 }
