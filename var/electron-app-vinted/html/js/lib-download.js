@@ -7,8 +7,12 @@ function downloadFile_p(url, filePath, force)
   {
     if(fs.existsSync(filePath))
     {
-      if(force === true || fs.statSync(thPath).size === 0) fs.rmSync(filePath)
-      else return;
+      if(force === true || fs.statSync(filePath).size === 0) fs.rmSync(filePath)
+      else
+      {
+        resolve();
+        return;
+      }
     }
 
     var req = https.get(url, (res) =>

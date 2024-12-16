@@ -4,7 +4,7 @@
 // dump
 // - fav
 // - search / [named-searches]
-// index / [id]
+// index / [id] /
 // - item.json
 // - thumbnail.jpg
 // - photo / [hi-res-photos]
@@ -12,7 +12,7 @@
 // - brand
 // - country
 // - user
-// - status / sold, uncategorized/untagged
+// - status / sold, untagged, hidden, reserved
 // - tag / [tags] + sold + uncategorized
 // order
 // - brand
@@ -41,9 +41,8 @@ const statusGroupPath = path.join(groupPath, "status");
 
 const soldStatusGroupPath = path.join(statusGroupPath, "sold");
 const untaggedStatusGroupPath = path.join(statusGroupPath, "untagged");
-// const uncategorizedStatusGroupPath = path.join(statusGroupPath, "uncategorized");
-
-var tagPath = tagGroupPath;
+const hiddenStatusGroupPath = path.join(statusGroupPath, "hidden");
+const reservedStatusGroupPath = path.join(statusGroupPath, "reserved");
 
 const orderPath = path.join(dataPath, "order");
 
@@ -52,14 +51,6 @@ const countryOrderPath = path.join(orderPath, "country");
 const userOrderPath = path.join(orderPath, "user");
 const tagOrderPath = path.join(orderPath, "tag");
 const statusOrderPath = path.join(orderPath, "status");
-
-// const tagPath = path.join(dataPath, "tag");
-//
-// const uncategorizedTag = "uncategorized";
-// const uncategorizedTagPath = path.join(tagPath, uncategorizedTag);
-//
-// const soldTag = "sold";
-// const soldTagPath = path.join(tagPath, uncategorizedTag);
 
 //------------------------------------------------------------------------------
 
@@ -115,6 +106,27 @@ function saveJSONFile(json, filePath, force)
 //------------------------------------------------------------------------------
 
 function dloadFile_p(url, filePath, force)
+{
+  if(fs.existsSync(filePath))
+  {
+    if(force === true) fs.rmSync(filePath)
+    else return false;
+  }
+
+  mkdir(path.dirname(filePath));
+
+  return dloadURL_p(url)
+  .then(text =>
+  {
+    fs.writeFileSync(filePath, text, "utf-8");
+
+    return text;
+  });
+}
+
+//------------------------------------------------------------------------------
+
+function ___dloadFile_p(url, filePath, force)
 {
   return dloadURL_p(url)
   .then(text =>
@@ -239,9 +251,24 @@ function itemIsUntagged(id)
 
 //------------------------------------------------------------------------------
 
+function itemIsHidden(id)
+{
+  // todo
+}
+
+//------------------------------------------------------------------------------
+
+function itemIsReserved(id)
+{
+  // todo
+}
+
+//------------------------------------------------------------------------------
+
 function dloadItemThumbnail_p(item)
 {
-  return downloadFile_p(item.photos[0].thumbnails[2].url, getItemThumbnailFilePath(item.id), true);
+  // return downloadFile_p(item.photos[0].thumbnails[2].url, getItemThumbnailFilePath(item.id), true);
+  return downloadFile_p(item.photos[0].thumbnails[2].url, getItemThumbnailFilePath(item.id), false);
 }
 
 //------------------------------------------------------------------------------
@@ -327,7 +354,7 @@ function remItemToGroup(id, group, name)
 
 function getTagPath(tag)
 {
-  return path.join(tagPath, tag);
+  return path.join(tagGroupPath, tag);
 }
 
 //------------------------------------------------------------------------------
@@ -404,7 +431,7 @@ function remItemToTag(id, tag)
 
 function getTags()
 {
-  return lsdir(tagPath);
+  return lsdir(tagGroupPath);
 }
 
 //------------------------------------------------------------------------------
@@ -505,27 +532,16 @@ function updateIndex()
 // ORDER
 //------------------------------------------------------------------------------
 
-function orderItemsBy(ids, orderingFunction)
+function orderItemsBy(items, orderingFunction)
 {
-  var items = getItems(ids);
-
-  items.sort(orderingFunction);
-  // console.log(items);
-
-  for(var i = 0; i < items.length; i++)
-  {
-    items[i] = "" + items[i].id;
-  }
-  // console.log(items);
-
-  return items;
+  return items.sort(orderingFunction);
 }
 
 //------------------------------------------------------------------------------
 
-function orderItemsByTime(ids)
+function orderItemsByTime(items)
 {
-  return orderItemsBy(ids, function(a, b)
+  return orderItemsBy(items, function(a, b)
   {
     // console.log(a.created_at_ts, b.created_at_ts, a.created_at_ts < b.created_at_ts);
     if(a.created_at_ts < b.created_at_ts) return -1;
@@ -536,9 +552,9 @@ function orderItemsByTime(ids)
 
 //------------------------------------------------------------------------------
 
-function orderItemsByUser(ids)
+function orderItemsByUser(items)
 {
-  return orderItemsBy(ids, function(a, b)
+  return orderItemsBy(items, function(a, b)
   {
     // console.log(a.user_login, b.user_login, a.user_login < b.user_login);
     if(a.user_login < b.user_login) return -1;
