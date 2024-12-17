@@ -567,6 +567,21 @@ function orderItemsByUser(items)
 // DUMP
 //------------------------------------------------------------------------------
 
+function processDumpPage(pagePath)
+{
+  var items = page.items;
+
+  if(typeof items === "undefined" || items.length === 0) return true;
+
+  for(var i = 0; i < items.length; i++)
+  {
+    var item = items[i];
+    if(!updateItemFiles(item, force) && quitOnExisting) return false;
+  }
+}
+
+//------------------------------------------------------------------------------
+
 // todo another function to process a dump jobid
 // todo load last saved page to be checked against every pagewith fuzzy match to understand when to stop
 // because further pages where already processed in the past
@@ -579,11 +594,11 @@ function dumpPages_p(getPageFunction_p, pageDir, startPage, endPage, force, quit
 
   if(startPage <= endPage) return getPageFunction_p(startPage).then((page) =>
   {
-    var pageName = "dumpItemsPage_" + _jobID + "_" + (999 - startPage);
+    var pageName = "dumpItemsPage_" + _jobID + "_" + (999 - startPage) + ".json";
     saveJSONFile(page, path.join(pageDir, _jobID, pageName), false);
 
     var items = page.items;
-    console.log("dumpPage_p", [items], page);
+    console.log("dumpPage_p", pageName, [items], page);
 
     if(typeof items === "undefined" || items.length === 0) return true;
 
