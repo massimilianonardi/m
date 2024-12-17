@@ -126,16 +126,16 @@ function dloadFile_p(url, filePath, force)
 
 //------------------------------------------------------------------------------
 
-function ___dloadFile_p(url, filePath, force)
-{
-  return dloadURL_p(url)
-  .then(text =>
-  {
-    saveTextFile(text, filePath, force);
-
-    return text;
-  });
-}
+// function ___dloadFile_p(url, filePath, force)
+// {
+//   return dloadURL_p(url)
+//   .then(text =>
+//   {
+//     saveTextFile(text, filePath, force);
+//
+//     return text;
+//   });
+// }
 
 //------------------------------------------------------------------------------
 // FAVOURITES AND SEARCH
@@ -327,6 +327,22 @@ function getUserGroupPath(user)
 function getStatusGroupPath(status)
 {
   return path.join(statusGroupPath, status);
+}
+
+//------------------------------------------------------------------------------
+
+function getStatusItems(status)
+{
+  var items = [];
+
+  var thisStatusPath = getStatusGroupPath(status);
+
+  fs.readdirSync(thisStatusPath).forEach(id =>
+  {
+    items.push(getItem(id));
+  });
+
+  return items;
 }
 
 //------------------------------------------------------------------------------
@@ -567,16 +583,30 @@ function orderItemsByUser(items)
 // DUMP
 //------------------------------------------------------------------------------
 
-function processDumpPage(pagePath)
+function processDumpPage(filePath, forceOrQuitOnExisting)
 {
+  var page = JSON.parse(fs.readFileSync(filePath, "utf-8"));
   var items = page.items;
 
-  if(typeof items === "undefined" || items.length === 0) return true;
+  if(typeof items === "undefined" || items.length === 0) return null;
 
   for(var i = 0; i < items.length; i++)
   {
-    var item = items[i];
-    if(!updateItemFiles(item, force) && quitOnExisting) return false;
+    if(!updateItemFiles(items[i], forceOrQuitOnExisting) && forceOrQuitOnExisting === false) return false;
+  }
+
+  return true;
+}
+
+//------------------------------------------------------------------------------
+
+function processDumpPages(filePaths, forceOrQuitOnExisting)
+{
+  for(var i = 0; i < filePaths.length; i++)
+  {
+    var res = processDumpPage(filePaths[i], forceOrQuitOnExisting);
+    console.log("processDumpPage", filePaths[i], forceOrQuitOnExisting, res);
+    if(res === false) return false;
   }
 }
 
@@ -587,14 +617,15 @@ function processDumpPage(pagePath)
 // because further pages where already processed in the past
 // todo check last saved page with fuzzy match to understand when to stop
 // because further pages where already processed in the past
-function dumpPages_p(getPageFunction_p, pageDir, startPage, endPage, force, quitOnExisting, jobID)
+function dumpPages_p(getPageFunction_p, pageDir, startPage, endPage, jobID)
 {
-  var _jobID = jobID;
-  if(typeof _jobID !== "string" && typeof _jobID !== "number") _jobID = "" + new Date().getTime();
+  var _jobID = typeof jobID === "string" ? jobID : "" + new Date().getTime();
+  var _startPage = typeof startPage === "number" ? startPage : 0;
+  var _endPage = typeof endPage === "number" ? endPage : 999;
 
-  if(startPage <= endPage) return getPageFunction_p(startPage).then((page) =>
+  if(_startPage <= _endPage) return getPageFunction_p(_startPage).then((page) =>
   {
-    var pageName = "dumpItemsPage_" + _jobID + "_" + (999 - startPage) + ".json";
+    var pageName = "dumpItemsPage_" + _jobID + "_" + (999 - _startPage) + ".json";
     saveJSONFile(page, path.join(pageDir, _jobID, pageName), false);
 
     var items = page.items;
@@ -602,7 +633,7 @@ function dumpPages_p(getPageFunction_p, pageDir, startPage, endPage, force, quit
 
     if(typeof items === "undefined" || items.length === 0) return true;
 
-    return dumpPages_p(getPageFunction_p, pageDir, startPage + 1, endPage, force, quitOnExisting, _jobID);
+    return dumpPages_p(getPageFunction_p, pageDir, _startPage + 1, _endPage, _jobID);
   });
 }
 
@@ -636,10 +667,9 @@ function dumpPages_p(getPageFunction_p, pageDir, startPage, endPage, force, quit
 
 //------------------------------------------------------------------------------
 
-function dumpFavourites_p(force)
+function dumpFavourites_p(startPage, endPage)
 {
-  // return dumpPages_p(getFavouritePage_p, favDumpPath, 0, 1, force, false);
-  return dumpPages_p(getFavouritePage_p, favDumpPath, 0, 99, force, false);
+  return dumpPages_p(getFavouritePage_p, favDumpPath, startPage, endPage);
 }
 
 //------------------------------------------------------------------------------

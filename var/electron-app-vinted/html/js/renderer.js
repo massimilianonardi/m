@@ -8,9 +8,8 @@
 function buildSectionGUIItemBrowser(parent)
 {
   var itemListBrowser = new ItemListBrowser(parent);
-  var ids = getTagItems("untagged");
-  var items = getItems(ids);
-  console.log(ids, items);
+  var items = getStatusItems("untagged");
+  console.log(items);
   itemListBrowser.setItems(items);
 }
 
