@@ -8,7 +8,7 @@
 function buildSectionGUIItemBrowser(parent)
 {
   var itemListBrowser = new ItemListBrowser(parent);
-  // var items = getStatusItems("untagged");
+  // var items = getGroupStatusUntaggedItems();
   // console.log(items);
   // itemListBrowser.setItems(items);
 }
@@ -17,9 +17,11 @@ function buildSectionGUIItemBrowser(parent)
 
 function buildSectionGUIupdate(parent)
 {
-  var dumpFavouritesStartPage = buildText(parent, "current_page", "text-indicator", "0");
-  var dumpFavouritesEndPage = buildText(parent, "current_page", "text-indicator", "999");
-  var dumpFavourites = buildButton(parent, "dump_fav", "button", "Dump Favourites", function()
+  var dumpContainer = buildDivElem(parent, null, "dump-container");
+
+  var dumpFavouritesStartPage = buildText(dumpContainer, null, "text-indicator", "0");
+  var dumpFavouritesEndPage = buildText(dumpContainer, null, "text-indicator", "999");
+  var dumpFavourites = buildButton(dumpContainer, null, "button", "Dump Favourites", function()
   {
     var startPage = dumpFavouritesStartPage.value;
     var endPage = dumpFavouritesEndPage.value;

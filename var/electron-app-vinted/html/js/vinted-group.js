@@ -1,28 +1,6 @@
 
 //------------------------------------------------------------------------------
-
-function addTagToGUI(parent, tag)
-{
-  buildButton(parent, "tag", "button", tag, function()
-  {
-    var listElem = getSection("update").listElem;
-    listElem.items = getTagList(tag);
-    refreshListElem(listElem);
-  });
-}
-
-//------------------------------------------------------------------------------
-
-function addTagsToGUI(parent, tags)
-{
-  for(var i = 0; i < tags.length; i++)
-  {
-    addTagToGUI(parent, tags[i]);
-  }
-}
-
-//------------------------------------------------------------------------------
-// GROUPS AND TAGS
+// GROUP PATHS
 //------------------------------------------------------------------------------
 
 function getGroupPath(group, name)
@@ -34,46 +12,39 @@ function getGroupPath(group, name)
 
 function getBrandGroupPath(brand)
 {
-  return path.join(brandGroupPath, brand);
+  return getGroupPath(brandGroup, brand);
 }
 
 //------------------------------------------------------------------------------
 
 function getCountryGroupPath(country)
 {
-  return path.join(countryGroupPath, country);
+  return getGroupPath(countryGroup, country);
 }
 
 //------------------------------------------------------------------------------
 
 function getUserGroupPath(user)
 {
-  return path.join(userGroupPath, user);
+  return getGroupPath(userGroup, user);
 }
 
 //------------------------------------------------------------------------------
 
 function getStatusGroupPath(status)
 {
-  return path.join(statusGroupPath, status);
+  return getGroupPath(status);
 }
 
 //------------------------------------------------------------------------------
 
-function getStatusItems(status)
+function getTagGroupPath(tag)
 {
-  var items = [];
-
-  var thisStatusPath = getStatusGroupPath(status);
-
-  fs.readdirSync(thisStatusPath).forEach(id =>
-  {
-    items.push(getItem(id));
-  });
-
-  return items;
+  return getGroupPath(tagGroup, tag);
 }
 
+//------------------------------------------------------------------------------
+// GROUP ADD AND REMOVE
 //------------------------------------------------------------------------------
 
 function addItemToGroup(id, group, name)
@@ -111,142 +82,323 @@ function remItemToGroup(id, group, name)
 
 function addItemToGroupBrand(id, brand)
 {
-  return addItemToGroup(id, "brand", brand);
+  return addItemToGroup(id, brandGroup, brand);
 }
 
 //------------------------------------------------------------------------------
 
 function remItemToGroupBrand(id, brand)
 {
-  return remItemToGroup(id, "brand", brand);
+  return remItemToGroup(id, brandGroup, brand);
 }
 
 //------------------------------------------------------------------------------
 
 function addItemToGroupCountry(id, country)
 {
-  return addItemToGroup(id, "country", country);
+  return addItemToGroup(id, countryGroup, country);
 }
 
 //------------------------------------------------------------------------------
 
 function remItemToGroupCountry(id, country)
 {
-  return remItemToGroup(id, "country", country);
+  return remItemToGroup(id, countryGroup, country);
 }
 
 //------------------------------------------------------------------------------
 
 function addItemToGroupUser(id, user)
 {
-  return addItemToGroup(id, "user", user);
+  return addItemToGroup(id, userGroup, user);
 }
 
 //------------------------------------------------------------------------------
 
 function remItemToGroupUser(id, user)
 {
-  return remItemToGroup(id, "user", user);
+  return remItemToGroup(id, userGroup, user);
 }
 
 //------------------------------------------------------------------------------
 
-function addItemToGroupStatus(id, tag)
+// function addItemToGroupTag(id, tag)
+// {
+//   return addItemToGroup(id, tagGroup, tag);
+// }
+
+//------------------------------------------------------------------------------
+
+// function remItemToGroupTag(id, tag)
+// {
+//   return remItemToGroup(id, tagGroup, tag);
+// }
+
+//------------------------------------------------------------------------------
+
+function addItemToGroupTag(id, tag)
 {
-  return addItemToGroup(id, "tag", tag);
+  // reverse link from item index to tag
+  link = path.relative(getItemPath(id), getTagGroupPath(tag));
+  target = getItemTagsPath(id, tag);
+  if(!fs.existsSync(target)) fs.symlink(link, target, function(error){if(error) console.log(error);});
+
+  return addItemToGroup(id, tagGroup, tag);
 }
 
 //------------------------------------------------------------------------------
 
-function remItemToGroupStatus(id, tag)
+function remItemToGroupTag(id, tag)
 {
-  return remItemToGroup(id, "tag", tag);
+  // reverse link from item index to tag
+  target = getItemTagsPath(id, tag);
+  if(fs.existsSync(target)) fs.rmSync(target);
+
+  return remItemToGroup(id, tagGroup, tag);
 }
 
 //------------------------------------------------------------------------------
 
 function addItemToGroupStatus(id, status)
 {
-  return addItemToGroup(id, "status", status);
+  return addItemToGroup(id, statusGroup, status);
 }
 
 //------------------------------------------------------------------------------
 
 function remItemToGroupStatus(id, status)
 {
-  return remItemToGroup(id, "status", status);
+  return remItemToGroup(id, statusGroup, status);
 }
 
 //------------------------------------------------------------------------------
 
 function addItemToGroupStatusSold(id)
 {
-  return addItemToGroup(id, "status", "sold");
+  return addItemToGroupStatus(id, soldStatus);
 }
 
 //------------------------------------------------------------------------------
 
 function remItemToGroupStatusSold(id)
 {
-  return remItemToGroup(id, "status", "sold");
+  return remItemToGroupStatus(id, soldStatus);
 }
 
 //------------------------------------------------------------------------------
 
 function addItemToGroupStatusUntagged(id)
 {
-  return addItemToGroup(id, "status", "untagged");
+  return addItemToGroupStatus(id, untaggedStatus);
 }
 
 //------------------------------------------------------------------------------
 
 function remItemToGroupStatusUntagged(id)
 {
-  return remItemToGroup(id, "status", "untagged");
+  return remItemToGroupStatus(id, untaggedStatus);
 }
 
 //------------------------------------------------------------------------------
 
 function addItemToGroupStatusHidden(id)
 {
-  return addItemToGroup(id, "status", "hidden");
+  return addItemToGroupStatus(id, hiddenStatus);
 }
 
 //------------------------------------------------------------------------------
 
 function remItemToGroupStatusHidden(id)
 {
-  return remItemToGroup(id, "status", "hidden");
+  return remItemToGroupStatus(id, hiddenStatus);
 }
 
 //------------------------------------------------------------------------------
 
 function addItemToGroupStatusReserved(id)
 {
-  return addItemToGroup(id, "status", "reserved");
+  return addItemToGroupStatus(id, reservedStatus);
 }
 
 //------------------------------------------------------------------------------
 
 function remItemToGroupStatusReserved(id)
 {
-  return remItemToGroup(id, "status", "reserved");
+  return remItemToGroupStatus(id, reservedStatus);
 }
 
 //------------------------------------------------------------------------------
 
-function getTagPath(tag)
+function addItemToGroupStatusFavourite(id)
 {
-  return path.join(tagGroupPath, tag);
+  return addItemToGroupStatus(id, favouriteStatus);
 }
 
 //------------------------------------------------------------------------------
 
-function getTagOrderedItemsPath(tag)
+function remItemToGroupStatusFavourite(id)
 {
-  return path.join(tagOrderPath, tag + ".json");
+  return remItemToGroupStatus(id, favouriteStatus);
 }
 
+//------------------------------------------------------------------------------
+// GROUP GET ITEMS
+//------------------------------------------------------------------------------
+
+function getGroupItemsID(group, name)
+{
+  return fs.readdirSync(getGroupPath(group, name));
+}
+
+//------------------------------------------------------------------------------
+
+function getGroupItems(group, name)
+{
+  return getItems(getGroupItemsID(group, name));
+}
+
+//------------------------------------------------------------------------------
+
+function getGroupBrandItemsID(brand)
+{
+  return getGroupItemsID(brandGroup, brand);
+}
+
+//------------------------------------------------------------------------------
+
+function getGroupBrandItems(brand)
+{
+  return getGroupItems(brandGroup, brand);
+}
+
+//------------------------------------------------------------------------------
+
+function getGroupCountryItemsID(country)
+{
+  return getGroupItemsID(countryGroup, country);
+}
+
+//------------------------------------------------------------------------------
+
+function getGroupCountryItems(country)
+{
+  return getGroupItems(countryGroup, country);
+}
+
+//------------------------------------------------------------------------------
+
+function getGroupUserItemsID(user)
+{
+  return getGroupItemsID(userGroup, user);
+}
+
+//------------------------------------------------------------------------------
+
+function getGroupUserItems(user)
+{
+  return getGroupItems(userGroup, user);
+}
+
+//------------------------------------------------------------------------------
+
+function getGroupTagItemsID(tag)
+{
+  return getGroupItemsID(tagGroup, tag);
+}
+
+//------------------------------------------------------------------------------
+
+function getGroupTagItems(tag)
+{
+  return getGroupItems(tagGroup, tag);
+}
+
+//------------------------------------------------------------------------------
+
+function getGroupStatusItemsID(status)
+{
+  return getGroupItemsID(statusGroup, status);
+}
+
+//------------------------------------------------------------------------------
+
+function getGroupStatusItems(status)
+{
+  return getGroupItems(statusGroup, status);
+}
+
+//------------------------------------------------------------------------------
+
+function getGroupStatusSoldItemsID()
+{
+  return getGroupItemsID(statusGroup, soldStatus);
+}
+
+//------------------------------------------------------------------------------
+
+function getGroupStatusSoldItems()
+{
+  return getGroupItems(statusGroup, soldStatus);
+}
+
+//------------------------------------------------------------------------------
+
+function getGroupStatusUntaggedItemsID()
+{
+  return getGroupItemsID(statusGroup, untaggedStatus);
+}
+
+//------------------------------------------------------------------------------
+
+function getGroupStatusUntaggedItems()
+{
+  return getGroupItems(statusGroup, untaggedStatus);
+}
+
+//------------------------------------------------------------------------------
+
+function getGroupStatusHiddenItemsID()
+{
+  return getGroupItemsID(statusGroup, hiddenStatus);
+}
+
+//------------------------------------------------------------------------------
+
+function getGroupStatusHiddenItems()
+{
+  return getGroupItems(statusGroup, hiddenStatus);
+}
+
+//------------------------------------------------------------------------------
+
+function getGroupStatusReservedItemsID()
+{
+  return getGroupItemsID(statusGroup, reservedStatus);
+}
+
+//------------------------------------------------------------------------------
+
+function getGroupStatusReservedItems()
+{
+  return getGroupItems(statusGroup, reservedStatus);
+}
+
+//------------------------------------------------------------------------------
+
+function getGroupStatusFavouriteItemsID()
+{
+  return getGroupItemsID(statusGroup, favouriteStatus);
+}
+
+//------------------------------------------------------------------------------
+
+function getGroupStatusFavouriteItems()
+{
+  return getGroupItems(statusGroup, favouriteStatus);
+}
+
+//------------------------------------------------------------------------------
+// TAG ORDER
 //------------------------------------------------------------------------------
 
 function getTagOrderedItems(tag)
@@ -264,50 +416,6 @@ function getTagOrderedItems(tag)
 function setTagOrderedItems(tag, items)
 {
   return saveJSONFile(items, getTagOrderedItemsPath(tag), true);
-}
-
-//------------------------------------------------------------------------------
-
-function addItemToTag(id, tag)
-{
-  if(!tag || tag === "")
-  {
-    console.log("addItemToTag - invalid tag:" + tag);
-    return;
-  }
-
-  var thisTagPath = getTagPath(tag);
-  var itemPath = getItemPath(id);
-
-  mkdir(thisTagPath);
-  var link = path.relative(thisTagPath, itemPath);
-  var target = path.join(thisTagPath, id);
-  if(!fs.existsSync(target)) fs.symlink(link, target, function(error){if(error) console.log(error);});
-
-  // reverse link from item index to tag
-  link = path.relative(itemPath, thisTagPath);
-  target = getItemTagPath(id, tag);
-  if(!fs.existsSync(target)) fs.symlink(link, target, function(error){if(error) console.log(error);});
-}
-
-//------------------------------------------------------------------------------
-
-function remItemToTag(id, tag)
-{
-  if(!tag || tag === "")
-  {
-    console.log("addItemToTag - invalid tag:" + tag);
-    return;
-  }
-
-  var thisTagPath = getTagPath(tag);
-
-  var target = path.join(thisTagPath, "" + id);
-  if(fs.existsSync(target)) fs.rmSync(target);
-
-  // reverse link from item index to tag
-  target = getItemTagPath(id, tag);
-  if(fs.existsSync(target)) fs.rmSync(target);
 }
 
 //------------------------------------------------------------------------------

@@ -81,16 +81,21 @@ function itemIsUntagged(item)
 
 function itemIsHidden(item)
 {
-  // todo
-  return false;
+  return item.is_hidden;
 }
 
 //------------------------------------------------------------------------------
 
 function itemIsReserved(item)
 {
-  // todo
-  return false;
+  return item.is_reserved;
+}
+
+//------------------------------------------------------------------------------
+
+function itemIsFavourite(item)
+{
+  return item.is_favourite;
 }
 
 //------------------------------------------------------------------------------
@@ -131,14 +136,15 @@ function updateItemFiles(item, force)
 {
   if(!saveJSONFile(item, getItemFilePath(item.id), force)) return false;
 
+  addItemToGroupBrand(item.id, item.brand);
+  addItemToGroupCountry(item.id, item.country);
+  addItemToGroupUser(item.id, item.user_login);
+
   if(itemIsSold(item)) addItemToGroupStatusSold(item.id);
   if(itemIsUntagged(item)) addItemToGroupStatusUntagged(item.id);
   if(itemIsHidden(item)) remItemToGroupStatusHidden(item.id);
   if(itemIsReserved(item)) addItemToGroupStatusReserved(item.id);
-
-  addItemToGroupBrand(item.id, item.brand);
-  addItemToGroupCountry(item.id, item.country);
-  addItemToGroupUser(item.id, item.user_login);
+  if(itemIsFavourite(item)) addItemToGroupStatusFavourite(item.id);
 
   return true;
 }

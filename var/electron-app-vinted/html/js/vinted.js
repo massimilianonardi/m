@@ -13,7 +13,7 @@
 // - brand
 // - country
 // - user
-// - status / sold, untagged, hidden, reserved
+// - status / sold, untagged, hidden, reserved, favourite
 // - tag / [tags] + sold + uncategorized
 // order
 // - brand
@@ -34,16 +34,29 @@ const itemIndexPath = path.join(dataPath, "index");
 
 const groupPath = path.join(dataPath, "group");
 
-const brandGroupPath = path.join(groupPath, "brand");
-const countryGroupPath = path.join(groupPath, "country");
-const userGroupPath = path.join(groupPath, "user");
-const tagGroupPath = path.join(groupPath, "tag");
-const statusGroupPath = path.join(groupPath, "status");
+const brandGroup = "brand";
+const countryGroup = "country";
+const userGroup = "user";
+const tagGroup = "tag";
+const statusGroup = "status";
 
-const soldStatusGroupPath = path.join(statusGroupPath, "sold");
-const untaggedStatusGroupPath = path.join(statusGroupPath, "untagged");
-const hiddenStatusGroupPath = path.join(statusGroupPath, "hidden");
-const reservedStatusGroupPath = path.join(statusGroupPath, "reserved");
+// const brandGroupPath = path.join(groupPath, "brand");
+// const countryGroupPath = path.join(groupPath, "country");
+// const userGroupPath = path.join(groupPath, "user");
+// const tagGroupPath = path.join(groupPath, "tag");
+// const statusGroupPath = path.join(groupPath, "status");
+
+const soldStatus = "sold";
+const untaggedStatus = "untagged";
+const hiddenStatus = "hidden";
+const reservedStatus = "reserved";
+const favouriteStatus = "favourite";
+
+// const soldStatusGroupPath = path.join(statusGroupPath, "sold");
+// const untaggedStatusGroupPath = path.join(statusGroupPath, "untagged");
+// const hiddenStatusGroupPath = path.join(statusGroupPath, "hidden");
+// const reservedStatusGroupPath = path.join(statusGroupPath, "reserved");
+// const favouriteStatusGroupPath = path.join(statusGroupPath, "favourite");
 
 const orderPath = path.join(dataPath, "order");
 
