@@ -62,3 +62,22 @@ function switchSection(name)
 }
 
 //------------------------------------------------------------------------------
+
+function buildSwitchSectionButtons(parent)
+{
+  var buttonsContainer = buildDivElem(parent, null, "switch-section-buttons-container");
+
+  for(var k in sections)
+  {
+    var section = k;
+    var button = buildButton(buttonsContainer, null, "button", section, function()
+    {
+      switchSection(this.section);
+    });
+    button.section = section;
+  }
+
+  return buttonsContainer;
+}
+
+//------------------------------------------------------------------------------

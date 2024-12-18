@@ -13,6 +13,13 @@ body, .section, .item-browser
   overflow: hidden;
 }
 
+.switch-section-buttons-container
+{
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
 .item-browser
 {
   display: flex;
@@ -49,7 +56,7 @@ body, .section, .item-browser
   width: fit-content;
   height: -webkit-fill-available;
   overflow: auto;
-  
+
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
