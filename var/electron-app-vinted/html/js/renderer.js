@@ -30,6 +30,25 @@ function buildSectionGUIupdate(parent)
       console.log("dumpFavourites", startPage, endPage);
     });
   });
+
+  var processDumpContainer = buildDivElem(parent, null, "process-dump-container");
+
+  var listDumps = buildButton(processDumpContainer, null, "button", "List Available Dumps", function()
+  {
+    var currentDumpPath = dumpDir.value === "" ? dumpPath : dumpDir.value;
+    filesTextArea.value = JSON.stringify(lspath(currentDumpPath, true), null, 2);
+  });
+  var dumpDir = buildText(processDumpContainer, null, "text-indicator", "");
+  var filesTextArea = buildElem("textarea", processDumpContainer, null, "files-area");
+  filesTextArea.rows = 20;
+  filesTextArea.cols = 100;
+
+  var forceOrQuitOnExistingFlag = buildText(processDumpContainer, null, "text-indicator", "true");
+  var processDump = buildButton(processDumpContainer, null, "button", "Process Selected Dump", function()
+  {
+    // console.log(eval(forceOrQuitOnExistingFlag.value), JSON.parse(filesTextArea.value));
+    processDumpPages(JSON.parse(filesTextArea.value), eval(forceOrQuitOnExistingFlag.value));
+  });
 }
 
 //------------------------------------------------------------------------------
