@@ -1,5 +1,38 @@
 
 //------------------------------------------------------------------------------
+// ORDER
+//------------------------------------------------------------------------------
+
+function getOrderFilePath(group, name)
+{
+  return path.join(orderPath, group, name + ".json");
+}
+
+//------------------------------------------------------------------------------
+
+function getOrderedItemsID(group, name)
+{
+  var orderFilePath = getOrderFilePath(group, name);
+
+  if(fs.existsSync(orderFilePath)) return JSON.parse(fs.readFileSync(orderFilePath))
+  else return [];
+}
+
+//------------------------------------------------------------------------------
+
+function setOrderedItemsID(ids, group, name)
+{
+  return saveJSONFile(ids, getOrderFilePath(group, name), true);
+}
+
+//------------------------------------------------------------------------------
+
+function setOrderedItems(items, group, name)
+{
+  return setOrderedItemsID(getItemsID(items), group, name);
+}
+
+//------------------------------------------------------------------------------
 // GROUP PATHS
 //------------------------------------------------------------------------------
 
@@ -245,9 +278,28 @@ function remItemToGroupStatusFavourite(id)
 // GROUP GET ITEMS
 //------------------------------------------------------------------------------
 
+// function getGroupItemsID(group, name)
+// {
+//   return fs.readdirSync(getGroupPath(group, name));
+// }
+
+//------------------------------------------------------------------------------
+
 function getGroupItemsID(group, name)
 {
-  return fs.readdirSync(getGroupPath(group, name));
+  var ids = getOrderedItemsID(group, name);
+  var orderedIDs = {};
+  for(var i = 0; i < ids.length; i++)
+  {
+    orderedIDs[ids[i]] = true;
+  }
+
+  fs.readdirSync(getGroupPath(group, name)).forEach(id =>
+  {
+    if(!orderedIDs[id]) ids.push(id);
+  });
+
+  return ids;
 }
 
 //------------------------------------------------------------------------------
@@ -395,63 +447,6 @@ function getGroupStatusFavouriteItemsID()
 function getGroupStatusFavouriteItems()
 {
   return getGroupItems(statusGroup, favouriteStatus);
-}
-
-//------------------------------------------------------------------------------
-// TAG ORDER
-//------------------------------------------------------------------------------
-
-function getTagOrderedItems(tag)
-{
-  var items = [];
-
-  var thisTagOrderPath = getTagOrderedItemsPath(tag);
-  if(fs.existsSync(thisTagOrderPath)) items = JSON.parse(fs.readFileSync(thisTagOrderPath));
-
-  return items;
-}
-
-//------------------------------------------------------------------------------
-
-function setTagOrderedItems(tag, items)
-{
-  return saveJSONFile(items, getTagOrderedItemsPath(tag), true);
-}
-
-//------------------------------------------------------------------------------
-
-function getTags()
-{
-  return lsdir(tagGroupPath);
-}
-
-//------------------------------------------------------------------------------
-
-function getTagItems(tag)
-{
-  var items = [];
-  var orderedItems = {};
-
-  var thisTagPath = getTagPath(tag);
-  // if(!fs.existsSync(thisTagPath)) return items;
-
-  items = getTagOrderedItems(tag);
-  // fill temp object for faster searches during dir read for not ordered items
-  for(var i = 0; i < items.length; i++)
-  {
-    orderedItems[items[i]] = true;
-  }
-
-  fs.readdirSync(thisTagPath).forEach(id =>
-  {
-    // items.push(id);
-    // if(-1 === items.indexOf(id)) items.push(id);
-    // if(!orderedItems[id]) items.push(id);
-    // if(!orderedItems[id]) if(fs.existsSync(path.join(thisTagPath, id, "item.json"))) items.push(id);
-    if(!orderedItems[id]) items.push(id);
-  });
-
-  return items;
 }
 
 //------------------------------------------------------------------------------
