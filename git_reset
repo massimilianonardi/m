@@ -1,7 +1,19 @@
 #!/bin/sh
 
-cd -L -- "${0%/*}"
-PATH="$(cd -L -- "${0%/*}" && pwd -L):$PATH"
+if [ -L "$0" ]
+then
+  THIS_PATH="$(ls -ld -- "$0")"
+  THIS_PATH="${THIS_PATH#*" $0 -> "}"
+else
+  THIS_PATH="$0"
+fi
+
+THIS_FILE="${THIS_PATH##*/}"
+
+THIS_DIR="$(cd -L -- "${THIS_PATH%/*}" && pwd -L)"
+
+cd "$THIS_DIR"
+PATH="$THIS_DIR:$PATH"
 
 
 
