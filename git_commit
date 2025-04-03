@@ -3,6 +3,8 @@
 cd -L -- "${0%/*}"
 PATH="$(cd -L -- "${0%/*}" && pwd -L):$PATH"
 
+
+
 COMMIT_MESSAGE_LAST="$(cat "${0}.msg")"
 
 echo "Previous commit message: $COMMIT_MESSAGE_LAST"
