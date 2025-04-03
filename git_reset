@@ -1,0 +1,34 @@
+#!/bin/sh
+
+cd -L -- "${0%/*}"
+PATH="$(cd -L -- "${0%/*}" && pwd -L):$PATH"
+
+
+
+git fetch origin
+
+BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+echo "BRANCH: $BRANCH"
+[ -z "$BRANCH" ] && echo "empty branch!" && exit 1
+
+for k in *
+do
+  [ -d "$k/.git" ] && mv "$k/.git" "$k/.git_"
+done
+
+git reset --hard origin/"$BRANCH"
+EXIT_CODE="$?"
+
+for k in *
+do
+  [ -d "$k/.git_" ] && mv "$k/.git_" "$k/.git"
+done
+
+echo ""
+echo ""
+echo ""
+echo "--------------------------------------------------------------------------------"
+read -p "press ENTER to exit" test
+
+exit "$EXIT_CODE"
+

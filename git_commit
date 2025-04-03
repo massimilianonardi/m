@@ -1,0 +1,48 @@
+#!/bin/sh
+
+cd -L -- "${0%/*}"
+PATH="$(cd -L -- "${0%/*}" && pwd -L):$PATH"
+
+COMMIT_MESSAGE_LAST="$(cat "${0}.msg")"
+
+echo "Previous commit message: $COMMIT_MESSAGE_LAST"
+read -p "Enter commit message (default to previous): " COMMIT_MESSAGE
+
+if [ -z "$COMMIT_MESSAGE" ]
+then
+  COMMIT_MESSAGE="$COMMIT_MESSAGE_LAST"
+fi
+
+#git add --all && git commit -m "$COMMIT_MESSAGE" && git push origin master
+
+echo "$COMMIT_MESSAGE" > "${0}.msg"
+
+BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+echo "BRANCH: $BRANCH"
+[ -z "$BRANCH" ] && echo "empty branch!" && exit 1
+
+for k in *
+do
+  [ -d "$k/.git" ] && mv "$k/.git" "$k/.git_"
+done
+
+git add --all && \
+git commit -m "$COMMIT_MESSAGE" && \
+git push origin "$BRANCH"
+EXIT_CODE="$?"
+
+git status
+
+for k in *
+do
+  [ -d "$k/.git_" ] && mv "$k/.git_" "$k/.git"
+done
+
+echo ""
+echo ""
+echo ""
+echo "--------------------------------------------------------------------------------"
+read -p "press ENTER to exit" test
+
+exit "$EXIT_CODE"
+
