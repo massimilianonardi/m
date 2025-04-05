@@ -1,1 +1,1 @@
-app portable: chromium, netbeans, pulsar, dbeaver
+app portable install into calling link dir

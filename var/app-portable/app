@@ -9,9 +9,25 @@ exist_function()
 
 #-------------------------------------------------------------------------------
 
+wait_user()
+{
+  EXIT_CODE="$?"
+  
+  # wait user input to terminate
+  echo ""
+  echo "--------------------------------------------------------------------------------"
+  echo "EXIT_CODE=$EXIT_CODE"
+  echo "--------------------------------------------------------------------------------"
+  read -p "press ENTER to exit" test
+
+  exit "$EXIT_CODE"
+}
+
+#-------------------------------------------------------------------------------
+
 update()
 {
-  . "../${APP_NAME}-${COMMAND}"
+  . "${THIS_DIR}/${APP_NAME}-${COMMAND}"
 
   DOWNLOAD_FILE="${APP_NAME}-${VERSION}.${FILE_TYPE}"
   echo "latest VERSION is $VERSION"
@@ -59,13 +75,30 @@ update()
       postinstall
     fi
   fi
+
+  wait_user
 }
 
 #-------------------------------------------------------------------------------
 
 run()
 {
-  . "../${APP_NAME}-${COMMAND}"
+  . "${THIS_DIR}/${APP_NAME}-${COMMAND}"
+}
+
+#-------------------------------------------------------------------------------
+
+debug()
+{
+  if [ -f "${THIS_DIR}/${APP_NAME}-${COMMAND}" ]
+  then
+    . "${THIS_DIR}/${APP_NAME}-${COMMAND}"
+  else
+    COMMAND="run"
+    run
+  fi
+
+  wait_user
 }
 
 #-------------------------------------------------------------------------------
@@ -100,8 +133,9 @@ main()
   fi
   
   case "$COMMAND" in
-    "run") true;;
     "update") true;;
+    "run") true;;
+    "debug") true;;
     *) exit 1;;
   esac
   
@@ -124,21 +158,17 @@ THIS_FILE="${THIS_PATH##*/}"
 THIS_DIR="$(cd -L -- "${THIS_PATH%/*}" && pwd -L)"
 
 # set working dir and path
-cd "$THIS_DIR"
+#cd "$THIS_DIR"
 PATH="$THIS_DIR:$PATH"
+
+# apps dir
+LINK_DIR="$(cd -L -- "${0%/*}" && pwd -L)"
+APPS_DIR="${LINK_DIR}/apps"
+mkdir -p "$APPS_DIR"
+cd "$APPS_DIR"
 
 EXIT_CODE="0"
 
 # setup app and user environment and do requested install/update/run command
 main "$@"
-EXIT_CODE="$?"
-
-# wait user input to terminate
-echo ""
-echo "--------------------------------------------------------------------------------"
-echo "EXIT_CODE=$EXIT_CODE"
-echo "--------------------------------------------------------------------------------"
-read -p "press ENTER to exit" test
-
-exit "$EXIT_CODE"
 
