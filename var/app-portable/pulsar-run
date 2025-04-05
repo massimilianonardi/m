@@ -1,5 +1,11 @@
 #!/bin/sh
 
-./latest/pulsar --in-process-gpu 1> /dev/null 2> /dev/null
-#./latest/pulsar --in-process-gpu
+#./latest/pulsar --in-process-gpu 1> /dev/null 2> /dev/null
+#./latest/pulsar --in-process-gpu 1> /dev/null 2> /dev/null &
+#disown
+#nohup ./latest/pulsar --in-process-gpu 1> /dev/null 2> /dev/null &
+#sleep 9
+
+screen -S (./latest/pulsar --in-process-gpu)
+sleep 9
 
