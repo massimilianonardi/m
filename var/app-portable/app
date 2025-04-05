@@ -83,7 +83,10 @@ update()
 
 run()
 {
-  . "${THIS_DIR}/${APP_NAME}-${COMMAND}"
+  #. "${THIS_DIR}/${APP_NAME}-${COMMAND}"
+  #"${THIS_DIR}/${APP_NAME}-${COMMAND}"
+  screen -S chromium-session -d -m "${THIS_DIR}/${APP_NAME}-${COMMAND}"
+  sleep 1
 }
 
 #-------------------------------------------------------------------------------

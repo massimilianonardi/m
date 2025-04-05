@@ -1,1 +1,1 @@
-app portable install into calling link dir
+app portable run detached from terminal
