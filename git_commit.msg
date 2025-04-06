@@ -1,1 +1,1 @@
-app portable run detached from terminal
+app portable home decoupled and under git

@@ -12,7 +12,7 @@ exist_function()
 wait_user()
 {
   EXIT_CODE="$?"
-  
+
   # wait user input to terminate
   echo ""
   echo "--------------------------------------------------------------------------------"
@@ -66,10 +66,10 @@ update()
       fi
     fi
     cd ..
-    
+
     rm -f ./latest
     ln -s "$VERSION/$UNPACKED_SUB_DIR" ./latest
-    
+
     if exist_function postinstall
     then
       postinstall
@@ -106,46 +106,7 @@ debug()
 
 #-------------------------------------------------------------------------------
 
-main()
-(
-  # get app name
-  if [ -n "$1" ]
-  then
-    APP_NAME="$1"
-    shift
-  else
-    echo "app name cannot be empty"
-    exit 1
-  fi
-
-  # setup user and home environment variables for app
-  export USER="$(id -un)"
-  export USERNAME="$USER"
-  export USERHOME="$(pwd)/$APP_NAME/home/${USER}"
-  export HOME="$USERHOME"
-  
-  # create app dirs and cd into main dir
-  mkdir -p "./$APP_NAME" "$HOME" && cd "./$APP_NAME"
-  
-  if [ -n "$1" ]
-  then
-    COMMAND="$1"
-    shift
-  else
-    COMMAND="run"
-  fi
-  
-  case "$COMMAND" in
-    "update") true;;
-    "run") true;;
-    "debug") true;;
-    *) exit 1;;
-  esac
-  
-  "$COMMAND"
-)
-
-#-------------------------------------------------------------------------------
+CALL_DIR="$(cd -L -- "${0%/*}" && pwd -L)"
 
 # resolve symlink caller
 if [ -L "$0" ]
@@ -160,18 +121,45 @@ fi
 THIS_FILE="${THIS_PATH##*/}"
 THIS_DIR="$(cd -L -- "${THIS_PATH%/*}" && pwd -L)"
 
-# set working dir and path
-#cd "$THIS_DIR"
-PATH="$THIS_DIR:$PATH"
+# set path
+PATH="$CALL_DIR:$THIS_DIR:$PATH"
 
 # apps dir
-LINK_DIR="$(cd -L -- "${0%/*}" && pwd -L)"
-APPS_DIR="${LINK_DIR}/apps"
-mkdir -p "$APPS_DIR"
-cd "$APPS_DIR"
+APPS_DIR="$CALL_DIR"
 
 EXIT_CODE="0"
 
-# setup app and user environment and do requested install/update/run command
-main "$@"
+# get app name
+if [ -n "$1" ]
+then
+  APP_NAME="$1"
+  shift
+else
+  echo "app name cannot be empty"
+  exit 1
+fi
 
+# setup home environment variable for app
+export USERHOME="$THIS_DIR/conf/$APP_NAME"
+export HOME="$USERHOME"
+
+# create app dirs and cd into main dir
+APP_DIR="$APPS_DIR/$APP_NAME"
+mkdir -p "$APP_DIR" "$HOME" && cd "$APP_DIR"
+
+if [ -n "$1" ]
+then
+  COMMAND="$1"
+  shift
+else
+  COMMAND="run"
+fi
+
+case "$COMMAND" in
+  "update") true;;
+  "run") true;;
+  "debug") true;;
+  *) exit 1;;
+esac
+
+"$COMMAND"
