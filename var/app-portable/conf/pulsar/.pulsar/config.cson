@@ -1,3 +1,23 @@
 "*":
+  "autocomplete-plus":
+    confirmCompletion: "tab always, enter when suggestion explicitly selected"
+  "bracket-matcher":
+    autocompleteBrackets: false
+    highlightMatchingLineNumber: true
+  core:
+    allowPendingPaneItems: false
+    openEmptyEditorOnStart: false
+    themes: [
+      "one-light-ui"
+      "one-light-syntax"
+    ]
+  editor:
+    autoIndentOnPaste: false
+    scrollSensitivity: 10
+    showIndentGuide: true
+    showInvisibles: true
   "exception-reporting":
     userId: "71b759e3-d8cc-4201-9eef-6165edd56059"
+  welcome:
+    lastViewedChangeLog: "1.127.1"
+    showOnStartup: false

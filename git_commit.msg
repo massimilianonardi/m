@@ -1,1 +1,1 @@
-app portable home decoupled and under git
+pulsar conf
