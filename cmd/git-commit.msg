@@ -1,1 +1,1 @@
-desktop-files
+app lapce text editor

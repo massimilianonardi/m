@@ -1,0 +1,388 @@
+2025-04-07T22:36:59.195484035+02:00 [INFO] ========== starting zed ==========
+2025-04-07T22:36:59.271145127+02:00 [INFO] Presentation support: "VK_KHR_wayland_surface"
+2025-04-07T22:36:59.271218625+02:00 [INFO] Presentation support: "VK_KHR_xcb_surface"
+2025-04-07T22:36:59.271335942+02:00 [INFO] Presentation support: "VK_KHR_xlib_surface"
+2025-04-07T22:36:59.271384368+02:00 [INFO] Enabling Vulkan Portability
+2025-04-07T22:36:59.271425061+02:00 [INFO] Enabling color space support
+2025-04-07T22:36:59.286349179+02:00 [INFO] Adapter: "llvmpipe (LLVM 19.1.1, 256 bits)"
+2025-04-07T22:36:59.286462016+02:00 [INFO] Ray tracing is supported
+2025-04-07T22:36:59.38983393+02:00 [INFO] perform;
+2025-04-07T22:36:59.389895348+02:00 [INFO] authenticate;
+2025-04-07T22:36:59.389972132+02:00 [INFO] read_command;
+2025-04-07T22:36:59.390204885+02:00 [INFO] Opening main db
+2025-04-07T22:36:59.391990258+02:00 [INFO] send_secondary_commands;
+2025-04-07T22:36:59.396209866+02:00 [INFO] new;
+2025-04-07T22:36:59.397801282+02:00 [INFO] Opening main db
+2025-04-07T22:36:59.39799016+02:00 [INFO] socket reader;
+2025-04-07T22:36:59.398038524+02:00 [INFO] read_socket;
+2025-04-07T22:36:59.398116536+02:00 [INFO] read_socket;
+2025-04-07T22:36:59.398469019+02:00 [INFO] read_socket;
+2025-04-07T22:36:59.398774875+02:00 [INFO] read_socket;
+2025-04-07T22:36:59.399022935+02:00 [INFO] read_socket;
+2025-04-07T22:36:59.399698071+02:00 [INFO] read_socket;
+2025-04-07T22:36:59.400068872+02:00 [INFO] keep_updated;
+2025-04-07T22:36:59.403306488+02:00 [INFO] read_socket;
+2025-04-07T22:36:59.404367329+02:00 [INFO] Using git binary path: None
+2025-04-07T22:36:59.410514097+02:00 [INFO] read_socket;
+2025-04-07T22:36:59.419005518+02:00 [INFO] read_socket;
+2025-04-07T22:36:59.419447689+02:00 [INFO] read_socket;
+2025-04-07T22:36:59.419698188+02:00 [INFO] read_socket;
+2025-04-07T22:36:59.419975139+02:00 [INFO] read_socket;
+2025-04-07T22:36:59.420225418+02:00 [INFO] read_socket;
+2025-04-07T22:36:59.42332683+02:00 [INFO] read_socket;
+2025-04-07T22:36:59.423544747+02:00 [INFO] read_socket;
+2025-04-07T22:36:59.457310611+02:00 [INFO] set environment variables from shell:/bin/bash, path:/m/src/m/app:/m/src/m/app:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin
+2025-04-07T22:36:59.457472883+02:00 [INFO] No prompt template overrides directory found at /m/src/m/app/conf/zed/.local/share/zed/prompt_overrides. Using built-in prompts.
+2025-04-07T22:36:59.46542253+02:00 [INFO] activate is not implemented on Linux, ignoring the call
+2025-04-07T22:36:59.469351207+02:00 [INFO] Opening main db
+2025-04-07T22:36:59.4696011+02:00 [INFO] perform;
+2025-04-07T22:36:59.469652533+02:00 [INFO] authenticate;
+2025-04-07T22:36:59.469772315+02:00 [INFO] read_command;
+2025-04-07T22:36:59.46983578+02:00 [INFO] send_secondary_commands;
+2025-04-07T22:36:59.474173673+02:00 [INFO] socket reader;
+2025-04-07T22:36:59.474248239+02:00 [INFO] read_socket;
+2025-04-07T22:36:59.47436974+02:00 [INFO] read_socket;
+2025-04-07T22:36:59.484700265+02:00 [INFO] read_socket;
+2025-04-07T22:36:59.489883529+02:00 [INFO] read_socket;
+2025-04-07T22:36:59.490539761+02:00 [INFO] read_socket;
+2025-04-07T22:36:59.493762029+02:00 [INFO] read_socket;
+2025-04-07T22:36:59.582321757+02:00 [INFO] Using surface present mode MAILBOX
+2025-04-07T22:36:59.610679196+02:00 [INFO] Creating a descriptor pool for at most 16 sets
+2025-04-07T22:36:59.610763736+02:00 [INFO] Creating a descriptor pool for at most 16 sets
+2025-04-07T22:36:59.610813109+02:00 [INFO] Initializing Blade pipelines for surface SurfaceInfo { format: Bgra8UnormSrgb, alpha: PreMultiplied }
+2025-04-07T22:36:59.726510079+02:00 [INFO] Using GPU: GpuSpecs { is_software_emulated: true, device_name: "llvmpipe (LLVM 19.1.1, 256 bits)", driver_name: "llvmpipe", driver_info: "Mesa 24.2.8-1ubuntu1~24.04.1 (LLVM 19.1.1)" }
+2025-04-07T22:36:59.74311905+02:00 [INFO] Opening main db
+2025-04-07T22:36:59.7599621+02:00 [INFO] rebuilt extension index in 16.927342ms
+2025-04-07T22:37:01.738950404+02:00 [INFO] Opening main db
+2025-04-07T22:37:01.773126576+02:00 [ERROR] missing field `name` at line 17 column 1
+2025-04-07T22:37:01.879504342+02:00 [INFO] Using surface present mode MAILBOX
+2025-04-07T22:37:01.879574782+02:00 [INFO] Retaining current format: Bgra8UnormSrgb
+2025-04-07T22:37:02.673482887+02:00 [ERROR] Is a directory (os error 21)
+2025-04-07T22:37:03.346144943+02:00 [ERROR] missing field `name` at line 17 column 1
+2025-04-07T22:37:04.752823381+02:00 [INFO] perform;
+2025-04-07T22:37:04.752887524+02:00 [INFO] authenticate;
+2025-04-07T22:37:04.752948332+02:00 [INFO] read_command;
+2025-04-07T22:37:04.753006431+02:00 [INFO] perform;
+2025-04-07T22:37:04.753051051+02:00 [INFO] authenticate;
+2025-04-07T22:37:04.753110158+02:00 [INFO] read_command;
+2025-04-07T22:37:04.753166588+02:00 [INFO] perform;
+2025-04-07T22:37:04.753256209+02:00 [INFO] authenticate;
+2025-04-07T22:37:04.753308725+02:00 [INFO] read_command;
+2025-04-07T22:37:04.753366349+02:00 [INFO] perform;
+2025-04-07T22:37:04.753410695+02:00 [INFO] authenticate;
+2025-04-07T22:37:04.75345939+02:00 [INFO] read_command;
+2025-04-07T22:37:04.75351216+02:00 [INFO] perform;
+2025-04-07T22:37:04.753556445+02:00 [INFO] authenticate;
+2025-04-07T22:37:04.753604918+02:00 [INFO] read_command;
+2025-04-07T22:37:04.75365727+02:00 [INFO] perform;
+2025-04-07T22:37:04.753701658+02:00 [INFO] authenticate;
+2025-04-07T22:37:04.753793542+02:00 [INFO] read_command;
+2025-04-07T22:37:04.75386238+02:00 [INFO] send_secondary_commands;
+2025-04-07T22:37:04.758234595+02:00 [INFO] send_secondary_commands;
+2025-04-07T22:37:04.758355102+02:00 [INFO] send_secondary_commands;
+2025-04-07T22:37:04.758426024+02:00 [INFO] send_secondary_commands;
+2025-04-07T22:37:04.758492552+02:00 [INFO] send_secondary_commands;
+2025-04-07T22:37:04.75855875+02:00 [INFO] send_secondary_commands;
+2025-04-07T22:37:04.762805747+02:00 [INFO] socket reader;
+2025-04-07T22:37:04.762867393+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.762940545+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.768311073+02:00 [INFO] socket reader;
+2025-04-07T22:37:04.768392456+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.768449871+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.768998004+02:00 [INFO] socket reader;
+2025-04-07T22:37:04.769048532+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.7691138+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.770287029+02:00 [INFO] socket reader;
+2025-04-07T22:37:04.770343077+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.770407228+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.770991206+02:00 [INFO] socket reader;
+2025-04-07T22:37:04.771040603+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.77110324+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.773657564+02:00 [INFO] socket reader;
+2025-04-07T22:37:04.773718158+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.773784724+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.7883246+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.797308671+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.805935678+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.821540741+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.834339484+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.841340554+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.841458611+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.841530237+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.8416859+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.841961716+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.842109625+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.848318978+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.848484632+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.848646177+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.848796612+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.849099147+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.850291929+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.850716279+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.850794928+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.851011035+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.851117525+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.851831637+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.867451023+02:00 [INFO] read_socket;
+2025-04-07T22:37:04.868191743+02:00 [INFO] read_socket;
+2025-04-07T22:37:42.653428087+02:00 [ERROR] missing field `name` at line 20 column 1
+2025-04-07T22:37:43.179132563+02:00 [ERROR] missing field `name` at line 21 column 1
+2025-04-07T22:38:06.010661415+02:00 [INFO] ========== starting zed ==========
+2025-04-07T22:38:06.070146102+02:00 [INFO] Presentation support: "VK_KHR_wayland_surface"
+2025-04-07T22:38:06.070311221+02:00 [INFO] Presentation support: "VK_KHR_xcb_surface"
+2025-04-07T22:38:06.070390708+02:00 [INFO] Presentation support: "VK_KHR_xlib_surface"
+2025-04-07T22:38:06.070471112+02:00 [INFO] Enabling Vulkan Portability
+2025-04-07T22:38:06.070555749+02:00 [INFO] Enabling color space support
+2025-04-07T22:38:06.085561174+02:00 [INFO] Adapter: "llvmpipe (LLVM 19.1.1, 256 bits)"
+2025-04-07T22:38:06.085699345+02:00 [INFO] Ray tracing is supported
+2025-04-07T22:38:06.106591388+02:00 [INFO] perform;
+2025-04-07T22:38:06.106681533+02:00 [INFO] authenticate;
+2025-04-07T22:38:06.106799165+02:00 [INFO] read_command;
+2025-04-07T22:38:06.106893412+02:00 [INFO] send_secondary_commands;
+2025-04-07T22:38:06.107073601+02:00 [INFO] Opening main db
+2025-04-07T22:38:06.110401164+02:00 [INFO] new;
+2025-04-07T22:38:06.11060878+02:00 [INFO] socket reader;
+2025-04-07T22:38:06.110701173+02:00 [INFO] read_socket;
+2025-04-07T22:38:06.110808762+02:00 [INFO] read_socket;
+2025-04-07T22:38:06.111147469+02:00 [INFO] read_socket;
+2025-04-07T22:38:06.111468511+02:00 [INFO] read_socket;
+2025-04-07T22:38:06.111796654+02:00 [INFO] read_socket;
+2025-04-07T22:38:06.112079119+02:00 [INFO] Opening main db
+2025-04-07T22:38:06.112465306+02:00 [INFO] read_socket;
+2025-04-07T22:38:06.1125924+02:00 [INFO] keep_updated;
+2025-04-07T22:38:06.115065965+02:00 [INFO] Using git binary path: None
+2025-04-07T22:38:06.119426063+02:00 [INFO] read_socket;
+2025-04-07T22:38:06.120701595+02:00 [INFO] read_socket;
+2025-04-07T22:38:06.124028991+02:00 [INFO] read_socket;
+2025-04-07T22:38:06.124566454+02:00 [INFO] read_socket;
+2025-04-07T22:38:06.125516131+02:00 [INFO] read_socket;
+2025-04-07T22:38:06.126747176+02:00 [INFO] read_socket;
+2025-04-07T22:38:06.127306336+02:00 [INFO] read_socket;
+2025-04-07T22:38:06.128532343+02:00 [INFO] read_socket;
+2025-04-07T22:38:06.128872786+02:00 [INFO] read_socket;
+2025-04-07T22:38:06.15054659+02:00 [INFO] No prompt template overrides directory found at /m/src/m/app/conf/zed/.local/share/zed/prompt_overrides. Using built-in prompts.
+2025-04-07T22:38:06.161052722+02:00 [INFO] activate is not implemented on Linux, ignoring the call
+2025-04-07T22:38:06.171218429+02:00 [INFO] perform;
+2025-04-07T22:38:06.17137534+02:00 [INFO] authenticate;
+2025-04-07T22:38:06.171472777+02:00 [INFO] read_command;
+2025-04-07T22:38:06.171567917+02:00 [INFO] send_secondary_commands;
+2025-04-07T22:38:06.171695096+02:00 [INFO] Opening main db
+2025-04-07T22:38:06.175529425+02:00 [INFO] socket reader;
+2025-04-07T22:38:06.175634307+02:00 [INFO] read_socket;
+2025-04-07T22:38:06.175732023+02:00 [INFO] read_socket;
+2025-04-07T22:38:06.187761105+02:00 [INFO] installing extension html latest version
+2025-04-07T22:38:06.189132775+02:00 [INFO] read_socket;
+2025-04-07T22:38:06.192392857+02:00 [INFO] read_socket;
+2025-04-07T22:38:06.197538378+02:00 [INFO] read_socket;
+2025-04-07T22:38:06.198932997+02:00 [INFO] read_socket;
+2025-04-07T22:38:06.207195372+02:00 [INFO] set environment variables from shell:/bin/bash, path:/m/src/m/app:/m/src/m/app:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin
+2025-04-07T22:38:06.257333087+02:00 [INFO] Using surface present mode MAILBOX
+2025-04-07T22:38:06.286592786+02:00 [INFO] Creating a descriptor pool for at most 16 sets
+2025-04-07T22:38:06.28669343+02:00 [INFO] Creating a descriptor pool for at most 16 sets
+2025-04-07T22:38:06.286772777+02:00 [INFO] Initializing Blade pipelines for surface SurfaceInfo { format: Bgra8UnormSrgb, alpha: PreMultiplied }
+2025-04-07T22:38:06.400168645+02:00 [INFO] Using GPU: GpuSpecs { is_software_emulated: true, device_name: "llvmpipe (LLVM 19.1.1, 256 bits)", driver_name: "llvmpipe", driver_info: "Mesa 24.2.8-1ubuntu1~24.04.1 (LLVM 19.1.1)" }
+2025-04-07T22:38:06.412497563+02:00 [INFO] Opening main db
+2025-04-07T22:38:06.927441499+02:00 [INFO] Opening main db
+2025-04-07T22:38:06.970387083+02:00 [INFO] Opening main db
+2025-04-07T22:38:07.063055838+02:00 [INFO] Using surface present mode MAILBOX
+2025-04-07T22:38:07.063146821+02:00 [INFO] Retaining current format: Bgra8UnormSrgb
+2025-04-07T22:38:09.269848749+02:00 [INFO] rebuilt extension index in 13.553024ms
+2025-04-07T22:38:09.935476142+02:00 [INFO] extensions updated. loading 1, reloading 0, unloading 0
+2025-04-07T22:38:09.942272436+02:00 [ERROR] failed to load wasm extension html
+
+Caused by:
+    0: error parsing wasm extension
+    1: unexpected end-of-file (at offset 0x29683)
+2025-04-07T22:38:12.432135438+02:00 [INFO] perform;
+2025-04-07T22:38:12.432254619+02:00 [INFO] authenticate;
+2025-04-07T22:38:12.432313149+02:00 [INFO] read_command;
+2025-04-07T22:38:12.432373048+02:00 [INFO] perform;
+2025-04-07T22:38:12.432416108+02:00 [INFO] authenticate;
+2025-04-07T22:38:12.432463484+02:00 [INFO] read_command;
+2025-04-07T22:38:12.432515306+02:00 [INFO] perform;
+2025-04-07T22:38:12.43255801+02:00 [INFO] authenticate;
+2025-04-07T22:38:12.432605443+02:00 [INFO] read_command;
+2025-04-07T22:38:12.432657508+02:00 [INFO] perform;
+2025-04-07T22:38:12.432700194+02:00 [INFO] authenticate;
+2025-04-07T22:38:12.432746788+02:00 [INFO] read_command;
+2025-04-07T22:38:12.432798999+02:00 [INFO] perform;
+2025-04-07T22:38:12.432841583+02:00 [INFO] authenticate;
+2025-04-07T22:38:12.432888195+02:00 [INFO] read_command;
+2025-04-07T22:38:12.432938856+02:00 [INFO] perform;
+2025-04-07T22:38:12.432983998+02:00 [INFO] authenticate;
+2025-04-07T22:38:12.433030651+02:00 [INFO] read_command;
+2025-04-07T22:38:12.438459174+02:00 [INFO] send_secondary_commands;
+2025-04-07T22:38:12.441119975+02:00 [INFO] send_secondary_commands;
+2025-04-07T22:38:12.441481971+02:00 [INFO] send_secondary_commands;
+2025-04-07T22:38:12.441554387+02:00 [INFO] send_secondary_commands;
+2025-04-07T22:38:12.441618205+02:00 [INFO] send_secondary_commands;
+2025-04-07T22:38:12.441682154+02:00 [INFO] send_secondary_commands;
+2025-04-07T22:38:12.441821192+02:00 [INFO] socket reader;
+2025-04-07T22:38:12.441868087+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.44194039+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.453715308+02:00 [INFO] socket reader;
+2025-04-07T22:38:12.453874688+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.456335638+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.458640444+02:00 [INFO] socket reader;
+2025-04-07T22:38:12.45871183+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.459957159+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.461369755+02:00 [INFO] socket reader;
+2025-04-07T22:38:12.461438621+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.461528878+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.467547249+02:00 [INFO] socket reader;
+2025-04-07T22:38:12.467621015+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.467820791+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.473429261+02:00 [INFO] socket reader;
+2025-04-07T22:38:12.473521886+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.473620449+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.480649495+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.502550329+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.520388596+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.534039386+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.553259755+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.569210766+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.569390166+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.569475178+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.569551169+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.569645552+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.570869761+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.572621903+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.572725433+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.572886992+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.572990819+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.573682904+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.57477992+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.574909364+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.576146506+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.576552115+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.584767874+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.585879646+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.586026349+02:00 [INFO] read_socket;
+2025-04-07T22:38:12.58946768+02:00 [INFO] read_socket;
+2025-04-07T22:38:16.059543159+02:00 [INFO] rebuilt extension index in 3.000733ms
+2025-04-07T22:38:16.059632745+02:00 [INFO] extensions updated. loading 0, reloading 1, unloading 0
+2025-04-07T22:39:06.450446416+02:00 [INFO] ========== starting zed ==========
+2025-04-07T22:39:06.510194243+02:00 [INFO] Presentation support: "VK_KHR_wayland_surface"
+2025-04-07T22:39:06.510347874+02:00 [INFO] Presentation support: "VK_KHR_xcb_surface"
+2025-04-07T22:39:06.510425342+02:00 [INFO] Presentation support: "VK_KHR_xlib_surface"
+2025-04-07T22:39:06.510503635+02:00 [INFO] Enabling Vulkan Portability
+2025-04-07T22:39:06.510572574+02:00 [INFO] Enabling color space support
+2025-04-07T22:39:06.52505359+02:00 [INFO] Adapter: "llvmpipe (LLVM 19.1.1, 256 bits)"
+2025-04-07T22:39:06.525185765+02:00 [INFO] Ray tracing is supported
+2025-04-07T22:39:06.550559863+02:00 [INFO] perform;
+2025-04-07T22:39:06.550649684+02:00 [INFO] authenticate;
+2025-04-07T22:39:06.550837906+02:00 [INFO] read_command;
+2025-04-07T22:39:06.550935937+02:00 [INFO] send_secondary_commands;
+2025-04-07T22:39:06.552194709+02:00 [INFO] new;
+2025-04-07T22:39:06.552699404+02:00 [INFO] socket reader;
+2025-04-07T22:39:06.552784919+02:00 [INFO] read_socket;
+2025-04-07T22:39:06.55288564+02:00 [INFO] read_socket;
+2025-04-07T22:39:06.553334827+02:00 [INFO] read_socket;
+2025-04-07T22:39:06.553700011+02:00 [INFO] Opening main db
+2025-04-07T22:39:06.553819366+02:00 [INFO] read_socket;
+2025-04-07T22:39:06.55529833+02:00 [INFO] read_socket;
+2025-04-07T22:39:06.556132056+02:00 [INFO] Opening main db
+2025-04-07T22:39:06.556708906+02:00 [INFO] read_socket;
+2025-04-07T22:39:06.556894006+02:00 [INFO] keep_updated;
+2025-04-07T22:39:06.5593393+02:00 [INFO] Using git binary path: None
+2025-04-07T22:39:06.561476876+02:00 [INFO] read_socket;
+2025-04-07T22:39:06.564947155+02:00 [INFO] read_socket;
+2025-04-07T22:39:06.571637395+02:00 [INFO] read_socket;
+2025-04-07T22:39:06.572010622+02:00 [INFO] read_socket;
+2025-04-07T22:39:06.572846179+02:00 [INFO] read_socket;
+2025-04-07T22:39:06.573069713+02:00 [INFO] read_socket;
+2025-04-07T22:39:06.573332625+02:00 [INFO] read_socket;
+2025-04-07T22:39:06.573619157+02:00 [INFO] read_socket;
+2025-04-07T22:39:06.573909014+02:00 [INFO] read_socket;
+2025-04-07T22:39:06.600989628+02:00 [INFO] set environment variables from shell:/bin/bash, path:/m/src/m/app:/m/src/m/app:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin
+2025-04-07T22:39:06.617219287+02:00 [INFO] No prompt template overrides directory found at /m/src/m/app/conf/zed/.local/share/zed/prompt_overrides. Using built-in prompts.
+2025-04-07T22:39:06.61882017+02:00 [INFO] extensions updated. loading 1, reloading 0, unloading 0
+2025-04-07T22:39:06.624148011+02:00 [INFO] activate is not implemented on Linux, ignoring the call
+2025-04-07T22:39:06.632763036+02:00 [INFO] Opening main db
+2025-04-07T22:39:06.634389661+02:00 [INFO] perform;
+2025-04-07T22:39:06.634492881+02:00 [INFO] authenticate;
+2025-04-07T22:39:06.634587738+02:00 [INFO] read_command;
+2025-04-07T22:39:06.635328208+02:00 [INFO] send_secondary_commands;
+2025-04-07T22:39:06.639756634+02:00 [INFO] socket reader;
+2025-04-07T22:39:06.639848355+02:00 [INFO] read_socket;
+2025-04-07T22:39:06.639961254+02:00 [INFO] read_socket;
+2025-04-07T22:39:06.646896895+02:00 [INFO] read_socket;
+2025-04-07T22:39:06.654904796+02:00 [INFO] read_socket;
+2025-04-07T22:39:06.657708343+02:00 [INFO] read_socket;
+2025-04-07T22:39:06.66028476+02:00 [INFO] read_socket;
+2025-04-07T22:39:06.711430482+02:00 [INFO] Using surface present mode MAILBOX
+2025-04-07T22:39:06.749369696+02:00 [INFO] Creating a descriptor pool for at most 16 sets
+2025-04-07T22:39:06.749476532+02:00 [INFO] Creating a descriptor pool for at most 16 sets
+2025-04-07T22:39:06.74952619+02:00 [INFO] Initializing Blade pipelines for surface SurfaceInfo { format: Bgra8UnormSrgb, alpha: PreMultiplied }
+2025-04-07T22:39:06.928843537+02:00 [INFO] Using GPU: GpuSpecs { is_software_emulated: true, device_name: "llvmpipe (LLVM 19.1.1, 256 bits)", driver_name: "llvmpipe", driver_info: "Mesa 24.2.8-1ubuntu1~24.04.1 (LLVM 19.1.1)" }
+2025-04-07T22:39:06.940387366+02:00 [INFO] Opening main db
+2025-04-07T22:39:07.623425909+02:00 [INFO] Opening main db
+2025-04-07T22:39:07.736356406+02:00 [INFO] Using surface present mode MAILBOX
+2025-04-07T22:39:07.73642993+02:00 [INFO] Retaining current format: Bgra8UnormSrgb
+2025-04-07T22:39:08.594831404+02:00 [INFO] Opening main db
+2025-04-07T22:39:12.373728106+02:00 [INFO] perform;
+2025-04-07T22:39:12.373802585+02:00 [INFO] authenticate;
+2025-04-07T22:39:12.373865044+02:00 [INFO] read_command;
+2025-04-07T22:39:12.373928638+02:00 [INFO] perform;
+2025-04-07T22:39:12.373971226+02:00 [INFO] authenticate;
+2025-04-07T22:39:12.374019572+02:00 [INFO] read_command;
+2025-04-07T22:39:12.374072374+02:00 [INFO] perform;
+2025-04-07T22:39:12.374115237+02:00 [INFO] authenticate;
+2025-04-07T22:39:12.374247385+02:00 [INFO] read_command;
+2025-04-07T22:39:12.374305688+02:00 [INFO] perform;
+2025-04-07T22:39:12.374348403+02:00 [INFO] authenticate;
+2025-04-07T22:39:12.374395295+02:00 [INFO] read_command;
+2025-04-07T22:39:12.374448213+02:00 [INFO] perform;
+2025-04-07T22:39:12.374491463+02:00 [INFO] authenticate;
+2025-04-07T22:39:12.374538575+02:00 [INFO] read_command;
+2025-04-07T22:39:12.374597721+02:00 [INFO] perform;
+2025-04-07T22:39:12.374644025+02:00 [INFO] authenticate;
+2025-04-07T22:39:12.374702123+02:00 [INFO] read_command;
+2025-04-07T22:39:12.379111725+02:00 [INFO] send_secondary_commands;
+2025-04-07T22:39:12.379370078+02:00 [INFO] send_secondary_commands;
+2025-04-07T22:39:12.379455487+02:00 [INFO] send_secondary_commands;
+2025-04-07T22:39:12.379521298+02:00 [INFO] send_secondary_commands;
+2025-04-07T22:39:12.37958448+02:00 [INFO] send_secondary_commands;
+2025-04-07T22:39:12.379646989+02:00 [INFO] send_secondary_commands;
+2025-04-07T22:39:12.388425523+02:00 [INFO] socket reader;
+2025-04-07T22:39:12.388491064+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.388558209+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.388808061+02:00 [INFO] socket reader;
+2025-04-07T22:39:12.388860585+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.388927419+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.390004388+02:00 [INFO] socket reader;
+2025-04-07T22:39:12.390059556+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.390122091+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.398637928+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.398975087+02:00 [INFO] socket reader;
+2025-04-07T22:39:12.399024003+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.399094535+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.403696037+02:00 [INFO] socket reader;
+2025-04-07T22:39:12.403787249+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.403868372+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.408501735+02:00 [INFO] socket reader;
+2025-04-07T22:39:12.408574996+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.408651904+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.416655283+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.431780153+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.438444262+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.448299804+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.45018025+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.450665313+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.450783046+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.450907254+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.451277912+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.451731082+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.452148388+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.452287614+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.452535577+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.454312451+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.455271159+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.457610021+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.45922949+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.459319893+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.459713877+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.459939596+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.461786712+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.470339751+02:00 [INFO] read_socket;
+2025-04-07T22:39:12.473072223+02:00 [INFO] read_socket;
