@@ -1,4 +1,4 @@
 #!/bin/sh
 
-"${0%/*}/app" chromium
+"${0%/*}/app" chromium run --incognito "$@"
 

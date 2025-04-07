@@ -1,4 +1,4 @@
 #!/bin/sh
 
-"${0%/*}/app" netbeans
+"${0%/*}/app" netbeans run "$@"
 

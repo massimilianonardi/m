@@ -1,4 +1,4 @@
 #!/bin/sh
 
-./latest/pulsar --in-process-gpu
+./latest/pulsar --in-process-gpu "$@"
 

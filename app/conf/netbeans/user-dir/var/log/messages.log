@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
->Log Session: Monday, April 7, 2025, 12:33:18 PM Central European Summer Time
+>Log Session: Monday, April 7, 2025, 3:17:56 PM Central European Summer Time
 >System Info: 
   Product Version         = Apache NetBeans IDE 25
   Operating System        = Linux version 6.11.0-21-generic running on amd64
@@ -472,11 +472,11 @@ Non heap memory usage: initial 7,3MB maximum -1b
 Garbage collector: G1 Young Generation (Collections=10 Total time spent=0s)
 Garbage collector: G1 Concurrent GC (Collections=4 Total time spent=0s)
 Garbage collector: G1 Old Generation (Collections=0 Total time spent=0s)
-Classes: loaded=7662 total loaded=7662 unloaded 0
+Classes: loaded=7688 total loaded=7688 unloaded 0
 INFO [org.netbeans.core.ui.warmup.DiagnosticTask]: Total memory 8.275.505.152
 INFO [null]: Total physical memory 8.275.505.152
 INFO [org.netbeans.ui.indexing]: Indexing started, time from last indexing 0 ms.
-INFO [org.netbeans.ui.indexing]: Indexing finished, indexing took 1 ms.
+INFO [org.netbeans.ui.indexing]: Indexing finished, indexing took 6 ms.
 INFO [org.netbeans.core.netigso.Netigso]: bundle org.eclipse.osgi@3.9.1.v20140110-1610 256
 INFO [org.netbeans.core.netigso.Netigso]: bundle org.eclipse.osgi@3.9.1.v20140110-1610 stopped
 INFO [null]: Last record repeated again.

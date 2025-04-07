@@ -1,1 +1,1 @@
-cmd
+desktop-files
