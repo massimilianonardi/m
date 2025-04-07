@@ -1,0 +1,170 @@
+#!/bin/sh
+
+#-------------------------------------------------------------------------------
+
+exist_function()
+{
+  type "$1">/dev/null 2>&1
+}
+
+#-------------------------------------------------------------------------------
+
+wait_user()
+{
+  EXIT_CODE="$?"
+
+  # wait user input to terminate
+  echo ""
+  echo "--------------------------------------------------------------------------------"
+  echo "EXIT_CODE=$EXIT_CODE"
+  echo "--------------------------------------------------------------------------------"
+  read -p "press ENTER to exit" test
+
+  exit "$EXIT_CODE"
+}
+
+#-------------------------------------------------------------------------------
+
+update()
+{
+  . "${THIS_DIR}/${APP_NAME}-${COMMAND}"
+
+  DOWNLOAD_FILE="${APP_NAME}-${VERSION}.${FILE_TYPE}"
+  echo "latest VERSION is $VERSION"
+  if [ -d "$VERSION" ]
+  then
+    echo "already have latest version"
+  else
+    rm -rf $VERSION
+    mkdir $VERSION
+    cd $VERSION
+    echo "fetching $DOWNLOAD_URL"
+    #curl -# "$DOWNLOAD_URL" > "$DOWNLOAD_FILE"
+    wget -O "$DOWNLOAD_FILE" "$DOWNLOAD_URL"
+    echo "unpacking..."
+    if [ "$FILE_TYPE" = "zip" ]
+    then
+      unzip "$DOWNLOAD_FILE"
+    elif [ "$FILE_TYPE" = "tar.gz" ] || [ "$FILE_TYPE" = "tgz" ] || [ "$FILE_TYPE" = "tar" ] || [ "$FILE_TYPE" = "gzip" ] || [ "$FILE_TYPE" = "bzip" ] || [ "$FILE_TYPE" = "xz" ]
+    then
+      tar xvf "$DOWNLOAD_FILE"
+    else
+      echo "unknown file type: FILE_TYPE=$FILE_TYPE"
+      exit 1
+    fi
+    rm "$DOWNLOAD_FILE"
+    # find the root subdir as UNPACKED_SUB_DIR (eventually empty)
+    if [ "$(ls | wc -l)" = "1" ]
+    then
+      UNPACKED_SUB_DIR="$(ls)"
+      ls "$UNPACKED_SUB_DIR"
+      echo "UNPACKED_SUB_DIR=$UNPACKED_SUB_DIR"
+      if [ "$(ls "$UNPACKED_SUB_DIR" | wc -l)" = "1" ]
+      then
+        UNPACKED_SUB_DIR="$UNPACKED_SUB_DIR/$(ls "$UNPACKED_SUB_DIR")"
+        echo "UNPACKED_SUB_DIR=$UNPACKED_SUB_DIR"
+      fi
+    fi
+    cd ..
+
+    rm -f ./latest
+    ln -s "$VERSION/$UNPACKED_SUB_DIR" ./latest
+
+    if exist_function postinstall
+    then
+      postinstall
+    fi
+  fi
+
+  wait_user
+}
+
+#-------------------------------------------------------------------------------
+
+run()
+{
+  if [ ! -e "./latest" ]
+  then
+    (COMMAND="update"; update)
+  fi
+  #. "${THIS_DIR}/${APP_NAME}-${COMMAND}"
+  #"${THIS_DIR}/${APP_NAME}-${COMMAND}"
+  screen -S chromium-session -d -m "${THIS_DIR}/${APP_NAME}-${COMMAND}"
+  sleep 1
+}
+
+#-------------------------------------------------------------------------------
+
+debug()
+{
+  if [ -f "${THIS_DIR}/${APP_NAME}-${COMMAND}" ]
+  then
+    . "${THIS_DIR}/${APP_NAME}-${COMMAND}"
+  else
+    COMMAND="run"
+    run
+  fi
+
+  wait_user
+}
+
+#-------------------------------------------------------------------------------
+
+CALL_DIR="$(cd -L -- "${0%/*}" && pwd -L)"
+
+# resolve symlink caller
+if [ -L "$0" ]
+then
+  THIS_PATH="$(ls -ld -- "$0")"
+  THIS_PATH="${THIS_PATH#*" $0 -> "}"
+else
+  THIS_PATH="$0"
+fi
+
+# actual name and dir from resolved path
+THIS_FILE="${THIS_PATH##*/}"
+THIS_DIR="$(cd -L -- "${THIS_PATH%/*}" && pwd -L)"
+
+# set path
+PATH="$CALL_DIR:$THIS_DIR:$PATH"
+
+# apps dir
+#APPS_DIR="$CALL_DIR"
+APPS_DIR="/m/app"
+
+EXIT_CODE="0"
+
+# get app name
+if [ -n "$1" ]
+then
+  APP_NAME="$1"
+  shift
+else
+  echo "app name cannot be empty"
+  exit 1
+fi
+
+# setup home environment variable for app
+export USERHOME="$THIS_DIR/conf/$APP_NAME"
+export HOME="$USERHOME"
+
+# create app dirs and cd into main dir
+APP_DIR="$APPS_DIR/$APP_NAME"
+mkdir -p "$APP_DIR" "$HOME" && cd "$APP_DIR"
+
+if [ -n "$1" ]
+then
+  COMMAND="$1"
+  shift
+else
+  COMMAND="run"
+fi
+
+case "$COMMAND" in
+  "update") true;;
+  "run") true;;
+  "debug") true;;
+  *) exit 1;;
+esac
+
+"$COMMAND"
