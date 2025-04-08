@@ -18,5 +18,10 @@ THIS_DIR="$(cd -P -- "${THIS_PATH%/*}" && pwd -P)"
 # set path
 PATH="$CALL_DIR:$THIS_DIR:$PATH"
 
-$THIS_DIR/../app/app "$@"
+if [ ! -L "/m/app/app" ]
+then
+  mkdir -p "/m/app"
+  ln -s "$(cd -P -- "$THIS_DIR/../app" && pwd -P)/app" "/m/app/app"
+fi
 
+$THIS_DIR/../app/app "$@"

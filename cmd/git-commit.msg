@@ -1,1 +1,1 @@
-app lapce text editor
+app reenginered paths, links and call stack

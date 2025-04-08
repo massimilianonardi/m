@@ -3,7 +3,7 @@ Version=1.0
 Name=Chromium
 GenericName=Web Browser
 Comment=Access the Internet
-Exec=env /m/cmd/app-chromium %U
+Exec=env /m/app/app chromium run %U
 Terminal=false
 Type=Application
 Icon=/m/app/chromium/latest/product_logo_48.png
@@ -15,13 +15,12 @@ Actions=new-window;Incognito;TempProfile;
 
 [Desktop Action new-window]
 Name=New Window
-Exec=env /m/cmd/app-chromium
+Exec=env /m/app/app chromium
 
 [Desktop Action Incognito]
 Name=New Incognito Window
-Exec=env /m/cmd/app-chromium --incognito
+Exec=env /m/app/app chromium run --incognito
 
 [Desktop Action TempProfile]
 Name=New Window with a Temporary Profile
-Exec=env /m/cmd/app-chromium --temp-profile
-
+Exec=env /m/app/app chromium run --temp-profile

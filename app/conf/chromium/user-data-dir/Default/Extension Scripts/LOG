@@ -1,2 +1,3 @@
-2025/04/06-22:24:20.505 141c Creating DB /m/src/m/var/app-portable/conf/chromium/user-data-dir/Default/Extension Scripts since it was missing.
-2025/04/06-22:24:20.508 141c Reusing MANIFEST /m/src/m/var/app-portable/conf/chromium/user-data-dir/Default/Extension Scripts/MANIFEST-000001
+2025/04/08-17:55:36.268 2132 Reusing MANIFEST /m/src/m/app/conf/chromium/user-data-dir/Default/Extension Scripts/MANIFEST-000001
+2025/04/08-17:55:36.269 2132 Recovering log #3
+2025/04/08-17:55:36.269 2132 Reusing old log /m/src/m/app/conf/chromium/user-data-dir/Default/Extension Scripts/000003.log 
