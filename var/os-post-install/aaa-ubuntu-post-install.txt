@@ -1,0 +1,42 @@
+
+execute os-post-install scripts
+configure term app
+configure file app
+configure text app
+configure firefox app + certs + ublock-origin
+configure chromium app + certs + ublock-origin
+set desktop wallpaper
+system settings: monitor, desktop, mouse, lock screen, rdp+ds.
+
+
+
+sudo apt clean
+sudo apt update
+sudo apt upgrade
+sudo apt autoremove
+sudo apt dist-upgrade
+sudo apt full-upgrade
+
+ip address
+
+sudo mount -o remount -a
+
+sudo mount --bind --bind -o nodev,ro /etc/ssl/certs /snap/core/current/etc/ssl/certs/
+sudo mount --bind --bind -o nodev,ro /usr/local/share/ca-certificates /snap/core/current/etc/ssl/certs/
+
+sudo apt install cups
+sudo cp /usr/share/cups/cupsd.conf.default /etc/cups/cupsd.conf
+sudo service cups restart
+
+sudo git config --system http.sslCAInfo /usr/local/share/ca-certificates
+sudo git config --system http.sslVerify false
+sudo git config --system --unset http.sslVerify
+
+curl --head --insecure https://amazon.it -w "%{certs}"
+
+vmware workstation
+balena etcher
+qgis
+dbeaver
+libre office
+
