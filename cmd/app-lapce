@@ -1,4 +1,4 @@
 #!/bin/sh
 
-"${0%/*}/app" lapce run "$@"
+"${0%/*}/app" lapce debug "$@"
 

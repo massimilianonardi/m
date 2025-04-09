@@ -1,1 +1,1 @@
-cmd link create
+app cmd

@@ -5,14 +5,14 @@
   },
   "panel": {
     "panels": {
+      "RightTop": [
+        "DocumentSymbol"
+      ],
       "LeftTop": [
         "FileExplorer",
         "Plugin",
         "SourceControl",
         "Debug"
-      ],
-      "RightTop": [
-        "DocumentSymbol"
       ],
       "BottomLeft": [
         "Terminal",
@@ -22,9 +22,9 @@
       ]
     },
     "styles": {
-      "LeftBottom": {
+      "BottomRight": {
         "active": 0,
-        "shown": true,
+        "shown": false,
         "maximized": false
       },
       "RightTop": {
@@ -32,9 +32,9 @@
         "shown": false,
         "maximized": false
       },
-      "BottomRight": {
+      "BottomLeft": {
         "active": 0,
-        "shown": false,
+        "shown": true,
         "maximized": false
       },
       "LeftTop": {
@@ -42,7 +42,7 @@
         "shown": true,
         "maximized": false
       },
-      "BottomLeft": {
+      "LeftBottom": {
         "active": 0,
         "shown": true,
         "maximized": false
@@ -62,17 +62,17 @@
       "right_split": 0.5
     },
     "sections": {
-      "FileExplorer": true,
-      "Installed": true,
-      "Error": true,
-      "Breakpoint": true,
+      "Variable": true,
       "StackFrame": true,
-      "OpenEditor": true,
       "Warn": true,
+      "Error": true,
       "Available": true,
+      "Breakpoint": true,
+      "OpenEditor": true,
       "Process": true,
       "Changes": true,
-      "Variable": true
+      "Installed": true,
+      "FileExplorer": true
     }
   },
   "breakpoints": {}
