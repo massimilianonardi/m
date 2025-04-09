@@ -1,1 +1,1 @@
-os-post-install
+cmd link create

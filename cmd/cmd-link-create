@@ -1,0 +1,22 @@
+#!/bin/sh
+
+CALL_DIR="$(cd -L -- "${0%/*}" && pwd -L)"
+
+# resolve symlink caller
+if [ -L "$0" ]
+then
+  THIS_PATH="$(ls -ld -- "$0")"
+  THIS_PATH="${THIS_PATH#*" $0 -> "}"
+else
+  THIS_PATH="$0"
+fi
+
+# actual name and dir from resolved path
+THIS_FILE="${THIS_PATH##*/}"
+THIS_DIR="$(cd -P -- "${THIS_PATH%/*}" && pwd -P)"
+
+if [ ! -L "/m/cmd" ]
+then
+  ln -s "$(cd -P -- "$THIS_DIR" && pwd -P)" "/m/cmd"
+fi
+
