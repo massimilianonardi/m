@@ -1,1 +1,1 @@
-app cmd
+os post install
