@@ -1,6 +1,6 @@
 #!/bin/bash
 
-browse_dir()
+browse_dir__()
 {
   dir="$1"
   dir="$(cd -L -- "$dir" && pwd -L)"
@@ -21,6 +21,46 @@ browse_dir()
   echo "--------------------------------------------------------------------------------"
 }
 
+load_dir()
+{
+  DIR="$1"
+  DIR="$(cd -L -- "$DIR" && pwd -L)"
+  cd "$DIR"
+
+  FILES_ARRAY=("..")
+  for k in *
+  do
+    FILES_ARRAY+=("$k")
+  done
+}
+
+browse_dir()
+{
+  echo "--------------------------------------------------------------------------------"
+  echo "$DIR"
+  echo "--------------------------------------------------------------------------------"
+
+  ROWS="$(tput lines)"
+  ROWS="$((ROWS-15))"
+  COLS="$(tput cols)"
+  COUNT=0
+  for k in ${FILES_ARRAY[@]}
+  do
+    echo "$k" 1>&2
+    COUNT=$((COUNT+1))
+    if [ ! "$COUNT" -lt "$ROWS" ]
+    then
+      break
+    fi
+  done
+
+  echo "--------------------------------------------------------------------------------"
+  echo "number of items: ${#FILES_ARRAY[@]}"
+  echo "--------------------------------------------------------------------------------"
+
+  tput cup 3 0
+}
+
 # escape_function()
 # {
 #   echo "escape function called"
@@ -28,18 +68,24 @@ browse_dir()
 
 # ls -lA 1>&2
 
+# echo "lines: $LINES"
+# echo "columns: $COLUMNS"
+# tput lines
+# tput cols
+
 # save cursor position
-echo -en "\033[s"
-echo -en "\033[7A---7 lines up"
+# echo -en "\033[s"
+# echo -en "\033[7A---7 lines up"
 # restore cursor position
-echo -en "\033[u"
-echo -en "\033[5A---5 lines up"
-echo -en "\033[u"
+# echo -en "\033[u"
+# echo -en "\033[5A---5 lines up"
+# echo -en "\033[u"
 
 #echo -en "\033[s\033[7A\033[1;32m 7 lines up green \033[u\033[0m"
 
 #browse_dir "./"
-browse_dir "/usr/share/applications"
+load_dir "/usr/share/applications"
+browse_dir
 
 # FILES_ARRAY=()
 # for k in ~/Scaricati/*
