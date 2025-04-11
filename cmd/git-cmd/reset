@@ -15,8 +15,6 @@ THIS_DIR="$(cd -P -- "${THIS_PATH%/*}" && pwd -P)"
 #COMMIT_MESSAGE_FILE="${THIS_DIR}/${THIS_FILE}.msg"
 COMMIT_MESSAGE_FILE="${THIS_DIR}/commit.msg"
 
-git fetch origin
-
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 echo "BRANCH: $BRANCH"
 [ -z "$BRANCH" ] && echo "empty branch!" && exit 1
@@ -26,6 +24,7 @@ do
   [ -d "$k/.git" ] && mv "$k/.git" "$k/.git_"
 done
 
+git fetch origin && \
 git reset --hard origin/"$BRANCH"
 EXIT_CODE="$?"
 
@@ -39,9 +38,5 @@ then
   COMMIT_MESSAGE="$(git show-branch --no-name HEAD)" && \
   echo "$COMMIT_MESSAGE" > "$COMMIT_MESSAGE_FILE"
 fi
-
-echo ""
-echo "--------------------------------------------------------------------------------"
-read -p "press ENTER to exit" EXIT_VAR
 
 exit "$EXIT_CODE"

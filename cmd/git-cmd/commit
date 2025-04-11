@@ -51,8 +51,4 @@ do
   [ -d "$k/.git_" ] && mv "$k/.git_" "$k/.git"
 done
 
-echo ""
-echo "--------------------------------------------------------------------------------"
-read -p "press ENTER to exit" EXIT_VAR
-
 exit "$EXIT_CODE"

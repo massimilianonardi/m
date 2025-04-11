@@ -16,6 +16,19 @@ THIS_DIR="$(cd -P -- "${THIS_PATH%/*}" && pwd -P)"
 
 PATH="$THIS_DIR:$PATH"
 
+if [ -z "$@" ]
+then
+  echo "no arguments passed!"
+  read -p "set arguments: " ARGS
+  if [ -z "$ARGS" ]
+  then
+    echo "arguments are empty!"
+    read -p "press ENTER to exit" EXIT_VAR
+    exit 1
+  fi
+  eval "set -- $ARGS"
+fi
+
 if [ "$1" = "askpass" ]
 then
   shift
@@ -60,3 +73,14 @@ GIT_CMD_COMMAND="$1"
 shift
 
 "$THIS_DIR/$GIT_CMD_COMMAND" "$@"
+
+PARENT_PROCESS="$(ps -o 'cmd=' -p $(ps -o 'ppid=' -p $$))"
+#if [ "$PARENT_PROCESS" != "bash" ]
+if [ "${PARENT_PROCESS%sh}" = "$PARENT_PROCESS" ]
+then
+  echo ""
+  echo "--------------------------------------------------------------------------------"
+  read -p "press ENTER to exit" EXIT_VAR
+fi
+
+exit "$EXIT_CODE"
