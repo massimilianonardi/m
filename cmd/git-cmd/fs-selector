@@ -1,0 +1,93 @@
+#!/bin/bash
+
+browse_dir()
+{
+  dir="$1"
+  dir="$(cd -L -- "$dir" && pwd -L)"
+  cd "$dir"
+  echo "--------------------------------------------------------------------------------"
+  echo "$dir"
+  echo "--------------------------------------------------------------------------------"
+  FILES_ARRAY=("..")
+  echo "${FILES_ARRAY[0]}"
+  for k in *
+  do
+    echo "$k" 1>&2
+    FILES_ARRAY+=("$k")
+  done
+
+  echo "--------------------------------------------------------------------------------"
+  echo "number of items: ${#FILES_ARRAY[@]}"
+  echo "--------------------------------------------------------------------------------"
+}
+
+# escape_function()
+# {
+#   echo "escape function called"
+# }
+
+# ls -lA 1>&2
+
+# save cursor position
+echo -en "\033[s"
+echo -en "\033[7A---7 lines up"
+# restore cursor position
+echo -en "\033[u"
+echo -en "\033[5A---5 lines up"
+echo -en "\033[u"
+
+#echo -en "\033[s\033[7A\033[1;32m 7 lines up green \033[u\033[0m"
+
+#browse_dir "./"
+browse_dir "/usr/share/applications"
+
+# FILES_ARRAY=()
+# for k in ~/Scaricati/*
+# do
+#   echo "$k"
+#   FILES_ARRAY+=("$k")
+# done
+#
+# echo "${FILES_ARRAY[@]}"
+#
+# for k in "${FILES_ARRAY[@]}"
+# do
+#   echo "$k"
+# done
+
+#tput cup 0 0
+
+# bind -x '"\eW":"who"'
+# bind -x '"\e": escape_function'
+# bind -x '"\C-k": escape_function'
+#
+# sleep 30
+
+while true
+do
+  IFS= read -rsn1 key
+  if [ "$key" = $'\E' ]
+  then
+    IFS= read -rsn2 key
+  fi
+  # echo "key: $key"
+  # case "$key" in
+  #   "q") exit 0;;
+  #   "[A") echo "UP" 1>&2;;
+  #   "[B") echo "DOWN";;
+  #   "[C") echo "RIGHT";;
+  #   "[D") echo "LEFT";;
+  #   *) exit 1;;
+  # esac
+  case "$key" in
+    "q") exit 0;;
+    "[A") echo -en "\033[1A";;
+#    "[A") echo "UP" 1>&2;;
+    "[B") echo "DOWN";;
+    "[C") echo "RIGHT";;
+    "[D") echo "LEFT";;
+#    *) exit 1;;
+  esac
+done
+
+#bind -r "\e"
