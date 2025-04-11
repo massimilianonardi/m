@@ -1,0 +1,183 @@
+2025-04-10T13:50:50.992936Z  INFO lapce_app::app: Starting up Lapce..
+2025-04-10T13:50:51.038203Z  INFO lapce_app::app: Starting up Lapce..
+2025-04-10T13:50:51.378606Z  INFO floem_winit::platform_impl::platform::x11::window: Guessed window scale factor: 1    
+2025-04-10T13:50:51.448367Z DEBUG lapce_app::keypress::loader: Keymap ignored: g f
+2025-04-10T13:50:51.448450Z DEBUG lapce_app::keypress::loader: Keymap ignored: o
+2025-04-10T13:50:51.448456Z DEBUG lapce_app::keypress::loader: Keymap ignored: /
+2025-04-10T13:50:51.448533Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+;
+2025-04-10T13:50:51.448539Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+g
+2025-04-10T13:50:51.448541Z DEBUG lapce_app::keypress::loader: Keymap ignored: g g
+2025-04-10T13:50:51.448543Z DEBUG lapce_app::keypress::loader: Keymap ignored: h
+2025-04-10T13:50:51.448545Z DEBUG lapce_app::keypress::loader: Keymap ignored: j
+2025-04-10T13:50:51.448547Z DEBUG lapce_app::keypress::loader: Keymap ignored: k
+2025-04-10T13:50:51.448550Z DEBUG lapce_app::keypress::loader: Keymap ignored: l
+2025-04-10T13:50:51.448552Z DEBUG lapce_app::keypress::loader: Keymap ignored: a
+2025-04-10T13:50:51.448554Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+a
+2025-04-10T13:50:51.448556Z DEBUG lapce_app::keypress::loader: Keymap ignored: i
+2025-04-10T13:50:51.448558Z DEBUG lapce_app::keypress::loader: Keymap ignored: u
+2025-04-10T13:50:51.448560Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+r
+2025-04-10T13:50:51.448563Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+i
+2025-04-10T13:50:51.448565Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+o
+2025-04-10T13:50:51.448567Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+n
+2025-04-10T13:50:51.448569Z DEBUG lapce_app::keypress::loader: Keymap ignored: g d
+2025-04-10T13:50:51.448571Z DEBUG lapce_app::keypress::loader: Keymap ignored: g h
+2025-04-10T13:50:51.448573Z DEBUG lapce_app::keypress::loader: Keymap ignored: p
+2025-04-10T13:50:51.448575Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+p
+2025-04-10T13:50:51.448577Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+j
+2025-04-10T13:50:51.448580Z DEBUG lapce_app::keypress::loader: Keymap ignored: y
+2025-04-10T13:50:51.448582Z DEBUG lapce_app::keypress::loader: Keymap ignored: x
+2025-04-10T13:50:51.448584Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+p
+2025-04-10T13:50:51.448586Z DEBUG lapce_app::keypress::loader: Keymap ignored: s
+2025-04-10T13:50:51.448588Z DEBUG lapce_app::keypress::loader: Keymap ignored: c
+2025-04-10T13:50:51.448590Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+s
+2025-04-10T13:50:51.448592Z DEBUG lapce_app::keypress::loader: Keymap ignored: c c
+2025-04-10T13:50:51.448594Z DEBUG lapce_app::keypress::loader: Keymap ignored: c w
+2025-04-10T13:50:51.448596Z DEBUG lapce_app::keypress::loader: Keymap ignored: c e
+2025-04-10T13:50:51.448599Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+i
+2025-04-10T13:50:51.448601Z DEBUG lapce_app::keypress::loader: Keymap ignored: o
+2025-04-10T13:50:51.448603Z DEBUG lapce_app::keypress::loader: Keymap ignored: 0
+2025-04-10T13:50:51.448605Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+6
+2025-04-10T13:50:51.448607Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+4
+2025-04-10T13:50:51.448609Z DEBUG lapce_app::keypress::loader: Keymap ignored: w
+2025-04-10T13:50:51.448611Z DEBUG lapce_app::keypress::loader: Keymap ignored: e
+2025-04-10T13:50:51.448613Z DEBUG lapce_app::keypress::loader: Keymap ignored: b
+2025-04-10T13:50:51.448615Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+o
+2025-04-10T13:50:51.448617Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+e
+2025-04-10T13:50:51.448619Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+y
+2025-04-10T13:50:51.448621Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+u
+2025-04-10T13:50:51.448623Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+d
+2025-04-10T13:50:51.448625Z DEBUG lapce_app::keypress::loader: Keymap ignored: z z
+2025-04-10T13:50:51.448627Z DEBUG lapce_app::keypress::loader: Keymap ignored: z t
+2025-04-10T13:50:51.448630Z DEBUG lapce_app::keypress::loader: Keymap ignored: z b
+2025-04-10T13:50:51.448632Z DEBUG lapce_app::keypress::loader: Keymap ignored: d
+2025-04-10T13:50:51.448633Z DEBUG lapce_app::keypress::loader: Keymap ignored: m
+2025-04-10T13:50:51.448635Z DEBUG lapce_app::keypress::loader: Keymap ignored: '
+2025-04-10T13:50:51.448637Z DEBUG lapce_app::keypress::loader: Keymap ignored: f
+2025-04-10T13:50:51.448640Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+f
+2025-04-10T13:50:51.448642Z DEBUG lapce_app::keypress::loader: Keymap ignored: ;
+2025-04-10T13:50:51.448644Z DEBUG lapce_app::keypress::loader: Keymap ignored: d
+2025-04-10T13:50:51.448646Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+.
+2025-04-10T13:50:51.448648Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+,
+2025-04-10T13:50:51.448650Z DEBUG lapce_app::keypress::loader: Keymap ignored: y
+2025-04-10T13:50:51.448652Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+8
+2025-04-10T13:50:51.448654Z DEBUG lapce_app::keypress::loader: Keymap ignored: n
+2025-04-10T13:50:51.448656Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+n
+2025-04-10T13:50:51.448658Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+5
+2025-04-10T13:50:51.448660Z DEBUG lapce_app::keypress::loader: Keymap ignored: ] shift+0
+2025-04-10T13:50:51.448662Z DEBUG lapce_app::keypress::loader: Keymap ignored: [ shift+9
+2025-04-10T13:50:51.448664Z DEBUG lapce_app::keypress::loader: Keymap ignored: ] shift+]
+2025-04-10T13:50:51.448666Z DEBUG lapce_app::keypress::loader: Keymap ignored: [ shift+[
+2025-04-10T13:50:51.448668Z DEBUG lapce_app::keypress::loader: Keymap ignored: v
+2025-04-10T13:50:51.448671Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+v
+2025-04-10T13:50:51.448673Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+v
+2025-04-10T13:50:51.448674Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+w l
+2025-04-10T13:50:51.448676Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+w h
+2025-04-10T13:50:51.448678Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+w j
+2025-04-10T13:50:51.448680Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+w k
+2025-04-10T13:50:51.448683Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+w s
+2025-04-10T13:50:51.448685Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+w v
+2025-04-10T13:50:51.448687Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+w c
+2025-04-10T13:50:51.448689Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+w x
+2025-04-10T13:50:51.448691Z DEBUG lapce_app::keypress::loader: Keymap ignored: space
+2025-04-10T13:50:51.448693Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+.
+2025-04-10T13:50:51.448695Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+,
+2025-04-10T13:50:51.448697Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+c
+2025-04-10T13:50:51.449625Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+b
+2025-04-10T13:50:51.449636Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+f
+2025-04-10T13:50:51.449638Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+p
+2025-04-10T13:50:51.449640Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+n
+2025-04-10T13:50:51.449795Z  WARN lapce_app::keypress: Failed to load from "/m/src/git/m/app/conf/lapce/.config/lapce-stable/keymaps.toml": no keymaps
+2025-04-10T13:50:51.562272Z  WARN lapce_core::language: Grammar not found at: "/m/src/git/m/app/conf/lapce/.local/share/lapce-stable/grammars/libtree-sitter-plaintext.so"
+2025-04-10T13:50:51.562305Z  WARN lapce_core::language: Grammar not found at: "/m/src/git/m/app/conf/lapce/.local/share/lapce-stable/grammars/tree-sitter-plaintext.so"
+2025-04-10T13:50:51.702781Z  INFO wgpu_hal::vulkan::instance: Debug utils not enabled: debug_utils_user_data not passed to Instance::from_raw    
+2025-04-10T13:50:51.714879Z  INFO wgpu_hal::gles::egl: Using X11 platform    
+2025-04-10T13:50:51.719113Z  WARN wgpu_hal::gles::egl: No config found!    
+2025-04-10T13:50:51.719139Z  WARN wgpu_hal::gles::egl: EGL says it can present to the window but not natively    
+2025-04-10T13:50:51.811217Z  WARN wgpu_hal::gles::adapter: Max vertex attribute stride unknown. Assuming it is 2048    
+2025-04-10T13:50:51.811777Z  INFO wgpu_core::instance: Adapter Vulkan AdapterInfo { name: "Quadro K620", vendor: 4318, device: 5051, device_type: DiscreteGpu, driver: "NVIDIA", driver_info: "550.120", backend: Vulkan }    
+2025-04-10T13:50:51.838838Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 0    
+2025-04-10T13:50:52.019588Z  INFO naga::back::spv::writer: Skip function Some("sdPrimBounds")    
+2025-04-10T13:50:52.020425Z  INFO naga::back::spv::writer: Skip function Some("sdPrim")    
+2025-04-10T13:50:52.145944Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 0    
+2025-04-10T13:50:52.347841Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 0    
+2025-04-10T13:50:52.490585Z ERROR lapce_app::plugin: error sending request for url (https://plugins.lapce.dev/api/v1/plugins?q=&offset=0): error trying to connect: error:0A000086:SSL routines:tls_post_process_server_certificate:certificate verify failed:ssl/statem/statem_clnt.c:2092: (self-signed certificate in certificate chain)
+
+Caused by:
+    0: error trying to connect: error:0A000086:SSL routines:tls_post_process_server_certificate:certificate verify failed:ssl/statem/statem_clnt.c:2092: (self-signed certificate in certificate chain)
+    1: error:0A000086:SSL routines:tls_post_process_server_certificate:certificate verify failed:ssl/statem/statem_clnt.c:2092: (self-signed certificate in certificate chain)
+    2: error:0A000086:SSL routines:tls_post_process_server_certificate:certificate verify failed:ssl/statem/statem_clnt.c:2092:
+2025-04-10T13:50:52.497832Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 1    
+2025-04-10T13:50:52.543112Z ERROR lapce_app::app: failed to obtain release info: Failed to retrieve releases for tree-sitter-grammars
+2025-04-10T13:50:52.715248Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 2    
+2025-04-10T13:50:53.214679Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 3    
+2025-04-10T13:50:53.715160Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 4    
+2025-04-10T13:50:54.215278Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 5    
+2025-04-10T13:50:54.715386Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 6    
+2025-04-10T13:50:55.214770Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 7    
+2025-04-10T13:50:55.715646Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 8    
+2025-04-10T13:50:56.215865Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 9    
+2025-04-10T13:50:56.715903Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 10    
+2025-04-10T13:50:57.215960Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 11    
+2025-04-10T13:50:57.716001Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 12    
+2025-04-10T13:50:58.215936Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 13    
+2025-04-10T13:50:58.716180Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 14    
+2025-04-10T13:50:59.216675Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 15    
+2025-04-10T13:50:59.716492Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 16    
+2025-04-10T13:51:00.215901Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 17    
+2025-04-10T13:51:00.716735Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 18    
+2025-04-10T13:51:01.216236Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 19    
+2025-04-10T13:51:01.716940Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 20    
+2025-04-10T13:51:02.217013Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 21    
+2025-04-10T13:51:02.717137Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 22    
+2025-04-10T13:51:03.217215Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 23    
+2025-04-10T13:51:03.717353Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 24    
+2025-04-10T13:51:04.216813Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 25    
+2025-04-10T13:51:04.717507Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 26    
+2025-04-10T13:51:05.217551Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 27    
+2025-04-10T13:51:05.717657Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 28    
+2025-04-10T13:51:06.217464Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 29    
+2025-04-10T13:51:06.717224Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 30    
+2025-04-10T13:51:07.217847Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 31    
+2025-04-10T13:51:07.718103Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 32    
+2025-04-10T13:51:08.218238Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 33    
+2025-04-10T13:51:08.718341Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 34    
+2025-04-10T13:51:09.217764Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 35    
+2025-04-10T13:51:09.718543Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 36    
+2025-04-10T13:51:10.218919Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 37    
+2025-04-10T13:51:10.718706Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 38    
+2025-04-10T13:51:11.218594Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 39    
+2025-04-10T13:51:11.718232Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 40    
+2025-04-10T13:51:12.218976Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 41    
+2025-04-10T13:51:12.719091Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 42    
+2025-04-10T13:51:13.219203Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 43    
+2025-04-10T13:51:13.719325Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 44    
+2025-04-10T13:51:14.219444Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 45    
+2025-04-10T13:51:14.719594Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 46    
+2025-04-10T13:51:15.219663Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 47    
+2025-04-10T13:51:15.719814Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 48    
+2025-04-10T13:51:16.219902Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 49    
+2025-04-10T13:51:16.720027Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 50    
+2025-04-10T13:51:17.220149Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 51    
+2025-04-10T13:51:17.719554Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 52    
+2025-04-10T13:51:18.220401Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 53    
+2025-04-10T13:51:18.720503Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 54    
+2025-04-10T13:51:19.220618Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 55    
+2025-04-10T13:51:19.720729Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 56    
+2025-04-10T13:51:20.220865Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 57    
+2025-04-10T13:51:20.720917Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 58    
+2025-04-10T13:51:21.221364Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 59    
+2025-04-10T13:51:21.721213Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 60    
+2025-04-10T13:51:21.775755Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 61    
+2025-04-10T13:51:21.879534Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 62    
+2025-04-10T13:51:21.935181Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 63    
+2025-04-10T13:51:21.998854Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 64    
+2025-04-10T13:51:22.221287Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 65    
+2025-04-10T13:51:22.693326Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 66    
+2025-04-10T13:51:22.721606Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 67    
+2025-04-10T13:51:23.221500Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 68    
+2025-04-10T13:51:23.720748Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 69    
+2025-04-10T13:51:24.221600Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 70    
+2025-04-10T13:51:24.721687Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 71    
+2025-04-10T13:51:25.168077Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 72    
+2025-04-10T13:51:25.221804Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 73    
+2025-04-10T13:51:25.297192Z  INFO wgpu_core::device::resource: Device::maintain: waiting for submission index 74    
