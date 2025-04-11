@@ -19,12 +19,11 @@ PATH="$THIS_DIR:$PATH"
 if [ -z "$@" ]
 then
   echo "no arguments passed!"
-  read -p "set arguments: " ARGS
+  read -p "set arguments (default: askpass commit): " ARGS
   if [ -z "$ARGS" ]
   then
-    echo "arguments are empty!"
-    read -p "press ENTER to exit" EXIT_VAR
-    exit 1
+    echo "arguments are empty! setting default: askpass commit..."
+    ARGS="askpass commit"
   fi
   eval "set -- $ARGS"
 fi
