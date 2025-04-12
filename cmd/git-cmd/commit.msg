@@ -1,1 +1,1 @@
-git commands reworking
+terminal dir/file browser/selector

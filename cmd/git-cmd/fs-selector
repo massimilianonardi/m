@@ -36,12 +36,8 @@ load_dir()
 
 browse_dir()
 {
-  echo "--------------------------------------------------------------------------------"
-  echo "$DIR"
-  echo "--------------------------------------------------------------------------------"
-
   ROWS="$(tput lines)"
-  ROWS="$((ROWS-15))"
+  ROWS="$((ROWS-12))"
   COLS="$(tput cols)"
   COUNT=0
   for k in ${FILES_ARRAY[@]}
@@ -55,10 +51,98 @@ browse_dir()
   done
 
   echo "--------------------------------------------------------------------------------"
+  echo "$DIR"
+  echo "--------------------------------------------------------------------------------"
   echo "number of items: ${#FILES_ARRAY[@]}"
   echo "--------------------------------------------------------------------------------"
 
-  tput cup 3 0
+  tput cup 0 0
+}
+
+scroll_dir()
+{
+  tput clear
+  ROWS="$(tput lines)"
+  ROWS="$((ROWS-12))"
+  COLS="$(tput cols)"
+  tput cup 0 0
+
+  INDEX_START=$1
+  # INDEX_END=$((${#FILES_ARRAY[@]}-12))
+  INDEX_END=$((ROWS-6+$1))
+  # echo "start $INDEX_START"
+  # echo "end $INDEX_END"
+  # return
+  for (( i=INDEX_START; i<INDEX_END; i++ ));
+  do
+    echo "${FILES_ARRAY[i]}" 1>&2
+  done
+
+  echo "--------------------------------------------------------------------------------"
+  echo "$DIR"
+  echo "--------------------------------------------------------------------------------"
+  echo "number of items: ${#FILES_ARRAY[@]}"
+  echo "--------------------------------------------------------------------------------"
+
+  tput cup 0 0
+}
+
+update_screen_vars()
+{
+  ROWS="$(tput lines)"
+  ROWS="$((ROWS-6))"
+  COLS="$(tput cols)"
+}
+
+update_screen_list()
+{
+  update_screen_vars
+  tput clear
+  tput cup 0 0
+
+  INDEX_START=$1
+  INDEX_END=$((ROWS+$1))
+  for (( i=INDEX_START; i<INDEX_END; i++ ));
+  do
+    echo "${FILES_ARRAY[i]}" 1>&2
+  done
+
+  echo "--------------------------------------------------------------------------------"
+  echo "$DIR"
+  echo "--------------------------------------------------------------------------------"
+  echo "number of items: ${#FILES_ARRAY[@]}"
+  echo "--------------------------------------------------------------------------------"
+
+  tput cup 0 0
+}
+
+scroll_cursor()
+{
+  FILE_ARRAY_POS=$((FILE_ARRAY_POS + $1))
+  # echo "array position raw: $FILE_ARRAY_POS"
+  if [ "$FILE_ARRAY_POS" -lt "0" ]
+  then
+    FILE_ARRAY_POS=0
+  elif [ "$FILE_ARRAY_POS" -gt "$((${#FILES_ARRAY[@]} - ROWS -1))" ]
+  then
+    FILE_ARRAY_POS="$((${#FILES_ARRAY[@]} - ROWS -1))"
+  fi
+  # echo "array position: $FILE_ARRAY_POS"
+
+  CURSOR_POS=$((CURSOR_POS + $1))
+  # echo "cursor position raw: $CURSOR_POS"
+  if [ "$CURSOR_POS" -lt "0" ]
+  then
+    CURSOR_POS=0
+  elif [ "$CURSOR_POS" -gt "$(($ROWS - 1))" ]
+  then
+    CURSOR_POS="$(($ROWS - 1))"
+  fi
+  # echo "cursor position: $CURSOR_POS"
+
+  update_screen_list $((FILE_ARRAY_POS + CURSOR_POS))
+
+  tput cup $CURSOR_POS 0
 }
 
 # escape_function()
@@ -85,7 +169,10 @@ browse_dir()
 
 #browse_dir "./"
 load_dir "/usr/share/applications"
-browse_dir
+update_screen_list 0
+# browse_dir
+# scroll_dir 3
+# scroll_dir 0
 
 # FILES_ARRAY=()
 # for k in ~/Scaricati/*
@@ -127,9 +214,10 @@ do
   # esac
   case "$key" in
     "q") exit 0;;
-    "[A") echo -en "\033[1A";;
+#    "[A") echo -en "\033[1A";;
 #    "[A") echo "UP" 1>&2;;
-    "[B") echo "DOWN";;
+    "[A") scroll_cursor -1;;
+    "[B") scroll_cursor +1;;
     "[C") echo "RIGHT";;
     "[D") echo "LEFT";;
 #    *) exit 1;;
