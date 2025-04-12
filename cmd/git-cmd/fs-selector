@@ -1,24 +1,27 @@
 #!/bin/bash
 
-browse_dir__()
+log()
 {
-  dir="$1"
-  dir="$(cd -L -- "$dir" && pwd -L)"
-  cd "$dir"
-  echo "--------------------------------------------------------------------------------"
-  echo "$dir"
-  echo "--------------------------------------------------------------------------------"
-  FILES_ARRAY=("..")
-  echo "${FILES_ARRAY[0]}"
-  for k in *
+  tput sc
+  tput cup $(("$TERM_ROWS")) 0
+  echo -n "$@" 1>&2
+  tput rc
+}
+
+printline()
+{
+  echo "$@" 1>&2
+}
+
+load_fav_paths()
+{
+  FAV_FILE="$1"
+
+  FILES_ARRAY=()
+  for k in $(cat "$FAV_FILE")
   do
-    echo "$k" 1>&2
     FILES_ARRAY+=("$k")
   done
-
-  echo "--------------------------------------------------------------------------------"
-  echo "number of items: ${#FILES_ARRAY[@]}"
-  echo "--------------------------------------------------------------------------------"
 }
 
 load_dir()
@@ -34,68 +37,41 @@ load_dir()
   done
 }
 
-browse_dir()
+select_dir()
 {
-  ROWS="$(tput lines)"
-  ROWS="$((ROWS-12))"
-  COLS="$(tput cols)"
-  COUNT=0
-  for k in ${FILES_ARRAY[@]}
-  do
-    echo "$k" 1>&2
-    COUNT=$((COUNT+1))
-    if [ ! "$COUNT" -lt "$ROWS" ]
-    then
-      break
-    fi
-  done
-
-  echo "--------------------------------------------------------------------------------"
-  echo "$DIR"
-  echo "--------------------------------------------------------------------------------"
-  echo "number of items: ${#FILES_ARRAY[@]}"
-  echo "--------------------------------------------------------------------------------"
-
-  tput cup 0 0
+  SELECTED_FILE="${FILES_ARRAY[$((FILE_ARRAY_POS + CURSOR_POS))]}"
+  # log "selected: $SELECTED_FILE"
+  if [ -d "$SELECTED_FILE" ]
+  then
+    load_dir "$SELECTED_FILE"
+    CURSOR_POS="0"
+    FILE_ARRAY_POS="0"
+    update_screen_list 0
+    tput cup 0 0
+  # else
+  #   log "selected: $SELECTED_FILE is not a directory"
+  fi
 }
 
-scroll_dir()
+return_dir()
 {
-  tput clear
-  ROWS="$(tput lines)"
-  ROWS="$((ROWS-12))"
-  COLS="$(tput cols)"
-  tput cup 0 0
-
-  INDEX_START=$1
-  # INDEX_END=$((${#FILES_ARRAY[@]}-12))
-  INDEX_END=$((ROWS-6+$1))
-  # echo "start $INDEX_START"
-  # echo "end $INDEX_END"
-  # return
-  for (( i=INDEX_START; i<INDEX_END; i++ ));
-  do
-    echo "${FILES_ARRAY[i]}" 1>&2
-  done
-
-  echo "--------------------------------------------------------------------------------"
   echo "$DIR"
-  echo "--------------------------------------------------------------------------------"
-  echo "number of items: ${#FILES_ARRAY[@]}"
-  echo "--------------------------------------------------------------------------------"
 
-  tput cup 0 0
+  exit 0
 }
 
 update_screen_vars()
 {
-  ROWS="$(tput lines)"
-  ROWS="$((ROWS-6))"
-  COLS="$(tput cols)"
+  TERM_ROWS="$(tput lines)"
+  TERM_COLS="$(tput cols)"
+  ROWS="$((TERM_ROWS - 6))"
+  COLS="$((TERM_COLS - 1))"
 }
 
 update_screen_list()
 {
+  tput sc
+
   update_screen_vars
   tput clear
   tput cup 0 0
@@ -104,124 +80,96 @@ update_screen_list()
   INDEX_END=$((ROWS+$1))
   for (( i=INDEX_START; i<INDEX_END; i++ ));
   do
-    echo "${FILES_ARRAY[i]}" 1>&2
+    # printline "${FILES_ARRAY[i]}"
+    if [ -d "${FILES_ARRAY[i]}" ]
+    then
+      printline "[D] ${FILES_ARRAY[i]}"
+    elif [ -f "${FILES_ARRAY[i]}" ]
+    then
+      printline "[F] ${FILES_ARRAY[i]}"
+    fi
   done
 
-  echo "--------------------------------------------------------------------------------"
-  echo "$DIR"
-  echo "--------------------------------------------------------------------------------"
-  echo "number of items: ${#FILES_ARRAY[@]}"
-  echo "--------------------------------------------------------------------------------"
+  printline "--------------------------------------------------------------------------------"
+  printline "$DIR"
+  printline "--------------------------------------------------------------------------------"
+  printline "number of items: ${#FILES_ARRAY[@]}"
+  printline "--------------------------------------------------------------------------------"
 
-  tput cup 0 0
+  tput rc
 }
 
 scroll_cursor()
 {
-  FILE_ARRAY_POS=$((FILE_ARRAY_POS + $1))
-  # echo "array position raw: $FILE_ARRAY_POS"
+  if [ -z "$CURSOR_POS" ]
+  then
+    CURSOR_POS="0"
+  fi
+
+  if [ -z "$FILE_ARRAY_POS" ]
+  then
+    FILE_ARRAY_POS="0"
+  fi
+
+  CURSOR_POS=$((CURSOR_POS + $1))
+
+  UPDATE_SCREEN=false
+  if [ "$CURSOR_POS" -lt "0" ]
+  then
+    FILE_ARRAY_POS=$((FILE_ARRAY_POS + $1))
+    CURSOR_POS=0
+    UPDATE_SCREEN=true
+  elif [ "$CURSOR_POS" -gt "$(($ROWS - 1))" ]
+  then
+    FILE_ARRAY_POS=$((FILE_ARRAY_POS + $1))
+    CURSOR_POS="$(($ROWS - 1))"
+    UPDATE_SCREEN=true
+  fi
+
   if [ "$FILE_ARRAY_POS" -lt "0" ]
   then
     FILE_ARRAY_POS=0
+    # UPDATE_SCREEN=false
   elif [ "$FILE_ARRAY_POS" -gt "$((${#FILES_ARRAY[@]} - ROWS -1))" ]
   then
     FILE_ARRAY_POS="$((${#FILES_ARRAY[@]} - ROWS -1))"
+    # UPDATE_SCREEN=false
   fi
-  # echo "array position: $FILE_ARRAY_POS"
 
-  CURSOR_POS=$((CURSOR_POS + $1))
-  # echo "cursor position raw: $CURSOR_POS"
-  if [ "$CURSOR_POS" -lt "0" ]
+  if [ "$UPDATE_SCREEN" = true ]
   then
-    CURSOR_POS=0
-  elif [ "$CURSOR_POS" -gt "$(($ROWS - 1))" ]
-  then
-    CURSOR_POS="$(($ROWS - 1))"
+    update_screen_list $((FILE_ARRAY_POS))
+  #   log "screen updated"
+  # else
+  #   log "screen NOT updated"
   fi
-  # echo "cursor position: $CURSOR_POS"
-
-  update_screen_list $((FILE_ARRAY_POS + CURSOR_POS))
 
   tput cup $CURSOR_POS 0
 }
 
-# escape_function()
-# {
-#   echo "escape function called"
-# }
+key_loop()
+{
+  while true
+  do
+    IFS= read -rsn1 key
+    if [ "$key" = $'\E' ]
+    then
+      IFS= read -rsn2 key
+    fi
 
-# ls -lA 1>&2
+    case "$key" in
+      "q") exit 0;;
+      "[A") scroll_cursor -1;;
+      "[B") scroll_cursor +1;;
+      "[C") log "RIGHT";;
+      "[D") log "LEFT";;
+      "") select_dir;;
+      " ") return_dir;;
+  #    *) exit 1;;
+    esac
+  done
+}
 
-# echo "lines: $LINES"
-# echo "columns: $COLUMNS"
-# tput lines
-# tput cols
-
-# save cursor position
-# echo -en "\033[s"
-# echo -en "\033[7A---7 lines up"
-# restore cursor position
-# echo -en "\033[u"
-# echo -en "\033[5A---5 lines up"
-# echo -en "\033[u"
-
-#echo -en "\033[s\033[7A\033[1;32m 7 lines up green \033[u\033[0m"
-
-#browse_dir "./"
 load_dir "/usr/share/applications"
 update_screen_list 0
-# browse_dir
-# scroll_dir 3
-# scroll_dir 0
-
-# FILES_ARRAY=()
-# for k in ~/Scaricati/*
-# do
-#   echo "$k"
-#   FILES_ARRAY+=("$k")
-# done
-#
-# echo "${FILES_ARRAY[@]}"
-#
-# for k in "${FILES_ARRAY[@]}"
-# do
-#   echo "$k"
-# done
-
-#tput cup 0 0
-
-# bind -x '"\eW":"who"'
-# bind -x '"\e": escape_function'
-# bind -x '"\C-k": escape_function'
-#
-# sleep 30
-
-while true
-do
-  IFS= read -rsn1 key
-  if [ "$key" = $'\E' ]
-  then
-    IFS= read -rsn2 key
-  fi
-  # echo "key: $key"
-  # case "$key" in
-  #   "q") exit 0;;
-  #   "[A") echo "UP" 1>&2;;
-  #   "[B") echo "DOWN";;
-  #   "[C") echo "RIGHT";;
-  #   "[D") echo "LEFT";;
-  #   *) exit 1;;
-  # esac
-  case "$key" in
-    "q") exit 0;;
-#    "[A") echo -en "\033[1A";;
-#    "[A") echo "UP" 1>&2;;
-    "[A") scroll_cursor -1;;
-    "[B") scroll_cursor +1;;
-    "[C") echo "RIGHT";;
-    "[D") echo "LEFT";;
-#    *) exit 1;;
-  esac
-done
-
-#bind -r "\e"
+key_loop

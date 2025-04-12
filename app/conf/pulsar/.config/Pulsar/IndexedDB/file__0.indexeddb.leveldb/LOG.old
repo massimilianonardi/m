@@ -1,1 +1,6 @@
-2025/04/11-22:15:30.746 d01 Reusing MANIFEST /m/src/git/m/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/MANIFEST-000001
+2025/04/12-09:42:53.778 f5b Reusing MANIFEST /m/src/git/m/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/MANIFEST-000001
+2025/04/12-09:42:53.778 f5b Recovering log #3
+2025/04/12-09:42:53.833 f5b Reusing old log /m/src/git/m/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/000003.log 
+2025/04/12-09:59:42.367 19b7 Level-0 table #5: started
+2025/04/12-09:59:42.393 19b7 Level-0 table #5: 2281107 bytes OK
+2025/04/12-09:59:42.396 19b7 Delete type=0 #3
