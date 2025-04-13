@@ -1,5 +1,32 @@
 #!/bin/bash
 
+cursor_addressing_mode_enter()
+{
+  tput sc
+  tput smcup
+  # printf \\33\[\?1047h
+  tput clear
+}
+
+cursor_addressing_mode_exit()
+{
+  tput clear
+  tput rmcup
+  # printf \\33\[\?1047l
+  tput rc
+}
+
+quit()
+{
+  cursor_addressing_mode_exit
+  if [ -z "$1" ]
+  then
+    exit 0
+  else
+    exit "$1"
+  fi
+}
+
 log()
 {
   tput sc
@@ -49,10 +76,19 @@ load_dir()
   DIR="$(cd -L -- "$1" && pwd -L)"
   cd "$DIR"
 
-  FILES_ARRAY=("..")
-  for k in *
+  if [ "$DIR" = "/" ]
+  then
+    FILES_ARRAY=()
+  else
+    FILES_ARRAY=("..")
+  fi
+
+  for k in ..?* .[!.]* *
   do
-    FILES_ARRAY+=("$k")
+    if [ -e "$k" ]
+    then
+      FILES_ARRAY+=("$k")
+    fi
   done
 
   dir_vars_init
@@ -80,15 +116,14 @@ return_dir()
 
   if [ -d "$SELECTED_FILE" ]
   then
-    tput clear
-    tput cup 0 0
     SELECTED_FILE="$(cd -L -- "$SELECTED_FILE" && pwd -L)"
     echo "$SELECTED_FILE"
     if [ -n "$OUTPUT_FILE" ]
     then
       echo "$SELECTED_FILE" > "$OUTPUT_FILE"
     fi
-    exit 0
+
+    quit
   else
     log "selected: $SELECTED_FILE is not a directory"
   fi
@@ -127,9 +162,9 @@ update_screen_list()
   done
 
   printline "--------------------------------------------------------------------------------"
-  printline "$DIR"
+  printline " $DIR"
   printline "--------------------------------------------------------------------------------"
-  printline "number of items: ${#FILES_ARRAY[@]}"
+  printline " number of items: ${#FILES_ARRAY[@]}"
   printline "--------------------------------------------------------------------------------"
 
   tput cup "$CURSOR_POS" 0
@@ -182,11 +217,11 @@ key_loop()
     fi
 
     case "$key" in
-      "q") tput clear; exit 0;;
+      "q") quit;;
       "[A") scroll_cursor -1;;
       "[B") scroll_cursor +1;;
-      "[C") log "RIGHT";;
-      "[D") log "LEFT";;
+      # "[C") log "RIGHT";;
+      # "[D") log "LEFT";;
       "") select_dir;;
       " ") return_dir;;
   #    *) exit 1;;
@@ -196,6 +231,8 @@ key_loop()
 
 screen_init()
 {
+  cursor_addressing_mode_enter
+
   # fix fo initial wrong values of size from tput
   tput clear
   for k in {0..999}
