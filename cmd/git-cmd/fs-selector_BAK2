@@ -56,11 +56,9 @@ select_dir()
 return_dir()
 {
   SELECTED_FILE="${FILES_ARRAY[$((FILE_ARRAY_POS + CURSOR_POS))]}"
-
+  
   if [ -d "$SELECTED_FILE" ]
   then
-    tput clear
-    tput cup 0 0
     echo "$SELECTED_FILE"
     exit 0
   else
@@ -201,11 +199,6 @@ elif [ -f "$1" ]
 then
   load_fav_paths "$1"
 fi
-
-
-
-tput clear
-tput cup 0 0
 
 update_screen_list 0
 key_loop

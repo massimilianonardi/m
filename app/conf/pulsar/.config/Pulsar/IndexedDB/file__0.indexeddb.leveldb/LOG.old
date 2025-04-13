@@ -1,6 +1,24 @@
-2025/04/12-09:42:53.778 f5b Reusing MANIFEST /m/src/git/m/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/MANIFEST-000001
-2025/04/12-09:42:53.778 f5b Recovering log #3
-2025/04/12-09:42:53.833 f5b Reusing old log /m/src/git/m/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/000003.log 
-2025/04/12-09:59:42.367 19b7 Level-0 table #5: started
-2025/04/12-09:59:42.393 19b7 Level-0 table #5: 2281107 bytes OK
-2025/04/12-09:59:42.396 19b7 Delete type=0 #3
+2025/04/12-21:29:40.219 b96 Reusing MANIFEST /m/src/git/m/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/MANIFEST-000001
+2025/04/12-21:29:40.219 b96 Recovering log #4
+2025/04/12-21:29:40.328 b96 Reusing old log /m/src/git/m/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/000004.log 
+2025/04/12-21:42:11.994 b7d Level-0 table #8: started
+2025/04/12-21:42:12.016 b7d Level-0 table #8: 2313048 bytes OK
+2025/04/12-21:42:12.019 b7d Delete type=0 #4
+2025/04/12-21:53:39.300 121a Compacting 1@1 + 1@2 files
+2025/04/12-21:53:39.313 121a Generated table #9@1: 41 keys, 9431 bytes
+2025/04/12-21:53:39.313 121a Compacted 1@1 + 1@2 files => 9431 bytes
+2025/04/12-21:53:39.314 121a compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/04/12-21:53:39.314 121a Delete type=2 #5
+2025/04/12-21:53:39.314 121a Delete type=2 #8
+2025/04/12-22:43:20.858 39d3 Level-0 table #11: started
+2025/04/12-22:43:20.881 39d3 Level-0 table #11: 2310427 bytes OK
+2025/04/12-22:43:20.883 39d3 Delete type=0 #7
+2025/04/12-23:05:25.731 9f51 Compacting 1@1 + 1@2 files
+2025/04/12-23:05:25.737 9f51 Generated table #12@1: 41 keys, 7738 bytes
+2025/04/12-23:05:25.738 9f51 Compacted 1@1 + 1@2 files => 7738 bytes
+2025/04/12-23:05:25.738 9f51 compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/04/12-23:05:25.739 9f51 Delete type=2 #11
+2025/04/12-23:05:25.739 9f51 Delete type=2 #9
+2025/04/12-23:35:00.497 b7ab Level-0 table #14: started
+2025/04/12-23:35:00.518 b7ab Level-0 table #14: 2357611 bytes OK
+2025/04/12-23:35:00.521 b7ab Delete type=0 #10
