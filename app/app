@@ -48,6 +48,9 @@ update()
     elif [ "$FILE_TYPE" = "tar.gz" ] || [ "$FILE_TYPE" = "tgz" ] || [ "$FILE_TYPE" = "tar" ] || [ "$FILE_TYPE" = "gzip" ] || [ "$FILE_TYPE" = "bzip" ] || [ "$FILE_TYPE" = "xz" ]
     then
       tar xvf "$DOWNLOAD_FILE"
+    elif [ "$FILE_TYPE" = "deb" ]
+    then
+      dpkg-deb -x "$DOWNLOAD_FILE" ./
     else
       echo "unknown file type: FILE_TYPE=$FILE_TYPE"
       exit 1
@@ -102,7 +105,7 @@ debug()
   then
     COMMAND="run"
   fi
-  
+
   #. "${SCRIPT_DIR}/${APP_NAME}-${COMMAND}"
   "${SCRIPT_DIR}/${APP_NAME}-${COMMAND}" "$@"
 

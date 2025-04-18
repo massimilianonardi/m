@@ -1,1 +1,1 @@
-terminal dir/file browser/selector
+app chrome
