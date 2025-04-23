@@ -1,1 +1,1 @@
-git-cmd tui
+app-cmd tui

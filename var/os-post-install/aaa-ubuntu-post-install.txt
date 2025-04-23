@@ -17,6 +17,11 @@ sudo apt autoremove
 sudo apt dist-upgrade
 sudo apt full-upgrade
 
+https://github.com/doublecmd/doublecmd/releases
+sudo apt-get install pcmanfm -y
+
+/usr/sbin/sshd -T -d -D  -p 22000 -f /etc/ssh/sshd_alt.conf
+
 ip address
 
 sudo mount -o remount -a

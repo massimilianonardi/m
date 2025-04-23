@@ -1,0 +1,6 @@
+#!/bin/sh
+
+VERSION="25.0.1"
+DOWNLOAD_URL="https://dbeaver.io/files/dbeaver-ce-latest-linux.gtk.x86_64.tar.gz"
+FILE_TYPE="tar.gz"
+

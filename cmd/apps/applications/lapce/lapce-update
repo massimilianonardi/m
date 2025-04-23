@@ -1,0 +1,6 @@
+#!/bin/sh
+
+VERSION="0.4.2"
+DOWNLOAD_URL="https://github.com/lapce/lapce/releases/latest/download/lapce-linux-amd64.tar.gz"
+FILE_TYPE="tar.gz"
+
