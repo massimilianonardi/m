@@ -69,7 +69,6 @@ fi
 
 if [ -z "$1" ]
 then
-  echo "no command passed!"
   read -p "enter command (default: commit): " GIT_CMD_COMMAND
   if [ -z "$GIT_CMD_COMMAND" ]
   then
