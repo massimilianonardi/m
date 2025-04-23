@@ -112,11 +112,7 @@ select_dir()
 
 return_dir()
 {
-  SELECTED_FILE="${FILES_ARRAY[$((FILE_ARRAY_POS + CURSOR_POS))]}"
-  if [ "$SELECTED_FILE" = "${SELECTED_FILE#/}" ]
-  then
-    SELECTED_FILE="$(pwd)/${FILES_ARRAY[$((FILE_ARRAY_POS + CURSOR_POS))]}"
-  fi
+  SELECTED_FILE="$(pwd)/${FILES_ARRAY[$((FILE_ARRAY_POS + CURSOR_POS))]}"
 
   if [ -d "$SELECTED_FILE" ]
   then
@@ -274,14 +270,11 @@ main()
   elif [ -f "$1" ]
   then
     load_fav_paths "$1"
-  else
-    load_dir "."
   fi
 
   if [ -n "$2" ]
   then
-#    OUTPUT_FILE="$2"
-    OUTPUT_FILE="$(cd -L -- "${2%/*}" && pwd -L)/${2##*/}"
+    OUTPUT_FILE="$2"
   else
     OUTPUT_FILE="$THIS_DIR/$THIS_FILE.sel"
   fi

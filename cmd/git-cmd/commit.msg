@@ -1,1 +1,1 @@
-os post install
+git-cmd tui

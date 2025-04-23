@@ -16,44 +16,18 @@ THIS_DIR="$(cd -P -- "${THIS_PATH%/*}" && pwd -P)"
 
 PATH="$THIS_DIR:$PATH"
 
-if [ -z "$@" ]
+if [ -z "$1" ]
 then
-  echo "no arguments passed!"
-  read -p "set arguments (default: askpass commit): " ARGS
-  if [ -z "$ARGS" ]
-  then
-    echo "arguments are empty! setting default: askpass commit..."
-    ARGS="askpass commit"
-  fi
-  eval "set -- $ARGS"
-fi
-
-if [ "$1" = "askpass" ]
-then
+  rm -f "$THIS_DIR/repo.sel"
+  dir-browser-selector "$THIS_DIR/repo.conf" "$THIS_DIR/repo.sel"
+  REPO_DIR="$(cat "$THIS_DIR/repo.sel")"
+  rm -f "$THIS_DIR/repo.sel"
+else
+  REPO_DIR="$1"
   shift
-  echo "configuring askpass..."
-
-  if [ -f "./$GIT_ASKPASS_CONF_FILE" ]
-  then
-    echo "importing git askpass configuration: $(pwd)/$GIT_ASKPASS_CONF_FILE"
-    . "./$GIT_ASKPASS_CONF_FILE"
-  elif [ -f "$THIS_DIR/$GIT_ASKPASS_CONF_FILE" ]
-  then
-    echo "importing git askpass configuration: $THIS_DIR/$GIT_ASKPASS_CONF_FILE"
-    . "$THIS_DIR/$GIT_ASKPASS_CONF_FILE"
-  else
-    echo "no git askpass configuration!"
-  fi
 fi
 
-if [ ! -d "./.git" ]
-then
-  cd "$THIS_DIR"
-  while [ ! -d "./.git" ] && [ "$(pwd)" != "/" ]
-  do
-    cd ..
-  done
-fi
+cd "$REPO_DIR"
 
 if [ -d "./.git" ]
 then
@@ -68,12 +42,53 @@ else
   exit 1
 fi
 
-GIT_CMD_COMMAND="$1"
-shift
+if [ -f "$THIS_DIR/askpass.conf" ]
+then
+  GIT_ASKPASS="$(cat "$THIS_DIR/askpass.conf" | grep "$REPO_DIR" | tail -1)"
+  GIT_ASKPASS="${GIT_ASKPASS#$REPO_DIR}"
+  GIT_ASKPASS="${GIT_ASKPASS#=}"
+
+  if [ -f "$GIT_ASKPASS" ]
+  then
+    echo "--------------------------------------------------------------------------------"
+    echo "GIT ASKPASS FILE FOUND: $GIT_ASKPASS"
+    echo "--------------------------------------------------------------------------------"
+
+    export GIT_ASKPASS
+    export SSH_ASKPASS="$GIT_ASKPASS"
+
+    export GIT_SSH_COMMAND="setsid ssh"
+
+    export DISPLAY=:0
+  else
+    echo "--------------------------------------------------------------------------------"
+    echo "NO GIT ASKPASS FILE FOUND: $GIT_ASKPASS"
+    echo "--------------------------------------------------------------------------------"
+  fi
+fi
+
+if [ -z "$1" ]
+then
+  echo "no command passed!"
+  read -p "enter command (default: commit): " GIT_CMD_COMMAND
+  if [ -z "$GIT_CMD_COMMAND" ]
+  then
+    GIT_CMD_COMMAND="commit"
+  fi
+  eval "set -- $ARGS"
+else
+  GIT_CMD_COMMAND="$1"
+  shift
+fi
+
+echo "--------------------------------------------------------------------------------"
+echo "GIT-CMD COMMAND: $GIT_CMD_COMMAND"
+echo "--------------------------------------------------------------------------------"
 
 "$THIS_DIR/$GIT_CMD_COMMAND" "$@"
 EXIT_CODE="$?"
 
+# detect if launched from gui or active terminal
 PARENT_PROCESS="$(ps -o 'cmd=' -p $(ps -o 'ppid=' -p $$))"
 #if [ "$PARENT_PROCESS" != "bash" ]
 if [ "${PARENT_PROCESS%sh}" = "$PARENT_PROCESS" ]
