@@ -1,1 +1,1 @@
-app chrome
+os post install
