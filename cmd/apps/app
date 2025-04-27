@@ -180,9 +180,10 @@ then
   mkdir -p "$APPS_DIR"
 fi
 
-if [ ! -L "$APPS_DIR/app" ]
+# create link to this command
+if [ ! -L "$APPS_DIR/$THIS_FILE" ]
 then
-  ln -s "$THIS_DIR/$THIS_FILE" "$APPS_DIR/app"
+  ln -s "$THIS_DIR/$THIS_FILE" "$APPS_DIR/$THIS_FILE"
 fi
 
 if [ ! -d "$APP_DIR" ]

@@ -35,7 +35,7 @@ PATH="$CALL_DIR:$THIS_DIR:$PATH"
 
 cd "$APPS_SCRIPT_DIR"
 
-set -- ""
+set --
 for k in ..?* .[!.]* *
 do
   if [ -e "$k" ] && [ -f "./$k/$k.desktop" ]
@@ -43,18 +43,18 @@ do
     set -- "$@" "$k"
   fi
 done
-get_desktop_apps
-echo "desktop apps: $@"
 
-exit 0
+menu "$@"
+eval "SELECTED_APP=\"\$$(($? + 1))\""
 
-# cd "$THIS_DIR/desktop-files"
+menu "install '$SELECTED_APP' desktop file" "uninstall '$SELECTED_APP' desktop file"
 
-for k in *
-do
-  echo "$k"
-  sudo cp "$THIS_DIR/desktop-files/$k" "/usr/share/applications"
-  sudo chown root:root "/usr/share/applications/$k"
-done
+if [ "$?" = "0" ]
+then
+  sudo rm -f "/usr/share/applications/$SELECTED_APP"
+  sudo cp "./$SELECTED_APP/$SELECTED_APP.desktop" "/usr/share/applications"
+else
+  sudo rm -f "/usr/share/applications/$SELECTED_APP"
+fi
 
 read -p "press ENTER to exit" test
