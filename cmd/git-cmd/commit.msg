@@ -1,1 +1,1 @@
-app-cmd tui
+app doublecmd

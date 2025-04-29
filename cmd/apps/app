@@ -156,13 +156,12 @@ fi
 THIS_FILE="${THIS_PATH##*/}"
 THIS_DIR="$(cd -P -- "${THIS_PATH%/*}" && pwd -P)"
 
-
+. "$THIS_DIR/app.conf"
 
 # apps update/run/debug script dir
 APP_SCRIPT_DIR="$APPS_SCRIPT_DIR/$APP_NAME"
 
 # apps bin dir
-. "$THIS_DIR/app.conf"
 APP_DIR="$APPS_DIR/$APP_NAME"
 
 # setup home environment variable for app
