@@ -1,0 +1,204 @@
+#!/bin/bash
+
+cursor_addressing_mode_enter()
+{
+  tput sc
+  tput smcup
+  tput clear
+}
+
+cursor_addressing_mode_exit()
+{
+  tput clear
+  tput rmcup
+  tput rc
+}
+
+quit()
+{
+  cursor_addressing_mode_exit
+
+  if [ -z "$1" ]
+  then
+    exit 0
+  else
+    echo "${FILES_ARRAY[$1]}"
+    exit "$1"
+  fi
+}
+
+log()
+{
+  tput sc
+  tput cup $(("$TERM_ROWS")) 0
+  echo -n "$@" 1>&2
+  tput rc
+}
+
+printline()
+{
+  echo "$@" 1>&2
+}
+
+vars_init()
+{
+  FILE_ARRAY_POS="0"
+  CURSOR_POS="0"
+}
+
+update_screen_vars()
+{
+  TERM_ROWS="$(tput lines)"
+  TERM_COLS="$(tput cols)"
+
+  ROWS="$(($TERM_ROWS - 0))"
+  COLS="$(($TERM_COLS - 0))"
+
+  if [ "${#FILES_ARRAY[@]}" -lt "$ROWS" ]
+  then
+    ROWS="${#FILES_ARRAY[@]}"
+  fi
+}
+
+load_menu()
+{
+  for k in "$@"
+  do
+    FILES_ARRAY+=("$k")
+  done
+
+  vars_init
+}
+
+return_selection()
+{
+  SELECTED_POS="$((FILE_ARRAY_POS + CURSOR_POS))"
+
+  quit "$SELECTED_POS"
+}
+
+update_screen_list()
+{
+  update_screen_vars
+  tput clear
+
+  INDEX_START=$1
+  INDEX_END=$((ROWS+$1))
+  if [ "$INDEX_END" -gt "${#FILES_ARRAY[@]}" ]
+  then
+    INDEX_END="${#FILES_ARRAY[@]}"
+  fi
+
+  for (( i=INDEX_START; i<INDEX_END; i++ ))
+  do
+    line="${FILES_ARRAY[i]}"
+    size="${#line}"
+    if [ "$size" -gt "$COLS" ]
+    then
+      line="${line:0:$COLS} [...]"
+    fi
+    printline "$line"
+  done
+
+  tput cup "$CURSOR_POS" 0
+}
+
+scroll_cursor()
+{
+  CURSOR_POS="$(($CURSOR_POS + $1))"
+
+  UPDATE_SCREEN="false"
+
+  if [ "$CURSOR_POS" -lt "0" ]
+  then
+    FILE_ARRAY_POS="$(($FILE_ARRAY_POS + $1))"
+    CURSOR_POS="0"
+    UPDATE_SCREEN="true"
+  elif [ "$CURSOR_POS" -gt "$(($ROWS - 1))" ]
+  then
+    FILE_ARRAY_POS="$(($FILE_ARRAY_POS + $1))"
+    CURSOR_POS="$(($ROWS - 1))"
+    UPDATE_SCREEN="true"
+  fi
+
+  if [ "$FILE_ARRAY_POS" -lt "0" ]
+  then
+    FILE_ARRAY_POS=0
+    # UPDATE_SCREEN=false
+  elif [ "$FILE_ARRAY_POS" -gt "$((${#FILES_ARRAY[@]} - $ROWS))" ]
+  then
+    FILE_ARRAY_POS="$((${#FILES_ARRAY[@]} - $ROWS))"
+    # UPDATE_SCREEN=false
+  fi
+
+  if [ "$UPDATE_SCREEN" = true ]
+  then
+    update_screen_list $((FILE_ARRAY_POS))
+  fi
+
+  tput cup $CURSOR_POS 0
+}
+
+key_loop()
+{
+  while true
+  do
+    IFS= read -rsn1 key
+    if [ "$key" = $'\E' ]
+    then
+      IFS= read -rsn2 key
+    fi
+
+    case "$key" in
+      "q") quit -1;;
+      "[A") scroll_cursor -1;;
+      "[B") scroll_cursor +1;;
+      # "[C") log "RIGHT";;
+      # "[D") log "LEFT";;
+      "") return_selection;;
+      # " ") return_dir;;
+      # *) exit 1;;
+    esac
+  done
+}
+
+screen_init()
+{
+  # fix fo initial wrong values of size from tput
+  tput clear
+  for k in {0..999}
+  do
+    echo -n "                                                 " 1>&2
+  done
+  tput clear
+}
+
+main()
+{
+  # resolving symlink if any
+  if [ -L "$0" ]
+  then
+    THIS_PATH="$(ls -ld -- "$0")"
+    THIS_PATH="${THIS_PATH#*" $0 -> "}"
+  else
+    THIS_PATH="$0"
+  fi
+
+  # resolving this file and dir
+  THIS_FILE="${THIS_PATH##*/}"
+  THIS_DIR="$(cd -P -- "${THIS_PATH%/*}" && pwd -P)"
+
+  if [ -z "$*" ]
+  then
+    exit 0
+  fi
+
+  load_menu "$@"
+
+  cursor_addressing_mode_enter
+  screen_init
+  update_screen_list 0
+  key_loop
+}
+
+main "$@"
