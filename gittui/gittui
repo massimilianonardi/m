@@ -81,7 +81,7 @@ else
 fi
 
 echo "--------------------------------------------------------------------------------"
-echo "GIT-CMD COMMAND: $GIT_CMD_COMMAND"
+echo "GITTUI COMMAND: $GIT_CMD_COMMAND"
 echo "--------------------------------------------------------------------------------"
 
 "$THIS_DIR/$GIT_CMD_COMMAND" "$@"
@@ -98,3 +98,4 @@ then
 fi
 
 exit "$EXIT_CODE"
+
