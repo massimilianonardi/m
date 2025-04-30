@@ -10,20 +10,17 @@ because of real dir need to be calculated by path full resolve, or per-app env
 /m
   app: portable apps simple format, no pkg available /m/app/app is link to app commannd in sources
     add fake desktop app that call tui to commands in cmd sources
-  xxx cmd: commands (launch apps, commit/reset/shell/test+shell m/rpr)
+  cmd: commands (link to sources cmd dir)
   data
   dev: test dir
   env: secrets or host specific vars
   pkg
   src/git/m:
-  - app: commands and portable user confs
-  - c-cpp
-  - cmd: all standalone commands (rsudo, etc.)
+  - cmd: all standalone commands (app+conf, gitman, rsudo, etc.)
+  - cpp
   - java (must all be converted to maven)
   - js (javascript web, nodejs and electron)
-  - gittui
   - note
-  - os (old stuff to be migrated)
   - var (unsorted stuff)
   sys
   usr
