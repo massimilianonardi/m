@@ -27,7 +27,7 @@ wait_user()
 
 update()
 {
-  . "${SCRIPT_DIR}/${APP_NAME}-${COMMAND}"
+  . "${APP_SCRIPT_DIR}/${APP_NAME}-${COMMAND}"
 
   DOWNLOAD_FILE="${APP_NAME}-${VERSION}.${FILE_TYPE}"
   echo "latest VERSION is $VERSION"
@@ -90,9 +90,9 @@ run()
   then
     (COMMAND="update"; update)
   fi
-  #. "${SCRIPT_DIR}/${APP_NAME}-${COMMAND}"
-  #"${SCRIPT_DIR}/${APP_NAME}-${COMMAND}"
-  screen -S app-session -d -m "${SCRIPT_DIR}/${APP_NAME}-${COMMAND}" "$@"
+  #. "${APP_SCRIPT_DIR}/${APP_NAME}-${COMMAND}"
+  #"${APP_SCRIPT_DIR}/${APP_NAME}-${COMMAND}"
+  screen -S app-session -d -m "${APP_SCRIPT_DIR}/${APP_NAME}-${COMMAND}" "$@"
   sleep 1
 }
 
@@ -101,13 +101,13 @@ run()
 debug()
 {
   echo "debug cmdline: $@"
-  if [ ! -f "${SCRIPT_DIR}/${APP_NAME}-${COMMAND}" ]
+  if [ ! -f "${APP_SCRIPT_DIR}/${APP_NAME}-${COMMAND}" ]
   then
     COMMAND="run"
   fi
 
-  #. "${SCRIPT_DIR}/${APP_NAME}-${COMMAND}"
-  "${SCRIPT_DIR}/${APP_NAME}-${COMMAND}" "$@"
+  #. "${APP_SCRIPT_DIR}/${APP_NAME}-${COMMAND}"
+  "${APP_SCRIPT_DIR}/${APP_NAME}-${COMMAND}" "$@"
 
   wait_user
 }
@@ -156,16 +156,12 @@ fi
 THIS_FILE="${THIS_PATH##*/}"
 THIS_DIR="$(cd -P -- "${THIS_PATH%/*}" && pwd -P)"
 
+. "$THIS_DIR/app.conf"
+
 # apps update/run/debug script dir
-SCRIPT_DIR="$THIS_DIR/applications"
-
-# set path
-#PATH="$CALL_DIR:$THIS_DIR:$PATH"
-
-#EXIT_CODE="0"
+APP_SCRIPT_DIR="$APPS_SCRIPT_DIR/$APP_NAME"
 
 # apps bin dir
-APPS_DIR="/m/app"
 APP_DIR="$APPS_DIR/$APP_NAME"
 
 # setup home environment variable for app
@@ -178,14 +174,15 @@ then
   mkdir -p "$HOME"
 fi
 
-if [ ! -d "/m/app" ]
+if [ ! -d "$APPS_DIR" ]
 then
-  mkdir -p "/m/app"
+  mkdir -p "$APPS_DIR"
 fi
 
-if [ ! -L "/m/app/app" ]
+# create link to this command
+if [ ! -L "$APPS_DIR/$THIS_FILE" ]
 then
-  ln -s "$THIS_DIR/$THIS_FILE" "/m/app/app"
+  ln -s "$THIS_DIR/$THIS_FILE" "$APPS_DIR/$THIS_FILE"
 fi
 
 if [ ! -d "$APP_DIR" ]

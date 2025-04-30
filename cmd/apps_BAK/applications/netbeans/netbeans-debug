@@ -1,0 +1,5 @@
+#!/bin/sh
+
+./latest/bin/netbeans --help
+#./latest/bin/netbeans --userdir "$HOME/user-dir" --cachedir "$HOME/cache-dir"
+./latest/bin/netbeans --userdir "$HOME/user-dir" --cachedir "./cache-dir"

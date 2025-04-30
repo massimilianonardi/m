@@ -1,0 +1,6 @@
+#!/bin/sh
+
+export CHROME_DEVEL_SANDBOX="$(pwd)/latest/chrome_sandbox"
+
+#./latest/chrome --user-data-dir="$HOME/user-data-dir" "$@"
+./latest/chrome --user-data-dir="./user-data-dir" "$@"
