@@ -1,0 +1,79 @@
+{
+  "split": {
+    "children": [],
+    "direction": "Horizontal"
+  },
+  "panel": {
+    "panels": {
+      "LeftTop": [
+        "FileExplorer",
+        "Plugin",
+        "SourceControl",
+        "Debug"
+      ],
+      "RightTop": [
+        "DocumentSymbol"
+      ],
+      "BottomLeft": [
+        "Terminal",
+        "Search",
+        "Problem",
+        "CallHierarchy"
+      ]
+    },
+    "styles": {
+      "BottomLeft": {
+        "active": 0,
+        "shown": true,
+        "maximized": false
+      },
+      "BottomRight": {
+        "active": 0,
+        "shown": false,
+        "maximized": false
+      },
+      "LeftBottom": {
+        "active": 0,
+        "shown": true,
+        "maximized": false
+      },
+      "RightTop": {
+        "active": 0,
+        "shown": false,
+        "maximized": false
+      },
+      "RightBottom": {
+        "active": 0,
+        "shown": false,
+        "maximized": false
+      },
+      "LeftTop": {
+        "active": 0,
+        "shown": true,
+        "maximized": false
+      }
+    },
+    "size": {
+      "left": 250.0,
+      "left_split": 0.5,
+      "bottom": 300.0,
+      "bottom_split": 0.5,
+      "right": 250.0,
+      "right_split": 0.5
+    },
+    "sections": {
+      "Changes": true,
+      "FileExplorer": true,
+      "Warn": true,
+      "Installed": true,
+      "StackFrame": true,
+      "Available": true,
+      "Error": true,
+      "OpenEditor": true,
+      "Process": true,
+      "Variable": true,
+      "Breakpoint": true
+    }
+  },
+  "breakpoints": {}
+}

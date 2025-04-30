@@ -1,6 +1,0 @@
-#!/bin/sh
-
-VERSION="25"
-DOWNLOAD_URL="https://dlcdn.apache.org/netbeans/netbeans/${VERSION}/netbeans-${VERSION}-bin.zip"
-FILE_TYPE="zip"
-
