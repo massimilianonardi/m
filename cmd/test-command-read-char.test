@@ -23,6 +23,8 @@ $(dd bs=1 count=1 2>/dev/null | od -b)
 EOF
 echo "dummy=$dummy"
 echo "oct=$oct"
+printf %d "\\$oct"
+printf "\\$oct"
 
 #   read -r dummy oct << EOF
 # $(dd bs=1 count=1 2>/dev/null)
