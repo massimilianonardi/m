@@ -1,0 +1,75 @@
+#!/bin/sh
+
+#-------------------------------------------------------------------------------
+
+readc()
+{
+  # arg: <variable-name>
+  if [ -t 0 ]
+  then
+    # if stdin is a tty device, put it out of icanon, set min and
+    # time to sane value, but don't otherwise touch other input or
+    # or local settings (echo, isig, icrnl...). Take a backup of the
+    # previous settings beforehand.
+    saved_tty_settings=$(stty -g)
+    stty -echo -icanon min 1 time 0
+    # stty -echo raw
+  fi
+
+  eval "$1="
+
+  read dummy oct << EOF
+$(dd bs=1 count=1 2>/dev/null | od -b)
+EOF
+echo "dummy=$dummy"
+echo "oct=$oct"
+
+#   read -r dummy oct << EOF
+# $(dd bs=1 count=1 2>/dev/null)
+# EOF
+# echo "dummy=$dummy"
+# echo "oct=$oct"
+
+  read -r char << EOF
+$(dd bs=1 count=1 2>/dev/null)
+EOF
+echo "char='$char'"
+
+if [ "$key" = $'\E' ]
+then
+  echo "escape character"
+fi
+
+  read -r char << EOF
+$(dd bs=1 count=1 2>/dev/null; echo .)
+EOF
+echo "char='$char'"
+
+  while
+    # read one byte, using a work around for the fact that command
+    # substitution strips trailing newline characters.
+    c=$(dd bs=1 count=1 2>/dev/null; echo .)
+    c=${c%.}
+
+    # break out of the loop on empty input (eof) or if a full character
+    # has been accumulated in the output variable (using "wc -m" to count
+    # the number of characters).
+    [ -n "$c" ] && eval "$1=\${$1}"'$c[ "$(($(printf %s "${'"$1"'}" | wc -m)))" -eq 0 ]'
+  do
+    continue
+  done
+
+  if [ -t 0 ]
+  then
+    # restore settings saved earlier if stdin is a tty device.
+    stty "$saved_tty_settings"
+  fi
+}
+
+test_readc()
+{
+  readc charvar
+  echo "charvar: $charvar"
+}
+
+#-------------------------------------------------------------------------------

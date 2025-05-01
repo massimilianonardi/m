@@ -1,3 +1,15 @@
-2025/04/30-21:44:02.832 16fe Reusing MANIFEST /m/src/git/m/cmd/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/MANIFEST-000001
-2025/04/30-21:44:02.832 16fe Recovering log #3
-2025/04/30-21:44:02.842 16fe Reusing old log /m/src/git/m/cmd/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/000003.log 
+2025/05/01-09:02:56.379 d69 Reusing MANIFEST /m/src/git/m/cmd/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/MANIFEST-000001
+2025/05/01-09:02:56.379 d69 Recovering log #3
+2025/05/01-09:02:56.498 d69 Reusing old log /m/src/git/m/cmd/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/000003.log 
+2025/05/01-09:26:51.909 11d5 Level-0 table #5: started
+2025/05/01-09:26:51.941 11d5 Level-0 table #5: 2019653 bytes OK
+2025/05/01-09:26:51.944 11d5 Delete type=0 #3
+2025/05/01-10:05:06.918 1a2c Level-0 table #7: started
+2025/05/01-10:05:06.955 1a2c Level-0 table #7: 1831356 bytes OK
+2025/05/01-10:05:06.957 1a2c Delete type=0 #4
+2025/05/01-10:18:38.522 1c4b Compacting 1@1 + 1@2 files
+2025/05/01-10:18:38.532 1c4b Generated table #8@1: 39 keys, 10877 bytes
+2025/05/01-10:18:38.532 1c4b Compacted 1@1 + 1@2 files => 10877 bytes
+2025/05/01-10:18:38.533 1c4b compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/05/01-10:18:38.534 1c4b Delete type=2 #7
+2025/05/01-10:18:38.534 1c4b Delete type=2 #5
