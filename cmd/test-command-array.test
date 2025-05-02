@@ -1,0 +1,82 @@
+#!/bin/sh
+
+#-------------------------------------------------------------------------------
+
+array_check()
+{
+  eval "[ \"\${${1}}_TYPE\" = \"array\" ]"
+}
+
+array_size()
+{
+  if ! array_check "$1"
+  then
+    echo "not an array"
+    return -1
+  fi
+
+  eval "${1}=\"\${${2}}_SIZE\""
+}
+
+array_get()
+{
+  if ! array_check "$1"
+  then
+    echo "not an array"
+    return -1
+  fi
+
+  eval "${1}=\"\${${2}}_${3}\""
+}
+
+array_set()
+{
+  if ! array_check "$1"
+  then
+    echo "not an array"
+    return -1
+  fi
+
+  eval "${1}=\"\${${2}}_${3}\""
+}
+
+array_add()
+{
+  if ! array_check "$1"
+  then
+    echo "not an array"
+    return -1
+  fi
+
+  eval "${1}=\"\${${2}}_${3}\""
+}
+
+array_unset()
+{
+  if ! array_check "$1"
+  then
+    echo "not an array"
+    return -1
+  fi
+
+  eval "${1}=\"\${${2}}_${3}\""
+}
+
+array()
+{
+  case "$1" in
+    "size") shift; array_size "$@";;
+    "get") shift; array_get "$@";;
+    "set") shift; array_set "$@";;
+    "add") shift; array_add "$@";;
+    "unset") shift; array_unset "$@";;
+    *) return -1;;
+  esac
+}
+
+test_array()
+{
+  array get x
+}
+
+#-------------------------------------------------------------------------------

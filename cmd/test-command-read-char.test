@@ -2,7 +2,7 @@
 
 #-------------------------------------------------------------------------------
 
-readc()
+readc___()
 {
   # arg: <variable-name>
   if [ -t 0 ]
@@ -18,19 +18,67 @@ readc()
 
   eval "$1="
 
+# characters and named control characters
   read dummy oct << EOF
-$(dd bs=1 count=1 2>/dev/null | od -b)
+$(dd bs=1 count=1 2>/dev/null | od -A n -t a)
 EOF
 echo "dummy=$dummy"
 echo "oct=$oct"
-printf %d "\\$oct"
-printf "\\$oct"
 
-#   read -r dummy oct << EOF
-# $(dd bs=1 count=1 2>/dev/null)
-# EOF
-# echo "dummy=$dummy"
-# echo "oct=$oct"
+# characters and named control characters
+  read dummy oct << EOF
+$(dd bs=1 count=1 2>/dev/null | od -A n -t a)
+EOF
+echo "dummy=$dummy"
+echo "oct=$oct"
+
+# characters and named control characters
+  read dummy oct << EOF
+$(dd bs=1 count=1 2>/dev/null | od -A n -t a)
+EOF
+echo "dummy=$dummy"
+echo "oct=$oct"
+
+# characters and named control characters
+  read dummy oct << EOF
+$(dd bs=1 count=1 2>/dev/null | od -A n -t a)
+EOF
+echo "dummy=$dummy"
+echo "oct=$oct"
+
+# octal no offset
+  read dummy oct << EOF
+$(dd bs=1 count=1 2>/dev/null | od -b -A n)
+EOF
+echo "dummy=$dummy"
+echo "oct=$oct"
+
+  read -r dummy oct << EOF
+$(dd bs=1 count=1 2>/dev/null)
+EOF
+echo "dummy=$dummy"
+echo "oct=$oct"
+
+  read -r dummy oct << EOF
+$(dd bs=1 count=1 2>/dev/null)
+EOF
+echo "dummy=$dummy"
+echo "oct=$oct"
+
+  read -r dummy oct << EOF
+$(dd bs=1 count=1 2>/dev/null)
+EOF
+echo "dummy=$dummy"
+echo "oct=$oct"
+
+# printf %d "\\$oct"
+# printf "\\$oct"
+
+  read -r dummy oct << EOF
+$(dd bs=1 count=1 2>/dev/null)
+EOF
+echo "dummy=$dummy"
+echo "oct=$oct"
 
   read -r char << EOF
 $(dd bs=1 count=1 2>/dev/null)
@@ -68,10 +116,161 @@ echo "char='$char'"
   fi
 }
 
+readc__()
+{
+  # arg: <variable-name>
+  if [ -t 0 ]
+  then
+    # if stdin is a tty device, put it out of icanon, set min and
+    # time to sane value, but don't otherwise touch other input or
+    # or local settings (echo, isig, icrnl...). Take a backup of the
+    # previous settings beforehand.
+    saved_tty_settings=$(stty -g)
+    stty -echo -icanon min 1 time 0
+    # stty -echo raw
+  else
+    echo "no tui"
+    exit 1
+  fi
+
+  eval "$1="
+
+# characters and named control characters
+  read key << EOF
+$(dd bs=1 count=1 2>/dev/null | od -A n -t a)
+EOF
+
+if [ "$key" = "esc" ]
+then
+  echo "escape character"
+  stty -echo -icanon min 0 time 0
+
+
+#   read key1 << EOF &
+# $(dd bs=1 count=1 2>/dev/null | od -A n -t a)
+# EOF
+
+# key1=$(dd bs=1 count=1 2>/dev/null | od -A n -t a) & pid="$!"
+# echo "pid=$pid"
+# sleep 1
+# kill "$pid"
+
+  read key1 << EOF
+$(dd bs=1 count=1 2>/dev/null | od -A n -t a)
+EOF
+echo "key1=$key1"
+
+  read key2 << EOF
+$(dd bs=1 count=1 2>/dev/null | od -A n -t a)
+EOF
+echo "key2=$key2"
+
+  stty time 0
+fi
+
+  if [ -t 0 ]
+  then
+    # restore settings saved earlier if stdin is a tty device.
+    stty "$saved_tty_settings"
+  fi
+}
+
+readc_()
+{
+  if [ -t 0 ]
+  then
+    saved_tty_settings=$(stty -g)
+    stty -echo -icanon min 1 time 0
+    # key="$(dd bs=1 count=1 2>/dev/null | od -A n -t a)"
+    read -r "$1" << EOF
+$(dd bs=1 count=1 2>/dev/null | od -A n -t a)
+EOF
+    # eval "$1='$key'"
+    stty "$saved_tty_settings"
+  else
+    echo "no tui"
+    exit 1
+  fi
+}
+
+readc_base()
+{
+  if [ -t 0 ]
+  then
+    saved_tty_settings=$(stty -g)
+    stty -echo -icanon min 1 time 0
+    read -r "$1" << EOF
+$(dd bs=1 count=1 2>/dev/null | od -A n -t a)
+EOF
+    stty "$saved_tty_settings"
+  else
+    echo "no tui"
+    exit 1
+  fi
+}
+
+readc()
+{
+  if [ -t 0 ]
+  then
+    saved_tty_settings=$(stty -g)
+    stty -echo -icanon min 1 time 0
+
+    read -r key << EOF
+$(dd bs=1 count=1 2>/dev/null | od -A n -t a)
+EOF
+
+    if [ "$key" = "esc" ]
+    then
+      stty -echo -icanon min 0 time 0
+      read -r key1 << EOF
+$(dd bs=1 count=1 2>/dev/null | od -A n -t a)
+EOF
+      read -r key2 << EOF
+$(dd bs=1 count=1 2>/dev/null | od -A n -t a)
+EOF
+      read -r key3 << EOF
+$(dd bs=1 count=1 2>/dev/null | od -A n -t a)
+EOF
+      read -r key4 << EOF
+$(dd bs=1 count=1 2>/dev/null | od -A n -t a)
+EOF
+      key="$key1$key2$key3$key4"
+      case "$key" in
+        "[A") key="up";;
+        "[B") key="down";;
+        "[C") key="right";;
+        "[D") key="left";;
+        "[3~") key="canc";;
+        *) key="esc$key";;
+      esac
+    elif [ "$key" = "sp" ]
+    then
+      key="space"
+    elif [ "$key" = "ht" ]
+    then
+      key="tab"
+    elif [ "$key" = "lf" ]
+    then
+      key="enter"
+    elif [ "$key" = "nl" ]
+    then
+      key="enter"
+    fi
+
+    eval "$1='$key'"
+
+    stty "$saved_tty_settings"
+  else
+    echo "no tty" 1>&2
+    exit 1
+  fi
+}
+
 test_readc()
 {
   readc charvar
-  echo "charvar: $charvar"
+  echo "charvar: '$charvar'"
 }
 
 #-------------------------------------------------------------------------------

@@ -23,7 +23,7 @@ for k in "${THIS_DIR}/${THIS_FILE}-"*".test"
 do
   if [ -f "$k" ]
   then
-    echo "importinng test file: $k"
+    echo "importing test file: $k"
     . "$k"
   fi
 done
