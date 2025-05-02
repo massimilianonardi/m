@@ -4,7 +4,8 @@
 
 array_check()
 {
-  eval "[ \"\${${1}}_TYPE\" = \"array\" ]"
+  # eval "[ \"\${${1}}_TYPE\" = \"array\" ]"
+  eval "[ \"\$${1}_TYPE\" = \"array\" ]"
 }
 
 array_size()
@@ -62,7 +63,7 @@ array_unset()
   eval "${1}=\"\${${2}}_${3}\""
 }
 
-array()
+array___()
 {
   case "$1" in
     "size") shift; array_size "$@";;
@@ -74,9 +75,118 @@ array()
   esac
 }
 
+array()
+{
+  eval "[ \"\$${1}_TYPE\" = \"array\" ]"
+  if [ ! "$?" = "0" ]
+  then
+    # if [ "$#" = "1" ] || [ "$2" = "new" ]
+    if [ "$#" = "1" ]
+    then
+      eval "${1}_TYPE=\"array\""
+      eval "${1}_SIZE=\"0\""
+      return 0
+    else
+      echo "not an array!" 1>&2
+      exit 1
+    fi
+  fi
+
+  case "$2" in
+    "size")
+      eval "${3}=\"\$${1}_SIZE\""
+    ;;
+    "get")
+      eval "${4}=\"\$${1}_${3}\""
+    ;;
+    "put")
+      eval "[ \"${3}\" -lt \"\$${1}_SIZE\" ] || exit 1"
+      eval "${1}_${3}=\"${4}\""
+    ;;
+    "add")
+      eval "set -- \"\$@\" \"\$${1}_SIZE\""
+      eval "${1}_${4}=\"${3}\""
+      eval "${1}_SIZE=\"\$((\$${1}_SIZE + 1))\""
+    ;;
+    "ins")
+      # todo
+      eval "${1}_SIZE=\"\$((\$${1}_SIZE + 1))\""
+    ;;
+    "rem")
+      # todo
+      eval "${1}_SIZE=\"\$((\$${1}_SIZE - 1))\""
+    ;;
+    "set_BAK")
+      set -- "$@" "${1}"
+      shift 2
+      # eval eval "\${$#}_SIZE=\"\$(($# - 1))\""
+      eval eval "\${$#}_SIZE=\"0\""
+      while [ "$#" -gt "1" ]
+      do
+        # eval echo "array=\${$#}"
+        # echo "nargs=$#"
+        # echo "args=$1"
+        eval eval eval "\${$#}_\\\${\${$#}_SIZE}=\\\\\\\"\\\\\\\$1\\\\\\\""
+        eval eval "\${$#}_SIZE=\"\$((\${$#}_SIZE + 1))\""
+        # eval eval echo "\\$\${$#}_SIZE"
+        # echo "assignement: \${$#}_\\\$((\\\${\${$#}_SIZE} - $#))=\"test\""
+        # eval echo "assignement: \${$#}_\\\${\${$#}_SIZE} - $#=\"test\""
+        # eval eval echo "\\\\\\\"assignement: \${$#}_\\\${\${$#}_SIZE} - $# + 1=\"test\"\\\\\\\""
+        shift
+      done
+    ;;
+    "set")
+      set -- "$@" "${1}"
+      shift 2
+      eval eval "\${$#}_SIZE=\"0\""
+      while [ "$#" -gt "1" ]
+      do
+        eval eval "\${$#}_\\\${\${$#}_SIZE}=\\\"$1\\\""
+        eval eval "\${$#}_SIZE=\"\\\$((\${$#}_SIZE + 1))\""
+        shift
+      done
+    ;;
+    "unset")
+      eval "set -- \"\$1\" \"\$${1}_SIZE\""
+      while [ "$2" -gt "0" ]
+      do
+        eval "${1}_SIZE=\"\$((\$${1}_SIZE - 1))\""
+        eval "set -- \"\$1\" \"\$${1}_SIZE\""
+        eval eval "unset ${1}_\${${1}_SIZE}"
+      done
+      eval "unset ${1}_SIZE"
+      eval "unset ${1}_TYPE"
+    ;;
+    *) exit 1;;
+  esac
+}
+
 test_array()
 {
-  array get x
+  # array ARRAY_NAME [size|get|set|add|unset] args...
+  # array ARRAY_NAME size SIZE_VAR_NAME
+  # array ARRAY_NAME get INDEX ELEM_VAR_NAME
+  # array ARRAY_NAME put INDEX NEW_VALUE
+  # array ARRAY_NAME add NEW_VALUE
+  # array ARRAY_NAME ins INDEX NEW_VALUE
+  # array ARRAY_NAME rem INDEX NEW_VALUE
+  # array ARRAY_NAME set NEW_VALUES...
+
+  # array get x
+  # x_TYPE=array
+  # array x
+  # array myarray new
+  array myarray
+  array myarray add "added value"
+  array myarray add "added value 2"
+  array myarray add "added value 3"
+  array myarray put 2 "replaced value"
+  array myarray get 1 myvar
+  echo "myvar=$myvar"
+  array myarray set "new val 0" "new val 1" "new val 2" "new val 3" "new val 4"
+  # array myarray unset
+
+  set | grep myarray
 }
 
 #-------------------------------------------------------------------------------
