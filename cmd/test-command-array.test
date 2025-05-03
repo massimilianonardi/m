@@ -80,7 +80,6 @@ array()
   eval "[ \"\$${1}_TYPE\" = \"array\" ]"
   if [ ! "$?" = "0" ]
   then
-    # if [ "$#" = "1" ] || [ "$2" = "new" ]
     if [ "$#" = "1" ]
     then
       eval "${1}_TYPE=\"array\""
@@ -101,7 +100,7 @@ array()
     ;;
     "put")
       eval "[ \"${3}\" -lt \"\$${1}_SIZE\" ] || exit 1"
-      eval "${1}_${3}=\"${4}\""
+      eval "${1}_${3}=\"\${4}\""
     ;;
     "add")
       eval "set -- \"\$@\" \"\$${1}_SIZE\""
@@ -136,14 +135,20 @@ array()
       done
     ;;
     "set")
-      set -- "$@" "${1}"
-      shift 2
-      eval eval "\${$#}_SIZE=\"0\""
-      while [ "$#" -gt "1" ]
+      eval "${1}_SIZE=\"0\""
+      # set -- "$@" "${1}"
+      # shift 2
+      # eval eval "\${$#}_SIZE=\"0\""
+      # while [ "$#" -gt "1" ]
+      # while [ "$(eval echo "\$${1}_SIZE")" -lt "$#" ]
+      while eval "[ \"\$${1}_SIZE\" -lt \"$#\" ]"
+      # while [ "$(eval echo "\$${1}_SIZE")" -lt "$(($# - 2))" ]
+      # while eval "[ \"\$${1}_SIZE\" -lt \"\$(($# - 2))\" ]"
       do
-        eval eval "\${$#}_\\\${\${$#}_SIZE}=\\\"$1\\\""
-        eval eval "\${$#}_SIZE=\"\\\$((\${$#}_SIZE + 1))\""
-        shift
+        eval "${1}_SIZE=\"\$((\$${1}_SIZE + 1))\""
+        # eval eval "\${$#}_\\\${\${$#}_SIZE}=\\\"$1\\\""
+        # eval eval "\${$#}_SIZE=\"\\\$((\${$#}_SIZE + 1))\""
+        # shift
       done
     ;;
     "unset")
@@ -152,7 +157,7 @@ array()
       do
         eval "${1}_SIZE=\"\$((\$${1}_SIZE - 1))\""
         eval "set -- \"\$1\" \"\$${1}_SIZE\""
-        eval eval "unset ${1}_\${${1}_SIZE}"
+        eval "unset ${1}_${2}"
       done
       eval "unset ${1}_SIZE"
       eval "unset ${1}_TYPE"
