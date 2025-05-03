@@ -96,6 +96,7 @@ array()
       eval "${3}=\"\$${1}_SIZE\""
     ;;
     "get")
+      eval "[ \"${3}\" -lt \"\$${1}_SIZE\" ] || exit 1"
       eval "${4}=\"\$${1}_${3}\""
     ;;
     "put")
@@ -141,15 +142,30 @@ array()
       # eval eval "\${$#}_SIZE=\"0\""
       # while [ "$#" -gt "1" ]
       # while [ "$(eval echo "\$${1}_SIZE")" -lt "$#" ]
-      while eval "[ \"\$${1}_SIZE\" -lt \"$#\" ]"
+      # while eval "[ \"\$${1}_SIZE\" -lt \"$#\" ]"
       # while [ "$(eval echo "\$${1}_SIZE")" -lt "$(($# - 2))" ]
-      # while eval "[ \"\$${1}_SIZE\" -lt \"\$(($# - 2))\" ]"
+      while eval "[ \"\$${1}_SIZE\" -lt \"\$(($# - 2))\" ]"
       do
+        # arraytr $1 \$${1}_SIZE
+        # arrayassign $1 \$${1}_SIZE ${$((${1}_SIZE + 2))}
+        eval "${1}_TMP=\$((${1}_SIZE + 3))"
+        eval eval "${1}_TMP=\\\"\\\${\$${1}_TMP}\\\""
+        arrayassign $1 "\$${1}_SIZE" "\$${1}_TMP"
+        # arrayassign $1 "\$${1}_SIZE" "\$((${1}_SIZE + 3))"
+        # arrayassign $1 "\$${1}_SIZE" "\$$(arrayget $1 "\$${1}_SIZE")"
+        # eval eval echo "\$$(arrayget $1 "\$${1}_SIZE")"
+        # arrayassign $1 "\$${1}_SIZE" "\\\${\$((${1}_SIZE + 3))}"
+        # eval "${1}_TMP=\"${1}_\$${1}_SIZE\""
+        # eval echo "tmp: \$${1}_TMP"
+        # eval "${1}_TMP2=\"\$${1}_SIZE\""
+        # eval echo "tmp2: \\\$\$${1}_TMP2"
+        # eval "${1}_${3}=\"\${4}\""
         eval "${1}_SIZE=\"\$((\$${1}_SIZE + 1))\""
         # eval eval "\${$#}_\\\${\${$#}_SIZE}=\\\"$1\\\""
         # eval eval "\${$#}_SIZE=\"\\\$((\${$#}_SIZE + 1))\""
         # shift
       done
+      eval "unset ${1}_TMP"
     ;;
     "unset")
       eval "set -- \"\$1\" \"\$${1}_SIZE\""
@@ -164,6 +180,21 @@ array()
     ;;
     *) exit 1;;
   esac
+}
+
+arraytr()
+{
+  eval echo "${1}_${2}"
+}
+
+arrayassign()
+{
+  eval eval "${1}_${2}=\"\${3}\""
+}
+
+arrayget()
+{
+  eval echo "${1}_${2}"
 }
 
 test_array()
