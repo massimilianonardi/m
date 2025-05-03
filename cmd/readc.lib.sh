@@ -58,4 +58,12 @@ EOF
   fi
 )
 
-readc
+readch()
+{
+  if [ -z "$1" ]
+  then
+    readc
+  else
+    eval "$1='$(readc)'"
+  fi
+}

@@ -37,3 +37,12 @@
 2025/05/04-01:03:24.233 173d compacted to: files[ 0 0 1 0 0 0 0 ]
 2025/05/04-01:03:24.233 173d Delete type=2 #66
 2025/05/04-01:03:24.233 173d Delete type=2 #68
+2025/05/04-01:21:50.136 17dc Level-0 table #71: started
+2025/05/04-01:21:50.168 17dc Level-0 table #71: 1564730 bytes OK
+2025/05/04-01:21:50.171 17dc Delete type=0 #67
+2025/05/04-01:24:34.238 17dc Compacting 1@1 + 1@2 files
+2025/05/04-01:24:34.243 17dc Generated table #72@1: 41 keys, 9888 bytes
+2025/05/04-01:24:34.243 17dc Compacted 1@1 + 1@2 files => 9888 bytes
+2025/05/04-01:24:34.243 17dc compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/05/04-01:24:34.243 17dc Delete type=2 #71
+2025/05/04-01:24:34.244 17dc Delete type=2 #69

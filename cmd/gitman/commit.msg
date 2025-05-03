@@ -1,1 +1,1 @@
-posix arrays completed and tested
+posix readc (echoes char) readch (echoes or assign to variable)
