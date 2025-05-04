@@ -1,1 +1,1 @@
-posix readc (echoes char) readch (echoes or assign to variable)
+posix realpaths.lib.sh
