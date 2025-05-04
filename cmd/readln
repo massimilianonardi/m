@@ -1,0 +1,11 @@
+#!/bin/sh
+
+if [ -L "$1" ]
+then
+  THIS_PATH="$(ls -ld -- "$1")"
+  THIS_PATH="${THIS_PATH#*" $1 -> "}"
+else
+  THIS_PATH="$1"
+fi
+
+echo "$THIS_PATH"
