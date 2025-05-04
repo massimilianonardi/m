@@ -2,10 +2,18 @@
 
 if [ -L "$1" ]
 then
-  THIS_PATH="$(ls -ld -- "$1")"
-  THIS_PATH="${THIS_PATH#*" $1 -> "}"
+  TARGET=$(ls -ld -- "$1" 2>/dev/null) || exit 1
+  # TARGET="$(ls -ld -- "$1")"
+  TARGET="${TARGET#*" $1 -> "}"
+elif [ -e "$1" ]
+then
+  TARGET="$1"
+  if [ "$TARGET" = "${TARGET#/}" ] && [ "$TARGET" = "${TARGET#./}" ] && [ "$TARGET" = "${TARGET#../}" ]
+  then
+    TARGET="./$TARGET"
+  fi
 else
-  THIS_PATH="$1"
+  exit 1
 fi
 
-echo "$THIS_PATH"
+echo "$TARGET"

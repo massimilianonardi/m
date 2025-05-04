@@ -1,104 +1,12 @@
 #!/bin/sh
 
-path_readlink()
-(
-  if [ -L "$1" ]
-  then
-#    TARGET=$(ls -ld -- "$1" 2>/dev/null) || exit 1
-    TARGET="$(ls -ld -- "$1")"
-    TARGET="${TARGET#*" $1 -> "}"
-  elif [ -e "$1" ]
-  then
-    TARGET="$1"
-    if [ "$TARGET" = "${TARGET#/}" ] && [ "$TARGET" = "${TARGET#./}" ] && [ "$TARGET" = "${TARGET#../}" ]
-    then
-      TARGET="./$TARGET"
-    fi
-  else
-    log_fatal "path doesn't exist!"
-    exit 1
-  fi
-
-  echo "$TARGET"
-)
-
-path_absolute()
-{
-  if [ -d "$1" ]
-  then
-    cd -L -- "$1" && pwd -L
-  elif [ -f "$1" ]
-  then
-    # echo "$(cd -L -- "${1%/*}" && pwd -L)/${1##*/}"
-    echo "$(cd -L -- "$(dirname -- "$1")" && pwd -L)/$(basename -- "$1")"
-  else
-    log_fatal "path doesn't exist!"
-    exit 1
-  fi
-}
-
-path_resolve_links_absolute()
-(
-  if [ -d "$1" ]
-  then
-    cd -P -- "$1" && pwd -P
-  elif [ -f "$1" ] && [ -L "$1" ]
-  then
-    TARGET="$(ls -ld -- "$1")"
-    TARGET="${TARGET#*" $1 -> "}"
-    if [ "$TARGET" = "${TARGET#/}" ]
-    then
-      # relative link
-      TARGET="$(dirname -- "$1")/$TARGET"
-    fi
-    echo "$(cd -P -- "$(dirname -- "$TARGET")" && pwd -P)/$(basename -- "$TARGET")"
-  elif [ -f "$1" ]
-  then
-    echo "$(cd -P -- "$(dirname -- "$1")" && pwd -P)/$(basename -- "$1")"
-  else
-    log_fatal "path doesn't exist!"
-    exit 1
-  fi
-)
-
-
-
-
-# if [ -L "$1" ]
-# then
-#   THIS_PATH="$(ls -ld -- "$1")"
-#   THIS_PATH="${THIS_PATH#*" $1 -> "}"
-# elif [ -d "$1" ]
-# then
-#   THIS_PATH="$(cd -P -- "$THIS_PATH%" && pwd -P)"
-# else
-#   THIS_PATH="$1"
-# fi
-#
-# THIS_FILE="${THIS_PATH##*/}"
-# THIS_DIR="$(cd -P -- "${THIS_PATH%/*}" && pwd -P)"
-#
-# echo "$THIS_DIR/$THIS_FILE"
-
-
-
-# resolve last link
-if [ -L "$1" ]
+if [ -d "$1" ]
 then
-  THIS_PATH="$(ls -ld -- "$1")"
-  THIS_PATH="${THIS_PATH#*" $1 -> "}"
-else
-  THIS_PATH="$1"
-fi
-
-if [ -d "$THIS_PATH" ]
+  cd -L -- "$1" && pwd -L
+elif [ -f "$1" ]
 then
-  cd -P -- "$THIS_PATH%" && pwd -P
+  echo "$(cd -L -- "${1%/*}" && pwd -L)/${1##*/}"
+  # echo "$(cd -L -- "$(dirname -- "$1")" && pwd -L)/$(basename -- "$1")"
 else
-  THIS_FILE="${THIS_PATH##*/}"
-  THIS_DIR="$(cd -P -- "${THIS_PATH%/*}" && pwd -P)"
-
-  echo "$THIS_DIR/$THIS_FILE"
+  exit 1
 fi
-
-# echo "$THIS_PATH"

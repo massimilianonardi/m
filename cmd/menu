@@ -40,10 +40,112 @@ printline()
   echo "$@" 1>&2
 }
 
-vars_init()
+array()
 {
-  FILE_ARRAY_POS="0"
-  CURSOR_POS="0"
+  eval "[ \"\$${1}_TYPE\" = \"array\" ]"
+  if [ ! "$?" = "0" ]
+  then
+    if [ "$#" = "1" ]
+    then
+      eval "${1}_TYPE=\"array\""
+      eval "${1}_SIZE=\"0\""
+      return 0
+    else
+      echo "not an array!" 1>&2
+      exit 1
+    fi
+  fi
+
+  case "$2" in
+    "size")
+      if [ -z "$3" ]
+      then
+        eval "echo \"\$${1}_SIZE\""
+      else
+        eval "${3}=\"\$${1}_SIZE\""
+      fi
+    ;;
+    "get")
+      if [ -z "$3" ]
+      then
+        while eval "[ \"\$(($# - 2))\" -lt \"\$${1}_SIZE\" ]"
+        do
+          set -- "$@" "$(array "$1" get $(($# - 2)))"
+        done
+        shift 2
+        echo "$@"
+        return 0
+      fi
+      eval "[ \"${3}\" -lt \"\$${1}_SIZE\" ] || exit 1"
+      if [ -z "$4" ]
+      then
+        eval "echo \"\$${1}_${3}\""
+      else
+        eval "${4}=\"\$${1}_${3}\""
+      fi
+    ;;
+    "put")
+      eval "[ \"${3}\" -lt \"\$${1}_SIZE\" ] || exit 1"
+      eval "${1}_${3}=\"\${4}\""
+    ;;
+    "add")
+      eval "set -- \"\$@\" \"\$${1}_SIZE\""
+      eval "${1}_${4}=\"${3}\""
+      eval "${1}_SIZE=\"\$((\$${1}_SIZE + 1))\""
+    ;;
+    "ins")
+      eval "[ \"${3}\" -lt \"\$${1}_SIZE\" ] || exit 1"
+      set -- "$@" "$1" "set"
+      while [ "$(($# - 6))" -lt "$3" ]
+      do
+        set -- "$@" "$(array "$1" get $(($# - 6)))"
+      done
+      set -- "$@" "$4"
+      while eval "[ \"\$(($# - 7))\" -lt \"\$${1}_SIZE\" ]"
+      do
+        set -- "$@" "$(array "$1" get $(($# - 7)))"
+      done
+      shift 4
+      array "$@"
+    ;;
+    "rem")
+      eval "[ \"${3}\" -lt \"\$${1}_SIZE\" ] || exit 1"
+      set -- "$@" "$1" "set"
+      while [ "$(($# - 5))" -lt "$3" ]
+      do
+        set -- "$@" "$(array "$1" get $(($# - 5)))"
+      done
+      while eval "[ \"\$(($# - 4))\" -lt \"\$${1}_SIZE\" ]"
+      do
+        set -- "$@" "$(array "$1" get $(($# - 4)))"
+      done
+      shift 3
+      array "$@"
+    ;;
+    "set")
+      array "$1" unset
+      array "$1"
+      set -- "$@" "${1}"
+      shift 2
+      while [ "$#" -gt "1" ]
+      do
+        eval "array \"\$$#\" add \"\$1\""
+        shift
+      done
+    ;;
+    "unset")
+      eval "set -- \"\$1\" \"\$${1}_SIZE\""
+      while [ "$2" -gt "0" ]
+      do
+        eval "${1}_SIZE=\"\$((\$${1}_SIZE - 1))\""
+        eval "set -- \"\$1\" \"\$${1}_SIZE\""
+        eval "unset ${1}_${2}"
+      done
+      eval "unset ${1}_SIZE"
+      eval "unset ${1}_TYPE"
+    ;;
+    *) exit 1;;
+  esac
 }
 
 update_screen_vars()
@@ -62,19 +164,40 @@ update_screen_vars()
 
 load_menu()
 {
+  array MENU_IDS
+  array MENU_TEXTS
+
   for k in "$@"
   do
-    FILES_ARRAY+=("$k")
+    ID="${k%%=*}"
+    TEXT="${k#*=}"
+    array MENU_IDS add "$ID"
+    array MENU_TEXTS add "$TEXT"
+    # echo "id=$ID - text=$TEXT"
   done
+  # array MENU_IDS get
+  # array MENU_TEXTS get
 
-  vars_init
+  ARRAY_POS="0"
+  CURSOR_POS="0"
 }
 
 return_selection()
 {
-  SELECTED_POS="$((FILE_ARRAY_POS + CURSOR_POS))"
+  SELECTED_POS="$((ARRAY_POS + CURSOR_POS))"
 
   quit "$SELECTED_POS"
+}
+
+screen_init()
+{
+  # fix fo initial wrong values of size from tput
+  tput clear
+  for k in {0..999}
+  do
+    echo -n "                                                 " 1>&2
+  done
+  tput clear
 }
 
 update_screen_list()
@@ -111,29 +234,29 @@ scroll_cursor()
 
   if [ "$CURSOR_POS" -lt "0" ]
   then
-    FILE_ARRAY_POS="$(($FILE_ARRAY_POS + $1))"
+    ARRAY_POS="$(($ARRAY_POS + $1))"
     CURSOR_POS="0"
     UPDATE_SCREEN="true"
   elif [ "$CURSOR_POS" -gt "$(($ROWS - 1))" ]
   then
-    FILE_ARRAY_POS="$(($FILE_ARRAY_POS + $1))"
+    ARRAY_POS="$(($ARRAY_POS + $1))"
     CURSOR_POS="$(($ROWS - 1))"
     UPDATE_SCREEN="true"
   fi
 
-  if [ "$FILE_ARRAY_POS" -lt "0" ]
+  if [ "$ARRAY_POS" -lt "0" ]
   then
-    FILE_ARRAY_POS=0
+    ARRAY_POS=0
     # UPDATE_SCREEN=false
-  elif [ "$FILE_ARRAY_POS" -gt "$((${#FILES_ARRAY[@]} - $ROWS))" ]
+  elif [ "$ARRAY_POS" -gt "$((${#FILES_ARRAY[@]} - $ROWS))" ]
   then
-    FILE_ARRAY_POS="$((${#FILES_ARRAY[@]} - $ROWS))"
+    ARRAY_POS="$((${#FILES_ARRAY[@]} - $ROWS))"
     # UPDATE_SCREEN=false
   fi
 
   if [ "$UPDATE_SCREEN" = true ]
   then
-    update_screen_list $((FILE_ARRAY_POS))
+    update_screen_list $((ARRAY_POS))
   fi
 
   tput cup $CURSOR_POS 0
@@ -213,27 +336,24 @@ key_loop()
   done
 }
 
-screen_init()
-{
-  # fix fo initial wrong values of size from tput
-  tput clear
-  for k in {0..999}
-  do
-    echo -n "                                                 " 1>&2
-  done
-  tput clear
-}
-
 main()
 {
-  if [ -z "$*" ]
+  if [ -z "$*" ] || [ "$#" -lt "5" ] || [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ -z "$4" ] || [ -z "$5" ]
   then
     exit 1
   fi
 
+  ROW_1="$1"
+  ROW_2="$2"
+  COL_1="$3"
+  COL_2="$4"
+  shift 4
+
   load_menu "$@"
 
+  trap "cursor_addressing_mode_exit" INT QUIT TERM HUP PIPE ABRT CHLD TSTP EXIT
   cursor_addressing_mode_enter
+
   screen_init
   update_screen_list 0
   key_loop

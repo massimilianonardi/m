@@ -31,6 +31,7 @@ command:
   - menu: input 2 arrays id+label -> 1 array "id=label", return selected id (enter to select, q to quit)
       convert to posix sh to allow sourcing and easy complex return value
       render menu within rectangle coordinates to allow surrounding with other text
+      menu row_1 row_2 col_1 col_2 [id=label]...
 
 --------------------------------------------------------------------------------
 

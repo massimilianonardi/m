@@ -1,1 +1,1 @@
-posix resolvepath
+posix resolvepath, resolveln, readln
