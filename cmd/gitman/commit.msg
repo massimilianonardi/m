@@ -1,1 +1,1 @@
-posix resolvepath, resolveln, readln
+posix tui menu

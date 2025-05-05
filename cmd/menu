@@ -1,44 +1,4 @@
-#!/bin/bash
-
-cursor_addressing_mode_enter()
-{
-  tput sc
-  tput smcup
-  tput clear
-}
-
-cursor_addressing_mode_exit()
-{
-  tput clear
-  tput rmcup
-  tput rc
-}
-
-quit()
-{
-  cursor_addressing_mode_exit
-
-  if [ -z "$1" ]
-  then
-    exit 0
-  else
-    echo "${FILES_ARRAY[$1]}"
-    exit "$1"
-  fi
-}
-
-log()
-{
-  tput sc
-  tput cup $(("$TERM_ROWS")) 0
-  echo -n "$@" 1>&2
-  tput rc
-}
-
-printline()
-{
-  echo "$@" 1>&2
-}
+#!/bin/sh
 
 array()
 {
@@ -148,120 +108,6 @@ array()
   esac
 }
 
-update_screen_vars()
-{
-  TERM_ROWS="$(tput lines)"
-  TERM_COLS="$(tput cols)"
-
-  ROWS="$(($TERM_ROWS - 0))"
-  COLS="$(($TERM_COLS - 0))"
-
-  if [ "${#FILES_ARRAY[@]}" -lt "$ROWS" ]
-  then
-    ROWS="${#FILES_ARRAY[@]}"
-  fi
-}
-
-load_menu()
-{
-  array MENU_IDS
-  array MENU_TEXTS
-
-  for k in "$@"
-  do
-    ID="${k%%=*}"
-    TEXT="${k#*=}"
-    array MENU_IDS add "$ID"
-    array MENU_TEXTS add "$TEXT"
-    # echo "id=$ID - text=$TEXT"
-  done
-  # array MENU_IDS get
-  # array MENU_TEXTS get
-
-  ARRAY_POS="0"
-  CURSOR_POS="0"
-}
-
-return_selection()
-{
-  SELECTED_POS="$((ARRAY_POS + CURSOR_POS))"
-
-  quit "$SELECTED_POS"
-}
-
-screen_init()
-{
-  # fix fo initial wrong values of size from tput
-  tput clear
-  for k in {0..999}
-  do
-    echo -n "                                                 " 1>&2
-  done
-  tput clear
-}
-
-update_screen_list()
-{
-  update_screen_vars
-  tput clear
-
-  INDEX_START=$1
-  INDEX_END=$((ROWS+$1))
-  if [ "$INDEX_END" -gt "${#FILES_ARRAY[@]}" ]
-  then
-    INDEX_END="${#FILES_ARRAY[@]}"
-  fi
-
-  for (( i=INDEX_START; i<INDEX_END; i++ ))
-  do
-    line="${FILES_ARRAY[i]}"
-    size="${#line}"
-    if [ "$size" -gt "$COLS" ]
-    then
-      line="${line:0:$COLS} [...]"
-    fi
-    printline "$line"
-  done
-
-  tput cup "$CURSOR_POS" 0
-}
-
-scroll_cursor()
-{
-  CURSOR_POS="$(($CURSOR_POS + $1))"
-
-  UPDATE_SCREEN="false"
-
-  if [ "$CURSOR_POS" -lt "0" ]
-  then
-    ARRAY_POS="$(($ARRAY_POS + $1))"
-    CURSOR_POS="0"
-    UPDATE_SCREEN="true"
-  elif [ "$CURSOR_POS" -gt "$(($ROWS - 1))" ]
-  then
-    ARRAY_POS="$(($ARRAY_POS + $1))"
-    CURSOR_POS="$(($ROWS - 1))"
-    UPDATE_SCREEN="true"
-  fi
-
-  if [ "$ARRAY_POS" -lt "0" ]
-  then
-    ARRAY_POS=0
-    # UPDATE_SCREEN=false
-  elif [ "$ARRAY_POS" -gt "$((${#FILES_ARRAY[@]} - $ROWS))" ]
-  then
-    ARRAY_POS="$((${#FILES_ARRAY[@]} - $ROWS))"
-    # UPDATE_SCREEN=false
-  fi
-
-  if [ "$UPDATE_SCREEN" = true ]
-  then
-    update_screen_list $((ARRAY_POS))
-  fi
-
-  tput cup $CURSOR_POS 0
-}
-
 readc()
 {
   if [ -t 0 ]
@@ -320,6 +166,171 @@ EOF
   fi
 }
 
+#-------------------------------------------------------------------------------
+
+cursor_addressing_mode_enter()
+{
+  tput sc
+  tput smcup
+  tput clear
+}
+
+cursor_addressing_mode_exit()
+{
+  tput clear
+  tput rmcup
+  tput rc
+}
+
+trap_quit()
+{
+  cursor_addressing_mode_exit
+  echo "trap_quit"
+  exit 2
+}
+
+quit()
+{
+  cursor_addressing_mode_exit
+
+  if [ -z "$1" ]
+  then
+    exit 1
+  else
+    array MENU_IDS get "$1"
+    exit "$1"
+  fi
+}
+
+log()
+{
+  tput sc
+  tput cup $(("$TERM_ROWS")) 0
+  echo -n "$@" 1>&2
+  tput rc
+}
+
+printline()
+{
+  echo "$@" 1>&2
+}
+
+update_screen_vars()
+{
+  TERM_ROWS="$(tput lines)"
+  TERM_COLS="$(tput cols)"
+
+  ROWS="$(($TERM_ROWS - 0))"
+  COLS="$(($TERM_COLS - 0))"
+
+  if [ "$ARRAY_SIZE" -lt "$ROWS" ]
+  then
+    ROWS="$ARRAY_SIZE"
+  fi
+}
+
+load_menu()
+{
+  array MENU_IDS
+  array MENU_TEXTS
+
+  for k in "$@"
+  do
+    ID="${k%%=*}"
+    TEXT="${k#*=}"
+    array MENU_IDS add "$ID"
+    array MENU_TEXTS add "$TEXT"
+  done
+
+  ARRAY_SIZE="$(array MENU_IDS size)"
+  ARRAY_POS="0"
+  CURSOR_POS="0"
+}
+
+return_selection()
+{
+  SELECTED_POS="$((ARRAY_POS + CURSOR_POS))"
+
+  quit "$SELECTED_POS"
+}
+
+screen_init()
+{
+  # fix fo initial wrong values of size from tput
+  tput clear
+  i=0
+  while [ "$i" -lt "999" ]
+  do
+    echo -n "                                                 " 1>&2
+    i="$(($i + 1))"
+  done
+  tput clear
+}
+
+update_screen_list()
+{
+  update_screen_vars
+  tput clear
+
+  INDEX_START=$1
+  INDEX_END=$((ROWS+$1))
+  if [ "$INDEX_END" -gt "$ARRAY_SIZE" ]
+  then
+    INDEX_END="$ARRAY_SIZE"
+  fi
+
+  i="$INDEX_START"
+  while [ "$i" -lt "$INDEX_END" ]
+  do
+    line="$(array MENU_TEXTS get "$i")"
+    # size="${#line}"
+    # if [ "$size" -gt "$COLS" ]
+    # then
+    #   line="${line:0:$COLS} [...]"
+    # fi
+    printline "$line"
+    i="$(($i + 1))"
+  done
+
+  tput cup "$CURSOR_POS" 0
+}
+
+scroll_cursor()
+{
+  CURSOR_POS="$(($CURSOR_POS + $1))"
+
+  UPDATE_SCREEN="false"
+
+  if [ "$CURSOR_POS" -lt "0" ]
+  then
+    ARRAY_POS="$(($ARRAY_POS + $1))"
+    CURSOR_POS="0"
+    UPDATE_SCREEN="true"
+  elif [ "$CURSOR_POS" -gt "$(($ROWS - 1))" ]
+  then
+    ARRAY_POS="$(($ARRAY_POS + $1))"
+    CURSOR_POS="$(($ROWS - 1))"
+    UPDATE_SCREEN="true"
+  fi
+
+  if [ "$ARRAY_POS" -lt "0" ]
+  then
+    ARRAY_POS=0
+    # UPDATE_SCREEN=false
+  elif [ "$ARRAY_POS" -gt "$(($ARRAY_SIZE - $ROWS))" ]
+  then
+    ARRAY_POS="$(($ARRAY_SIZE - $ROWS))"
+    # UPDATE_SCREEN=false
+  fi
+
+  if [ "$UPDATE_SCREEN" = true ]
+  then
+    update_screen_list $((ARRAY_POS))
+  fi
+
+  tput cup $CURSOR_POS 0
+}
+
 key_loop()
 {
   while true
@@ -351,7 +362,9 @@ main()
 
   load_menu "$@"
 
-  trap "cursor_addressing_mode_exit" INT QUIT TERM HUP PIPE ABRT CHLD TSTP EXIT
+  # trap "trap_quit" INT QUIT TERM HUP PIPE ABRT CHLD TSTP EXIT
+  # trap "trap_quit" INT QUIT TERM HUP PIPE ABRT
+  trap "trap_quit" INT QUIT TERM HUP PIPE ABRT TSTP EXIT
   cursor_addressing_mode_enter
 
   screen_init
