@@ -176,7 +176,7 @@ EOF
 #   # printf "$@" 1>&2
 #   printf "$@"
 #   tput rc
-}
+# }
 
 printline()
 {
@@ -262,9 +262,18 @@ load_menu()
   ARRAY_SIZE="$(array MENU_IDS size)"
   ARRAY_POS="0"
   CURSOR_POS="0"
+
+  if [ "$ARRAY_SIZE" -lt "$TERM_ROWS" ]
+  then
+    ROWS="$ARRAY_SIZE"
+  else
+    ROWS="$TERM_ROWS"
+    # ROWS="$(($TERM_ROWS - 1))"
+  fi
+  COLS="$TERM_COLS"
 }
 
-update_screen_list()
+update_screen_list___()
 {
   ROWS="$(($TERM_ROWS - 1))"
   COLS="$(($TERM_COLS - 1))"
@@ -299,7 +308,7 @@ update_screen_list()
   tput cup "$CURSOR_POS" 0
 }
 
-scroll_cursor()
+scroll_cursor___()
 {
   CURSOR_POS="$(($CURSOR_POS + $1))"
 
@@ -335,6 +344,132 @@ scroll_cursor()
   tput cup $CURSOR_POS 0
 }
 
+scroll_cursor_to___()
+{
+  # ARRAY_POS="$(($ARRAY_SIZE - 1))"
+  ARRAY_POS="$1"
+  update_screen_list $ARRAY_POS
+}
+
+print_menu_entry()
+{
+  line="$(array MENU_TEXTS get "$1")"
+  # size="${#line}"
+  # if [ "$size" -gt "$COLS" ]
+  # then
+  #   line="${line:0:$COLS} [...]"
+  # fi
+  # printf "$1" "$line" "$@"
+  printf "$1 $line"
+  if [ "$2" = "true" ]
+  then
+    echo ""
+  else
+    # put cursor at beginning of the printed line
+    true
+  fi
+}
+
+update_screen_list()
+{
+  tput clear
+
+  INDEX_START=$1
+  INDEX_END=$((ROWS + $1 - 1))
+
+  i="$INDEX_START"
+  while [ "$i" -lt "$INDEX_END" ]
+  do
+    print_menu_entry "$i" true
+    i="$(($i + 1))"
+  done
+  print_menu_entry "$i"
+
+  tput cup "$CURSOR_POS" 0
+}
+
+scroll_cursor()
+{
+  UPDATE_SCREEN="false"
+
+  CURSOR_POS="$(($CURSOR_POS + $1))"
+  ARRAY_POS="$(($ARRAY_POS + $1))"
+
+  if [ "$CURSOR_POS" -lt "0" ]
+  then
+    CURSOR_POS="0"
+    UPDATE_SCREEN="true"
+  elif [ "$CURSOR_POS" -gt "$(($ROWS - 1))" ]
+  then
+    CURSOR_POS="$(($ROWS - 1))"
+    UPDATE_SCREEN="true"
+  fi
+
+  if [ "$ARRAY_POS" -lt "0" ]
+  then
+    ARRAY_POS=0
+  elif [ "$ARRAY_POS" -gt "$(($ARRAY_SIZE - 1))" ]
+  then
+    ARRAY_POS="$(($ARRAY_SIZE - 1))"
+  fi
+
+  if [ "$UPDATE_SCREEN" = true ]
+  then
+    update_screen_list "$((ARRAY_POS - $CURSOR_POS))"
+    # update_screen_list "$((ARRAY_POS - $CURSOR_POS + 1))"
+  fi
+
+  tput cup $CURSOR_POS 0
+}
+
+scroll_page()
+{
+  scroll_cursor $(($1 * ($ROWS - 1)))
+}
+
+move_cursor_to()
+{
+  ARRAY_POS="0"
+  CURSOR_POS="0"
+  scroll_cursor "$1"
+  update_screen_list "$((ARRAY_POS - $CURSOR_POS))"
+
+  # ARRAY_POS="$1"
+  # CURSOR_POS="$(($1 % $ROWS))"
+  # update_screen_list "$((ARRAY_POS - $CURSOR_POS))"
+
+  # UPDATE_SCREEN="false"
+  #
+  # if [ "$CURSOR_POS" -lt "0" ]
+  # then
+  #   CURSOR_POS="0"
+  #   ARRAY_POS="0"
+  #   UPDATE_SCREEN="true"
+  # elif [ "$CURSOR_POS" -gt "$(($ROWS - 1))" ]
+  # then
+  #   CURSOR_POS="$(($ROWS - 1))"
+  #   ARRAY_POS="$(($ARRAY_POS + $1))"
+  #   UPDATE_SCREEN="true"
+  # fi
+  #
+  # if [ "$ARRAY_POS" -lt "0" ]
+  # then
+  #   ARRAY_POS=0
+  #   # UPDATE_SCREEN=false
+  # elif [ "$ARRAY_POS" -gt "$(($ARRAY_SIZE - $ROWS))" ]
+  # then
+  #   ARRAY_POS="$(($ARRAY_SIZE - $ROWS))"
+  #   # UPDATE_SCREEN=false
+  # fi
+  #
+  # if [ "$UPDATE_SCREEN" = true ]
+  # then
+  #   update_screen_list $((ARRAY_POS))
+  # fi
+
+  tput cup $CURSOR_POS 0
+}
+
 key_loop()
 {
   while true
@@ -343,12 +478,12 @@ key_loop()
 
     case "$key" in
       "q") quit;;
-      "up") scroll_cursor -1;;
-      "down") scroll_cursor +1;;
-      "pageup") scroll_cursor $((- $TERM_ROWS + 1));;
-      "pagedown") scroll_cursor $(($TERM_ROWS - 1));;
-      "home") ARRAY_POS=0; update_screen_list 0;;
-      "end") ARRAY_POS="$(($ARRAY_SIZE - 1))"; update_screen_list $ARRAY_POS;;
+      "up") scroll_cursor "-1";;
+      "down") scroll_cursor "+1";;
+      "pageup") scroll_page "-1";;
+      "pagedown") scroll_page "+1";;
+      "home") move_cursor_to "0";;
+      "end") move_cursor_to "$(($ARRAY_SIZE - 1))";;
       "enter") return_selection;;
       # *) exit 1;;
     esac
@@ -371,12 +506,12 @@ main()
     exit 1
   fi
 
-  load_menu "$@"
-
   trap "screen_reset; exit 2" INT QUIT TERM HUP PIPE ABRT TSTP
   screen_init
 
+  load_menu "$@"
   update_screen_list 0
+
   key_loop
 }
 
