@@ -1,7 +1,6 @@
 #!/bin/sh
 
 # https://github.com/charmbracelet/gum
-# https://github.com/sri-arjuna/tui
 
 #-------------------------------------------------------------------------------
 
@@ -142,12 +141,7 @@ EOF
       "[B") key="down";;
       "[C") key="right";;
       "[D") key="left";;
-      "[F") key="end";;
-      "[H") key="home";;
-      "[1~") key="home";;
-      "[4~") key="end";;
-      "[5~") key="pageup";;
-      "[6~") key="pagedown";;
+      "[3~") key="canc";;
       *) key="esc$key";;
     esac
   elif [ "$key" = "sp" ]
@@ -169,31 +163,12 @@ EOF
 
 #-------------------------------------------------------------------------------
 
-# log()
-# {
-#   tput sc
-#   tput cup $(($TERM_ROWS)) 0
-#   # printf "$@" 1>&2
-#   printf "$@"
-#   tput rc
-}
-
-printline()
-{
-  # echo "$@" 1>&2
-  echo "$@"
-}
-
-#-------------------------------------------------------------------------------
-
 screen_init()
 {
   saved_tty_settings=$(stty -g)
   tput sc
   tput smcup
   tput clear
-
-  screen_vars_update
 }
 
 screen_reset()
@@ -204,6 +179,13 @@ screen_reset()
   stty "$saved_tty_settings"
 }
 
+trap_quit()
+{
+  screen_reset
+  echo "trap_quit"
+  exit 2
+}
+
 screen_vars_update()
 {
   # fix fo initial wrong values of size from tput
@@ -211,14 +193,28 @@ screen_vars_update()
   i=0
   while [ "$i" -lt "999" ]
   do
-    # printf "                                                 " 1>&2
-    printf "                                                 "
+    printf "                                                 " 1>&2
     i="$(($i + 1))"
   done
   tput clear
 
   TERM_ROWS="$(tput lines)"
   TERM_COLS="$(tput cols)"
+}
+
+#-------------------------------------------------------------------------------
+
+log()
+{
+  tput sc
+  tput cup $(("$TERM_ROWS")) 0
+  printf "$@" 1>&2
+  tput rc
+}
+
+printline()
+{
+  echo "$@" 1>&2
 }
 
 #-------------------------------------------------------------------------------
@@ -240,8 +236,7 @@ return_selection()
   screen_reset
 
   SELECTED_POS="$((ARRAY_POS + CURSOR_POS))"
-  # array MENU_IDS get "$SELECTED_POS"
-  array MENU_IDS get "$SELECTED_POS" 1>&2
+  array MENU_IDS get "$SELECTED_POS"
 
   exit 0
 }
@@ -266,8 +261,10 @@ load_menu()
 
 update_screen_list()
 {
-  ROWS="$(($TERM_ROWS - 1))"
-  COLS="$(($TERM_COLS - 1))"
+  screen_vars_update
+
+  ROWS="$(($TERM_ROWS - 0))"
+  COLS="$(($TERM_COLS - 0))"
 
   if [ "$ARRAY_SIZE" -lt "$ROWS" ]
   then
@@ -292,7 +289,7 @@ update_screen_list()
     # then
     #   line="${line:0:$COLS} [...]"
     # fi
-    printline "$i $line"
+    printline "$line"
     i="$(($i + 1))"
   done
 
@@ -345,10 +342,6 @@ key_loop()
       "q") quit;;
       "up") scroll_cursor -1;;
       "down") scroll_cursor +1;;
-      "pageup") scroll_cursor $((- $TERM_ROWS + 1));;
-      "pagedown") scroll_cursor $(($TERM_ROWS - 1));;
-      "home") ARRAY_POS=0; update_screen_list 0;;
-      "end") ARRAY_POS="$(($ARRAY_SIZE - 1))"; update_screen_list $ARRAY_POS;;
       "enter") return_selection;;
       # *) exit 1;;
     esac
@@ -359,25 +352,32 @@ main()
 {
   if [ ! -t 0 ]
   then
-    # echo "no tty" 1>&2
-    echo "no tty"
+    echo "no tty" 1>&2
     exit 1
   fi
 
-  if [ -z "$*" ]
+  if [ -z "$*" ] || [ "$#" -lt "5" ] || [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ -z "$4" ] || [ -z "$5" ]
   then
-    # echo "no args" 1>&2
-    echo "no args"
+    echo "no args" 1>&2
     exit 1
   fi
+
+  ROW_1="$1"
+  ROW_2="$2"
+  COL_1="$3"
+  COL_2="$4"
+  shift 4
 
   load_menu "$@"
 
-  trap "screen_reset; exit 2" INT QUIT TERM HUP PIPE ABRT TSTP
+  # trap "trap_quit" INT QUIT TERM HUP PIPE ABRT CHLD TSTP EXIT
+  # trap "trap_quit" INT QUIT TERM HUP PIPE ABRT
+  trap "trap_quit" INT QUIT TERM HUP PIPE ABRT TSTP
   screen_init
 
+  screen_vars_update
   update_screen_list 0
   key_loop
 }
 
-main "$@" 3>&2 2>&1 1>&3
+main "$@"
