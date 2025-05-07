@@ -16,7 +16,7 @@ PATH="$THIS_DIR:$PATH"
 
 if [ -z "$1" ]
 then
-  REPO_DIR="$(menu $(cat "$THIS_DIR/repo.conf"))"
+  REPO_DIR="$(gitmenu $(cat "$THIS_DIR/repo.conf"))"
   if [ -z "$REPO_DIR" ]
   then
     rm -f "$THIS_DIR/repo.sel"
@@ -73,7 +73,7 @@ fi
 
 if [ -z "$1" ]
 then
-  GIT_CMD_COMMAND="$(menu commit reset status)"
+  GIT_CMD_COMMAND="$(gitmenu commit reset status)"
   if [ -z "$GIT_CMD_COMMAND" ]
   then
     GIT_CMD_COMMAND="commit"

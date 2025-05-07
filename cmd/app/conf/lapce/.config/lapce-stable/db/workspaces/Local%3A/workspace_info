@@ -5,6 +5,12 @@
   },
   "panel": {
     "panels": {
+      "BottomLeft": [
+        "Terminal",
+        "Search",
+        "Problem",
+        "CallHierarchy"
+      ],
       "LeftTop": [
         "FileExplorer",
         "Plugin",
@@ -13,31 +19,10 @@
       ],
       "RightTop": [
         "DocumentSymbol"
-      ],
-      "BottomLeft": [
-        "Terminal",
-        "Search",
-        "Problem",
-        "CallHierarchy"
       ]
     },
     "styles": {
-      "BottomLeft": {
-        "active": 0,
-        "shown": true,
-        "maximized": false
-      },
       "BottomRight": {
-        "active": 0,
-        "shown": false,
-        "maximized": false
-      },
-      "LeftBottom": {
-        "active": 0,
-        "shown": true,
-        "maximized": false
-      },
-      "RightTop": {
         "active": 0,
         "shown": false,
         "maximized": false
@@ -48,6 +33,21 @@
         "maximized": false
       },
       "LeftTop": {
+        "active": 0,
+        "shown": true,
+        "maximized": false
+      },
+      "BottomLeft": {
+        "active": 0,
+        "shown": true,
+        "maximized": false
+      },
+      "RightTop": {
+        "active": 0,
+        "shown": false,
+        "maximized": false
+      },
+      "LeftBottom": {
         "active": 0,
         "shown": true,
         "maximized": false
@@ -62,17 +62,17 @@
       "right_split": 0.5
     },
     "sections": {
-      "Changes": true,
+      "Error": true,
+      "Available": true,
       "FileExplorer": true,
       "Warn": true,
-      "Installed": true,
-      "StackFrame": true,
-      "Available": true,
-      "Error": true,
       "OpenEditor": true,
+      "Breakpoint": true,
       "Process": true,
-      "Variable": true,
-      "Breakpoint": true
+      "Changes": true,
+      "StackFrame": true,
+      "Installed": true,
+      "Variable": true
     }
   },
   "breakpoints": {}

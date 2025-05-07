@@ -1,0 +1,214 @@
+2025-05-07T19:44:42.427637Z  INFO lapce_app::app: Starting up Lapce..
+2025-05-07T19:44:58.228457Z  INFO lapce_app::app: Starting up Lapce..
+2025-05-07T19:44:58.243810Z  INFO lapce_app::app: Starting up Lapce..
+2025-05-07T19:44:58.374153Z  WARN sctk_adwaita::buttons: Ignoring unknown button type:     
+2025-05-07T19:44:58.404135Z DEBUG lapce_app::keypress::loader: Keymap ignored: g f
+2025-05-07T19:44:58.404174Z DEBUG lapce_app::keypress::loader: Keymap ignored: o
+2025-05-07T19:44:58.404175Z DEBUG lapce_app::keypress::loader: Keymap ignored: /
+2025-05-07T19:44:58.404202Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+;
+2025-05-07T19:44:58.404203Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+g
+2025-05-07T19:44:58.404204Z DEBUG lapce_app::keypress::loader: Keymap ignored: g g
+2025-05-07T19:44:58.404205Z DEBUG lapce_app::keypress::loader: Keymap ignored: h
+2025-05-07T19:44:58.404206Z DEBUG lapce_app::keypress::loader: Keymap ignored: j
+2025-05-07T19:44:58.404207Z DEBUG lapce_app::keypress::loader: Keymap ignored: k
+2025-05-07T19:44:58.404207Z DEBUG lapce_app::keypress::loader: Keymap ignored: l
+2025-05-07T19:44:58.404208Z DEBUG lapce_app::keypress::loader: Keymap ignored: a
+2025-05-07T19:44:58.404209Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+a
+2025-05-07T19:44:58.404210Z DEBUG lapce_app::keypress::loader: Keymap ignored: i
+2025-05-07T19:44:58.404210Z DEBUG lapce_app::keypress::loader: Keymap ignored: u
+2025-05-07T19:44:58.404211Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+r
+2025-05-07T19:44:58.404212Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+i
+2025-05-07T19:44:58.404213Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+o
+2025-05-07T19:44:58.404214Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+n
+2025-05-07T19:44:58.404214Z DEBUG lapce_app::keypress::loader: Keymap ignored: g d
+2025-05-07T19:44:58.404215Z DEBUG lapce_app::keypress::loader: Keymap ignored: g h
+2025-05-07T19:44:58.404216Z DEBUG lapce_app::keypress::loader: Keymap ignored: p
+2025-05-07T19:44:58.404217Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+p
+2025-05-07T19:44:58.404218Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+j
+2025-05-07T19:44:58.404218Z DEBUG lapce_app::keypress::loader: Keymap ignored: y
+2025-05-07T19:44:58.404219Z DEBUG lapce_app::keypress::loader: Keymap ignored: x
+2025-05-07T19:44:58.404220Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+p
+2025-05-07T19:44:58.404221Z DEBUG lapce_app::keypress::loader: Keymap ignored: s
+2025-05-07T19:44:58.404221Z DEBUG lapce_app::keypress::loader: Keymap ignored: c
+2025-05-07T19:44:58.404222Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+s
+2025-05-07T19:44:58.404223Z DEBUG lapce_app::keypress::loader: Keymap ignored: c c
+2025-05-07T19:44:58.404224Z DEBUG lapce_app::keypress::loader: Keymap ignored: c w
+2025-05-07T19:44:58.404225Z DEBUG lapce_app::keypress::loader: Keymap ignored: c e
+2025-05-07T19:44:58.404225Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+i
+2025-05-07T19:44:58.404226Z DEBUG lapce_app::keypress::loader: Keymap ignored: o
+2025-05-07T19:44:58.404227Z DEBUG lapce_app::keypress::loader: Keymap ignored: 0
+2025-05-07T19:44:58.404228Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+6
+2025-05-07T19:44:58.404229Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+4
+2025-05-07T19:44:58.404229Z DEBUG lapce_app::keypress::loader: Keymap ignored: w
+2025-05-07T19:44:58.404230Z DEBUG lapce_app::keypress::loader: Keymap ignored: e
+2025-05-07T19:44:58.404231Z DEBUG lapce_app::keypress::loader: Keymap ignored: b
+2025-05-07T19:44:58.404232Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+o
+2025-05-07T19:44:58.404232Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+e
+2025-05-07T19:44:58.404233Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+y
+2025-05-07T19:44:58.404234Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+u
+2025-05-07T19:44:58.404235Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+d
+2025-05-07T19:44:58.404236Z DEBUG lapce_app::keypress::loader: Keymap ignored: z z
+2025-05-07T19:44:58.404236Z DEBUG lapce_app::keypress::loader: Keymap ignored: z t
+2025-05-07T19:44:58.404237Z DEBUG lapce_app::keypress::loader: Keymap ignored: z b
+2025-05-07T19:44:58.404238Z DEBUG lapce_app::keypress::loader: Keymap ignored: d
+2025-05-07T19:44:58.404239Z DEBUG lapce_app::keypress::loader: Keymap ignored: m
+2025-05-07T19:44:58.404240Z DEBUG lapce_app::keypress::loader: Keymap ignored: '
+2025-05-07T19:44:58.404240Z DEBUG lapce_app::keypress::loader: Keymap ignored: f
+2025-05-07T19:44:58.404241Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+f
+2025-05-07T19:44:58.404242Z DEBUG lapce_app::keypress::loader: Keymap ignored: ;
+2025-05-07T19:44:58.404243Z DEBUG lapce_app::keypress::loader: Keymap ignored: d
+2025-05-07T19:44:58.404243Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+.
+2025-05-07T19:44:58.404244Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+,
+2025-05-07T19:44:58.404245Z DEBUG lapce_app::keypress::loader: Keymap ignored: y
+2025-05-07T19:44:58.404246Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+8
+2025-05-07T19:44:58.404246Z DEBUG lapce_app::keypress::loader: Keymap ignored: n
+2025-05-07T19:44:58.404247Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+n
+2025-05-07T19:44:58.404248Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+5
+2025-05-07T19:44:58.404249Z DEBUG lapce_app::keypress::loader: Keymap ignored: ] shift+0
+2025-05-07T19:44:58.404250Z DEBUG lapce_app::keypress::loader: Keymap ignored: [ shift+9
+2025-05-07T19:44:58.404250Z DEBUG lapce_app::keypress::loader: Keymap ignored: ] shift+]
+2025-05-07T19:44:58.404251Z DEBUG lapce_app::keypress::loader: Keymap ignored: [ shift+[
+2025-05-07T19:44:58.404252Z DEBUG lapce_app::keypress::loader: Keymap ignored: v
+2025-05-07T19:44:58.404253Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+v
+2025-05-07T19:44:58.404253Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+v
+2025-05-07T19:44:58.404254Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+w l
+2025-05-07T19:44:58.404255Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+w h
+2025-05-07T19:44:58.404256Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+w j
+2025-05-07T19:44:58.404256Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+w k
+2025-05-07T19:44:58.404257Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+w s
+2025-05-07T19:44:58.404258Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+w v
+2025-05-07T19:44:58.404259Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+w c
+2025-05-07T19:44:58.404259Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+w x
+2025-05-07T19:44:58.404260Z DEBUG lapce_app::keypress::loader: Keymap ignored: space
+2025-05-07T19:44:58.404261Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+.
+2025-05-07T19:44:58.404262Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+,
+2025-05-07T19:44:58.404263Z DEBUG lapce_app::keypress::loader: Keymap ignored: shift+c
+2025-05-07T19:44:58.404606Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+b
+2025-05-07T19:44:58.404608Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+f
+2025-05-07T19:44:58.404609Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+p
+2025-05-07T19:44:58.404610Z DEBUG lapce_app::keypress::loader: Keymap ignored: ctrl+n
+2025-05-07T19:44:58.404722Z  WARN lapce_app::keypress: Failed to load from "/m/src/git/m/cmd/app/conf/lapce/.config/lapce-stable/keymaps.toml": no keymaps
+2025-05-07T19:44:58.477907Z  WARN lapce_core::language: Grammar not found at: "/m/src/git/m/cmd/app/conf/lapce/.local/share/lapce-stable/grammars/libtree-sitter-plaintext.so"
+2025-05-07T19:44:58.477983Z  WARN lapce_core::language: Grammar not found at: "/m/src/git/m/cmd/app/conf/lapce/.local/share/lapce-stable/grammars/tree-sitter-plaintext.so"
+2025-05-07T19:44:58.559388Z  INFO wgpu_hal::vulkan::instance: Debug utils not enabled: debug_utils_user_data not passed to Instance::from_raw    
+2025-05-07T19:44:58.564941Z  INFO wgpu_hal::gles::egl: Using Wayland platform    
+2025-05-07T19:44:58.583851Z  WARN wgpu_hal::gles::egl: Re-initializing Gles context due to Wayland window    
+2025-05-07T19:44:58.607461Z  INFO wgpu_core::instance: Adapter Vulkan AdapterInfo { name: "llvmpipe (LLVM 19.1.1, 256 bits)", vendor: 65541, device: 0, device_type: Cpu, driver: "llvmpipe", driver_info: "Mesa 24.2.8-1ubuntu1~24.04.1 (LLVM 19.1.1)", backend: Vulkan }    
+2025-05-07T19:44:58.651160Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:58.651219Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:58.651422Z  WARN tiny_skia::painter: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:58.651470Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:58.651503Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:58.695499Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:58.695555Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:58.695731Z  WARN tiny_skia::painter: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:58.695776Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:58.695815Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:58.994907Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:58.994979Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:58.995145Z  WARN tiny_skia::painter: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:58.995205Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:58.995246Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:59.120522Z  INFO lapce_app::app::grammars: Successfully downloaded grammars
+2025-05-07T19:44:59.121662Z  INFO lapce_app::app::grammars: Successfully downloaded queries
+2025-05-07T19:44:59.402992Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:59.403052Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:59.403193Z  WARN tiny_skia::painter: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:59.403243Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:59.403279Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:59.495826Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:59.495897Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:59.496064Z  WARN tiny_skia::painter: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:59.496124Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:59.496167Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:59.996678Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:59.996748Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:59.996915Z  WARN tiny_skia::painter: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:59.996975Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:44:59.997018Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:00.497619Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:00.497733Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:00.497911Z  WARN tiny_skia::painter: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:00.497974Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:00.498018Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:00.998898Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:00.998968Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:00.999136Z  WARN tiny_skia::painter: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:00.999191Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:00.999229Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:01.026101Z  WARN floem_winit::platform_impl::platform::wayland::window::state: Failed to set cursor to Default    
+2025-05-07T19:45:01.026352Z  WARN floem_winit::platform_impl::platform::wayland::window::state: Failed to set cursor to ColResize    
+2025-05-07T19:45:01.039460Z  WARN floem_winit::platform_impl::platform::wayland::window::state: Failed to set cursor to Default    
+2025-05-07T19:45:01.169820Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:01.169877Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:01.170023Z  WARN tiny_skia::painter: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:01.170061Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:01.170097Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:01.498832Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:01.498893Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:01.499057Z  WARN tiny_skia::painter: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:01.499102Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:01.499144Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:01.999678Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:01.999803Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:02.000004Z  WARN tiny_skia::painter: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:02.000088Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:02.000165Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:02.500314Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:02.500437Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:02.500698Z  WARN tiny_skia::painter: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:02.500833Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:02.500910Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:03.002383Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:03.002451Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:03.002599Z  WARN tiny_skia::painter: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:03.002652Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:03.002720Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:03.027014Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:03.027074Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:03.027227Z  WARN tiny_skia::painter: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:03.027267Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:03.027304Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:03.041305Z  WARN floem_winit::platform_impl::platform::wayland::window::state: Failed to set cursor to Pointer    
+2025-05-07T19:45:03.080797Z  WARN floem_winit::platform_impl::platform::wayland::window::state: Failed to set cursor to Default    
+2025-05-07T19:45:03.087558Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:03.087631Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:03.087820Z  WARN tiny_skia::painter: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:03.087880Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:03.087918Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:03.292445Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:03.292505Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:03.292675Z  WARN tiny_skia::painter: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:03.292727Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:03.292763Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:03.315243Z  WARN floem_winit::platform_impl::platform::wayland::window::state: Failed to set cursor to Pointer    
+2025-05-07T19:45:03.503070Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:03.503143Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:03.503696Z  WARN tiny_skia::painter: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:03.503759Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:03.503927Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:04.002409Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:04.002482Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:04.002683Z  WARN tiny_skia::painter: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:04.002746Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:04.002791Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:04.349619Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:04.349661Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:04.349760Z  WARN tiny_skia::painter: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:04.349794Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:04.349819Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:04.424441Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:04.424508Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:04.424699Z  WARN tiny_skia::painter: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:04.424751Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:04.424787Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:04.502622Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:04.502691Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:04.502857Z  WARN tiny_skia::painter: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:04.502917Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:04.502961Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:04.521064Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:04.521116Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:04.521253Z  WARN tiny_skia::painter: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:04.521290Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
+2025-05-07T19:45:04.521326Z  WARN tiny_skia::mask: empty paths and horizontal/vertical lines cannot be filled    
