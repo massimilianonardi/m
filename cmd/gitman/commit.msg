@@ -1,1 +1,1 @@
-gitman menu reworked
+app menu reworked + install cmd path system wide (need reboot)

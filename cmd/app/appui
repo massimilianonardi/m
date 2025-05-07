@@ -1,5 +1,9 @@
 #!/bin/sh
 
+. realpaths.lib.sh
+. waituser.lib.sh
+. array.lib.sh
+
 #-------------------------------------------------------------------------------
 
 exist_function()
@@ -98,14 +102,78 @@ debug()
 
 #-------------------------------------------------------------------------------
 
+desktop()
+{
+  if [ -f "$APP_SCRIPT_DIR/$APP_NAME.desktop" ]
+  then
+    DESKTOP_COMMAND="$(menu inst_app="install '$APP_NAME' desktop file" uninst_app="uninstall '$APP_NAME' desktop file" inst_all="install all desktop files" uninst_all="uninstall all desktop files")"
+    case "$DESKTOP_COMMAND" in
+      "inst_app")
+        sudo rm -f "/usr/share/applications/$APP_NAME.desktop"
+        sudo cp "$APP_SCRIPT_DIR/$APP_NAME.desktop" "/usr/share/applications"
+        sudo chown root:root "/usr/share/applications/$APP_NAME.desktop"
+      ;;
+      "uninst_app")
+        sudo rm -f "/usr/share/applications/$APP_NAME.desktop"
+      ;;
+      "inst_all")
+        (
+          cd "$APPS_SCRIPT_DIR"
+          for k in ..?* .[!.]* *
+          do
+            if [ -e "$k" ] && [ -f "./$k/$k.desktop" ]
+            then
+              sudo rm -f "/usr/share/applications/$k.desktop"
+              sudo cp "./$k/$k.desktop" "/usr/share/applications"
+              sudo chown root:root "/usr/share/applications/$k.desktop"
+            fi
+          done
+        )
+      ;;
+      "uninst_all")
+        (
+          cd "$APPS_SCRIPT_DIR"
+          for k in ..?* .[!.]* *
+          do
+            if [ -e "$k" ] && [ -f "./$k/$k.desktop" ]
+            then
+              sudo rm -f "/usr/share/applications/$k.desktop"
+            fi
+          done
+        )
+      ;;
+      *) exit 1;;
+    esac
+  else
+    echo "no desktop file exists for this app: $APP_NAME"
+  fi
+
+  waituser
+}
+
+#-------------------------------------------------------------------------------
+
+realpaths
+
+. "$THIS_DIR/app.conf"
+
 # parse command line: $1=APP_NAME, $2=COMMAND
 if [ -n "$1" ]
 then
   APP_NAME="$1"
   shift
 else
-  echo "app name cannot be empty"
-  exit 1
+  array APP_ARRAY
+  for k in $(cd "$APPS_SCRIPT_DIR"; ls -d *)
+  do
+    if [ -d "$APPS_SCRIPT_DIR/$k" ]
+    then
+      array APP_ARRAY add "$k"
+    fi
+  done
+
+  APP_NAME="$(menu $(array APP_ARRAY get))"
+  array APP_ARRAY unset
 fi
 
 if [ -n "$1" ]
@@ -113,17 +181,17 @@ then
   COMMAND="$1"
   shift
 else
-  COMMAND="run"
+  # COMMAND="run"
+  COMMAND="$(menu run debug update desktop)"
 fi
 
 case "$COMMAND" in
-  "update") true;;
   "run") true;;
   "debug") true;;
+  "update") true;;
+  "desktop") true;;
   *) exit 1;;
 esac
-
-. "$THIS_DIR/app.conf"
 
 # apps update/run/debug script dir
 APP_SCRIPT_DIR="$APPS_SCRIPT_DIR/$APP_NAME"
