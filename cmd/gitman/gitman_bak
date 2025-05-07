@@ -1,5 +1,7 @@
 #!/bin/sh
 
+GIT_ASKPASS_CONF_FILE="git-askpass.conf"
+
 if [ -L "$0" ]
 then
   THIS_PATH="$(ls -ld -- "$0")"
@@ -16,16 +18,10 @@ PATH="$THIS_DIR:$PATH"
 
 if [ -z "$1" ]
 then
-  REPO_DIR="$(menu $(cat "$THIS_DIR/repo.conf"))"
-  if [ -z "$REPO_DIR" ]
-  then
-    rm -f "$THIS_DIR/repo.sel"
-    dir-browser-selector "$THIS_DIR/repo.conf" "$THIS_DIR/repo.sel"
-    REPO_DIR="$(cat "$THIS_DIR/repo.sel")"
-    rm -f "$THIS_DIR/repo.sel"
-  # else
-  #   echo "REPO_DIR=$REPO_DIR"
-  fi
+  rm -f "$THIS_DIR/repo.sel"
+  dir-browser-selector "$THIS_DIR/repo.conf" "$THIS_DIR/repo.sel"
+  REPO_DIR="$(cat "$THIS_DIR/repo.sel")"
+  rm -f "$THIS_DIR/repo.sel"
 else
   REPO_DIR="$1"
   shift
@@ -73,11 +69,12 @@ fi
 
 if [ -z "$1" ]
 then
-  GIT_CMD_COMMAND="$(menu commit reset status)"
+  read -p "enter command (default: commit): " GIT_CMD_COMMAND
   if [ -z "$GIT_CMD_COMMAND" ]
   then
     GIT_CMD_COMMAND="commit"
   fi
+  eval "set -- $ARGS"
 else
   GIT_CMD_COMMAND="$1"
   shift

@@ -1,0 +1,17 @@
+#!/bin/sh
+
+. realpaths.lib.sh
+. waituser.lib.sh
+
+#-------------------------------------------------------------------------------
+
+realpaths
+
+if [ -z "$*" ]
+then
+  set -- "$(menu ./app/appui=app ./gitman/gitman=gitman rsudo ls)"
+fi
+
+"$@"
+
+waituser

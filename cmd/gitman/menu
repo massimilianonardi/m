@@ -1,8 +1,5 @@
 #!/bin/sh
 
-# https://github.com/charmbracelet/gum
-# https://github.com/sri-arjuna/tui
-
 #-------------------------------------------------------------------------------
 
 array()
@@ -169,23 +166,6 @@ EOF
 
 #-------------------------------------------------------------------------------
 
-# log()
-# {
-#   tput sc
-#   tput cup $(($TERM_ROWS)) 0
-#   # printf "$@" 1>&2
-#   printf "$@"
-#   tput rc
-# }
-
-printline()
-{
-  # echo "$@" 1>&2
-  echo "$@"
-}
-
-#-------------------------------------------------------------------------------
-
 screen_init()
 {
   saved_tty_settings=$(stty -g)
@@ -211,7 +191,6 @@ screen_vars_update()
   i=0
   while [ "$i" -lt "999" ]
   do
-    # printf "                                                 " 1>&2
     printf "                                                 "
     i="$(($i + 1))"
   done
@@ -243,12 +222,8 @@ return_selection()
   then
     SELECTED_POS="$CURSOR_POS"
   else
-    # SELECTED_POS="$((ARRAY_POS + CURSOR_POS))"
     SELECTED_POS="$ARRAY_POS"
   fi
-  # SELECTED_POS="$((ARRAY_POS + CURSOR_POS))"
-  # echo "SELECTED_POS=$SELECTED_POS ARRAY_POS=$ARRAY_POS CURSOR_POS=$CURSOR_POS"
-  # array MENU_IDS get "$SELECTED_POS"
   (array MENU_IDS get "$SELECTED_POS") 1>&2
 
   exit 0
@@ -276,87 +251,8 @@ load_menu()
     ROWS="$ARRAY_SIZE"
   else
     ROWS="$TERM_ROWS"
-    # ROWS="$(($TERM_ROWS - 1))"
   fi
   COLS="$TERM_COLS"
-}
-
-update_screen_list___()
-{
-  ROWS="$(($TERM_ROWS - 1))"
-  COLS="$(($TERM_COLS - 1))"
-
-  if [ "$ARRAY_SIZE" -lt "$ROWS" ]
-  then
-    ROWS="$ARRAY_SIZE"
-  fi
-
-  tput clear
-
-  INDEX_START=$1
-  INDEX_END=$((ROWS+$1))
-  if [ "$INDEX_END" -gt "$ARRAY_SIZE" ]
-  then
-    INDEX_END="$ARRAY_SIZE"
-  fi
-
-  i="$INDEX_START"
-  while [ "$i" -lt "$INDEX_END" ]
-  do
-    line="$(array MENU_TEXTS get "$i")"
-    # size="${#line}"
-    # if [ "$size" -gt "$COLS" ]
-    # then
-    #   line="${line:0:$COLS} [...]"
-    # fi
-    printline "$i $line"
-    i="$(($i + 1))"
-  done
-
-  tput cup "$CURSOR_POS" 0
-}
-
-scroll_cursor___()
-{
-  CURSOR_POS="$(($CURSOR_POS + $1))"
-
-  UPDATE_SCREEN="false"
-
-  if [ "$CURSOR_POS" -lt "0" ]
-  then
-    ARRAY_POS="$(($ARRAY_POS + $1))"
-    CURSOR_POS="0"
-    UPDATE_SCREEN="true"
-  elif [ "$CURSOR_POS" -gt "$(($ROWS - 1))" ]
-  then
-    ARRAY_POS="$(($ARRAY_POS + $1))"
-    CURSOR_POS="$(($ROWS - 1))"
-    UPDATE_SCREEN="true"
-  fi
-
-  if [ "$ARRAY_POS" -lt "0" ]
-  then
-    ARRAY_POS=0
-    # UPDATE_SCREEN=false
-  elif [ "$ARRAY_POS" -gt "$(($ARRAY_SIZE - $ROWS))" ]
-  then
-    ARRAY_POS="$(($ARRAY_SIZE - $ROWS))"
-    # UPDATE_SCREEN=false
-  fi
-
-  if [ "$UPDATE_SCREEN" = true ]
-  then
-    update_screen_list $((ARRAY_POS))
-  fi
-
-  tput cup $CURSOR_POS 0
-}
-
-scroll_cursor_to___()
-{
-  # ARRAY_POS="$(($ARRAY_SIZE - 1))"
-  ARRAY_POS="$1"
-  update_screen_list $ARRAY_POS
 }
 
 print_menu_entry()
@@ -424,7 +320,6 @@ scroll_cursor()
   if [ "$UPDATE_SCREEN" = true ]
   then
     update_screen_list "$((ARRAY_POS - $CURSOR_POS))"
-    # update_screen_list "$((ARRAY_POS - $CURSOR_POS + 1))"
   fi
 
   tput cup $CURSOR_POS 0
@@ -441,39 +336,6 @@ move_cursor_to()
   CURSOR_POS="0"
   scroll_cursor "$1"
   update_screen_list "$((ARRAY_POS - $CURSOR_POS))"
-
-  # ARRAY_POS="$1"
-  # CURSOR_POS="$(($1 % $ROWS))"
-  # update_screen_list "$((ARRAY_POS - $CURSOR_POS))"
-
-  # UPDATE_SCREEN="false"
-  #
-  # if [ "$CURSOR_POS" -lt "0" ]
-  # then
-  #   CURSOR_POS="0"
-  #   ARRAY_POS="0"
-  #   UPDATE_SCREEN="true"
-  # elif [ "$CURSOR_POS" -gt "$(($ROWS - 1))" ]
-  # then
-  #   CURSOR_POS="$(($ROWS - 1))"
-  #   ARRAY_POS="$(($ARRAY_POS + $1))"
-  #   UPDATE_SCREEN="true"
-  # fi
-  #
-  # if [ "$ARRAY_POS" -lt "0" ]
-  # then
-  #   ARRAY_POS=0
-  #   # UPDATE_SCREEN=false
-  # elif [ "$ARRAY_POS" -gt "$(($ARRAY_SIZE - $ROWS))" ]
-  # then
-  #   ARRAY_POS="$(($ARRAY_SIZE - $ROWS))"
-  #   # UPDATE_SCREEN=false
-  # fi
-  #
-  # if [ "$UPDATE_SCREEN" = true ]
-  # then
-  #   update_screen_list $((ARRAY_POS))
-  # fi
 
   tput cup $CURSOR_POS 0
 }
