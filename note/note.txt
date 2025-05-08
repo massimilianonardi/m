@@ -28,9 +28,11 @@ because of real dir need to be calculated by path full resolve, or per-app env
   m
 
 command:
+  - app: reorganize menus flow + decide if standalone or not
   - menu: input array "id=label", return selected id (enter to select, q to quit)
       make input format robust for any text (= mandatory?)
       use environment variables to control menu and keep command line arguments simple as it is now
+      make multi window menus + key to switch active one
 
 --------------------------------------------------------------------------------
 

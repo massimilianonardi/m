@@ -166,7 +166,7 @@ else
   array APP_ARRAY
   for k in $(cd "$APPS_SCRIPT_DIR"; ls -d *)
   do
-    if [ -d "$APPS_SCRIPT_DIR/$k" ]
+    if [ -d "$APPS_SCRIPT_DIR/$k" ] && [ -f "$APPS_SCRIPT_DIR/$k/$k-run" ] #&& [ -f "$APPS_SCRIPT_DIR/$k/$k-update" ]
     then
       array APP_ARRAY add "$k"
     fi
@@ -174,6 +174,10 @@ else
 
   APP_NAME="$(menu $(array APP_ARRAY get))"
   array APP_ARRAY unset
+  if [ -z "$APP_NAME" ]
+  then
+    exit 1
+  fi
 fi
 
 if [ -n "$1" ]

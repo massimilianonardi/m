@@ -1,1 +1,1 @@
-note menu
+app + conf cleanup
