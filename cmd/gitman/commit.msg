@@ -1,1 +1,1 @@
-menu rendering rectangle working
+test-command in subdir
