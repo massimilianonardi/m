@@ -106,7 +106,7 @@ desktop()
 {
   if [ -f "$APP_SCRIPT_DIR/$APP_NAME.desktop" ]
   then
-    DESKTOP_COMMAND="$(menu inst_app="install '$APP_NAME' desktop file" uninst_app="uninstall '$APP_NAME' desktop file" inst_all="install all desktop files" uninst_all="uninstall all desktop files")"
+    DESKTOP_COMMAND="$(menu inst_app="install '$APP_NAME' desktop file" uninst_app="uninstall '$APP_NAME' desktop file")"
     case "$DESKTOP_COMMAND" in
       "inst_app")
         sudo rm -f "/usr/share/applications/$APP_NAME.desktop"
@@ -115,32 +115,6 @@ desktop()
       ;;
       "uninst_app")
         sudo rm -f "/usr/share/applications/$APP_NAME.desktop"
-      ;;
-      "inst_all")
-        (
-          cd "$APPS_SCRIPT_DIR"
-          for k in ..?* .[!.]* *
-          do
-            if [ -e "$k" ] && [ -f "./$k/$k.desktop" ]
-            then
-              sudo rm -f "/usr/share/applications/$k.desktop"
-              sudo cp "./$k/$k.desktop" "/usr/share/applications"
-              sudo chown root:root "/usr/share/applications/$k.desktop"
-            fi
-          done
-        )
-      ;;
-      "uninst_all")
-        (
-          cd "$APPS_SCRIPT_DIR"
-          for k in ..?* .[!.]* *
-          do
-            if [ -e "$k" ] && [ -f "./$k/$k.desktop" ]
-            then
-              sudo rm -f "/usr/share/applications/$k.desktop"
-            fi
-          done
-        )
       ;;
       *) exit 1;;
     esac
@@ -166,7 +140,7 @@ else
   array APP_ARRAY
   for k in $(cd "$APPS_SCRIPT_DIR"; ls -d *)
   do
-    if [ -d "$APPS_SCRIPT_DIR/$k" ] && [ -f "$APPS_SCRIPT_DIR/$k/$k-run" ] #&& [ -f "$APPS_SCRIPT_DIR/$k/$k-update" ]
+    if [ -d "$APPS_SCRIPT_DIR/$k" ] && [ -f "$APPS_SCRIPT_DIR/$k/$k-run" ] && [ -f "$APPS_SCRIPT_DIR/$k/$k-update" ]
     then
       array APP_ARRAY add "$k"
     fi
