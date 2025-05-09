@@ -299,12 +299,6 @@ menu_init()
   ARRAY_SIZE="$(array MENU_IDS size)"
   ARRAY_POS="0"
   CURSOR_POS="0"
-  #
-  # if [ "$ARRAY_SIZE" -lt "$ROWS" ]
-  # then
-  #   ROWS="$ARRAY_SIZE"
-  # fi
-  # COLS="$TERM_COLS"
 }
 
 print_menu_entry()
@@ -335,7 +329,10 @@ screen_render()
   done
 
   # reset cursor position (also column!!!)
-  tput cup "$CURSOR_POS" 0
+  # tput cup "$CURSOR_POS" 0
+
+  # default cursor position
+  tput cup "$ROW_0" "$COL_0"
 }
 
 scroll_cursor()
@@ -370,11 +367,13 @@ scroll_cursor()
   fi
 
   tput cup $CURSOR_POS 0
+  tput cup "$(($ROW_0 + $CURSOR_POS))" "$COL_0"
 }
 
 scroll_page()
 {
   scroll_cursor $(($1 * ($ROWS - 1)))
+  # scroll_cursor "$(($1 * $ROWS - 1))"
 }
 
 move_cursor_to()
@@ -384,7 +383,8 @@ move_cursor_to()
   scroll_cursor "$1"
   screen_render "$((ARRAY_POS - $CURSOR_POS))"
 
-  tput cup $CURSOR_POS 0
+  # tput cup $CURSOR_POS 0
+  tput cup "$(($ROW_0 + $CURSOR_POS))" "$COL_0"
 }
 
 key_loop()
