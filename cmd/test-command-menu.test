@@ -19,10 +19,21 @@ test_menu()
 # $(menu id_0=Text_0 id_1=Text_1 id_2=Text_2 id_3=Text_3 id_4=Text_4 id_5=Text_5 2>&1)
 # EOF
 
-  menu_selection="$(menu id_0=Text_0 id_1=Text_1 id_2=Text_2 id_3=Text_3 id_4=Text_4 id_5=Text_5)"
+  # menu_selection="$(menu id_0=Text_0 id_1=Text_1 id_2=Text_2 id_3=Text_3 id_4=Text_4 id_5=Text_5)"
+  # echo "menu_selection=$menu_selection"
+  # read WAIT_VAR
+  # menu_selection="$(menu $(ls /usr/share/applications))"
+  # echo "menu_selection=$menu_selection"
+
+  export ROW_0=2
+  export COL_0=5
+  export ROWS=5
+  export COLS=9
+
+  menu_selection="$(menu_dev id_0=Text_0 id_1=Text_1 id_2=Text_2 id_3=Text_3 id_4=Text_4 id_5=Text_5)"
   echo "menu_selection=$menu_selection"
   read WAIT_VAR
-  menu_selection="$(menu $(ls /usr/share/applications))"
+  menu_selection="$(menu_dev $(ls /usr/share/applications))"
   echo "menu_selection=$menu_selection"
 }
 
