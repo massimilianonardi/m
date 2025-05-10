@@ -308,6 +308,9 @@ menu_init()
 
 print_menu_entry()
 {
+  tput cup "$(($ROW_0 + $1))" "$COL_0"
+  printf "%${COLS}s"
+  tput cup "$(($ROW_0 + $1))" "$COL_0"
   line="$(array MENU_TEXTS get "$1")"
   size="$(printf "$line" | wc -m)"
   if [ "$size" -gt "$COLS" ]
@@ -319,21 +322,18 @@ print_menu_entry()
 
 screen_render()
 {
-  # ARRAY_POS_START="$ARRAY_POS"
   ARRAY_POS_START="$1"
 
   # tput clear
-
   i="0"
   n="$ROWS"
   while [ "$i" -lt "$n" ]
   do
-    tput cup "$(($ROW_0 + $i))" "$COL_0"
+    # tput cup "$(($ROW_0 + $i))" "$COL_0"
     print_menu_entry "$(($ARRAY_POS_START + $i))"
     i="$(($i + 1))"
   done
 
-  # default cursor position
   tput cup "$ROW_0" "$COL_0"
 }
 
