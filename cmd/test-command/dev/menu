@@ -337,16 +337,37 @@ menu_init()
 
 print_menu_entry()
 {
+  # clear whole line
   tput cup "$(($ROW_0 + $1))" "$COL_0"
   printf "%${COLS}s"
   tput cup "$(($ROW_0 + $1))" "$COL_0"
-  line="$(array MENU_TEXTS get "$1")"
+
+  # build line to print
+  # line="$(tput setaf 2)${1}$(tput sgr0) $(tput setaf 3)[$(array MENU_SEL get "$1")]$(tput sgr0) $(array MENU_TEXTS get "$1")"
+
+  # line="$(printf "$line" | tr -cd '[:print:]')"
+  # line="$(printf "$line" | sed 's/[^[:print:]]//g')"
+  # line="$(printf "$line" | sed $'s/\033\[[0-9;]*m//g')"
+
+  # line="$(array MENU_TEXTS get "$1")"
+
+  # limit too long lines (use line without ascii control codes)
+  line="${1} [$(array MENU_SEL get "$1")] $(array MENU_TEXTS get "$1")"
   size="$(printf "$line" | wc -m)"
+  line="$(array MENU_TEXTS get "$1")"
   if [ "$size" -gt "$COLS" ]
   then
-    line="$(printf "$line" | cut -c "1-$(($COLS - 6))")$(tput setaf 1) [...]$(tput sgr0)"
+    sizeexceed="$(($size - $COLS))"
+    size="$(printf "$line" | wc -m)"
+    line="$(printf "$line" | cut -c "1-$(($size - $sizeexceed - 6))")$(tput setaf 1) [...]$(tput sgr0)"
+    # line="$(printf "$line" | cut -c "1-$(($COLS - 6))")$(tput setaf 1) [...]$(tput sgr0)"
   fi
-  printf "$(tput setaf 2)${1}$(tput sgr0) $(tput setaf 3)'$(array MENU_SEL get "$1")'$(tput sgr0) $line"
+
+  # print line
+  # line="$(tput setaf 2)${1}$(tput sgr0) $(tput setaf 3)[$(array MENU_SEL get "$1")]$(tput sgr0) $(array MENU_TEXTS get "$1")"
+  line="$(tput setaf 2)${1}$(tput sgr0) $(tput setaf 3)[$(array MENU_SEL get "$1")]$(tput sgr0) $line"
+  printf "$line"
+  # printf "$(tput setaf 2)${1}$(tput sgr0) $(tput setaf 3)'$(array MENU_SEL get "$1")'$(tput sgr0) $line"
   # SEL_ITEM_CURR_STRING="$(array MENU_SEL get "$SELECTED_POS")"
   # printf "$(tput setaf 2)${1}$(tput sgr0) $(tput setaf 3)'$SEL_ITEM_CURR_STRING'$(tput sgr0) $line"
   tput cup "$(($ROW_0 + $1))" "$COL_0"
