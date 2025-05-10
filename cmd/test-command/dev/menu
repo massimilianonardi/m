@@ -248,6 +248,16 @@ screen_vars_update()
   then
     COLS="$(($TERM_COLS - $COL_0))"
   fi
+
+  if [ -z "$SEL_ITEM_TRUE_STRING" ]
+  then
+    SEL_ITEM_TRUE_STRING="+"
+  fi
+
+  if [ -z "$SEL_ITEM_FALSE_STRING" ]
+  then
+    SEL_ITEM_FALSE_STRING="-"
+  fi
 }
 
 #-------------------------------------------------------------------------------
@@ -268,25 +278,43 @@ return_selection()
 {
   screen_reset
 
-  if [ "$ARRAY_SIZE" -lt "$TERM_ROWS" ]
-  then
-    SELECTED_POS="$CURSOR_POS"
-  else
-    # SELECTED_POS="$((ARRAY_POS + CURSOR_POS))"
-    SELECTED_POS="$ARRAY_POS"
-  fi
-  # SELECTED_POS="$((ARRAY_POS + CURSOR_POS))"
-  # echo "SELECTED_POS=$SELECTED_POS ARRAY_POS=$ARRAY_POS CURSOR_POS=$CURSOR_POS"
-  # array MENU_IDS get "$SELECTED_POS"
+  SELECTED_POS="$ARRAY_POS"
+  # if [ "$ARRAY_SIZE" -lt "$TERM_ROWS" ]
+  # then
+  #   SELECTED_POS="$CURSOR_POS"
+  # else
+  #   # SELECTED_POS="$((ARRAY_POS + CURSOR_POS))"
+  #   SELECTED_POS="$ARRAY_POS"
+  # fi
   (array MENU_IDS get "$SELECTED_POS") 1>&2
 
   exit 0
+}
+
+select_item_toggle()
+{
+  SELECTED_POS="$ARRAY_POS"
+  SEL_ITEM_CURR_STRING="$(array MENU_SEL get "$SELECTED_POS")"
+  if [ "$SEL_ITEM_CURR_STRING" = "$SEL_ITEM_TRUE_STRING" ]
+  then
+    array MENU_SEL put "$SELECTED_POS" "$SEL_ITEM_FALSE_STRING"
+  elif [ "$SEL_ITEM_CURR_STRING" = "$SEL_ITEM_FALSE_STRING" ]
+  then
+    array MENU_SEL put "$SELECTED_POS" "$SEL_ITEM_TRUE_STRING"
+  else
+    # quit
+    false
+    # array MENU_SEL set "$SELECTED_POS" "$SEL_ITEM_TRUE_STRING"
+  fi
+
+  print_menu_entry "$(($ARRAY_POS_START + $SELECTED_POS))"
 }
 
 menu_init()
 {
   array MENU_IDS
   array MENU_TEXTS
+  array MENU_SEL
 
   for k in "$@"
   do
@@ -294,6 +322,7 @@ menu_init()
     TEXT="${k#*=}"
     array MENU_IDS add "$ID"
     array MENU_TEXTS add "$TEXT"
+    array MENU_SEL add "$SEL_ITEM_FALSE_STRING"
   done
 
   ARRAY_SIZE="$(array MENU_IDS size)"
@@ -317,7 +346,10 @@ print_menu_entry()
   then
     line="$(printf "$line" | cut -c "1-$(($COLS - 6))")$(tput setaf 1) [...]$(tput sgr0)"
   fi
-  printf "$(tput setaf 2)$1$(tput sgr0) $line"
+  printf "$(tput setaf 2)${1}$(tput sgr0) $(tput setaf 3)'$(array MENU_SEL get "$1")'$(tput sgr0) $line"
+  # SEL_ITEM_CURR_STRING="$(array MENU_SEL get "$SELECTED_POS")"
+  # printf "$(tput setaf 2)${1}$(tput sgr0) $(tput setaf 3)'$SEL_ITEM_CURR_STRING'$(tput sgr0) $line"
+  tput cup "$(($ROW_0 + $1))" "$COL_0"
 }
 
 screen_render()
@@ -403,6 +435,7 @@ key_loop()
       "pagedown") scroll_page "+1";;
       "home") move_cursor_to "0";;
       "end") move_cursor_to "$(($ARRAY_SIZE - 1))";;
+      "space") select_item_toggle;;
       "enter") return_selection;;
       # *) exit 1;;
     esac
