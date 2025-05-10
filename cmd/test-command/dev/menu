@@ -399,10 +399,12 @@ scroll_cursor()
 
   if [ "$CURSOR_POS" -lt "0" ]
   then
+    ARRAY_POS_START="$(($ARRAY_POS_START + $1))"
     CURSOR_POS="0"
     UPDATE_SCREEN="true"
   elif [ "$CURSOR_POS" -gt "$(($ROWS - 1))" ]
   then
+    ARRAY_POS_START="$(($ARRAY_POS_START + $1))"
     CURSOR_POS="$(($ROWS - 1))"
     UPDATE_SCREEN="true"
   fi
@@ -417,11 +419,12 @@ scroll_cursor()
 
   if [ "$UPDATE_SCREEN" = true ]
   then
-    screen_render "$((ARRAY_POS - $CURSOR_POS))"
+    screen_render "$ARRAY_POS_START"
+    # screen_render "$((ARRAY_POS - $CURSOR_POS))"
     # screen_render "$((ARRAY_POS - $CURSOR_POS + 1))"
   fi
 
-  tput cup $CURSOR_POS 0
+  # tput cup $CURSOR_POS 0
   tput cup "$(($ROW_0 + $CURSOR_POS))" "$COL_0"
 }
 
