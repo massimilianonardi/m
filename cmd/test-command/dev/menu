@@ -2,6 +2,19 @@
 
 #-------------------------------------------------------------------------------
 
+quote()
+{
+  printf %s\\n "$1" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/" ;
+}
+
+save()
+{
+  for i do printf %s\\n "$i" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/' \\\\/" ; done
+  echo " "
+}
+
+#-------------------------------------------------------------------------------
+
 array()
 {
   eval "[ \"\$${1}_TYPE\" = \"array\" ]"
@@ -352,9 +365,9 @@ print_menu_entry()
   # line="$(array MENU_TEXTS get "$1")"
 
   # limit too long lines (use line without ascii control codes)
-  line="${1} [$(array MENU_SEL get "$1")] $(array MENU_TEXTS get "$1")"
+  line="$(($ARRAY_POS_START + $1)) [$(array MENU_SEL get "$(($ARRAY_POS_START + $1))")] $(array MENU_TEXTS get "$(($ARRAY_POS_START + $1))")"
   size="$(printf "$line" | wc -m)"
-  line="$(array MENU_TEXTS get "$1")"
+  line="$(array MENU_TEXTS get "$(($ARRAY_POS_START + $1))")"
   if [ "$size" -gt "$COLS" ]
   then
     sizeexceed="$(($size - $COLS))"
@@ -365,7 +378,7 @@ print_menu_entry()
 
   # print line
   # line="$(tput setaf 2)${1}$(tput sgr0) $(tput setaf 3)[$(array MENU_SEL get "$1")]$(tput sgr0) $(array MENU_TEXTS get "$1")"
-  line="$(tput setaf 2)${1}$(tput sgr0) $(tput setaf 3)[$(array MENU_SEL get "$1")]$(tput sgr0) $line"
+  line="$(tput setaf 2)$(($ARRAY_POS_START + $1))$(tput sgr0) $(tput setaf 3)[$(array MENU_SEL get "$(($ARRAY_POS_START + $1))")]$(tput sgr0) $line"
   printf "$line"
   # printf "$(tput setaf 2)${1}$(tput sgr0) $(tput setaf 3)'$(array MENU_SEL get "$1")'$(tput sgr0) $line"
   # SEL_ITEM_CURR_STRING="$(array MENU_SEL get "$SELECTED_POS")"
@@ -383,7 +396,8 @@ screen_render()
   while [ "$i" -lt "$n" ]
   do
     # tput cup "$(($ROW_0 + $i))" "$COL_0"
-    print_menu_entry "$(($ARRAY_POS_START + $i))"
+    # print_menu_entry "$(($ARRAY_POS_START + $i))"
+    print_menu_entry "$i" "$ARRAY_POS_START"
     i="$(($i + 1))"
   done
 
@@ -415,6 +429,14 @@ scroll_cursor()
   elif [ "$ARRAY_POS" -gt "$(($ARRAY_SIZE - 1))" ]
   then
     ARRAY_POS="$(($ARRAY_SIZE - 1))"
+  fi
+
+  if [ "$ARRAY_POS_START" -lt "0" ]
+  then
+    ARRAY_POS_START=0
+  elif [ "$ARRAY_POS_START" -gt "$(($ARRAY_SIZE - $ROWS))" ]
+  then
+    ARRAY_POS_START="$(($ARRAY_SIZE - $ROWS))"
   fi
 
   if [ "$UPDATE_SCREEN" = true ]

@@ -1,1 +1,1 @@
-menu multiselection todo return array, fix scrolling
+menu multiselection scrolling fixed, todo return array
