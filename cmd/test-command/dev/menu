@@ -2,6 +2,10 @@
 
 # MENU_ID="false" # disables id detection from menu entries "menu_entry_id=menu_entry_text"
 # MENU_MULTISELECTION="true" # enables multi selection
+# ROW_0 # row coordinate to start render
+# COL_0 # col coordinate to start render
+# ROWS # max rows to render
+# COLS # max cols to render
 
 #-------------------------------------------------------------------------------
 
@@ -363,13 +367,9 @@ scroll_cursor()
   if [ "$UPDATE_SCREEN" = true ]
   then
     screen_render "$ARRAY_POS_START"
-    # screen_render "$((ARRAY_POS - $CURSOR_POS))"
-    # screen_render "$((ARRAY_POS - $CURSOR_POS + 1))"
   fi
 
   menu_entry_highlight "$CURSOR_POS"
-  # tput cup $CURSOR_POS 0
-  # tput cup "$(($ROW_0 + $CURSOR_POS))" "$COL_0"
 }
 
 scroll_page()
