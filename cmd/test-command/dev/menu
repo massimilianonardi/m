@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# MENU_ID="false" # disables id detection from menu entries "menu_entry_id=menu_entry_text"
+# MENU_MULTISELECTION="true" # enables multi selection
+
 #-------------------------------------------------------------------------------
 
 . array.lib.sh
@@ -148,7 +151,18 @@ screen_vars_update()
     COLS="$(($TERM_COLS - $COL_0))"
   fi
 
+  # init menu id detection
+  if [ -z "$MENU_ID" ]
+  then
+    MENU_ID="true"
+  fi
+
   # init multi selection
+  if [ -z "$MENU_MULTISELECTION" ]
+  then
+    MENU_MULTISELECTION="false"
+  fi
+
   if [ -z "$SEL_ITEM_TRUE_STRING" ]
   then
     SEL_ITEM_TRUE_STRING="+"
@@ -180,8 +194,7 @@ return_selection()
 
   if [ ! "$MENU_MULTISELECTION" = "true" ]
   then
-    SELECTED_POS="$ARRAY_POS"
-    (array MENU_IDS get "$SELECTED_POS") 1>&2
+    (array MENU_IDS get "$ARRAY_POS") 1>&2
   else
     array MENU_SELECTED_ITEMS
     i="0"
@@ -194,8 +207,6 @@ return_selection()
       fi
       i="$(($i + 1))"
     done
-    echo "result"
-    array MENU_SELECTED_ITEMS get
     (array MENU_SELECTED_ITEMS get) 1>&2
   fi
 
@@ -210,21 +221,20 @@ select_item_toggle()
   fi
 
   SELECTED_POS="$ARRAY_POS"
-  SEL_ITEM_CURR_STRING="$(array MENU_SEL get "$SELECTED_POS")"
+  SEL_ITEM_CURR_STRING="$(array MENU_SEL get "$ARRAY_POS")"
   if [ "$SEL_ITEM_CURR_STRING" = "$SEL_ITEM_TRUE_STRING" ]
   then
-    array MENU_SEL put "$SELECTED_POS" "$SEL_ITEM_FALSE_STRING"
+    array MENU_SEL put "$ARRAY_POS" "$SEL_ITEM_FALSE_STRING"
   elif [ "$SEL_ITEM_CURR_STRING" = "$SEL_ITEM_FALSE_STRING" ]
   then
-    array MENU_SEL put "$SELECTED_POS" "$SEL_ITEM_TRUE_STRING"
+    array MENU_SEL put "$ARRAY_POS" "$SEL_ITEM_TRUE_STRING"
   else
     # quit
     false
-    # array MENU_SEL set "$SELECTED_POS" "$SEL_ITEM_TRUE_STRING"
+    # array MENU_SEL set "$ARRAY_POS" "$SEL_ITEM_TRUE_STRING"
   fi
 
-  # print_menu_entry "$(($ARRAY_POS_START + $SELECTED_POS))"
-  print_menu_entry "$CURSOR_POS"
+  print_menu_entry "$ARRAY_POS" "$CURSOR_POS"
 }
 
 menu_init()
@@ -235,8 +245,15 @@ menu_init()
 
   for k in "$@"
   do
-    ID="${k%%=*}"
-    TEXT="${k#*=}"
+    if [ ! "$MENU_ID" = "false" ]
+    then
+      ID="${k%%=*}"
+      TEXT="${k#*=}"
+    else
+      ID="$k"
+      TEXT="$k"
+    fi
+
     array MENU_IDS add "$ID"
     array MENU_TEXTS add "$TEXT"
     array MENU_SEL add "$SEL_ITEM_FALSE_STRING"
@@ -254,58 +271,58 @@ menu_init()
 
 print_menu_entry()
 {
+  MENU_ENTRY_INDEX="$1"
+  MENU_ENTRY_ROW="$2"
+
   # clear whole line
-  tput cup "$(($ROW_0 + $1))" "$COL_0"
+  tput cup "$(($ROW_0 + $MENU_ENTRY_ROW))" "$COL_0"
   printf "%${COLS}s"
-  tput cup "$(($ROW_0 + $1))" "$COL_0"
-
-  # build line to print
-  # line="$(tput setaf 2)${1}$(tput sgr0) $(tput setaf 3)[$(array MENU_SEL get "$1")]$(tput sgr0) $(array MENU_TEXTS get "$1")"
-
-  # line="$(printf "$line" | tr -cd '[:print:]')"
-  # line="$(printf "$line" | sed 's/[^[:print:]]//g')"
-  # line="$(printf "$line" | sed $'s/\033\[[0-9;]*m//g')"
-
-  # line="$(array MENU_TEXTS get "$1")"
+  tput cup "$(($ROW_0 + $MENU_ENTRY_ROW))" "$COL_0"
 
   # limit too long lines (use line without ascii control codes)
-  line="$(($ARRAY_POS_START + $1)) [$(array MENU_SEL get "$(($ARRAY_POS_START + $1))")] $(array MENU_TEXTS get "$(($ARRAY_POS_START + $1))")"
+  if [ ! "$MENU_MULTISELECTION" = "true" ]
+  then
+    line="$MENU_ENTRY_INDEX $(array MENU_TEXTS get "$MENU_ENTRY_INDEX")"
+  else
+    line="$MENU_ENTRY_INDEX [$(array MENU_SEL get "$MENU_ENTRY_INDEX")] $(array MENU_TEXTS get "$MENU_ENTRY_INDEX")"
+  fi
   size="$(printf "$line" | wc -m)"
-  line="$(array MENU_TEXTS get "$(($ARRAY_POS_START + $1))")"
+  line="$(array MENU_TEXTS get "$MENU_ENTRY_INDEX")"
   if [ "$size" -gt "$COLS" ]
   then
     sizeexceed="$(($size - $COLS))"
     size="$(printf "$line" | wc -m)"
     line="$(printf "$line" | cut -c "1-$(($size - $sizeexceed - 6))")$(tput setaf 1) [...]$(tput sgr0)"
-    # line="$(printf "$line" | cut -c "1-$(($COLS - 6))")$(tput setaf 1) [...]$(tput sgr0)"
   fi
 
   # print line
-  # line="$(tput setaf 2)${1}$(tput sgr0) $(tput setaf 3)[$(array MENU_SEL get "$1")]$(tput sgr0) $(array MENU_TEXTS get "$1")"
-  line="$(tput setaf 2)$(($ARRAY_POS_START + $1))$(tput sgr0) $(tput setaf 3)[$(array MENU_SEL get "$(($ARRAY_POS_START + $1))")]$(tput sgr0) $line"
+  if [ ! "$MENU_MULTISELECTION" = "true" ]
+  then
+    line="$(tput setaf 2)$MENU_ENTRY_INDEX$(tput sgr0) $line"
+  else
+    line="$(tput setaf 2)$MENU_ENTRY_INDEX$(tput sgr0) $(tput setaf 3)[$(array MENU_SEL get "$MENU_ENTRY_INDEX")]$(tput sgr0) $line"
+  fi
   printf "$line"
-  # printf "$(tput setaf 2)${1}$(tput sgr0) $(tput setaf 3)'$(array MENU_SEL get "$1")'$(tput sgr0) $line"
-  # SEL_ITEM_CURR_STRING="$(array MENU_SEL get "$SELECTED_POS")"
-  # printf "$(tput setaf 2)${1}$(tput sgr0) $(tput setaf 3)'$SEL_ITEM_CURR_STRING'$(tput sgr0) $line"
-  tput cup "$(($ROW_0 + $1))" "$COL_0"
+
+  tput cup "$(($ROW_0 + $MENU_ENTRY_ROW))" "$COL_0"
 }
 
 screen_render()
 {
   ARRAY_POS_START="$1"
 
-  # tput clear
   i="0"
   n="$ROWS"
   while [ "$i" -lt "$n" ]
   do
-    # tput cup "$(($ROW_0 + $i))" "$COL_0"
-    # print_menu_entry "$(($ARRAY_POS_START + $i))"
-    print_menu_entry "$i" "$ARRAY_POS_START"
+    print_menu_entry "$(($ARRAY_POS_START + $i))" "$i"
     i="$(($i + 1))"
   done
+}
 
-  tput cup "$ROW_0" "$COL_0"
+menu_entry_highlight()
+{
+  tput cup "$(($ROW_0 + $1))" "$COL_0"
 }
 
 scroll_cursor()
@@ -350,8 +367,9 @@ scroll_cursor()
     # screen_render "$((ARRAY_POS - $CURSOR_POS + 1))"
   fi
 
+  menu_entry_highlight "$CURSOR_POS"
   # tput cup $CURSOR_POS 0
-  tput cup "$(($ROW_0 + $CURSOR_POS))" "$COL_0"
+  # tput cup "$(($ROW_0 + $CURSOR_POS))" "$COL_0"
 }
 
 scroll_page()
@@ -411,14 +429,9 @@ main()
   trap "screen_reset; exit 2" INT QUIT TERM HUP PIPE ABRT TSTP
   screen_init
 
-  # i=0
-  # while [ "$i" -lt "999" ]
-  # do
-  #   printf "*************************************************"
-  #   i="$(($i + 1))"
-  # done
   menu_init "$@"
   screen_render 0
+  menu_entry_highlight 0
 
   key_loop
 }

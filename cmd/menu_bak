@@ -2,9 +2,113 @@
 
 #-------------------------------------------------------------------------------
 
-. array.lib.sh
+array()
+{
+  eval "[ \"\$${1}_TYPE\" = \"array\" ]"
+  if [ ! "$?" = "0" ]
+  then
+    if [ "$#" = "1" ]
+    then
+      eval "${1}_TYPE=\"array\""
+      eval "${1}_SIZE=\"0\""
+      return 0
+    else
+      echo "not an array!" 1>&2
+      exit 1
+    fi
+  fi
 
-#-------------------------------------------------------------------------------
+  case "$2" in
+    "size")
+      if [ -z "$3" ]
+      then
+        eval "echo \"\$${1}_SIZE\""
+      else
+        eval "${3}=\"\$${1}_SIZE\""
+      fi
+    ;;
+    "get")
+      if [ -z "$3" ]
+      then
+        while eval "[ \"\$(($# - 2))\" -lt \"\$${1}_SIZE\" ]"
+        do
+          set -- "$@" "$(array "$1" get $(($# - 2)))"
+        done
+        shift 2
+        echo "$@"
+        return 0
+      fi
+      eval "[ \"${3}\" -lt \"\$${1}_SIZE\" ] || exit 1"
+      if [ -z "$4" ]
+      then
+        eval "echo \"\$${1}_${3}\""
+      else
+        eval "${4}=\"\$${1}_${3}\""
+      fi
+    ;;
+    "put")
+      eval "[ \"${3}\" -lt \"\$${1}_SIZE\" ] || exit 1"
+      eval "${1}_${3}=\"\${4}\""
+    ;;
+    "add")
+      eval "set -- \"\$@\" \"\$${1}_SIZE\""
+      eval "${1}_${4}=\"${3}\""
+      eval "${1}_SIZE=\"\$((\$${1}_SIZE + 1))\""
+    ;;
+    "ins")
+      eval "[ \"${3}\" -lt \"\$${1}_SIZE\" ] || exit 1"
+      set -- "$@" "$1" "set"
+      while [ "$(($# - 6))" -lt "$3" ]
+      do
+        set -- "$@" "$(array "$1" get $(($# - 6)))"
+      done
+      set -- "$@" "$4"
+      while eval "[ \"\$(($# - 7))\" -lt \"\$${1}_SIZE\" ]"
+      do
+        set -- "$@" "$(array "$1" get $(($# - 7)))"
+      done
+      shift 4
+      array "$@"
+    ;;
+    "rem")
+      eval "[ \"${3}\" -lt \"\$${1}_SIZE\" ] || exit 1"
+      set -- "$@" "$1" "set"
+      while [ "$(($# - 5))" -lt "$3" ]
+      do
+        set -- "$@" "$(array "$1" get $(($# - 5)))"
+      done
+      while eval "[ \"\$(($# - 4))\" -lt \"\$${1}_SIZE\" ]"
+      do
+        set -- "$@" "$(array "$1" get $(($# - 4)))"
+      done
+      shift 3
+      array "$@"
+    ;;
+    "set")
+      array "$1" unset
+      array "$1"
+      set -- "$@" "${1}"
+      shift 2
+      while [ "$#" -gt "1" ]
+      do
+        eval "array \"\$$#\" add \"\$1\""
+        shift
+      done
+    ;;
+    "unset")
+      eval "set -- \"\$1\" \"\$${1}_SIZE\""
+      while [ "$2" -gt "0" ]
+      do
+        eval "${1}_SIZE=\"\$((\$${1}_SIZE - 1))\""
+        eval "set -- \"\$1\" \"\$${1}_SIZE\""
+        eval "unset ${1}_${2}"
+      done
+      eval "unset ${1}_SIZE"
+      eval "unset ${1}_TYPE"
+    ;;
+    *) exit 1;;
+  esac
+}
 
 readc()
 {
@@ -92,11 +196,9 @@ screen_vars_update()
   done
   tput clear
 
-  # get terminal size
   TERM_ROWS="$(tput lines)"
   TERM_COLS="$(tput cols)"
 
-  # init render region
   if [ -z "$ROW_0" ]
   then
     ROW_0="0"
@@ -117,7 +219,6 @@ screen_vars_update()
     COLS="$TERM_COLS"
   fi
 
-  # init limits
   if [ -z "$ROWS_MIN" ]
   then
     ROWS_MIN="2"
@@ -147,17 +248,6 @@ screen_vars_update()
   then
     COLS="$(($TERM_COLS - $COL_0))"
   fi
-
-  # init multi selection
-  if [ -z "$SEL_ITEM_TRUE_STRING" ]
-  then
-    SEL_ITEM_TRUE_STRING="+"
-  fi
-
-  if [ -z "$SEL_ITEM_FALSE_STRING" ]
-  then
-    SEL_ITEM_FALSE_STRING="-"
-  fi
 }
 
 #-------------------------------------------------------------------------------
@@ -178,60 +268,25 @@ return_selection()
 {
   screen_reset
 
-  if [ ! "$MENU_MULTISELECTION" = "true" ]
+  if [ "$ARRAY_SIZE" -lt "$TERM_ROWS" ]
   then
-    SELECTED_POS="$ARRAY_POS"
-    (array MENU_IDS get "$SELECTED_POS") 1>&2
+    SELECTED_POS="$CURSOR_POS"
   else
-    array MENU_SELECTED_ITEMS
-    i="0"
-    n="$(array MENU_SEL size)"
-    while [ "$i" -lt "$n" ]
-    do
-      if [ "$(array MENU_SEL get "$i")" = "$SEL_ITEM_TRUE_STRING" ]
-      then
-        array MENU_SELECTED_ITEMS add "$(array MENU_IDS get "$i")"
-      fi
-      i="$(($i + 1))"
-    done
-    echo "result"
-    array MENU_SELECTED_ITEMS get
-    (array MENU_SELECTED_ITEMS get) 1>&2
+    # SELECTED_POS="$((ARRAY_POS + CURSOR_POS))"
+    SELECTED_POS="$ARRAY_POS"
   fi
+  # SELECTED_POS="$((ARRAY_POS + CURSOR_POS))"
+  # echo "SELECTED_POS=$SELECTED_POS ARRAY_POS=$ARRAY_POS CURSOR_POS=$CURSOR_POS"
+  # array MENU_IDS get "$SELECTED_POS"
+  (array MENU_IDS get "$SELECTED_POS") 1>&2
 
   exit 0
-}
-
-select_item_toggle()
-{
-  if [ ! "$MENU_MULTISELECTION" = "true" ]
-  then
-    return 0
-  fi
-
-  SELECTED_POS="$ARRAY_POS"
-  SEL_ITEM_CURR_STRING="$(array MENU_SEL get "$SELECTED_POS")"
-  if [ "$SEL_ITEM_CURR_STRING" = "$SEL_ITEM_TRUE_STRING" ]
-  then
-    array MENU_SEL put "$SELECTED_POS" "$SEL_ITEM_FALSE_STRING"
-  elif [ "$SEL_ITEM_CURR_STRING" = "$SEL_ITEM_FALSE_STRING" ]
-  then
-    array MENU_SEL put "$SELECTED_POS" "$SEL_ITEM_TRUE_STRING"
-  else
-    # quit
-    false
-    # array MENU_SEL set "$SELECTED_POS" "$SEL_ITEM_TRUE_STRING"
-  fi
-
-  # print_menu_entry "$(($ARRAY_POS_START + $SELECTED_POS))"
-  print_menu_entry "$CURSOR_POS"
 }
 
 menu_init()
 {
   array MENU_IDS
   array MENU_TEXTS
-  array MENU_SEL
 
   for k in "$@"
   do
@@ -239,7 +294,6 @@ menu_init()
     TEXT="${k#*=}"
     array MENU_IDS add "$ID"
     array MENU_TEXTS add "$TEXT"
-    array MENU_SEL add "$SEL_ITEM_FALSE_STRING"
   done
 
   ARRAY_SIZE="$(array MENU_IDS size)"
@@ -254,40 +308,16 @@ menu_init()
 
 print_menu_entry()
 {
-  # clear whole line
   tput cup "$(($ROW_0 + $1))" "$COL_0"
   printf "%${COLS}s"
   tput cup "$(($ROW_0 + $1))" "$COL_0"
-
-  # build line to print
-  # line="$(tput setaf 2)${1}$(tput sgr0) $(tput setaf 3)[$(array MENU_SEL get "$1")]$(tput sgr0) $(array MENU_TEXTS get "$1")"
-
-  # line="$(printf "$line" | tr -cd '[:print:]')"
-  # line="$(printf "$line" | sed 's/[^[:print:]]//g')"
-  # line="$(printf "$line" | sed $'s/\033\[[0-9;]*m//g')"
-
-  # line="$(array MENU_TEXTS get "$1")"
-
-  # limit too long lines (use line without ascii control codes)
-  line="$(($ARRAY_POS_START + $1)) [$(array MENU_SEL get "$(($ARRAY_POS_START + $1))")] $(array MENU_TEXTS get "$(($ARRAY_POS_START + $1))")"
+  line="$(array MENU_TEXTS get "$1")"
   size="$(printf "$line" | wc -m)"
-  line="$(array MENU_TEXTS get "$(($ARRAY_POS_START + $1))")"
   if [ "$size" -gt "$COLS" ]
   then
-    sizeexceed="$(($size - $COLS))"
-    size="$(printf "$line" | wc -m)"
-    line="$(printf "$line" | cut -c "1-$(($size - $sizeexceed - 6))")$(tput setaf 1) [...]$(tput sgr0)"
-    # line="$(printf "$line" | cut -c "1-$(($COLS - 6))")$(tput setaf 1) [...]$(tput sgr0)"
+    line="$(printf "$line" | cut -c "1-$(($COLS - 6))")$(tput setaf 1) [...]$(tput sgr0)"
   fi
-
-  # print line
-  # line="$(tput setaf 2)${1}$(tput sgr0) $(tput setaf 3)[$(array MENU_SEL get "$1")]$(tput sgr0) $(array MENU_TEXTS get "$1")"
-  line="$(tput setaf 2)$(($ARRAY_POS_START + $1))$(tput sgr0) $(tput setaf 3)[$(array MENU_SEL get "$(($ARRAY_POS_START + $1))")]$(tput sgr0) $line"
-  printf "$line"
-  # printf "$(tput setaf 2)${1}$(tput sgr0) $(tput setaf 3)'$(array MENU_SEL get "$1")'$(tput sgr0) $line"
-  # SEL_ITEM_CURR_STRING="$(array MENU_SEL get "$SELECTED_POS")"
-  # printf "$(tput setaf 2)${1}$(tput sgr0) $(tput setaf 3)'$SEL_ITEM_CURR_STRING'$(tput sgr0) $line"
-  tput cup "$(($ROW_0 + $1))" "$COL_0"
+  printf "$(tput setaf 2)$1$(tput sgr0) $line"
 }
 
 screen_render()
@@ -300,8 +330,7 @@ screen_render()
   while [ "$i" -lt "$n" ]
   do
     # tput cup "$(($ROW_0 + $i))" "$COL_0"
-    # print_menu_entry "$(($ARRAY_POS_START + $i))"
-    print_menu_entry "$i" "$ARRAY_POS_START"
+    print_menu_entry "$(($ARRAY_POS_START + $i))"
     i="$(($i + 1))"
   done
 
@@ -317,12 +346,10 @@ scroll_cursor()
 
   if [ "$CURSOR_POS" -lt "0" ]
   then
-    ARRAY_POS_START="$(($ARRAY_POS_START + $1))"
     CURSOR_POS="0"
     UPDATE_SCREEN="true"
   elif [ "$CURSOR_POS" -gt "$(($ROWS - 1))" ]
   then
-    ARRAY_POS_START="$(($ARRAY_POS_START + $1))"
     CURSOR_POS="$(($ROWS - 1))"
     UPDATE_SCREEN="true"
   fi
@@ -335,22 +362,13 @@ scroll_cursor()
     ARRAY_POS="$(($ARRAY_SIZE - 1))"
   fi
 
-  if [ "$ARRAY_POS_START" -lt "0" ]
-  then
-    ARRAY_POS_START=0
-  elif [ "$ARRAY_POS_START" -gt "$(($ARRAY_SIZE - $ROWS))" ]
-  then
-    ARRAY_POS_START="$(($ARRAY_SIZE - $ROWS))"
-  fi
-
   if [ "$UPDATE_SCREEN" = true ]
   then
-    screen_render "$ARRAY_POS_START"
-    # screen_render "$((ARRAY_POS - $CURSOR_POS))"
+    screen_render "$((ARRAY_POS - $CURSOR_POS))"
     # screen_render "$((ARRAY_POS - $CURSOR_POS + 1))"
   fi
 
-  # tput cup $CURSOR_POS 0
+  tput cup $CURSOR_POS 0
   tput cup "$(($ROW_0 + $CURSOR_POS))" "$COL_0"
 }
 
@@ -385,7 +403,6 @@ key_loop()
       "pagedown") scroll_page "+1";;
       "home") move_cursor_to "0";;
       "end") move_cursor_to "$(($ARRAY_SIZE - 1))";;
-      "space") select_item_toggle;;
       "enter") return_selection;;
       # *) exit 1;;
     esac
@@ -411,12 +428,6 @@ main()
   trap "screen_reset; exit 2" INT QUIT TERM HUP PIPE ABRT TSTP
   screen_init
 
-  # i=0
-  # while [ "$i" -lt "999" ]
-  # do
-  #   printf "*************************************************"
-  #   i="$(($i + 1))"
-  # done
   menu_init "$@"
   screen_render 0
 
