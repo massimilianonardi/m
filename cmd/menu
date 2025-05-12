@@ -428,12 +428,6 @@ main()
   trap "screen_reset; exit 2" INT QUIT TERM HUP PIPE ABRT TSTP
   screen_init
 
-  i=0
-  while [ "$i" -lt "999" ]
-  do
-    printf "*************************************************"
-    i="$(($i + 1))"
-  done
   menu_init "$@"
   screen_render 0
 

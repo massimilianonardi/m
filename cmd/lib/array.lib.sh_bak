@@ -12,27 +12,6 @@
 # array ARRAY_NAME set NEW_VALUES...
 # array ARRAY_NAME unset
 
-#-------------------------------------------------------------------------------
-
-quote()
-{
-  printf %s\\n "$1" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/"
-}
-
-# current_args=$(saveargs "$@")
-# set -- foo bar baz boo
-# eval "set -- $current_args"
-saveargs()
-{
-  for i
-  do
-    printf %s\\n "$i" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/' \\\\/"
-  done
-  echo " "
-}
-
-#-------------------------------------------------------------------------------
-
 array()
 {
   eval "[ \"\$${1}_TYPE\" = \"array\" ]"
@@ -63,7 +42,7 @@ array()
       then
         while eval "[ \"\$(($# - 2))\" -lt \"\$${1}_SIZE\" ]"
         do
-          set -- "$@" "$(quote "$(array "$1" get $(($# - 2)))")"
+          set -- "$@" "$(array "$1" get $(($# - 2)))"
         done
         shift 2
         echo "$@"

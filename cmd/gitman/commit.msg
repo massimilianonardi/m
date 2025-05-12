@@ -1,1 +1,1 @@
-menu multiselection scrolling fixed, todo return array
+menu multiselection env switch + return array
