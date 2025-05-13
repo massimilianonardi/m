@@ -1,1 +1,1 @@
-rsudo-jobs, enc lib, rsudo path to rpr + env enc
+app desktop files use app command with no absolute path

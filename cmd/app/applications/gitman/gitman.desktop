@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.0
 Name=gitman
-Exec=env gitman
+Exec=gitman
 Terminal=true
 Type=Application
 StartupNotify=true

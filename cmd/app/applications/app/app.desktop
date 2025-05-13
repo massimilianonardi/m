@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.0
 Name=app
-Exec=env app
+Exec=app
 Terminal=true
 Type=Application
 StartupNotify=true

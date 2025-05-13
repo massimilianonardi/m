@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.0
 Name=Pulsar
-Exec=env /m/app/app pulsar run %F
+Exec=app pulsar run %F
 Terminal=false
 Type=Application
 Icon=/m/app/pulsar/latest/resources/pulsar.png
