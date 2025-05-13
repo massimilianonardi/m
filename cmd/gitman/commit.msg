@@ -1,1 +1,1 @@
-app, desktop fix menu fix (eval array get quoted), decide for readc lib usefulness
+rsudo-jobs, enc lib, rsudo path to rpr + env enc
