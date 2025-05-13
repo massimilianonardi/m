@@ -26,7 +26,7 @@ else
   done
 
   # menu should allow selection
-  APP_NAME="$(menu $(array APP_ARRAY get))"
+  APP_NAME="$(eval menu $(array APP_ARRAY get))"
   array APP_ARRAY unset
   if [ -z "$APP_NAME" ]
   then

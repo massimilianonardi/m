@@ -37,6 +37,8 @@ test_array()
   array myarray rem 1
   set | grep myarray
   array myarray get
+  eval set -- $(array myarray get); for k in "$@"; do echo "$k"; done
+  for k in eval echo "$(array myarray get)"; do echo "$k"; done
   array myarray unset
   echo "array unset"
   set | grep myarray
