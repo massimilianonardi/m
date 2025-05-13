@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=rsudo-jobs
+Exec=rsudo-jobs
+Terminal=true
+Type=Application
+StartupNotify=true
+StartupWMClass=rsudo-jobs
