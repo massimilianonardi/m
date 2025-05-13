@@ -7,6 +7,7 @@
   # enc_file="/m/env/rpr/#webgis-deploy-include-users.enc"
   # unenc_file="/m/env/rpr/#postgres-servers"
   # enc_file="/m/env/rpr/#postgres-servers.enc"
+  
   # log "encoding..."
   # openssl enc -e -aes-256-cbc -pbkdf2 -in "$unenc_file" -out "$enc_file"
   # log "decoding..."
