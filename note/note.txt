@@ -48,6 +48,12 @@ other machines: ssh -p 2222 -l mnardi 10.1.0.177
 
 --------------------------------------------------------------------------------
 
+find big files/directories
+
+du -aBM 2>/dev/null | sort -nr | head -n 50 | more
+
+--------------------------------------------------------------------------------
+
 .dektop files
 find the wmclass:
 open the app, from terminal type
