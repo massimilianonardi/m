@@ -1,1 +1,1 @@
-desktop files fixes
+note ssh tunnel local port forwarding
