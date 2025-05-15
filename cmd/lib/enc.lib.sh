@@ -7,7 +7,7 @@
   # enc_file="/m/env/rpr/#webgis-deploy-include-users.enc"
   # unenc_file="/m/env/rpr/#postgres-servers"
   # enc_file="/m/env/rpr/#postgres-servers.enc"
-  
+
   # log "encoding..."
   # openssl enc -e -aes-256-cbc -pbkdf2 -in "$unenc_file" -out "$enc_file"
   # log "decoding..."
@@ -22,6 +22,40 @@
   # echo "env_enc_file: $env_enc_file"
   # eval "$(openssl enc -d -aes-256-cbc -pbkdf2 -in "$env_enc_file")"
   # unset env_enc_file
+
+#------------------------------------------------------------------------------
+
+file_enc()
+{
+  if [ ! -f "$1" ]
+  then
+    return 1
+  fi
+
+  if [ -z "$OPENSSL_PASS" ]
+  then
+    eval "$(openssl enc -e -aes-256-cbc -pbkdf2 -in "$1" -out "$1".enc)"
+  else
+    eval "$(openssl enc -e -aes-256-cbc -pbkdf2 -in "$1" -out "$1".enc -pass "env:OPENSSL_PASS")"
+  fi
+}
+
+#------------------------------------------------------------------------------
+
+file_dec()
+{
+  if [ ! -f "$1" ]
+  then
+    return 1
+  fi
+
+  if [ -z "$OPENSSL_PASS" ]
+  then
+    eval "$(openssl enc -d -aes-256-cbc -pbkdf2 -in "$1" -out "$1".dec)"
+  else
+    eval "$(openssl enc -d -aes-256-cbc -pbkdf2 -in "$1" -out "$1".dec -pass "env:OPENSSL_PASS")"
+  fi
+}
 
 #------------------------------------------------------------------------------
 

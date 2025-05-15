@@ -1,0 +1,58 @@
+#!/bin/sh
+
+#-------------------------------------------------------------------------------
+
+. realpaths.lib.sh
+. waituser.lib.sh
+. enc.lib.sh
+. array.lib.sh
+
+#-------------------------------------------------------------------------------
+
+menu_dir()
+(
+  if [ ! -d "$1" ]
+  then
+    return 1
+  fi
+
+  cd "$1"
+
+  array DIR_ARRAY
+  array DIR_ARRAY add ".."
+  for k in ..?* .[!.]* *
+  do
+    if [ -e "$k" ]
+    then
+      array DIR_ARRAY add "$k"
+    fi
+  done
+
+  FILE="$(eval menu $(array DIR_ARRAY get))"
+
+  if [ -n "$FILE" ]
+  then
+    echo "$(cd -L -- "$1" && pwd -L)/$FILE"
+  fi
+)
+
+#-------------------------------------------------------------------------------
+
+realpaths
+
+FILE="$(menu_dir "$THIS_DIR")"
+
+while [ -n "$FILE" ] && [ -d "$FILE" ]
+#while [ -n "$FILE" ]
+do
+  FILE_SEL="$FILE"
+  FILE="$(menu_dir "$FILE")"
+done
+
+if [ -n "$FILE" ] && [ -f "$FILE" ]
+then
+  echo "$FILE"
+  eval "$(menu file_enc="Encode file" file_dec="Decode file") '$FILE'"
+# else
+#   echo "$FILE_SEL"
+fi

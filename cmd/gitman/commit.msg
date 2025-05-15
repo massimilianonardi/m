@@ -1,1 +1,1 @@
-note find big files/directories
+file selector + file encode/decode tui
