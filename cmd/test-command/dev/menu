@@ -139,6 +139,8 @@ quit()
   fi
 }
 
+# env var and return protocol to return also key pressed along with menu entry selection
+# a little lib with a simple fucntion to read the above into two vars separately can be very helpful
 return_selection()
 {
   screen_reset
@@ -376,10 +378,13 @@ main()
   trap "screen_reset; exit 2" INT QUIT TERM HUP PIPE ABRT TSTP
   screen_init
 
+  # the following must be enclosed into a subshell function that inits screen rect region and input array
   menu_init "$@"
   screen_render 0
   menu_entry_highlight 0
 
+  # the following sends read character to a function that sends proper command to
+  # proper function by init all vars depending of target menu
   key_loop
 }
 
