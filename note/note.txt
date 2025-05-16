@@ -46,6 +46,10 @@ from vm bridged: ssh -p 2222 -l root 192.168.1.115
 10.1.0.177: ssh -p 2222 -l mnardi localhost
 other machines: ssh -p 2222 -l mnardi 10.1.0.177
 
+from mbpro 192.168.1.115: ssh -L 192.168.1.115:2222:10.1.0.25:22 mnardi@10.1.0.25
+from mbpro 192.168.1.115: ssh -p 2222 -l mnardi localhost
+other machines: ssh -p 2222 -l mnardi 192.168.1.115
+
 --------------------------------------------------------------------------------
 
 find big files/directories

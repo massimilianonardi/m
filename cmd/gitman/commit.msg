@@ -1,1 +1,1 @@
-file selector + file encode/decode tui
+note ssh tunnel local port forwarding
