@@ -6,11 +6,11 @@ menuctl()
     "keys")
       shift
 
-      set -- "$1" "$2" "${MENU_KEY_SEPARATOR:-asd}" "$(
+      set -- "$1" "$2" "${MENU_KEY_SEPARATOR:-":"}" "$(
         shift 2
         export MENU_CUSTOM_KEYS="$1"
         shift
-        export MENU_KEY_SEPARATOR="${MENU_KEY_SEPARATOR:-asd}"
+        export MENU_KEY_SEPARATOR="${MENU_KEY_SEPARATOR:-":"}"
         menu "$@"
       )"
 
