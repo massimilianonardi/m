@@ -6,52 +6,75 @@
 . waituser.lib.sh
 # . enc.lib.sh
 . array.lib.sh
+. menu.lib.sh
 
 #-------------------------------------------------------------------------------
 
 menu_dir()
-(
+{
   if [ ! -d "$1" ]
   then
     return 1
   fi
-  
-  cd "$1"
 
-  array DIR_ARRAY
-  array DIR_ARRAY add ".."
-  for k in ..?* .[!.]* *
-  do
-    if [ -e "$k" ]
+  eval menuctl keys key selection "$keys" $(
+    cd "$1"
+    set -- "$(cd -L -- "$1" && pwd -L)"
+
+    array DIR_ARRAY
+
+    if [ ! "$(pwd)" = "/" ]
     then
-      array DIR_ARRAY add "$k"
+      array DIR_ARRAY add "${1}/..=.."
+    else
+      set -- ""
     fi
-  done
 
-  FILE="$(eval menu $(array DIR_ARRAY get))"
+    for k in ..?* .[!.]* *
+    do
+      if [ -e "$k" ]
+      then
+        array DIR_ARRAY add "${1}/$k=$k"
+      fi
+    done
 
-  if [ -n "$FILE" ]
-  then
-    echo "$(cd -L -- "$1" && pwd -L)/$FILE"
-  fi
-)
+    array DIR_ARRAY get
+
+    # FILE="$(eval menu $(array DIR_ARRAY get))"
+    #
+    # if [ -n "$FILE" ]
+    # then
+    #   echo "$(cd -L -- "$1" && pwd -L)/$FILE"
+    # fi
+  )
+
+  echo "key=$key"; echo "selection=$selection"
+}
 
 #-------------------------------------------------------------------------------
 
 realpaths
 
-FILE="$(menu_dir "$THIS_DIR")"
+keys="canc:c:d:m:r"
 
-while [ -n "$FILE" ] && [ -d "$FILE" ]
+# FILE="$(menu_dir "$THIS_DIR")"
+# eval menuctl keys key selection "$keys" $(dir "/")
+menu_dir "/"
+# waituser
+
+while [ "$key" = "enter" ] && [ -d "$selection" ]
+# while [ -n "$FILE" ] && [ -d "$FILE" ]
 #while [ -n "$FILE" ]
 do
-  FILE_SEL="$FILE"
-  FILE="$(menu_dir "$FILE")"
+  # FILE_SEL="$FILE"
+  # FILE="$(menu_dir "$FILE")"
+  # menuctl keys key selection "$keys" id_0=Text_0 id_1=Text_1 id_2=Text_2
+  menu_dir "$selection"
 done
 
-if [ -n "$FILE" ]
-then
-  echo "$FILE"
-else
-  echo "$FILE_SEL"
-fi
+# if [ -n "$FILE" ]
+# then
+#   echo "$FILE"
+# else
+#   echo "$FILE_SEL"
+# fi

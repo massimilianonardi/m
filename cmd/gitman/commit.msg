@@ -1,1 +1,1 @@
-menu return on custom keys, return custom key along with selection + helper lib
+file manager tui and needed menu features notes
