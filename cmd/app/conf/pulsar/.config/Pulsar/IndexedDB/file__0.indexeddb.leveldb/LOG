@@ -37,3 +37,9 @@
 2025/05/17-09:56:48.810 5167 Level-0 table #71: started
 2025/05/17-09:56:48.841 5167 Level-0 table #71: 1636505 bytes OK
 2025/05/17-09:56:48.843 5167 Delete type=0 #67
+2025/05/17-10:25:20.039 5f6c Compacting 1@1 + 1@2 files
+2025/05/17-10:25:20.044 5f6c Generated table #72@1: 41 keys, 11927 bytes
+2025/05/17-10:25:20.044 5f6c Compacted 1@1 + 1@2 files => 11927 bytes
+2025/05/17-10:25:20.045 5f6c compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/05/17-10:25:20.045 5f6c Delete type=2 #71
+2025/05/17-10:25:20.045 5f6c Delete type=2 #69

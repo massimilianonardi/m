@@ -6,21 +6,16 @@ menuctl()
     "keys")
       shift
 
-      if [ -z "$MENU_KEY_SEPARATOR" ]
-      then
-        export MENU_KEY_SEPARATOR=":"
-      fi
-
-      set -- "$1" "$2" "$(
+      set -- "$1" "$2" "${MENU_KEY_SEPARATOR:-asd}" "$(
         shift 2
         export MENU_CUSTOM_KEYS="$1"
         shift
+        export MENU_KEY_SEPARATOR="${MENU_KEY_SEPARATOR:-asd}"
         menu "$@"
       )"
 
-      # echo "arg1=$1 arg2=$2 arg3=$3"
-      eval "$1=\"${3%%${MENU_KEY_SEPARATOR}*}\""
-      eval "$2=\"${3#*${MENU_KEY_SEPARATOR}}\""
+      eval "$1=\"${4%%${3}*}\""
+      eval "$2=\"${4#*${3}}\""
     ;;
     *) exit 1;;
   esac
