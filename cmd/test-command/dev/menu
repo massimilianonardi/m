@@ -123,6 +123,12 @@ screen_vars_update()
   then
     SEL_ITEM_FALSE_STRING="-"
   fi
+
+  # return key pressed
+  if [ -z "$MENU_KEY_SEPARATOR" ]
+  then
+    MENU_KEY_SEPARATOR=":"
+  fi
 }
 
 #-------------------------------------------------------------------------------
@@ -145,6 +151,11 @@ return_selection()
 {
   screen_reset
 
+  if [ -n "$MENU_CUSTOM_KEYS" ]
+  then
+    printf "${key}${MENU_KEY_SEPARATOR}" 1>&2
+  fi
+
   if [ ! "$MENU_MULTISELECTION" = "true" ]
   then
     (array MENU_IDS get "$ARRAY_POS") 1>&2
@@ -164,6 +175,27 @@ return_selection()
   fi
 
   exit 0
+}
+
+check_key()
+{
+  if [ -z "$1" ]
+  then
+    return 0
+  fi
+
+  if [ -z "$MENU_CUSTOM_KEYS" ]
+  then
+    return 0
+  fi
+
+  if [ "${MENU_CUSTOM_KEYS#*${1}*}" = "$MENU_CUSTOM_KEYS" ]
+  then
+    return 0
+  fi
+
+  return_selection
+  # printf "${1}${MENU_KEY_SEPARATOR}"
 }
 
 select_item_toggle()
@@ -346,6 +378,7 @@ key_loop()
 
     case "$key" in
       "q") quit;;
+      "esc") quit;;
       "up") scroll_cursor "-1";;
       "down") scroll_cursor "+1";;
       "pageup") scroll_page "-1";;
@@ -354,6 +387,7 @@ key_loop()
       "end") move_cursor_to "$(($ARRAY_SIZE - 1))";;
       "space") select_item_toggle;;
       "enter") return_selection;;
+      *) check_key "$key";;
       # *) exit 1;;
     esac
   done

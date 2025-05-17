@@ -1,1 +1,1 @@
-menu for multimenu tui apps start reworking
+menu custom key + return selected custom key

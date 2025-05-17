@@ -1,21 +1,13 @@
-2025/05/15-07:36:13.766 298b Reusing MANIFEST /m/src/git/m/cmd/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/MANIFEST-000001
-2025/05/15-07:36:13.767 298b Recovering log #46
-2025/05/15-07:36:13.769 298b Reusing old log /m/src/git/m/cmd/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/000046.log 
-2025/05/15-09:15:33.166 386a Compacting 1@1 + 1@2 files
-2025/05/15-09:15:33.184 386a Generated table #49@1: 41 keys, 10094 bytes
-2025/05/15-09:15:33.184 386a Compacted 1@1 + 1@2 files => 10094 bytes
-2025/05/15-09:15:33.187 386a compacted to: files[ 0 0 1 0 0 0 0 ]
-2025/05/15-09:15:33.187 386a Delete type=2 #44
-2025/05/15-09:15:33.187 386a Delete type=2 #47
-2025/05/15-14:45:14.836 4ffc Level-0 table #51: started
-2025/05/15-14:45:14.931 4ffc Level-0 table #51: 1923045 bytes OK
-2025/05/15-14:45:14.936 4ffc Delete type=0 #46
-2025/05/15-15:17:42.778 8a22 Compacting 1@1 + 1@2 files
-2025/05/15-15:17:42.790 8a22 Generated table #52@1: 41 keys, 11336 bytes
-2025/05/15-15:17:42.791 8a22 Compacted 1@1 + 1@2 files => 11336 bytes
-2025/05/15-15:17:42.793 8a22 compacted to: files[ 0 0 1 0 0 0 0 ]
-2025/05/15-15:17:42.793 8a22 Delete type=2 #51
-2025/05/15-15:17:42.793 8a22 Delete type=2 #49
-2025/05/15-15:19:15.094 8a15 Level-0 table #54: started
-2025/05/15-15:19:15.171 8a15 Level-0 table #54: 1803096 bytes OK
-2025/05/15-15:19:15.177 8a15 Delete type=0 #50
+2025/05/16-08:20:13.011 c48 Reusing MANIFEST /m/src/git/m/cmd/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/MANIFEST-000001
+2025/05/16-08:20:13.012 c48 Recovering log #53
+2025/05/16-08:20:13.045 c48 Reusing old log /m/src/git/m/cmd/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/000053.log 
+2025/05/16-08:20:13.046 c48 Delete type=2 #49
+2025/05/16-08:53:32.647 ed3 Compacting 1@1 + 1@2 files
+2025/05/16-08:53:32.652 ed3 Generated table #56@1: 41 keys, 10798 bytes
+2025/05/16-08:53:32.652 ed3 Compacted 1@1 + 1@2 files => 10798 bytes
+2025/05/16-08:53:32.652 ed3 compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/05/16-08:53:32.653 ed3 Delete type=2 #54
+2025/05/16-08:53:32.653 ed3 Delete type=2 #52
+2025/05/16-11:52:12.889 1745 Level-0 table #58: started
+2025/05/16-11:52:12.919 1745 Level-0 table #58: 1816513 bytes OK
+2025/05/16-11:52:12.922 1745 Delete type=0 #53
