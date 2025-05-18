@@ -32,7 +32,6 @@ command:
       because system is modified with desktop files, thus modifiy environment is the cleaner solution
       BUT do not rewrite "upload" function to use libs and keep it standalone to avoid problems
   - menu: make multi window menus + key to switch active one
-    pass env var for header and footer according to render region
     env to make return only selected index (no ids or texts)
     env to make preselection
     find a way with multi selection to return also the entry under the cursor when pressed enter
