@@ -16,14 +16,57 @@
 
 #-------------------------------------------------------------------------------
 
+tty_get_cursor_pos()
+{
+  if [ -z "$1" ]
+  then
+    if [ -z "$2" ]
+    then
+      set -- "row" "col"
+    else
+      set -- "row" "$2"
+    fi
+  elif [ -z "$2" ]
+  then
+    set -- "$1" "col"
+  fi
+
+  saved_tty_settings=$(stty -g)
+
+  stty -echo -icanon min 0 time 1
+  tput u7
+  IFS='[;R' read -r dummy1 $1 $2 dummy2
+
+  stty "$saved_tty_settings"
+
+  # echo "row=$row"
+  # echo "col=$col"
+  # read x
+}
+
+string_count_lines()
+{
+  if [ -z "$1" ]
+  then
+    return 1
+  fi
+
+  eval echo "\$(($(printf "${1}" | wc -l) + 1))"
+}
+
+#-------------------------------------------------------------------------------
+
 screen_init()
 {
   saved_tty_settings=$(stty -g)
+  stty -echo
+
   tput sc
   tput smcup
   tput clear
 
   screen_vars_update
+  screen_background_render
 }
 
 screen_reset()
@@ -31,6 +74,7 @@ screen_reset()
   tput clear
   tput rmcup
   tput rc
+
   stty "$saved_tty_settings"
 }
 
@@ -69,6 +113,26 @@ screen_vars_update()
   if [ -z "$COLS" ]
   then
     COLS="$TERM_COLS"
+  fi
+
+  # init header/footer
+  if [ -n "$MENU_HEADER" ]
+  then
+    MENU_HEADER_ROW_0="$ROW_0"
+    MENU_HEADER_COL_0="$COL_0"
+    MENU_HEADER_SIZE_ROW="$(string_count_lines "$MENU_HEADER")"
+    ROW_0="$(($ROW_0 + $MENU_HEADER_SIZE_ROW))"
+    MENU_HEADER="$(printf "$MENU_HEADER" | tr '\n' ':space:6')"
+    # MENU_HEADER="$(printf "$MENU_HEADER" | sed 's|\n|\n#######|g')"
+    # MENU_HEADER="$(printf "$MENU_HEADER" | sed 's|ROW|WOR|g')"
+  fi
+
+  if [ -n "$MENU_FOOTER" ]
+  then
+    MENU_FOOTER_SIZE_ROW="$(string_count_lines "$MENU_FOOTER")"
+    ROWS="$(($ROWS - $MENU_FOOTER_SIZE_ROW))"
+    MENU_FOOTER_ROW_0="$(($ROW_0 + $ROWS))"
+    MENU_FOOTER_COL_0="$COL_0"
   fi
 
   # init limits
@@ -128,6 +192,21 @@ screen_vars_update()
   if [ -z "$MENU_KEY_SEPARATOR" ]
   then
     MENU_KEY_SEPARATOR=":"
+  fi
+}
+
+screen_background_render()
+{
+  if [ -n "$MENU_HEADER" ]
+  then
+    tput cup "$MENU_HEADER_ROW_0" "$MENU_HEADER_COL_0"
+    printf "$MENU_HEADER"
+  fi
+
+  if [ -n "$MENU_FOOTER" ]
+  then
+    tput cup "$MENU_FOOTER_ROW_0" "$MENU_FOOTER_COL_0"
+    printf "$MENU_FOOTER"
   fi
 }
 

@@ -1,1 +1,1 @@
-file manager tui and needed menu features notes
+menu header footer need replace newlines with col_0 spaces
