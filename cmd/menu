@@ -6,6 +6,9 @@
 # COL_0 # col coordinate to start render
 # ROWS # max rows to render
 # COLS # max cols to render
+# MENU_CUSTOM_KEYS="key1:key2:key3" # returns selection also with these keys in the form "key:selection"
+# MENU_HEADER # text above menu
+# MENU_FOOTER # text below menu
 
 #-------------------------------------------------------------------------------
 
@@ -122,9 +125,6 @@ screen_vars_update()
     MENU_HEADER_COL_0="$COL_0"
     MENU_HEADER_SIZE_ROW="$(string_count_lines "$MENU_HEADER")"
     ROW_0="$(($ROW_0 + $MENU_HEADER_SIZE_ROW))"
-    MENU_HEADER="$(printf "$MENU_HEADER" | tr '\n' ':space:6')"
-    # MENU_HEADER="$(printf "$MENU_HEADER" | sed 's|\n|\n#######|g')"
-    # MENU_HEADER="$(printf "$MENU_HEADER" | sed 's|ROW|WOR|g')"
   fi
 
   if [ -n "$MENU_FOOTER" ]
@@ -195,18 +195,34 @@ screen_vars_update()
   fi
 }
 
+screen_render_text_at()
+(
+  # IFS=$(printf '\n+'); IFS=${IFS%?}
+  IFS='
+'
+  i="0"
+  for line in $1
+  do
+    tput cup "$(($2 + $i))" "$3"
+    printf "%s" "$line"
+    i="$(($i + 1))"
+  done
+)
+
 screen_background_render()
 {
   if [ -n "$MENU_HEADER" ]
   then
-    tput cup "$MENU_HEADER_ROW_0" "$MENU_HEADER_COL_0"
-    printf "$MENU_HEADER"
+    # tput cup "$MENU_HEADER_ROW_0" "$MENU_HEADER_COL_0"
+    # printf "$MENU_HEADER"
+    screen_render_text_at "$MENU_HEADER" "$MENU_HEADER_ROW_0" "$MENU_HEADER_COL_0"
   fi
 
   if [ -n "$MENU_FOOTER" ]
   then
-    tput cup "$MENU_FOOTER_ROW_0" "$MENU_FOOTER_COL_0"
-    printf "$MENU_FOOTER"
+    # tput cup "$MENU_FOOTER_ROW_0" "$MENU_FOOTER_COL_0"
+    # printf "$MENU_FOOTER"
+    screen_render_text_at "$MENU_FOOTER" "$MENU_FOOTER_ROW_0" "$MENU_FOOTER_COL_0"
   fi
 }
 
