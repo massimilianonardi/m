@@ -10,14 +10,14 @@
 
 #-------------------------------------------------------------------------------
 
-menu_dir()
+menu_dir___()
 {
   if [ ! -d "$1" ]
   then
     return 1
   fi
 
-  eval menuctl keys key selection "$keys" $(
+  eval menuctl multi menukeys key index selection "$keys" $(
     cd "$1"
     set -- "$(cd -L -- "$1" && pwd -L)"
 
@@ -48,7 +48,41 @@ menu_dir()
     # fi
   )
 
-  echo "key=$key"; echo "selection=$selection"
+  echo "key=$key"; echo "index=$index"; echo "selection=$selection"
+}
+
+menu_dir()
+{
+  if [ ! -d "$1" ]
+  then
+    return 1
+  fi
+
+  cd "$1"
+  set -- "$(cd -L -- "$1" && pwd -L)"
+
+  array DIR_ARRAY
+
+  if [ ! "$(pwd)" = "/" ]
+  then
+    array DIR_ARRAY add "${1}/..=.."
+  else
+    set -- ""
+  fi
+
+  for k in ..?* .[!.]* *
+  do
+    if [ -e "$k" ]
+    then
+      array DIR_ARRAY add "${1}/$k=$k"
+    fi
+  done
+
+  eval menuctl multi menukeys key index selection "$keys" $(array DIR_ARRAY get)
+
+  echo "key=$key"
+  echo "index=$index entry=$(array DIR_ARRAY get "$index")"
+  echo "selection=$selection"
 }
 
 #-------------------------------------------------------------------------------

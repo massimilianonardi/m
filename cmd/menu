@@ -213,15 +213,11 @@ screen_background_render()
 {
   if [ -n "$MENU_HEADER" ]
   then
-    # tput cup "$MENU_HEADER_ROW_0" "$MENU_HEADER_COL_0"
-    # printf "$MENU_HEADER"
     screen_render_text_at "$MENU_HEADER" "$MENU_HEADER_ROW_0" "$MENU_HEADER_COL_0"
   fi
 
   if [ -n "$MENU_FOOTER" ]
   then
-    # tput cup "$MENU_FOOTER_ROW_0" "$MENU_FOOTER_COL_0"
-    # printf "$MENU_FOOTER"
     screen_render_text_at "$MENU_FOOTER" "$MENU_FOOTER_ROW_0" "$MENU_FOOTER_COL_0"
   fi
 }
@@ -240,15 +236,14 @@ quit()
   fi
 }
 
-# env var and return protocol to return also key pressed along with menu entry selection
-# a little lib with a simple fucntion to read the above into two vars separately can be very helpful
 return_selection()
 {
   screen_reset
 
   if [ -n "$MENU_CUSTOM_KEYS" ]
   then
-    printf "${key}${MENU_KEY_SEPARATOR}" 1>&2
+    # printf "${key}${MENU_KEY_SEPARATOR}" 1>&2
+    printf "${key}${MENU_KEY_SEPARATOR}${ARRAY_POS}${MENU_KEY_SEPARATOR}" 1>&2
   fi
 
   if [ ! "$MENU_MULTISELECTION" = "true" ]
@@ -507,13 +502,10 @@ main()
   trap "screen_reset; exit 2" INT QUIT TERM HUP PIPE ABRT TSTP
   screen_init
 
-  # the following must be enclosed into a subshell function that inits screen rect region and input array
   menu_init "$@"
   screen_render 0
   menu_entry_highlight 0
 
-  # the following sends read character to a function that sends proper command to
-  # proper function by init all vars depending of target menu
   key_loop
 }
 

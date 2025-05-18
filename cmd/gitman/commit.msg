@@ -1,1 +1,1 @@
-menu header and footer rendered correctly inside menu region
+menukeys return index of highlighted entry
