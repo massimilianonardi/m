@@ -63,6 +63,7 @@ menu_dir()
 
   array DIR_ARRAY
 
+echo "menu $1"
   if [ ! "$(pwd)" = "/" ]
   then
     array DIR_ARRAY add "${1}/..=.."
@@ -79,10 +80,15 @@ menu_dir()
   done
 
   eval menuctl multi menukeys key index selection "$keys" $(array DIR_ARRAY get)
+  file="$(array DIR_ARRAY get "$index")"
+  file="${file%%=*}"
 
   echo "key=$key"
   echo "index=$index entry=$(array DIR_ARRAY get "$index")"
+  echo "file=$file"
   echo "selection=$selection"
+
+  array DIR_ARRAY unset
 }
 
 #-------------------------------------------------------------------------------
@@ -91,24 +97,11 @@ realpaths
 
 keys="canc:c:d:m:r"
 
-# FILE="$(menu_dir "$THIS_DIR")"
-# eval menuctl keys key selection "$keys" $(dir "/")
 menu_dir "/"
-# waituser
 
-while [ "$key" = "enter" ] && [ -d "$selection" ]
-# while [ -n "$FILE" ] && [ -d "$FILE" ]
-#while [ -n "$FILE" ]
+echo "outside"
+while [ "$key" = "enter" ] && [ -d "$file" ]
 do
-  # FILE_SEL="$FILE"
-  # FILE="$(menu_dir "$FILE")"
-  # menuctl keys key selection "$keys" id_0=Text_0 id_1=Text_1 id_2=Text_2
-  menu_dir "$selection"
+echo "inside"
+  menu_dir "$file"
 done
-
-# if [ -n "$FILE" ]
-# then
-#   echo "$FILE"
-# else
-#   echo "$FILE_SEL"
-# fi
