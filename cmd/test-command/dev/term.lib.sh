@@ -7,7 +7,7 @@ term_screen_init()
   if [ ! -t 0 ]
   then
     # echo "no tty" 1>&2
-    echo "no tty"
+    # echo "no tty"
     exit 1
   fi
 

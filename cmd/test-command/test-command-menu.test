@@ -54,9 +54,11 @@ test_menu()
   # menu-fs
   # menuexec "" "" "" menu-fs
   # menufs "" "" "" "/home"
-  menufs "" "" ""
+  # menufs "" "" ""
   # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
   # fsencdec
+
+  term-render-menu $menu_entries
 }
 
 #-------------------------------------------------------------------------------
