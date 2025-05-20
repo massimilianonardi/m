@@ -67,6 +67,9 @@ test_menu()
   menuset keys "b:n:m"
   menuread "" "" "" id_0=Text_0 id_1=Text_1 id_2=Text_2 id_3=Text_3 id_4=Text_4 id_5=Text_5
   echo "key=$key"; echo "res=$res"; echo "selection=$selection"
+  menu-fs
+  menureadfs "" "" "" menu-fs
+  echo "key=$key"; echo "res=$res"; echo "selection=$selection"
 }
 
 #-------------------------------------------------------------------------------

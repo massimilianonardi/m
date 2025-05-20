@@ -34,7 +34,8 @@ menu_dir()
     fi
   done
 
-  eval menuread "key" "file" "list" $(array DIR_ARRAY get)
+  eval menuread "key" "file" "selection" $(array DIR_ARRAY get)
+  array FILE_SELECTION add "$selection"
 
   array DIR_ARRAY unset
 }
@@ -42,6 +43,8 @@ menu_dir()
 #-------------------------------------------------------------------------------
 
 menuset id
+
+array FILE_SELECTION
 
 if [ -z "$1" ]
 then
@@ -56,6 +59,18 @@ do
 done
 
 # perform action associated with selected key on selecteditems
-echo "key=$key"
-echo "file=$file"
-echo "list=$list"
+# echo "key=$key"
+# echo "file=$file"
+# eval echo "selection=$(array FILE_SELECTION get)"
+
+# quote "${key}" 1>&2
+# printf " " 1>&2
+# quote "${file}" 1>&2
+# printf " " 1>&2
+# eval echo $(array FILE_SELECTION get) 1>&2
+
+quote "${key}"
+printf " "
+quote "${file}"
+printf " "
+eval echo $(array FILE_SELECTION get)
