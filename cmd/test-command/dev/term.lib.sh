@@ -19,7 +19,6 @@ term_screen_init()
   tput clear
 
   trap "term_screen_reset; exit 2" INT QUIT TERM HUP PIPE ABRT TSTP
-  # trap "term_screen_reset; exit 2" INT QUIT TERM HUP PIPE ABRT TSTP EXIT
 
   term_screen_size_update
 }

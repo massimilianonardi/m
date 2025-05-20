@@ -10,17 +10,10 @@ main()
 {
   term_screen_init
   term-render-menu "$@"
+  # ROW_0="$ROW_0" COL_0="30" ROWS="$ROWS" COLS="$COLS" term-render-menu "$@"
   term_screen_reset
 }
 
 #-------------------------------------------------------------------------------
 
 main "$@" 3>&2 2>&1 1>&3
-
-# term_screen_init
-# # term-render-menu "$@" 3>&2 2>&1 1>&3
-# term-render-menu "$@"
-# # res="$(term-render-menu "$@")"
-# # ROW_0="$ROW_0" COL_0="30" ROWS="$ROWS" COLS="$COLS" term-render-menu "$@"
-# term_screen_reset
-# # echo "res=$res"
