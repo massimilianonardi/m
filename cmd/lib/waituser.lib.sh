@@ -16,5 +16,5 @@ waituser()
     read -p "press ENTER to exit" EXIT_VAR
   fi
 
-  exit "$EXIT_CODE"
+  # exit "$EXIT_CODE"
 }

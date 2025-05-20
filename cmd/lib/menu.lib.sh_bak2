@@ -9,8 +9,7 @@ menuread()
     return 1
   fi
 
-  # set -- "${1:-"key"}" "${2:-"res"}" "${3:-"selection"}" $(shift 3; menu "$@")
-  set -- "${1:-"key"}" "${2:-"res"}" "${3:-"selection"}" $(shift 3; MENU_CUSTOM_KEYS="${MENU_CUSTOM_KEYS:-"unknown"}" menu "$@")
+  set -- "${1:-"key"}" "${2:-"res"}" "${3:-"selection"}" $(shift 3; menu "$@")
 
   # eval "$1=\"${4}\""
   # eval "$2=\"${5}\""

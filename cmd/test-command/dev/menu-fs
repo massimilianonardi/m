@@ -2,9 +2,6 @@
 
 #-------------------------------------------------------------------------------
 
-. realpaths.lib.sh
-. waituser.lib.sh
-# . enc.lib.sh
 . array.lib.sh
 . menu.lib.sh
 
@@ -44,15 +41,14 @@ menu_dir()
 
 #-------------------------------------------------------------------------------
 
-realpaths
-
-keys="canc:c:d:m:r"
-
 menuset id
-menuset multi
-menuset keys "$keys"
 
-menu_dir "/"
+if [ -z "$1" ]
+then
+  menu_dir "$(pwd)"
+else
+  menu_dir "$1"
+fi
 
 while [ "$key" = "enter" ] && [ -d "$file" ]
 do
@@ -63,4 +59,3 @@ done
 echo "key=$key"
 echo "file=$file"
 echo "list=$list"
-waituser
