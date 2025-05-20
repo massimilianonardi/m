@@ -37,7 +37,10 @@ command:
     env to pass arrays by name (ids, texts, selection by booleans, ids or indexes?)
     find a way to safely return highlighted entry by value and not by index,
     unless pass arrays feature is simple
+    return formats: text, id, selection texts, selection ids, key highlighted-entry, key highlighted-entry multi-selected-items (ids or texts)
+--------------------------------------------------------------------------------
 
+https://github.com/dylanaraps/pure-sh-bible
 --------------------------------------------------------------------------------
 
 SSH TUNNEL

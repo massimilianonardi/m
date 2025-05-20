@@ -13,7 +13,6 @@
     ]
   editor:
     autoIndentOnPaste: false
-    scrollSensitivity: 10
     showIndentGuide: true
     showInvisibles: true
   "exception-reporting":
