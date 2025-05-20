@@ -19,6 +19,7 @@ term_screen_init()
   tput clear
 
   trap "term_screen_reset; exit 2" INT QUIT TERM HUP PIPE ABRT TSTP
+  # trap "term_screen_reset; exit 2" INT QUIT TERM HUP PIPE ABRT TSTP EXIT
 
   term_screen_size_update
 }
@@ -45,8 +46,8 @@ term_screen_size_update()
   tput clear
 
   # get terminal size
-  TERM_ROWS="$(tput lines)"
-  TERM_COLS="$(tput cols)"
+  export TERM_ROWS="$(tput lines)"
+  export TERM_COLS="$(tput cols)"
 }
 
 term_exit()

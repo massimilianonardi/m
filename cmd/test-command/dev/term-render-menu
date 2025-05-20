@@ -12,10 +12,6 @@
 
 #-------------------------------------------------------------------------------
 
-# . realpaths.lib.sh
-# . waituser.lib.sh
-# . enc.lib.sh
-. term.lib.sh
 . array.lib.sh
 
 #-------------------------------------------------------------------------------
@@ -165,8 +161,6 @@ screen_background_render()
 
 return_selection()
 {
-  term_screen_reset
-
   if [ -n "$MENU_CUSTOM_KEYS" ]
   then
     quote "${key}" 1>&2
@@ -413,13 +407,6 @@ key_loop()
 
 main()
 {
-  if [ ! -t 0 ]
-  then
-    # echo "no tty" 1>&2
-    echo "no tty"
-    exit 1
-  fi
-
   if [ -z "$*" ]
   then
     # echo "no args" 1>&2
@@ -427,7 +414,6 @@ main()
     exit 1
   fi
 
-  term_screen_init
   screen_vars_update
   screen_background_render
 
@@ -439,3 +425,4 @@ main()
 }
 
 main "$@" 3>&2 2>&1 1>&3
+# main "$@"
