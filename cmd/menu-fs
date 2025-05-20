@@ -2,9 +2,6 @@
 
 #-------------------------------------------------------------------------------
 
-. realpaths.lib.sh
-. waituser.lib.sh
-# . enc.lib.sh
 . array.lib.sh
 . menu.lib.sh
 
@@ -37,30 +34,32 @@ menu_dir()
     fi
   done
 
-  eval menuread "key" "file" "list" $(array DIR_ARRAY get)
+  eval menuread "key" "file" "selection" $(array DIR_ARRAY get)
+  array FILE_SELECTION add "$selection"
 
   array DIR_ARRAY unset
 }
 
 #-------------------------------------------------------------------------------
 
-realpaths
-
-keys="canc:c:d:m:r"
-
 menuset id
-menuset multi
-menuset keys "$keys"
 
-menu_dir "/"
+array FILE_SELECTION
+
+if [ -z "$1" ]
+then
+  menu_dir "$(pwd)"
+else
+  menu_dir "$1"
+fi
 
 while [ "$key" = "enter" ] && [ -d "$file" ]
 do
   menu_dir "$file"
 done
 
-# perform action associated with selected key on selecteditems
-echo "key=$key"
-echo "file=$file"
-echo "list=$list"
-waituser
+quote "${key}"
+printf " "
+quote "${file}"
+printf " "
+eval echo $(array FILE_SELECTION get)

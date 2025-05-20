@@ -6,26 +6,12 @@ test_menu()
 {
   . menu.lib.sh
 
-  # menu id_0=Text_0 id_1=Text_1 id_2=Text_2 id_3=Text_3 id_4=Text_4 id_5=Text_5
-  # menu id_0=Text_0 id_1=Text_1 id_2=Text_2 id_3=Text_3 id_4=Text_4 id_5=Text_5 | cat > /m/src/git/m/cmd/menu_selection.sel
-  # menu id_0=Text_0 id_1=Text_1 id_2=Text_2 id_3=Text_3 id_4=Text_4 id_5=Text_5 2>/m/src/git/m/cmd/menu_selection.sel; cat /m/src/git/m/cmd/menu_selection.sel; rm -f /m/src/git/m/cmd/menu_selection.sel
-  # menu id_0=Text_0 id_1=Text_1 id_2=Text_2 id_3=Text_3 id_4=Text_4 id_5=Text_5 2>&1 | menu_selection="$(cat)"
-  # menu id_0=Text_0 id_1=Text_1 id_2=Text_2 id_3=Text_3 id_4=Text_4 id_5=Text_5 2>&1 | cat
-  # menu_selection="$(menu id_0=Text_0 id_1=Text_1 id_2=Text_2 id_3=Text_3 id_4=Text_4 id_5=Text_5)"
-  # menu_selection="$(menu Text_0 Text_1 Text_2 Text_3 Text_4 Text_5)"
-  # menu $(ls /usr/share/applications)
-  # menu_selection="$(menu $(ls /usr/share/applications))"
-  # menu_selection="$(menu id_0=Text_0 id_1=Text_1 id_2=Text_2 id_3=Text_3 id_4=Text_4 id_5=Text_5 2>&1)"
-  # menu_selection="$(menu id_0=Text_0 id_1=Text_1 id_2=Text_2 id_3=Text_3 id_4=Text_4 id_5=Text_5 3>&2 2>&1 1>&3)"
-#   read -r menu_selection << EOF
-# $(menu id_0=Text_0 id_1=Text_1 id_2=Text_2 id_3=Text_3 id_4=Text_4 id_5=Text_5 2>&1)
-# EOF
-
   # menu_selection="$(menu id_0=Text_0 id_1=Text_1 id_2=Text_2 id_3=Text_3 id_4=Text_4 id_5=Text_5)"
   # echo "menu_selection=$menu_selection"
   # read WAIT_VAR
   # menu_selection="$(menu $(ls /usr/share/applications))"
   # echo "menu_selection=$menu_selection"
+  # read WAIT_VAR
 
   # export ROW_0=2
   # export COL_0=5
@@ -47,29 +33,30 @@ test_menu()
   # read WAIT_VAR
   # menu_selection="$(menu $(ls /usr/share/applications))"; echo "menu_selection=$menu_selection"
   # read WAIT_VAR
-  # menukeys menu_selected_key menu_highlighted_index menu_selection "b:n:m" id_0=Text_0 id_1=Text_1 id_2=Text_2 id_3=Text_3 id_4=Text_4 id_5=Text_5; echo "menu_selected_key=$menu_selected_key"; echo "menu_highlighted_index=$menu_highlighted_index"; echo "menu_selection=$menu_selection"
-  # read WAIT_VAR
-  # menuctl assign menu_selected_key menu_highlighted_index menu_selection menuctl header "$(printf "Menu Header - ROW 1\n---Row 2---\n---Row 3---\n\n")" menuctl region 1 1 25 35 menuctl keys "b:n:m" menu id_0=Text_0 id_1=Text_1 id_2=Text_2 id_3=Text_3 id_4=Text_4 id_5=Text_5; echo "menu_selected_key=$menu_selected_key"; echo "menu_highlighted_index=$menu_highlighted_index"; echo "menu_selection=$menu_selection"
-  # read WAIT_VAR
-  # MENU_KEY_SEPARATOR="=" menuctl keys menu_selected_key menu_selection "b:n:m" id_0=Text_0 id_1=Text_1 id_2=Text_2 id_3=Text_3 id_4=Text_4 id_5=Text_5; echo "menu_selected_key=$menu_selected_key"; echo "menu_selection=$menu_selection"
-  # echo "MENU_KEY_SEPARATOR=$MENU_KEY_SEPARATOR"
-  # read WAIT_VAR
-  # menu_selection="$(menu id_0=Text_0 id_1=Text_1 id_2=Text_2 id_3=Text_3 id_4=Text_4 id_5=Text_5)"; echo "menu_selection=$menu_selection"
-  # menuctl header "$(printf "Menu Header - ROW 1\n---Row 2---\n---Row 3---\n\n")" \
-  # menuctl footer "$(printf "Menu Footer - ROW 1\n---Row 2---")" \
-  # menuctl region 1 1 25 35 \
-  # menuctl id menuctl multi menuctl keys "b:n:m" \
+
+  menu_entries="id_0=Text_0 id_1=Text_1 id_2=Text_2 id_3=Text_3 id_4=Text_4 id_5=Text_5"
+  # menu_entries="$(ls /usr/share/applications)"
+
+  # menucmd header "$(printf "Menu Header - ROW 1\n---Row 2---\n---Row 3---\n\n")" \
+  # menucmd footer "$(printf "Menu Footer - ROW 1\n---Row 2---")" \
+  # menucmd region 1 1 25 35 \
+  # menucmd id menucmd multi menucmd keys "b:n:m" \
+
   menuset header "$(printf "Menu Header - ROW 1\n---Row 2---\n---Row 3---\n\n")"
   menuset footer "$(printf "Menu Footer - ROW 1\n---Row 2---")"
   menuset region 1 1 25 35
   menuset id
   menuset multi
   menuset keys "b:n:m"
-  menuread "" "" "" id_0=Text_0 id_1=Text_1 id_2=Text_2 id_3=Text_3 id_4=Text_4 id_5=Text_5
-  echo "key=$key"; echo "res=$res"; echo "selection=$selection"
-  menu-fs
-  menureadfs "" "" "" menu-fs
-  echo "key=$key"; echo "res=$res"; echo "selection=$selection"
+  # menuread "" "" "" $menu_entries
+  # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
+
+  # menu-fs
+  # menuexec "" "" "" menu-fs
+  # menufs "" "" "" "/home"
+  # menufs "" "" ""
+  # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
+  fsencdec
 }
 
 #-------------------------------------------------------------------------------

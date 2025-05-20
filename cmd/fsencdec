@@ -2,10 +2,11 @@
 
 #-------------------------------------------------------------------------------
 
-. realpaths.lib.sh
+# . realpaths.lib.sh
 . waituser.lib.sh
 . enc.lib.sh
-. array.lib.sh
+# . array.lib.sh
+. menu.lib.sh
 
 #-------------------------------------------------------------------------------
 
@@ -38,21 +39,28 @@ menu_dir()
 
 #-------------------------------------------------------------------------------
 
-realpaths
+# realpaths
 
-FILE="$(menu_dir "$THIS_DIR")"
+menuset nomulti
+menuset keys "e:d"
+menuset header "FILE ENCODING / DECODING: enter=choose, e=encode, d=decode"
 
-while [ -n "$FILE" ] && [ -d "$FILE" ]
-#while [ -n "$FILE" ]
-do
-  FILE_SEL="$FILE"
-  FILE="$(menu_dir "$FILE")"
-done
+menufs "key" "file" "selection"
 
-if [ -n "$FILE" ] && [ -f "$FILE" ]
+if [ ! -f "$file" ]
 then
-  echo "$FILE"
-  eval "$(menu file_enc="Encode file" file_dec="Decode file") '$FILE'"
-# else
-#   echo "$FILE_SEL"
+  echo "not a file: $file"
+else
+  if [ "$key" = "enter" ]
+  then
+    eval "$(menuset keys "" && menu file_enc="Encode file: $file" file_dec="Decode file: $file") '$file'"
+  elif [ "$key" = "e" ]
+  then
+    file_enc "$file"
+  elif [ "$key" = "d" ]
+  then
+    file_dec "$file"
+  fi
 fi
+
+waituser
