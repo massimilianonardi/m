@@ -30,7 +30,14 @@ menu_dir()
   do
     if [ -e "$k" ]
     then
-      array DIR_ARRAY add "${1}/$k=$k"
+      # array DIR_ARRAY add "${1}/$k=$k"
+      if [ -d "$k" ]
+      then
+        array DIR_ARRAY add "${1}/$k=[D] $k"
+      elif [ -f "$k" ]
+      then
+        array DIR_ARRAY add "${1}/$k=[F] $k"
+      fi
     fi
   done
 

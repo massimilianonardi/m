@@ -289,7 +289,6 @@ check_key()
   fi
 
   return_selection
-  # printf "${1}${MENU_KEY_SEPARATOR}"
 }
 
 select_item_toggle()

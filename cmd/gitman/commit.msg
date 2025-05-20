@@ -1,1 +1,1 @@
-gitman status added last commit message
+menu-fs D/F tags for dirs/files
