@@ -13,8 +13,8 @@ THIS_FILE="${THIS_PATH##*/}"
 THIS_DIR="$(cd -P -- "${THIS_PATH%/*}" && pwd -P)"
 
 git fetch origin && \
-git status
+git status && \
+git show -s --format=%s
 EXIT_CODE="$?"
 
 exit "$EXIT_CODE"
-

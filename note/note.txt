@@ -34,10 +34,7 @@ command:
   - menu: make multi window menus + key to switch active one
     env to make return only selected index (no ids or texts)
     env to make preselection
-    env to pass arrays by name (ids, texts, selection by booleans, ids or indexes?)
-    find a way to safely return highlighted entry by value and not by index,
-    unless pass arrays feature is simple
-    return formats: text/id, selection texts/ids, key highlighted-entry, key highlighted-entry multi-selected-items (ids or texts)
+    env to pass arrays by name (ids, texts, selection by booleans, ids or indexes?) -> only to lib sourced function
 --------------------------------------------------------------------------------
 
 https://github.com/dylanaraps/pure-sh-bible
