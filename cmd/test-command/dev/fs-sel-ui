@@ -63,12 +63,11 @@ menu_dir()
 
   array DIR_ARRAY
 
-echo "menu $1"
-  if [ ! "$(pwd)" = "/" ]
+  if [ "$(pwd)" = "/" ]
   then
-    array DIR_ARRAY add "${1}/..=.."
-  else
     set -- ""
+  else
+    array DIR_ARRAY add "${1}/..=.."
   fi
 
   for k in ..?* .[!.]* *
@@ -79,14 +78,12 @@ echo "menu $1"
     fi
   done
 
-  eval menuctl multi menukeys key index selection "$keys" $(array DIR_ARRAY get)
-  file="$(array DIR_ARRAY get "$index")"
-  file="${file%%=*}"
+  eval menuread "key" "file" "list" $(array DIR_ARRAY get)
 
   echo "key=$key"
-  echo "index=$index entry=$(array DIR_ARRAY get "$index")"
   echo "file=$file"
-  echo "selection=$selection"
+  echo "list=$list"
+  read x
 
   array DIR_ARRAY unset
 }
@@ -97,11 +94,13 @@ realpaths
 
 keys="canc:c:d:m:r"
 
+menuset id
+menuset multi
+menuset keys "$keys"
+
 menu_dir "/"
 
-echo "outside"
 while [ "$key" = "enter" ] && [ -d "$file" ]
 do
-echo "inside"
   menu_dir "$file"
 done

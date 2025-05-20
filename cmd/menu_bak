@@ -196,7 +196,6 @@ screen_vars_update()
 }
 
 screen_render_text_at()
-{
 (
   # IFS=$(printf '\n+'); IFS=${IFS%?}
   IFS='
@@ -209,7 +208,6 @@ screen_render_text_at()
     i="$(($i + 1))"
   done
 )
-}
 
 screen_background_render()
 {
@@ -242,12 +240,16 @@ return_selection()
 {
   screen_reset
 
-  quote "${key}" 1>&2
-  printf " " 1>&2
-  quote "$(array MENU_IDS get "$ARRAY_POS")" 1>&2
-
-  if [ "$MENU_MULTISELECTION" = "true" ]
+  if [ -n "$MENU_CUSTOM_KEYS" ]
   then
+    # printf "${key}${MENU_KEY_SEPARATOR}" 1>&2
+    printf "${key}${MENU_KEY_SEPARATOR}${ARRAY_POS}${MENU_KEY_SEPARATOR}" 1>&2
+  fi
+
+  if [ ! "$MENU_MULTISELECTION" = "true" ]
+  then
+    (array MENU_IDS get "$ARRAY_POS") 1>&2
+  else
     array MENU_SELECTED_ITEMS
     i="0"
     n="$(array MENU_SEL size)"
@@ -259,7 +261,6 @@ return_selection()
       fi
       i="$(($i + 1))"
     done
-    printf " " 1>&2
     (array MENU_SELECTED_ITEMS get) 1>&2
   fi
 

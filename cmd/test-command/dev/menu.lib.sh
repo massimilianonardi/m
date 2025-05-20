@@ -15,6 +15,12 @@ menuread()
   # eval "$2=\"${5}\""
   eval "$1=${4}"
   eval "$2=${5}"
+
+  if [ "$#" -lt "5" ]
+  then
+    return 0
+  fi
+
   eval $3=\"$(shift 5; echo "$@")\"
 }
 

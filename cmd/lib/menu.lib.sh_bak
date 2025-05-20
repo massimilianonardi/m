@@ -2,26 +2,20 @@
 
 #-------------------------------------------------------------------------------
 
-menuread()
+menukeys()
 {
-  if [ "$#" -lt "3" ]
-  then
-    return 1
-  fi
+  set -- "$1" "$2" "$3" "${MENU_KEY_SEPARATOR:-":"}" "$(
+    shift 3
+    export MENU_CUSTOM_KEYS="$1"
+    shift
+    export MENU_KEY_SEPARATOR="${MENU_KEY_SEPARATOR:-":"}"
+    menu "$@"
+  )"
 
-  set -- "${1:-"key"}" "${2:-"res"}" "${3:-"selection"}" $(shift 3; menu "$@")
-
-  # eval "$1=\"${4}\""
-  # eval "$2=\"${5}\""
-  eval "$1=${4}"
-  eval "$2=${5}"
-
-  if [ "$#" -lt "5" ]
-  then
-    return 0
-  fi
-
-  eval $3=\"$(shift 5; echo "$@")\"
+  eval "$1=\"${5%%${4}*}\""
+  eval "$2=\"${5#*${4}}\""
+  eval "$2=\"\${$2%%${4}*}\""
+  eval "$3=\"${5#*${4}*${4}}\""
 }
 
 #-------------------------------------------------------------------------------
@@ -47,42 +41,18 @@ menuset()
     ;;
     "keys")
       shift
-
-      if [ "$#" -lt "1" ]
-      then
-        return 1
-      fi
-
       export MENU_CUSTOM_KEYS="$1"
     ;;
     "header")
       shift
-
-      if [ "$#" -lt "1" ]
-      then
-        return 1
-      fi
-
       export MENU_HEADER="$1"
     ;;
     "footer")
       shift
-
-      if [ "$#" -lt "1" ]
-      then
-        return 1
-      fi
-
       export MENU_FOOTER="$1"
     ;;
     "region")
       shift
-
-      if [ "$#" -lt "4" ]
-      then
-        return 1
-      fi
-
       export ROW_0="$1"
       export COL_0="$2"
       export ROWS="$3"
@@ -99,6 +69,7 @@ menuctl()
   case "$1" in
     "multi")
       shift
+      # export MENU_MULTISELECTION="true"
       MENU_MULTISELECTION="true" "$@"
     ;;
     "nomulti")
@@ -115,48 +86,24 @@ menuctl()
     ;;
     "keys")
       shift
-
-      if [ "$#" -lt "1" ]
-      then
-        return 1
-      fi
-
       MENU_CUSTOM_KEYS="$1"
       shift
       MENU_CUSTOM_KEYS="$MENU_CUSTOM_KEYS" "$@"
     ;;
     "header")
       shift
-
-      if [ "$#" -lt "1" ]
-      then
-        return 1
-      fi
-
       MENU_HEADER="$1"
       shift
       MENU_HEADER="$MENU_HEADER" "$@"
     ;;
     "footer")
       shift
-
-      if [ "$#" -lt "1" ]
-      then
-        return 1
-      fi
-
       MENU_FOOTER="$1"
       shift
       MENU_FOOTER="$MENU_FOOTER" "$@"
     ;;
     "region")
       shift
-
-      if [ "$#" -lt "4" ]
-      then
-        return 1
-      fi
-
       ROW_0="$1"
       shift
       COL_0="$1"
@@ -166,6 +113,18 @@ menuctl()
       COLS="$1"
       shift
       ROW_0="$ROW_0" COL_0="$COL_0" ROWS="$ROWS" COLS="$COLS" "$@"
+    ;;
+    "assign")
+      shift
+      set -- "$1" "$2" "$3" "${MENU_KEY_SEPARATOR:-":"}" "$(
+        shift 3
+        MENU_KEY_SEPARATOR="${MENU_KEY_SEPARATOR:-":"}" "$@"
+      )"
+
+      eval "$1=\"${5%%${4}*}\""
+      eval "$2=\"${5#*${4}}\""
+      eval "$2=\"\${$2%%${4}*}\""
+      eval "$3=\"${5#*${4}*${4}}\""
     ;;
     *) exit 1;;
   esac
