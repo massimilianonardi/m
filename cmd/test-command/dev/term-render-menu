@@ -34,20 +34,6 @@ string_count_lines()
 
 screen_vars_update()
 {
-  # fix fo initial wrong values of size from tput
-  tput clear
-  i=0
-  while [ "$i" -lt "999" ]
-  do
-    printf "                                                 "
-    i="$(($i + 1))"
-  done
-  tput clear
-
-  # get terminal size
-  TERM_ROWS="$(tput lines)"
-  TERM_COLS="$(tput cols)"
-
   # init render region
   if [ -z "$ROW_0" ]
   then
