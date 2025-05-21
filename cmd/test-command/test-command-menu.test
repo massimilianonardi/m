@@ -58,9 +58,9 @@ test_menu()
   # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
   # fsencdec
 
-  # term-render-menu-main $menu_entries
-  res="$(term-render-menu-main $menu_entries)"
-  echo "res=$res"
+  term-render-menu-main $menu_entries
+  # res="$(term-render-menu-main $menu_entries)"
+  # echo "res=$res"
 }
 
 #-------------------------------------------------------------------------------

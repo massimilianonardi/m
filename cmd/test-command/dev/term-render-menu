@@ -31,100 +31,121 @@ string_count_lines()
 screen_vars_update()
 {
   # init render region
-  if [ -z "$ROW_0" ]
+  if [ -z "$m_menu_ROW_0" ]
   then
-    ROW_0="0"
+    m_menu_ROW_0="0"
   fi
 
-  if [ -z "$COL_0" ]
+  if [ -z "$m_menu_COL_0" ]
   then
-    COL_0="0"
+    m_menu_COL_0="0"
   fi
 
-  if [ -z "$ROWS" ]
+  if [ -z "$m_menu_ROWS" ]
   then
-    ROWS="$TERM_ROWS"
+    m_menu_ROWS="$TERM_ROWS"
   fi
 
-  if [ -z "$COLS" ]
+  if [ -z "$m_menu_COLS" ]
   then
-    COLS="$TERM_COLS"
+    m_menu_COLS="$TERM_COLS"
   fi
 
   # init header/footer
-  if [ -n "$MENU_HEADER" ]
+  if [ -n "$m_menu_MENU_HEADER" ]
   then
-    MENU_HEADER_ROW_0="$ROW_0"
-    MENU_HEADER_COL_0="$COL_0"
-    MENU_HEADER_SIZE_ROW="$(string_count_lines "$MENU_HEADER")"
-    ROW_0="$(($ROW_0 + $MENU_HEADER_SIZE_ROW))"
+    m_menu_MENU_HEADER_SIZE_ROW="$(string_count_lines "$m_menu_MENU_HEADER")"
+
+    if [ -z "$m_menu_MENU_HEADER_ROW_0" ]
+    then
+      m_menu_MENU_HEADER_ROW_0="$m_menu_ROW_0"
+      m_menu_ROW_0="$(($m_menu_ROW_0 + $m_menu_MENU_HEADER_SIZE_ROW))"
+    fi
+
+    if [ -z "$m_menu_MENU_HEADER_COL_0" ]
+    then
+      m_menu_MENU_HEADER_COL_0="$m_menu_COL_0"
+    fi
   fi
 
-  if [ -n "$MENU_FOOTER" ]
+  if [ -n "$m_menu_MENU_FOOTER" ]
   then
-    MENU_FOOTER_SIZE_ROW="$(string_count_lines "$MENU_FOOTER")"
-    ROWS="$(($ROWS - $MENU_FOOTER_SIZE_ROW))"
-    MENU_FOOTER_ROW_0="$(($ROW_0 + $ROWS))"
-    MENU_FOOTER_COL_0="$COL_0"
+    m_menu_MENU_FOOTER_SIZE_ROW="$(string_count_lines "$m_menu_MENU_FOOTER")"
+
+    if [ -z "$m_menu_MENU_FOOTER_ROW_0" ]
+    then
+      m_menu_ROWS="$(($m_menu_ROWS - $m_menu_MENU_FOOTER_SIZE_ROW))"
+      m_menu_MENU_FOOTER_ROW_0="$(($m_menu_ROW_0 + $m_menu_ROWS))"
+    fi
+
+    if [ -z "$m_menu_MENU_FOOTER_COL_0" ]
+    then
+      m_menu_MENU_FOOTER_COL_0="$m_menu_COL_0"
+    fi
+
+    # m_menu_MENU_FOOTER_SIZE_ROW="$(string_count_lines "$m_menu_MENU_FOOTER")"
+    # m_menu_ROWS="$(($m_menu_ROWS - $m_menu_MENU_FOOTER_SIZE_ROW))"
+    # m_menu_MENU_FOOTER_ROW_0="$(($m_menu_ROW_0 + $m_menu_ROWS))"
+    # m_menu_MENU_FOOTER_COL_0="$m_menu_COL_0"
   fi
 
   # init limits
-  if [ -z "$ROWS_MIN" ]
+  if [ -z "$m_menu_ROWS_MIN" ]
   then
-    ROWS_MIN="2"
+    m_menu_ROWS_MIN="2"
   fi
 
-  if [ -z "$MENU_ENTRY_SIZE_MIN" ]
+  if [ -z "$m_menu_MENU_ENTRY_SIZE_MIN" ]
   then
-    MENU_ENTRY_SIZE_MIN="3"
+    m_menu_MENU_ENTRY_SIZE_MIN="3"
   fi
 
-  if [ "$ROW_0" -gt "$(($TERM_ROWS - 1 - $ROWS_MIN))" ]
+  if [ "$m_menu_ROW_0" -gt "$(($TERM_ROWS - 1 - $m_menu_ROWS_MIN))" ]
   then
-    ROW_0="$(($TERM_ROWS - 1 - $ROWS_MIN))"
+    m_menu_ROW_0="$(($TERM_ROWS - 1 - $m_menu_ROWS_MIN))"
   fi
 
-  if [ "$COL_0" -gt "$(($TERM_COLS - 1 - $MENU_ENTRY_SIZE_MIN))" ]
+  if [ "$m_menu_COL_0" -gt "$(($TERM_COLS - 1 - $m_menu_MENU_ENTRY_SIZE_MIN))" ]
   then
-    COL_0="$(($TERM_COLS - 1 - $MENU_ENTRY_SIZE_MIN))"
+    m_menu_COL_0="$(($TERM_COLS - 1 - $m_menu_MENU_ENTRY_SIZE_MIN))"
   fi
 
-  if [ "$(($ROW_0 + $ROWS))" -gt "$TERM_ROWS" ]
+  if [ "$(($m_menu_ROW_0 + $m_menu_ROWS))" -gt "$TERM_ROWS" ]
   then
-    ROWS="$(($TERM_ROWS - $ROW_0))"
+    m_menu_ROWS="$(($TERM_ROWS - $m_menu_ROW_0))"
   fi
 
-  if [ "$(($COL_0 + $COLS))" -gt "$TERM_COLS" ]
+  if [ "$(($m_menu_COL_0 + $m_menu_COLS))" -gt "$TERM_COLS" ]
   then
-    COLS="$(($TERM_COLS - $COL_0))"
+    m_menu_COLS="$(($TERM_COLS - $m_menu_COL_0))"
   fi
 
   # init menu id detection
-  if [ -z "$MENU_ID" ]
+  if [ -z "$m_menu_MENU_ID" ]
   then
-    MENU_ID="true"
+    m_menu_MENU_ID="true"
   fi
 
   # init multi selection
-  if [ -z "$MENU_MULTISELECTION" ]
+  if [ -z "$m_menu_MENU_MULTISELECTION" ]
   then
-    MENU_MULTISELECTION="false"
+    m_menu_MENU_MULTISELECTION="false"
   fi
 
-  if [ -z "$SEL_ITEM_TRUE_STRING" ]
+  if [ -z "$m_menu_SEL_ITEM_TRUE_STRING" ]
   then
-    SEL_ITEM_TRUE_STRING="+"
+    m_menu_SEL_ITEM_TRUE_STRING="+"
   fi
 
-  if [ -z "$SEL_ITEM_FALSE_STRING" ]
+  if [ -z "$m_menu_SEL_ITEM_FALSE_STRING" ]
   then
-    SEL_ITEM_FALSE_STRING="-"
+    m_menu_SEL_ITEM_FALSE_STRING="-"
   fi
 
   # return key pressed
-  if [ -z "$MENU_KEY_SEPARATOR" ]
+  if [ -z "$m_menu_MENU_KEY_SEPARATOR" ]
   then
-    MENU_KEY_SEPARATOR=":"
+    m_menu_MENU_KEY_SEPARATOR=":"
   fi
 }
 
@@ -146,21 +167,56 @@ screen_render_text_at()
 
 screen_background_render()
 {
-  if [ -n "$MENU_HEADER" ]
+  if [ -n "$m_menu_MENU_HEADER" ]
   then
-    screen_render_text_at "$MENU_HEADER" "$MENU_HEADER_ROW_0" "$MENU_HEADER_COL_0"
+    screen_render_text_at "$m_menu_MENU_HEADER" "$m_menu_MENU_HEADER_ROW_0" "$m_menu_MENU_HEADER_COL_0"
   fi
 
-  if [ -n "$MENU_FOOTER" ]
+  if [ -n "$m_menu_MENU_FOOTER" ]
   then
-    screen_render_text_at "$MENU_FOOTER" "$MENU_FOOTER_ROW_0" "$MENU_FOOTER_COL_0"
+    screen_render_text_at "$m_menu_MENU_FOOTER" "$m_menu_MENU_FOOTER_ROW_0" "$m_menu_MENU_FOOTER_COL_0"
   fi
+}
+
+#-------------------------------------------------------------------------------
+
+return_var()
+{
+  eval quoted="\$(quote \"\$$1\")"
+  eval echo "export $1=\"$quoted;\""
 }
 
 #-------------------------------------------------------------------------------
 
 return_selection()
 {
+  # (
+  #   return_var "m_menu_MENU_HEADER"
+  #   return_var "m_menu_MENU_MULTISELECTION"
+  #   return_var "m_menu_ROWS"
+  #   return_var "m_menu_ROW_0"
+  # ) 1>&2
+
+  # (set | grep m_menu_) 1>&2
+  # set 1>&2
+  for k in $(set | grep m_menu_ | sed 's|=.*||g')
+  do
+    return_var "$k" 1>&2
+  done
+
+  exit 0
+}
+
+___return_selection()
+{
+  (
+    printf "'"
+    return_var "ARRAY_POS_START"
+    printf " "
+    return_var "CURSOR_POS"
+    printf "' "
+  ) 1>&2
+
   if [ -n "$MENU_CUSTOM_KEYS" ]
   then
     quote "${key}" 1>&2
@@ -197,12 +253,12 @@ check_key()
     return 0
   fi
 
-  if [ -z "$MENU_CUSTOM_KEYS" ]
+  if [ -z "$m_menu_MENU_CUSTOM_KEYS" ]
   then
     return 0
   fi
 
-  if [ "${MENU_CUSTOM_KEYS#*${1}*}" = "$MENU_CUSTOM_KEYS" ]
+  if [ "${m_menu_MENU_CUSTOM_KEYS#*${1}*}" = "$m_menu_MENU_CUSTOM_KEYS" ]
   then
     return 0
   fi
@@ -212,37 +268,35 @@ check_key()
 
 select_item_toggle()
 {
-  if [ ! "$MENU_MULTISELECTION" = "true" ]
+  if [ ! "$m_menu_MENU_MULTISELECTION" = "true" ]
   then
     return 0
   fi
 
-  SELECTED_POS="$ARRAY_POS"
-  SEL_ITEM_CURR_STRING="$(array MENU_SEL get "$ARRAY_POS")"
-  if [ "$SEL_ITEM_CURR_STRING" = "$SEL_ITEM_TRUE_STRING" ]
+  m_menu_SELECTED_POS="$m_menu_ARRAY_POS"
+  m_menu_SEL_ITEM_CURR_STRING="$(array m_menu_MENU_SEL get "$m_menu_ARRAY_POS")"
+  if [ "$m_menu_SEL_ITEM_CURR_STRING" = "$m_menu_SEL_ITEM_TRUE_STRING" ]
   then
-    array MENU_SEL put "$ARRAY_POS" "$SEL_ITEM_FALSE_STRING"
-  elif [ "$SEL_ITEM_CURR_STRING" = "$SEL_ITEM_FALSE_STRING" ]
+    array m_menu_MENU_SEL put "$m_menu_ARRAY_POS" "$m_menu_SEL_ITEM_FALSE_STRING"
+  elif [ "$m_menu_SEL_ITEM_CURR_STRING" = "$m_menu_SEL_ITEM_FALSE_STRING" ]
   then
-    array MENU_SEL put "$ARRAY_POS" "$SEL_ITEM_TRUE_STRING"
+    array m_menu_MENU_SEL put "$m_menu_ARRAY_POS" "$m_menu_SEL_ITEM_TRUE_STRING"
   else
-    # term_exit
     false
-    # array MENU_SEL set "$ARRAY_POS" "$SEL_ITEM_TRUE_STRING"
   fi
 
-  print_menu_entry "$ARRAY_POS" "$CURSOR_POS"
+  print_menu_entry "$m_menu_ARRAY_POS" "$m_menu_CURSOR_POS"
 }
 
 menu_init()
 {
-  array MENU_IDS
-  array MENU_TEXTS
-  array MENU_SEL
+  array m_menu_MENU_IDS
+  array m_menu_MENU_TEXTS
+  array m_menu_MENU_SEL
 
   for k in "$@"
   do
-    if [ ! "$MENU_ID" = "false" ]
+    if [ ! "$m_menu_MENU_ID" = "false" ]
     then
       ID="${k%%=*}"
       TEXT="${k#*=}"
@@ -251,135 +305,135 @@ menu_init()
       TEXT="$k"
     fi
 
-    array MENU_IDS add "$ID"
-    array MENU_TEXTS add "$TEXT"
-    array MENU_SEL add "$SEL_ITEM_FALSE_STRING"
+    array m_menu_MENU_IDS add "$ID"
+    array m_menu_MENU_TEXTS add "$TEXT"
+    array m_menu_MENU_SEL add "$m_menu_SEL_ITEM_FALSE_STRING"
   done
 
-  ARRAY_SIZE="$(array MENU_IDS size)"
-  ARRAY_POS="0"
-  CURSOR_POS="0"
+  m_menu_ARRAY_SIZE="$(array m_menu_MENU_IDS size)"
+  m_menu_ARRAY_POS="0"
+  m_menu_CURSOR_POS="0"
 
-  if [ "$ARRAY_SIZE" -lt "$ROWS" ]
+  if [ "$m_menu_ARRAY_SIZE" -lt "$m_menu_ROWS" ]
   then
-    ROWS="$ARRAY_SIZE"
+    m_menu_ROWS="$m_menu_ARRAY_SIZE"
   fi
 }
 
 print_menu_entry()
 {
-  MENU_ENTRY_INDEX="$1"
-  MENU_ENTRY_ROW="$2"
+  m_menu_MENU_ENTRY_INDEX="$1"
+  m_menu_MENU_ENTRY_ROW="$2"
 
   # clear whole line
-  tput cup "$(($ROW_0 + $MENU_ENTRY_ROW))" "$COL_0"
-  printf "%${COLS}s"
-  tput cup "$(($ROW_0 + $MENU_ENTRY_ROW))" "$COL_0"
+  tput cup "$(($m_menu_ROW_0 + $m_menu_MENU_ENTRY_ROW))" "$m_menu_COL_0"
+  printf "%${m_menu_COLS}s"
+  tput cup "$(($m_menu_ROW_0 + $m_menu_MENU_ENTRY_ROW))" "$m_menu_COL_0"
 
   # limit too long lines (use line without ascii control codes)
-  if [ ! "$MENU_MULTISELECTION" = "true" ]
+  if [ ! "$m_menu_MENU_MULTISELECTION" = "true" ]
   then
-    line="$MENU_ENTRY_INDEX $(array MENU_TEXTS get "$MENU_ENTRY_INDEX")"
+    line="$m_menu_MENU_ENTRY_INDEX $(array m_menu_MENU_TEXTS get "$m_menu_MENU_ENTRY_INDEX")"
   else
-    line="$MENU_ENTRY_INDEX [$(array MENU_SEL get "$MENU_ENTRY_INDEX")] $(array MENU_TEXTS get "$MENU_ENTRY_INDEX")"
+    line="$m_menu_MENU_ENTRY_INDEX [$(array m_menu_MENU_SEL get "$m_menu_MENU_ENTRY_INDEX")] $(array m_menu_MENU_TEXTS get "$m_menu_MENU_ENTRY_INDEX")"
   fi
   size="$(printf "$line" | wc -m)"
-  line="$(array MENU_TEXTS get "$MENU_ENTRY_INDEX")"
-  if [ "$size" -gt "$COLS" ]
+  line="$(array m_menu_MENU_TEXTS get "$m_menu_MENU_ENTRY_INDEX")"
+  if [ "$size" -gt "$m_menu_COLS" ]
   then
-    sizeexceed="$(($size - $COLS))"
+    sizeexceed="$(($size - $m_menu_COLS))"
     size="$(printf "$line" | wc -m)"
     line="$(printf "$line" | cut -c "1-$(($size - $sizeexceed - 6))")$(tput setaf 1) [...]$(tput sgr0)"
   fi
 
   # print line
-  if [ ! "$MENU_MULTISELECTION" = "true" ]
+  if [ ! "$m_menu_MENU_MULTISELECTION" = "true" ]
   then
-    line="$(tput setaf 2)$MENU_ENTRY_INDEX$(tput sgr0) $line"
+    line="$(tput setaf 2)$m_menu_MENU_ENTRY_INDEX$(tput sgr0) $line"
   else
-    line="$(tput setaf 2)$MENU_ENTRY_INDEX$(tput sgr0) $(tput setaf 3)[$(array MENU_SEL get "$MENU_ENTRY_INDEX")]$(tput sgr0) $line"
+    line="$(tput setaf 2)$m_menu_MENU_ENTRY_INDEX$(tput sgr0) $(tput setaf 3)[$(array m_menu_MENU_SEL get "$m_menu_MENU_ENTRY_INDEX")]$(tput sgr0) $line"
   fi
   printf "$line"
 
-  tput cup "$(($ROW_0 + $MENU_ENTRY_ROW))" "$COL_0"
+  tput cup "$(($m_menu_ROW_0 + $m_menu_MENU_ENTRY_ROW))" "$m_menu_COL_0"
 }
 
 screen_render()
 {
-  ARRAY_POS_START="$1"
+  m_menu_ARRAY_POS_START="$1"
 
   i="0"
-  n="$ROWS"
+  n="$m_menu_ROWS"
   while [ "$i" -lt "$n" ]
   do
-    print_menu_entry "$(($ARRAY_POS_START + $i))" "$i"
+    print_menu_entry "$(($m_menu_ARRAY_POS_START + $i))" "$i"
     i="$(($i + 1))"
   done
 }
 
 menu_entry_highlight()
 {
-  tput cup "$(($ROW_0 + $1))" "$COL_0"
+  tput cup "$(($m_menu_ROW_0 + $1))" "$m_menu_COL_0"
 }
 
 scroll_cursor()
 {
   UPDATE_SCREEN="false"
 
-  CURSOR_POS="$(($CURSOR_POS + $1))"
-  ARRAY_POS="$(($ARRAY_POS + $1))"
+  m_menu_CURSOR_POS="$(($m_menu_CURSOR_POS + $1))"
+  m_menu_ARRAY_POS="$(($m_menu_ARRAY_POS + $1))"
 
-  if [ "$CURSOR_POS" -lt "0" ]
+  if [ "$m_menu_CURSOR_POS" -lt "0" ]
   then
-    ARRAY_POS_START="$(($ARRAY_POS_START + $1))"
-    CURSOR_POS="0"
+    m_menu_ARRAY_POS_START="$(($m_menu_ARRAY_POS_START + $1))"
+    m_menu_CURSOR_POS="0"
     UPDATE_SCREEN="true"
-  elif [ "$CURSOR_POS" -gt "$(($ROWS - 1))" ]
+  elif [ "$m_menu_CURSOR_POS" -gt "$(($m_menu_ROWS - 1))" ]
   then
-    ARRAY_POS_START="$(($ARRAY_POS_START + $1))"
-    CURSOR_POS="$(($ROWS - 1))"
+    m_menu_ARRAY_POS_START="$(($m_menu_ARRAY_POS_START + $1))"
+    m_menu_CURSOR_POS="$(($m_menu_ROWS - 1))"
     UPDATE_SCREEN="true"
   fi
 
-  if [ "$ARRAY_POS" -lt "0" ]
+  if [ "$m_menu_ARRAY_POS" -lt "0" ]
   then
-    ARRAY_POS=0
-  elif [ "$ARRAY_POS" -gt "$(($ARRAY_SIZE - 1))" ]
+    m_menu_ARRAY_POS=0
+  elif [ "$m_menu_ARRAY_POS" -gt "$(($m_menu_ARRAY_SIZE - 1))" ]
   then
-    ARRAY_POS="$(($ARRAY_SIZE - 1))"
+    m_menu_ARRAY_POS="$(($m_menu_ARRAY_SIZE - 1))"
   fi
 
-  if [ "$ARRAY_POS_START" -lt "0" ]
+  if [ "$m_menu_ARRAY_POS_START" -lt "0" ]
   then
-    ARRAY_POS_START=0
-  elif [ "$ARRAY_POS_START" -gt "$(($ARRAY_SIZE - $ROWS))" ]
+    m_menu_ARRAY_POS_START=0
+  elif [ "$m_menu_ARRAY_POS_START" -gt "$(($m_menu_ARRAY_SIZE - $m_menu_ROWS))" ]
   then
-    ARRAY_POS_START="$(($ARRAY_SIZE - $ROWS))"
+    m_menu_ARRAY_POS_START="$(($m_menu_ARRAY_SIZE - $m_menu_ROWS))"
   fi
 
   if [ "$UPDATE_SCREEN" = true ]
   then
-    screen_render "$ARRAY_POS_START"
+    screen_render "$m_menu_ARRAY_POS_START"
   fi
 
-  menu_entry_highlight "$CURSOR_POS"
+  menu_entry_highlight "$m_menu_CURSOR_POS"
 }
 
 scroll_page()
 {
-  scroll_cursor $(($1 * ($ROWS - 1)))
-  # scroll_cursor "$(($1 * $ROWS - 1))"
+  scroll_cursor $(($1 * ($m_menu_ROWS - 1)))
+  # scroll_cursor "$(($1 * $m_menu_ROWS - 1))"
 }
 
 move_cursor_to()
 {
-  ARRAY_POS="0"
-  CURSOR_POS="0"
+  m_menu_ARRAY_POS="0"
+  m_menu_CURSOR_POS="0"
   scroll_cursor "$1"
-  screen_render "$((ARRAY_POS - $CURSOR_POS))"
+  screen_render "$((m_menu_ARRAY_POS - $m_menu_CURSOR_POS))"
 
   # tput cup $CURSOR_POS 0
-  tput cup "$(($ROW_0 + $CURSOR_POS))" "$COL_0"
+  tput cup "$(($m_menu_ROW_0 + $m_menu_CURSOR_POS))" "$m_menu_COL_0"
 }
 
 key_loop()
@@ -389,14 +443,14 @@ key_loop()
     key="$(readc)"
 
     case "$key" in
-      "q") term_exit;;
-      "esc") term_exit;;
+      "q") exit 0;;
+      "esc") exit 0;;
       "up") scroll_cursor "-1";;
       "down") scroll_cursor "+1";;
       "pageup") scroll_page "-1";;
       "pagedown") scroll_page "+1";;
       "home") move_cursor_to "0";;
-      "end") move_cursor_to "$(($ARRAY_SIZE - 1))";;
+      "end") move_cursor_to "$(($m_menu_ARRAY_SIZE - 1))";;
       "space") select_item_toggle;;
       "enter") return_selection;;
       *) check_key "$key";;
@@ -407,22 +461,36 @@ key_loop()
 
 main()
 {
-  if [ -z "$*" ]
-  then
+  # if [ -z "$*" ]
+  # then
+#   echo "m_menu_MENU_HEADER=$m_menu_MENU_HEADER" 1>&2
+#   echo "m_menu_MENU_HEADER=$m_menu_MENU_HEADER"
+#   echo "KEY_LOOP=$KEY_LOOP" 1>&2
+#   echo "KEY_LOOP=$KEY_LOOP"
+# read x
     # echo "no args" 1>&2
-    echo "no args"
-    exit 1
-  fi
+    # echo "no args"
+    # exit 1
+  # fi
 
   screen_vars_update
   screen_background_render
 
-  menu_init "$@"
-  screen_render 0
-  menu_entry_highlight 0
+  if [ -n "$*" ]
+  then
+    menu_init "$@"
+  fi
+  # screen_render 0
+  screen_render "${m_menu_ARRAY_POS_START:-"0"}"
+  menu_entry_highlight "${m_menu_CURSOR_POS_START:-"0"}"
+
+  if [ "$KEY_LOOP" = "false" ]
+  then
+    exit 0
+  fi
 
   key_loop
 }
 
-# main "$@" 3>&2 2>&1 1>&3
-main "$@"
+main "$@" 3>&2 2>&1 1>&3
+# main "$@"
