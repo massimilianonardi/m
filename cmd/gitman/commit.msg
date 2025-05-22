@@ -1,1 +1,1 @@
-term.lib.sh term screen functions to init restore and helpers for tui apps
+term-mod generic tui app tath calls term mods + term-mod-menu
