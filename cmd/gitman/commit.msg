@@ -1,1 +1,1 @@
-term-mod notes
+term menu initial cursor pos fix

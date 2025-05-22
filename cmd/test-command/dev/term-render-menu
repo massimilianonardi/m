@@ -504,7 +504,8 @@ main()
   fi
 
   screen_render "${m_menu_ARRAY_POS_START:-"0"}"
-  menu_entry_highlight "${m_menu_CURSOR_POS_START:-"0"}"
+  # menu_entry_highlight "${m_menu_CURSOR_POS_START:-"0"}"
+  menu_entry_highlight "${m_menu_CURSOR_POS:-"0"}"
 
   if [ "$KEY_LOOP" = "false" ]
   then
@@ -518,5 +519,5 @@ main()
   key_loop
 }
 
-# main "$@" 3>&2 2>&1 1>&3
-main "$@"
+main "$@" 3>&2 2>&1 1>&3
+# main "$@"

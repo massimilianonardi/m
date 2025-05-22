@@ -5,6 +5,19 @@
 menueval()
 {
   set -- "$1" $(eval eval \"\$$1\" && shift && "$@")
+#   set -- "$1" \
+#   $(
+# eval echo "arg1=\$$1"
+# eval echo "arg1=\$$1" 1>&2
+# read x
+#     if eval [ -n "\$$1" ]
+#     then
+#       # eval eval \"\$$1\"
+#       eval eval \$$1
+#     fi
+#     shift
+#     "$@"
+#   )
   eval $1=\"$(shift && echo "$@")\"
 }
 
