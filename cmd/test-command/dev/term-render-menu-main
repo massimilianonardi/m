@@ -3,12 +3,17 @@
 #-------------------------------------------------------------------------------
 
 . term.lib.sh
+. menu.lib.sh
 
 #-------------------------------------------------------------------------------
 
 menu_instance()
 {
 (
+#   echo "args=$@"
+#   echo "args=$@" 1>&2
+# read x
+
   # eval $1
   eval "$1"
   # eval "$1" 1>&2
@@ -38,7 +43,7 @@ menu_instance()
 #   done
 # read x
 
-  export KEY_LOOP="true"
+  # export KEY_LOOP="true"
   # eval $1 term-render-menu "test1 test2 test3"
   # term-render-menu test1 test2 test3
   term-render-menu
@@ -51,22 +56,36 @@ main()
 {
   term_screen_init
 
-  export m_menu_MENU_MULTISELECTION="true"
-  export m_menu_MENU_CUSTOM_KEYS="enter"
-  export m_menu_MENU_CUSTOM_KEYS="b:n:m"
-  export m_menu_MENU_HEADER="$(printf "Menu Header - ROW 1\n---Row 2---\n---Row 3---\n\n")"
-  export m_menu_MENU_FOOTER="$(printf "Menu Footer - ROW 1\n---Row 2---")"
+  menuset id
+  menuset multi
+  menuset keys "b:n:m"
+  menuset header "$(printf "Menu Header - ROW 1\n---Row 2---\n---Row 3---\n\n")"
+  menuset footer "$(printf "Menu Footer - ROW 1\n---Row 2---")"
+  menuset region 5 10 20 30
 
-  KEY_LOOP="false" m_menu_CURSOR_POS_START="4" m_menu_ARRAY_POS_START="0" m_menu_ROW_0="$m_menu_ROW_0" m_menu_COL_0="10" m_menu_ROWS="$m_menu_ROWS" m_menu_COLS="30" term-render-menu "$@"
-  KEY_LOOP="false" m_menu_CURSOR_POS_START="1" m_menu_ARRAY_POS_START="1" m_menu_ROW_0="$m_menu_ROW_0" m_menu_COL_0="40" m_menu_ROWS="$m_menu_ROWS" m_menu_COLS="30" term-render-menu "$@"
+  export m_menu_MENU_RETURN_ENV="true"
 
-  var1="$(m_menu_CURSOR_POS_START="1" m_menu_ARRAY_POS_START="2" m_menu_ROW_0="$m_menu_ROW_0" m_menu_COL_0="10" m_menu_ROWS="$m_menu_ROWS" m_menu_COLS="30" term-render-menu "$@")"
-  var2="$(m_menu_CURSOR_POS_START="4" m_menu_ARRAY_POS_START="1" m_menu_ROW_0="$m_menu_ROW_0" m_menu_COL_0="40" m_menu_ROWS="$m_menu_ROWS" m_menu_COLS="30" term-render-menu "$@")"
+  var1="$(KEY_LOOP="false"                   m_menu_CURSOR_POS_START="1" m_menu_ARRAY_POS_START="2" menucmd footer "footer 1" term-render-menu "$@")"
+  var2="$(KEY_LOOP="false" m_menu_COL_0="40" m_menu_CURSOR_POS_START="1" m_menu_ARRAY_POS_START="2" menucmd footer "footer 2" term-render-menu "$@")"
+
+  # var1="$(m_menu_CURSOR_POS_START="1" m_menu_ARRAY_POS_START="2" m_menu_ROW_0="$m_menu_ROW_0" m_menu_COL_0="10" m_menu_ROWS="20" m_menu_COLS="30" term-render-menu "$@")"
+  # var2="$(m_menu_CURSOR_POS_START="4" m_menu_ARRAY_POS_START="1" m_menu_ROW_0="$m_menu_ROW_0" m_menu_COL_0="40" m_menu_ROWS="20" m_menu_COLS="30" term-render-menu "$@")"
+  # echo "var1=$var1"
+  # echo "var2=$var2"
+  # read x
+
+  # term_region_clear "0" "10" "20" "30"
+  # read x
 
   # while [ true ]
   # do
-    var1="$(menu_instance "$var1")"
-    var2="$(menu_instance "$var2")"
+    # var1="$(menu_instance "$var1")"
+    # var2="$(menu_instance "$var2")"
+    # var1="$(eval "$var1" && term-render-menu)"
+    # var2="$(eval "$var2" && term-render-menu)"
+    menueval "var1" term-render-menu
+    menueval "var2" term-render-menu
+    # read x
   # done
 
   term_screen_reset
@@ -78,37 +97,6 @@ main()
 }
 
 #-------------------------------------------------------------------------------
-
-# quote()
-# {
-#   # printf %s\\n "$1" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/"
-#   printf "%s" "$1" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/"
-# }
-#
-# return_var()
-# {
-#   # eval eval printf "export $1=\"$(quote \"\$$1\")\;\""
-#   eval quoted="\$(quote \"\$$1\")"
-#   # echo "quoted=$quoted"
-#   eval echo "export $1=\"$quoted;\""
-#   # eval eval printf "$1='\$$1'\;"
-# }
-#
-# m_menu_MENU_MULTISELECTION="true"
-# m_menu_MENU_CUSTOM_KEYS="enter"
-# m_menu_MENU_CUSTOM_KEYS="b:n:m"
-# m_menu_MENU_HEADER="$(printf "Menu Header - ROW 1\n---Row 2---\n---Row 3---\n\n")"
-# m_menu_MENU_FOOTER="$(printf "Menu Footer - ROW 1\n---Row 2---")"
-#
-# return_var "m_menu_MENU_MULTISELECTION"
-# return_var "m_menu_MENU_HEADER"
-
-# set | grep m_menu_ | sed 's|=.*||g'
-#   for k in $(set | grep m_menu_ | sed 's|=.*||g')
-#   do
-#     echo "k=$k"
-#   done
-# exit 0
 
 # main "$@" 3>&2 2>&1 1>&3
 main "$@"

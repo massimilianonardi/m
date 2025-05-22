@@ -18,6 +18,7 @@ test_array()
   # array ARRAY_NAME set NEW_VALUES...
 
   array myarray
+  # array myarray
   array myarray add "added value"
   array myarray add "added value 2"
   array myarray size

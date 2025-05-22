@@ -13,6 +13,7 @@
 #-------------------------------------------------------------------------------
 
 . array.lib.sh
+. term.lib.sh
 
 #-------------------------------------------------------------------------------
 
@@ -188,7 +189,7 @@ return_var()
 
 #-------------------------------------------------------------------------------
 
-return_selection()
+___return_selection()
 {
   # (
   #   return_var "m_menu_MENU_HEADER"
@@ -207,40 +208,62 @@ return_selection()
   exit 0
 }
 
-___return_selection()
+return_selection()
 {
-  (
-    printf "'"
-    return_var "ARRAY_POS_START"
-    printf " "
-    return_var "CURSOR_POS"
-    printf "' "
-  ) 1>&2
+  if [ "$m_menu_MENU_RETURN_ENV" = "true" ]
+  then
+    m_menu_MENU_RETURN_KEY="$key"
+    m_menu_MENU_RETURN_ITEM="$(array m_menu_MENU_IDS get "$m_menu_ARRAY_POS")"
+    array m_menu_MENU_SELECTED_ITEMS
+    i="0"
+    n="$(array m_menu_MENU_SEL size)"
+    while [ "$i" -lt "$n" ]
+    do
+      if [ "$(array m_menu_MENU_SEL get "$i")" = "$m_menu_SEL_ITEM_TRUE_STRING" ]
+      then
+        array m_menu_MENU_SELECTED_ITEMS add "$(array m_menu_MENU_IDS get "$i")"
+      fi
+      i="$(($i + 1))"
+    done
+    m_menu_MENU_RETURN_SELECTION="$(array m_menu_MENU_SELECTED_ITEMS get)"
+    return_var "m_menu_MENU_RETURN_KEY" 1>&2
+    return_var "m_menu_MENU_RETURN_ITEM" 1>&2
+    return_var "m_menu_MENU_RETURN_SELECTION" 1>&2
+
+    for k in $(set | grep m_menu_ | sed 's|=.*||g')
+    do
+      return_var "$k" 1>&2
+    done
+
+    exit 0
+    # printf "#" 1>&2
+  fi
+
 
   if [ -n "$MENU_CUSTOM_KEYS" ]
   then
     quote "${key}" 1>&2
     printf " " 1>&2
-    quote "$(array MENU_IDS get "$ARRAY_POS")" 1>&2
+    quote "$(array m_menu_MENU_IDS get "$m_menu_ARRAY_POS")" 1>&2
     printf " " 1>&2
   fi
 
-  if [ ! "$MENU_MULTISELECTION" = "true" ]
+  if [ ! "$m_menu_MENU_MULTISELECTION" = "true" ]
   then
-    (array MENU_IDS get "$ARRAY_POS") 1>&2
+    (array m_menu_MENU_IDS get "$m_menu_ARRAY_POS") 1>&2
   else
-    array MENU_SELECTED_ITEMS
+    array m_menu_MENU_SELECTED_ITEMS
     i="0"
-    n="$(array MENU_SEL size)"
+    n="$(array m_menu_MENU_SEL size)"
     while [ "$i" -lt "$n" ]
     do
-      if [ "$(array MENU_SEL get "$i")" = "$SEL_ITEM_TRUE_STRING" ]
+      if [ "$(array m_menu_MENU_SEL get "$i")" = "$m_menu_SEL_ITEM_TRUE_STRING" ]
       then
-        array MENU_SELECTED_ITEMS add "$(array MENU_IDS get "$i")"
+        array m_menu_MENU_SELECTED_ITEMS add "$(array m_menu_MENU_IDS get "$i")"
       fi
       i="$(($i + 1))"
     done
-    (array MENU_SELECTED_ITEMS get) 1>&2
+    (array m_menu_MENU_SELECTED_ITEMS get) 1>&2
   fi
 
   exit 0
@@ -290,6 +313,11 @@ select_item_toggle()
 
 menu_init()
 {
+  # array m_menu_MENU_IDS unset
+  # array m_menu_MENU_TEXTS unset
+  # array m_menu_MENU_SEL unset
+  # read x
+
   array m_menu_MENU_IDS
   array m_menu_MENU_TEXTS
   array m_menu_MENU_SEL
@@ -443,8 +471,22 @@ key_loop()
     key="$(readc)"
 
     case "$key" in
-      "q") exit 0;;
-      "esc") exit 0;;
+      # "q") exit 0;;
+      # "esc") exit 0;;
+      "q")
+        if [ "$m_menu_MENU_RETURN_ENV" = "true" ]
+        then
+          return_selection
+        fi
+        exit 0
+      ;;
+      "esc")
+        if [ "$m_menu_MENU_RETURN_ENV" = "true" ]
+        then
+          return_selection
+        fi
+        exit 0
+      ;;
       "up") scroll_cursor "-1";;
       "down") scroll_cursor "+1";;
       "pageup") scroll_page "-1";;
@@ -463,29 +505,29 @@ main()
 {
   # if [ -z "$*" ]
   # then
-#   echo "m_menu_MENU_HEADER=$m_menu_MENU_HEADER" 1>&2
-#   echo "m_menu_MENU_HEADER=$m_menu_MENU_HEADER"
-#   echo "KEY_LOOP=$KEY_LOOP" 1>&2
-#   echo "KEY_LOOP=$KEY_LOOP"
-# read x
     # echo "no args" 1>&2
     # echo "no args"
     # exit 1
   # fi
 
   screen_vars_update
+  term_region_clear "$m_menu_ROW_0" "$m_menu_COL_0" "$m_menu_ROWS" "$m_menu_COLS"
   screen_background_render
 
   if [ -n "$*" ]
   then
     menu_init "$@"
   fi
-  # screen_render 0
+
   screen_render "${m_menu_ARRAY_POS_START:-"0"}"
   menu_entry_highlight "${m_menu_CURSOR_POS_START:-"0"}"
 
   if [ "$KEY_LOOP" = "false" ]
   then
+    if [ "$m_menu_MENU_RETURN_ENV" = "true" ]
+    then
+      return_selection
+    fi
     exit 0
   fi
 
