@@ -45,9 +45,15 @@ array()
       eval "${1}_SIZE=\"0\""
       return 0
     else
-      echo "not an array!" 1>&2
-      exit 1
+      # echo "not an array!" 1>&2
+      # exit 1
+      return 1
     fi
+  elif [ "$#" = "1" ]
+  then
+    array "$1" unset
+    array "$1"
+    return 0
   fi
 
   case "$2" in

@@ -1,1 +1,1 @@
-multi menu working menueval stores and restores menu state into arg variable
+array.lib.sh on array declaration if exists, unsets and recreate empty

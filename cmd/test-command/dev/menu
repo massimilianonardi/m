@@ -12,9 +12,6 @@
 
 #-------------------------------------------------------------------------------
 
-# . realpaths.lib.sh
-# . waituser.lib.sh
-# . enc.lib.sh
 . term.lib.sh
 . array.lib.sh
 

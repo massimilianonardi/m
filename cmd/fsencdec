@@ -5,7 +5,6 @@
 # . realpaths.lib.sh
 . waituser.lib.sh
 . enc.lib.sh
-# . array.lib.sh
 . menu.lib.sh
 
 #-------------------------------------------------------------------------------

@@ -61,7 +61,9 @@ test_menu()
   # term-render-menu-main $menu_entries
   # res="$(term-render-menu-main $menu_entries)"
   # echo "res=$res"
-  menuexec "" "" "" term-render-menu-main $menu_entries
+  # menuexec "" "" "" term-render-menu-main $menu_entries
+  # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
+  menuexec "" "" "" term-mod menu $menu_entries
   echo "key=$key"; echo "res=$res"; echo "selection=$selection"
 }
 

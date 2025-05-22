@@ -88,6 +88,23 @@ term_region_clear()
   done
 }
 
+term_render_text_at()
+{
+(
+  # IFS=$(printf '\n+'); IFS=${IFS%?}
+  IFS='
+'
+  i="0"
+  for line in $1
+  do
+    tput cup "$(($2 + $i))" "$3"
+    printf "%s" "$line"
+    i="$(($i + 1))"
+  done
+)
+}
+
+# to be put under subshell
 tty_get_cursor_pos()
 {
   if [ -z "$1" ]
@@ -110,12 +127,9 @@ tty_get_cursor_pos()
   IFS='[;R' read -r dummy1 $1 $2 dummy2
 
   stty "$saved_tty_settings"
-
-  # echo "row=$row"
-  # echo "col=$col"
-  # read x
 }
 
+# to be removed (duplicate of term_render_text_at)
 screen_render_text_at()
 {
 (
