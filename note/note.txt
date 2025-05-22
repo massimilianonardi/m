@@ -35,6 +35,11 @@ command:
     env to make return only selected index (no ids or texts)
     env to make preselection
     env to pass arrays by name (ids, texts, selection by booleans, ids or indexes?) -> only to lib sourced function
+  - term-mod: inits and resets terminal at end and call specified term module
+    (eg term-mod menu calls term-mod-menu). a term module does not need to init or reset terminal,
+    thus mods can be combined to create a complex tui app.
+    each mod must standardize return env vars and switch off key loop
+    (allows initial renders of all mods into tui and only after recall active mod with key loop)
 --------------------------------------------------------------------------------
 
 https://github.com/dylanaraps/pure-sh-bible
