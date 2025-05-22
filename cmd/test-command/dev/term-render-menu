@@ -240,7 +240,7 @@ return_selection()
   fi
 
 
-  if [ -n "$MENU_CUSTOM_KEYS" ]
+  if [ -n "$m_menu_MENU_CUSTOM_KEYS" ]
   then
     quote "${key}" 1>&2
     printf " " 1>&2
@@ -534,5 +534,5 @@ main()
   key_loop
 }
 
-main "$@" 3>&2 2>&1 1>&3
-# main "$@"
+# main "$@" 3>&2 2>&1 1>&3
+main "$@"
