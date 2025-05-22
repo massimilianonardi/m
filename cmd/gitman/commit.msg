@@ -1,1 +1,1 @@
-array.lib.sh on array declaration if exists, unsets and recreate empty
+term.lib.sh term screen functions to init restore and helpers for tui apps

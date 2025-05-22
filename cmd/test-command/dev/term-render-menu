@@ -150,32 +150,16 @@ screen_vars_update()
   fi
 }
 
-screen_render_text_at()
-{
-(
-  # IFS=$(printf '\n+'); IFS=${IFS%?}
-  IFS='
-'
-  i="0"
-  for line in $1
-  do
-    tput cup "$(($2 + $i))" "$3"
-    printf "%s" "$line"
-    i="$(($i + 1))"
-  done
-)
-}
-
 screen_background_render()
 {
   if [ -n "$m_menu_MENU_HEADER" ]
   then
-    screen_render_text_at "$m_menu_MENU_HEADER" "$m_menu_MENU_HEADER_ROW_0" "$m_menu_MENU_HEADER_COL_0"
+    term_render_text_at "$m_menu_MENU_HEADER" "$m_menu_MENU_HEADER_ROW_0" "$m_menu_MENU_HEADER_COL_0"
   fi
 
   if [ -n "$m_menu_MENU_FOOTER" ]
   then
-    screen_render_text_at "$m_menu_MENU_FOOTER" "$m_menu_MENU_FOOTER_ROW_0" "$m_menu_MENU_FOOTER_COL_0"
+    term_render_text_at "$m_menu_MENU_FOOTER" "$m_menu_MENU_FOOTER_ROW_0" "$m_menu_MENU_FOOTER_COL_0"
   fi
 }
 

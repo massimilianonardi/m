@@ -130,7 +130,7 @@ tty_get_cursor_pos()
 }
 
 # to be removed (duplicate of term_render_text_at)
-screen_render_text_at()
+___screen_render_text_at()
 {
 (
   # IFS=$(printf '\n+'); IFS=${IFS%?}
