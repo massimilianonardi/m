@@ -58,12 +58,16 @@ test_menu()
   # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
   # fsencdec
 
-  term-render-menu-main $menu_entries
-  # res="$(term-render-menu-main $menu_entries)"
-  # echo "res=$res"
-  # menuexec "" "" "" term-render-menu-main $menu_entries
-  # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
+  # term-mod menu $menu_entries
   # menuexec "" "" "" term-mod menu $menu_entries
+  # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
+  res="$(term-mod menu $menu_entries)"
+  echo "res=$res"
+
+  # term-mod multimenu $menu_entries
+  # res="$(term-mod multimenu $menu_entries)"
+  # echo "res=$res"
+  # menuexec "" "" "" term-mod multimenu $menu_entries
   # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
 }
 

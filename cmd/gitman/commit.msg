@@ -1,1 +1,1 @@
-term menu initial cursor pos fix
+term menu lib function to render to terminal despite of redirections and command substitutions
