@@ -1,1 +1,1 @@
-term menu lib function to render to terminal despite of redirections and command substitutions
+env.lib.sh export env variables for later import

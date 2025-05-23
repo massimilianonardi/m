@@ -41,8 +41,6 @@ command:
     each mod must standardize return env vars and switch off key loop
     (allows initial renders of all mods into tui and only after recall active mod with key loop)
     lib function to export vars by list/prefix/regex
-    term lib function that writes to /dev/tty: term_render(){"$@" >/dev/tty}
-    term lib function that writes to stdout: term_result(){"$@" >/dev/stdout}
 --------------------------------------------------------------------------------
 
 https://github.com/dylanaraps/pure-sh-bible

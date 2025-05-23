@@ -43,3 +43,15 @@
 2025/05/23-15:15:07.477 1c5be compacted to: files[ 0 0 1 0 0 0 0 ]
 2025/05/23-15:15:07.477 1c5be Delete type=2 #238
 2025/05/23-15:15:07.477 1c5be Delete type=2 #240
+2025/05/23-15:31:39.360 1caa1 Level-0 table #243: started
+2025/05/23-15:31:39.391 1caa1 Level-0 table #243: 1726242 bytes OK
+2025/05/23-15:31:39.392 1caa1 Delete type=0 #239
+2025/05/23-15:37:54.934 1caa3 Compacting 1@1 + 1@2 files
+2025/05/23-15:37:54.939 1caa3 Generated table #244@1: 41 keys, 12327 bytes
+2025/05/23-15:37:54.939 1caa3 Compacted 1@1 + 1@2 files => 12327 bytes
+2025/05/23-15:37:54.939 1caa3 compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/05/23-15:37:54.940 1caa3 Delete type=2 #243
+2025/05/23-15:37:54.940 1caa3 Delete type=2 #241
+2025/05/23-15:47:46.163 1d00c Level-0 table #246: started
+2025/05/23-15:47:46.188 1d00c Level-0 table #246: 1616574 bytes OK
+2025/05/23-15:47:46.190 1d00c Delete type=0 #242

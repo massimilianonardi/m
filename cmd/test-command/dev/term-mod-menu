@@ -192,7 +192,7 @@ return_selection()
 
     for k in $(set | grep m_menu_ | sed 's|=.*||g')
     do
-      term_output term_output return_var "$k"
+      term_output return_var "$k"
     done
 
     exit 0
