@@ -9,8 +9,20 @@ test_env()
   # env_list
   env_list "THIS"
   # env_export
+  env_export $(env_list "THIS")
+  env_cmdscope $(env_list "THIS")
+  env_set $(env_list "THIS")
   env_export "$(env_list "THIS")"
-  env_return "$(env_list "THIS")"
+  env_cmdscope "$(env_list "THIS")"
+  env_set "$(env_list "THIS")"
+
+  echo "\n\n\n - env_return by command line: "
+  env_return "set" $(env_list "THIS")
+
+  echo "\n\n\n - env_return by env vars: "
+  ENV_RETURN="export" ENV_LIST="$(env_list "THIS")" env_return
+
+  echo ""
 }
 
 #-------------------------------------------------------------------------------

@@ -14,38 +14,113 @@ env_list()
 
 #-------------------------------------------------------------------------------
 
-return_quoted_var()
+env_set()
 {
-  eval quoted="\$(quote \"\$$1\")"
-  eval printf "$1=\"$quoted\" ."
-}
+  if [ -z "$*" ]
+  then
+    return 0
+  fi
 
-#-------------------------------------------------------------------------------
+  if [ "$#" = "1" ]
+  then
+    set -- $@
+  fi
 
-env_return()
-{
-  for k in $@
+  while [ "$#" -gt "0" ]
   do
-    return_quoted_var "$k"
+    eval quoted="\$(quote \"\$$1\")"
+    eval printf "$1=\"$quoted; \""
+    shift
   done
 }
 
 #-------------------------------------------------------------------------------
 
-export_quoted_var()
+env_cmdscope()
 {
-  eval quoted="\$(quote \"\$$1\")"
-  eval echo "export $1=\"$quoted;\""
+  # for k in $@
+  # do
+  #   eval quoted="\$(quote \"\$$k\")"
+  #   eval printf "$k=\"$quoted \""
+  # done
+
+  if [ -z "$*" ]
+  then
+    return 0
+  fi
+
+  if [ "$#" = "1" ]
+  then
+    set -- $@
+  fi
+
+  while [ "$#" -gt "0" ]
+  do
+    eval quoted="\$(quote \"\$$1\")"
+    eval printf "$1=\"$quoted \""
+    shift
+  done
 }
 
 #-------------------------------------------------------------------------------
 
 env_export()
 {
-  for k in $@
+  if [ -z "$*" ]
+  then
+    return 0
+  fi
+
+  if [ "$#" = "1" ]
+  then
+    set -- $@
+  fi
+
+  while [ "$#" -gt "0" ]
   do
-    export_quoted_var "$k"
+    eval quoted="\$(quote \"\$$1\")"
+    eval echo "export $1=\"$quoted; \""
+    shift
   done
+}
+
+#-------------------------------------------------------------------------------
+
+env_return()
+{
+(
+  if [ -n "$1" ]
+  then
+    ENV_RETURN="$1"
+    shift
+  fi
+
+  if [ -n "$*" ]
+  then
+    ENV_LIST="$@"
+  fi
+
+  if [ -z "$ENV_RETURN" ]
+  then
+    return 1
+  elif [ -z "$ENV_LIST" ]
+  then
+    return 0
+  fi
+
+  ENV_LIST="ENV_RETURN ENV_LIST $ENV_LIST"
+
+  if [ "$ENV_RETURN" = "export" ]
+  then
+    env_export "$ENV_LIST"
+  elif [ "$ENV_RETURN" = "cmdscope" ]
+  then
+    env_cmdscope "$ENV_LIST"
+  elif [ "$ENV_RETURN" = "set" ] || [ -z "$ENV_RETURN" ]
+  then
+    env_set "$ENV_LIST"
+  fi
+)
 }
 
 #-------------------------------------------------------------------------------
