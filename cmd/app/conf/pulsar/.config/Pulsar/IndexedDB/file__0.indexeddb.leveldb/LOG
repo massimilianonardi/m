@@ -52,3 +52,12 @@
 2025/05/24-10:23:51.185 ed8b compacted to: files[ 0 0 1 0 0 0 0 ]
 2025/05/24-10:23:51.186 ed8b Delete type=2 #260
 2025/05/24-10:23:51.186 ed8b Delete type=2 #262
+2025/05/24-10:48:22.060 108a1 Level-0 table #265: started
+2025/05/24-10:48:22.091 108a1 Level-0 table #265: 1618961 bytes OK
+2025/05/24-10:48:22.093 108a1 Delete type=0 #261
+2025/05/24-10:56:05.665 10bec Compacting 1@1 + 1@2 files
+2025/05/24-10:56:05.671 10bec Generated table #266@1: 41 keys, 12190 bytes
+2025/05/24-10:56:05.671 10bec Compacted 1@1 + 1@2 files => 12190 bytes
+2025/05/24-10:56:05.672 10bec compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/05/24-10:56:05.672 10bec Delete type=2 #265
+2025/05/24-10:56:05.672 10bec Delete type=2 #263

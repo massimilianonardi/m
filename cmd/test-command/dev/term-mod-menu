@@ -161,37 +161,36 @@ screen_background_render()
 
 #-------------------------------------------------------------------------------
 
-return_var()
-{
-  eval quoted="\$(quote \"\$$1\")"
-  eval echo "export $1=\"$quoted;\""
-}
-
-#-------------------------------------------------------------------------------
-
 return_selection()
 {
-  if [ "$m_menu_MENU_RETURN_ENV" = "true" ]
-  then
-    m_menu_MENU_RETURN_KEY="$key"
-    m_menu_MENU_RETURN_ITEM="$(array m_menu_MENU_IDS get "$m_menu_ARRAY_POS")"
-    array m_menu_MENU_SELECTED_ITEMS
-    i="0"
-    n="$(array m_menu_MENU_SEL size)"
-    while [ "$i" -lt "$n" ]
-    do
-      if [ "$(array m_menu_MENU_SEL get "$i")" = "$m_menu_SEL_ITEM_TRUE_STRING" ]
-      then
-        array m_menu_MENU_SELECTED_ITEMS add "$(array m_menu_MENU_IDS get "$i")"
-      fi
-      i="$(($i + 1))"
-    done
-    m_menu_MENU_RETURN_SELECTION="$(array m_menu_MENU_SELECTED_ITEMS get)"
+  m_menu_MENU_RETURN_KEY="$key"
+  m_menu_MENU_RETURN_ITEM="$(array m_menu_MENU_IDS get "$m_menu_ARRAY_POS")"
+  array m_menu_MENU_SELECTED_ITEMS
+  i="0"
+  n="$(array m_menu_MENU_SEL size)"
+  while [ "$i" -lt "$n" ]
+  do
+    if [ "$(array m_menu_MENU_SEL get "$i")" = "$m_menu_SEL_ITEM_TRUE_STRING" ]
+    then
+      array m_menu_MENU_SELECTED_ITEMS add "$(array m_menu_MENU_IDS get "$i")"
+    fi
+    i="$(($i + 1))"
+  done
+  m_menu_MENU_RETURN_SELECTION="$(array m_menu_MENU_SELECTED_ITEMS get)"
 
-    env_return export "$(env_list "m_menu_")"
 
-    exit 0
-  fi
+
+  ENV_RETURN=export
+  env_return
+  EXIT_VALUE="$?"
+  echo "EXIT_VALUE=$EXIT_VALUE"
+  # if env_return
+  # then
+  #   term_output echo "returned env"
+  #   exit 0
+  # fi
+  term_output echo "returning result"
+
 
 
   if [ -n "$m_menu_MENU_CUSTOM_KEYS" ]
@@ -241,14 +240,8 @@ ___return_selection()
       i="$(($i + 1))"
     done
     m_menu_MENU_RETURN_SELECTION="$(array m_menu_MENU_SELECTED_ITEMS get)"
-    term_output return_var "m_menu_MENU_RETURN_KEY"
-    term_output return_var "m_menu_MENU_RETURN_ITEM"
-    term_output return_var "m_menu_MENU_RETURN_SELECTION"
 
-    for k in $(set | grep m_menu_ | sed 's|=.*||g')
-    do
-      term_output return_var "$k"
-    done
+    env_return export "$(env_list "m_menu_")"
 
     exit 0
   fi

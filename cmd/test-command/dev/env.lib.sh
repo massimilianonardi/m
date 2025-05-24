@@ -105,7 +105,8 @@ env_return()
     return 1
   elif [ -z "$ENV_LIST" ]
   then
-    return 0
+    # return 0
+    ENV_LIST="$(env_list)"
   fi
 
   ENV_LIST='ENV_RETURN
@@ -122,6 +123,9 @@ ENV_LIST
   then
     env_set "$ENV_LIST"
   fi
+
+exit 5
+  return 0
 )
 }
 
