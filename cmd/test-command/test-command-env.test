@@ -22,6 +22,10 @@ test_env()
   echo "\n\n\n - env_return by env vars: "
   ENV_RETURN="export" ENV_LIST="$(env_list "THIS")" env_return
 
+  echo "\n\n\n - eval: "
+  eval env_return "export" $(env_list "THIS")
+  echo "THIS_PATH=$THIS_PATH"
+
   echo ""
 }
 

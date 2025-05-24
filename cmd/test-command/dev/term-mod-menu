@@ -12,6 +12,7 @@
 
 #-------------------------------------------------------------------------------
 
+. env.lib.sh
 . array.lib.sh
 . term.lib.sh
 
@@ -169,6 +170,60 @@ return_var()
 #-------------------------------------------------------------------------------
 
 return_selection()
+{
+  if [ "$m_menu_MENU_RETURN_ENV" = "true" ]
+  then
+    m_menu_MENU_RETURN_KEY="$key"
+    m_menu_MENU_RETURN_ITEM="$(array m_menu_MENU_IDS get "$m_menu_ARRAY_POS")"
+    array m_menu_MENU_SELECTED_ITEMS
+    i="0"
+    n="$(array m_menu_MENU_SEL size)"
+    while [ "$i" -lt "$n" ]
+    do
+      if [ "$(array m_menu_MENU_SEL get "$i")" = "$m_menu_SEL_ITEM_TRUE_STRING" ]
+      then
+        array m_menu_MENU_SELECTED_ITEMS add "$(array m_menu_MENU_IDS get "$i")"
+      fi
+      i="$(($i + 1))"
+    done
+    m_menu_MENU_RETURN_SELECTION="$(array m_menu_MENU_SELECTED_ITEMS get)"
+
+    env_return export "$(env_list "m_menu_")"
+
+    exit 0
+  fi
+
+
+  if [ -n "$m_menu_MENU_CUSTOM_KEYS" ]
+  then
+    term_output quote "${key}"
+    term_output printf " "
+    term_output quote "$(array m_menu_MENU_IDS get "$m_menu_ARRAY_POS")"
+    term_output printf " "
+  fi
+
+  if [ ! "$m_menu_MENU_MULTISELECTION" = "true" ]
+  then
+    term_output array m_menu_MENU_IDS get "$m_menu_ARRAY_POS"
+  else
+    array m_menu_MENU_SELECTED_ITEMS
+    i="0"
+    n="$(array m_menu_MENU_SEL size)"
+    while [ "$i" -lt "$n" ]
+    do
+      if [ "$(array m_menu_MENU_SEL get "$i")" = "$m_menu_SEL_ITEM_TRUE_STRING" ]
+      then
+        array m_menu_MENU_SELECTED_ITEMS add "$(array m_menu_MENU_IDS get "$i")"
+      fi
+      i="$(($i + 1))"
+    done
+    term_output array m_menu_MENU_SELECTED_ITEMS get
+  fi
+
+  exit 0
+}
+
+___return_selection()
 {
   if [ "$m_menu_MENU_RETURN_ENV" = "true" ]
   then

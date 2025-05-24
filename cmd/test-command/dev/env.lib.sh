@@ -108,7 +108,9 @@ env_return()
     return 0
   fi
 
-  ENV_LIST="ENV_RETURN ENV_LIST $ENV_LIST"
+  ENV_LIST='ENV_RETURN
+ENV_LIST
+'"$ENV_LIST"
 
   if [ "$ENV_RETURN" = "export" ]
   then

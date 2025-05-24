@@ -28,3 +28,27 @@
 2025/05/24-08:36:56.813 3439 Level-0 table #256: started
 2025/05/24-08:36:56.842 3439 Level-0 table #256: 1596994 bytes OK
 2025/05/24-08:36:56.844 3439 Delete type=0 #252
+2025/05/24-08:51:58.799 3bb3 Compacting 1@1 + 1@2 files
+2025/05/24-08:51:58.805 3bb3 Generated table #257@1: 41 keys, 12184 bytes
+2025/05/24-08:51:58.805 3bb3 Compacted 1@1 + 1@2 files => 12184 bytes
+2025/05/24-08:51:58.805 3bb3 compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/05/24-08:51:58.806 3bb3 Delete type=2 #256
+2025/05/24-08:51:58.806 3bb3 Delete type=2 #254
+2025/05/24-09:02:40.682 3e02 Level-0 table #259: started
+2025/05/24-09:02:40.711 3e02 Level-0 table #259: 1657183 bytes OK
+2025/05/24-09:02:40.713 3e02 Delete type=0 #255
+2025/05/24-09:59:46.796 93a6 Compacting 1@1 + 1@2 files
+2025/05/24-09:59:46.802 93a6 Generated table #260@1: 41 keys, 11892 bytes
+2025/05/24-09:59:46.802 93a6 Compacted 1@1 + 1@2 files => 11892 bytes
+2025/05/24-09:59:46.803 93a6 compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/05/24-09:59:46.803 93a6 Delete type=2 #257
+2025/05/24-09:59:46.803 93a6 Delete type=2 #259
+2025/05/24-10:12:00.621 9889 Level-0 table #262: started
+2025/05/24-10:12:00.654 9889 Level-0 table #262: 1579214 bytes OK
+2025/05/24-10:12:00.658 9889 Delete type=0 #258
+2025/05/24-10:23:51.179 ed8b Compacting 1@1 + 1@2 files
+2025/05/24-10:23:51.184 ed8b Generated table #263@1: 41 keys, 12344 bytes
+2025/05/24-10:23:51.184 ed8b Compacted 1@1 + 1@2 files => 12344 bytes
+2025/05/24-10:23:51.185 ed8b compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/05/24-10:23:51.186 ed8b Delete type=2 #260
+2025/05/24-10:23:51.186 ed8b Delete type=2 #262
