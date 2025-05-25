@@ -180,7 +180,8 @@ return_selection()
 
 
 
-  ENV_RETURN=export
+  # ENV_LIST="m_menu_MENU_"
+  ENV_RETURN="export"
   env_return
   EXIT_VALUE="$?"
   echo "EXIT_VALUE=$EXIT_VALUE"

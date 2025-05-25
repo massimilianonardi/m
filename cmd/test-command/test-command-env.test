@@ -6,7 +6,9 @@ test_env()
 {
   . env.lib.sh
 
-  # env_list
+  env_list
+  exit 0
+  
   env_list "THIS"
   # env_export
   env_export $(env_list "THIS")
