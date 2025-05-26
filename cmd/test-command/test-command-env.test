@@ -16,16 +16,34 @@ fff'
   export TEST_VAR_4='
 ggg'
 
+  echo "\n\n\n - env_list: "
   env_list
-  exit 0
 
+  echo "\n\n\n - env_list THIS: "
   env_list "THIS"
-  # env_export
+
+  echo "\n\n\n - env_list THIS|TEST_VAR: "
+  env_list "THIS\|TEST_VAR"
+
+  echo "\n\n\n - env_export: "
+  env_export
+
+  echo "\n\n\n - env_export THIS: "
   env_export $(env_list "THIS")
+
+  echo "\n\n\n - env_cmdscope THIS: "
   env_cmdscope $(env_list "THIS")
+
+  echo "\n\n\n - env_set THIS: "
   env_set $(env_list "THIS")
+
+  echo "\n\n\n - env_export THIS: "
   env_export "$(env_list "THIS")"
+
+  echo "\n\n\n - env_cmdscope THIS: "
   env_cmdscope "$(env_list "THIS")"
+
+  echo "\n\n\n - env_set THIS: "
   env_set "$(env_list "THIS")"
 
   echo "\n\n\n - env_return by command line: "

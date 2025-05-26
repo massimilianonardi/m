@@ -6,19 +6,9 @@ env_list()
 {
   if [ -z "$*" ]
   then
-    # set | sed 's|=.*||g'
-    # set
-    # set | sed 's/\(.*\)\(='\''\).*\('\''$\)/\1/g'
-    # set | sed '/='\''/,/'\''$/ s/.*//'
-    # set | sed '/='\''/,/'\''$/ {/='\''/p; s/.*//}'
-    # set | sed -e 's/\(.*\)\(='\''\).*\('\''$\)/\1/g' -e '/='\''/,/'\''$/ s/.*//'
-    # set | sed -e 's/\(.*\)\(='\''\).*\('\''$\)/\1/g' -e '/='\''/,/'\''$/ {/='\''/p; s/.*//}'
-    # set | sed -n "/.*=/{p; :a; N; /'/!ba; s/.*\n//}; p"
-    # env awk 'BEGIN{for(v in ENVIRON) print v}' | sort
     set | sed '/='\''/,/'\''$/ {s/='\''.*//p; /.*/d}'
   else
-    set | grep -e "$@" | sed 's|=.*||g'
-    # env awk 'BEGIN{for(v in ENVIRON) print v}' | grep -e "$@" | sort
+    set | sed '/='\''/,/'\''$/ {s/='\''.*//p; /.*/d}' | grep -e "$@"
   fi
 }
 
@@ -88,13 +78,8 @@ env_export()
 
   while [ "$#" -gt "0" ]
   do
-    # (eval quoted="\$(quote \"\$$1\")"
-    # eval echo "export $1=\"$quoted; \"")
-    (
-      # eval quoted="\$(quote \"\$$1\")"
-      eval echo "n=$# arg=$1 val=\"\$$1\""
-    )
-# echo "?=$? arg=$1"
+    eval quoted="\$(quote \"\$$1\")"
+    eval echo "export $1=\"$quoted; \""
     shift
   done
 }
@@ -127,8 +112,6 @@ env_return()
   ENV_LIST='ENV_RETURN
 ENV_LIST
 '"$ENV_LIST"
-echo "ENV_LIST=$ENV_LIST"
-return 7
 
   if [ "$ENV_RETURN" = "export" ]
   then
@@ -141,8 +124,8 @@ return 7
     env_set "$ENV_LIST"
   fi
 
-exit 5
-  return 0
+# return 5
+#   return 0
 )
 }
 

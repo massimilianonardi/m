@@ -1,1 +1,4 @@
 2025/05/26-07:39:07.322 e35 Reusing MANIFEST /m/src/git/m/cmd/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/MANIFEST-000001
+2025/05/26-11:08:16.840 35ff Level-0 table #5: started
+2025/05/26-11:08:16.927 35ff Level-0 table #5: 1760529 bytes OK
+2025/05/26-11:08:16.932 35ff Delete type=0 #3
