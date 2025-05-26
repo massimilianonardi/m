@@ -42,6 +42,9 @@ command:
     (allows initial renders of all mods into tui and only after recall active mod with key loop)
     lib function to export vars by list/prefix/regex
 --------------------------------------------------------------------------------
+https://sed.js.org/
+https://ato.pxeger.com/about
+https://regex101.com/
 https://www.grymoire.com/Unix/Sed.html
 https://github.com/dylanaraps/pure-sh-bible
 --------------------------------------------------------------------------------

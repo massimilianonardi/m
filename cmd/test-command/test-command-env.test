@@ -37,13 +37,13 @@ ggg'
   echo "\n\n\n - env_set THIS: "
   env_set $(env_list "THIS")
 
-  echo "\n\n\n - env_export THIS: "
+  echo "\n\n\n - env_export THIS quoted: "
   env_export "$(env_list "THIS")"
 
-  echo "\n\n\n - env_cmdscope THIS: "
+  echo "\n\n\n - env_cmdscope THIS quoted: "
   env_cmdscope "$(env_list "THIS")"
 
-  echo "\n\n\n - env_set THIS: "
+  echo "\n\n\n - env_set THIS quoted: "
   env_set "$(env_list "THIS")"
 
   echo "\n\n\n - env_return by command line: "
@@ -54,7 +54,6 @@ ggg'
 
   echo "\n\n\n - eval: "
   eval env_return "export" $(env_list "THIS")
-  echo "THIS_PATH=$THIS_PATH"
 
   echo ""
 }

@@ -38,12 +38,6 @@ env_set()
 
 env_cmdscope()
 {
-  # for k in $@
-  # do
-  #   eval quoted="\$(quote \"\$$k\")"
-  #   eval printf "$k=\"$quoted \""
-  # done
-
   if [ -z "$*" ]
   then
     return 0
@@ -109,9 +103,9 @@ env_return()
     ENV_LIST="$(env_list)"
   fi
 
-  ENV_LIST='ENV_RETURN
-ENV_LIST
-'"$ENV_LIST"
+#   ENV_LIST='ENV_RETURN
+# ENV_LIST
+# '"$ENV_LIST"
 
   if [ "$ENV_RETURN" = "export" ]
   then
@@ -123,9 +117,6 @@ ENV_LIST
   then
     env_set "$ENV_LIST"
   fi
-
-# return 5
-#   return 0
 )
 }
 
