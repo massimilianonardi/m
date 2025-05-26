@@ -7,9 +7,15 @@ env_list()
   if [ -z "$*" ]
   then
     # set | sed 's|=.*||g'
-    set
+    # set
+    # set | sed 's/\(.*\)\(='\''\).*\('\''$\)/\1/g'
+    # set | sed '/='\''/,/'\''$/ s/.*//'
+    # set | sed '/='\''/,/'\''$/ {/='\''/p; s/.*//}'
+    # set | sed -e 's/\(.*\)\(='\''\).*\('\''$\)/\1/g' -e '/='\''/,/'\''$/ s/.*//'
+    # set | sed -e 's/\(.*\)\(='\''\).*\('\''$\)/\1/g' -e '/='\''/,/'\''$/ {/='\''/p; s/.*//}'
     # set | sed -n "/.*=/{p; :a; N; /'/!ba; s/.*\n//}; p"
     # env awk 'BEGIN{for(v in ENVIRON) print v}' | sort
+    set | sed '/='\''/,/'\''$/ {s/='\''.*//p; /.*/d}'
   else
     set | grep -e "$@" | sed 's|=.*||g'
     # env awk 'BEGIN{for(v in ENVIRON) print v}' | grep -e "$@" | sort

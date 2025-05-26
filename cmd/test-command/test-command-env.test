@@ -6,9 +6,19 @@ test_env()
 {
   . env.lib.sh
 
+  export TEST_VAR_1='aaa
+bbb
+ccc'
+  export TEST_VAR_2='ddd
+eee'
+  export TEST_VAR_3='
+fff'
+  export TEST_VAR_4='
+ggg'
+
   env_list
   exit 0
-  
+
   env_list "THIS"
   # env_export
   env_export $(env_list "THIS")
