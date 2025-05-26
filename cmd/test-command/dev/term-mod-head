@@ -1,0 +1,97 @@
+#!/bin/sh
+
+#-------------------------------------------------------------------------------
+
+. env.lib.sh
+. term.lib.sh
+. menu.lib.sh
+
+#-------------------------------------------------------------------------------
+
+string_count_lines()
+{
+  if [ -z "$1" ]
+  then
+    return 1
+  fi
+
+  eval echo "\$(($(printf "${1}" | wc -l) + 1))"
+}
+
+#-------------------------------------------------------------------------------
+
+screen_vars_update()
+{
+  # init header/footer
+  if [ -n "$term_mod_HEAD_HEADER" ]
+  then
+    term_mod_HEAD_HEADER_SIZE_ROW="$(string_count_lines "$term_mod_HEAD_HEADER")"
+
+    if [ -z "$term_mod_HEAD_HEADER_ROW_0" ]
+    then
+      term_mod_HEAD_HEADER_ROW_0="$term_mod_ROW0"
+      term_mod_ROW0="$(($term_mod_ROW0 + $term_mod_HEAD_HEADER_SIZE_ROW))"
+    fi
+
+    if [ -z "$term_mod_HEAD_HEADER_COL_0" ]
+    then
+      term_mod_HEAD_HEADER_COL_0="$term_mod_COL0"
+    fi
+  fi
+
+  if [ -n "$term_mod_HEAD_FOOTER" ]
+  then
+    term_mod_HEAD_FOOTER_SIZE_ROW="$(string_count_lines "$term_mod_HEAD_FOOTER")"
+
+    if [ -z "$term_mod_HEAD_FOOTER_ROW_0" ]
+    then
+      term_mod_ROWS="$(($term_mod_ROWS - $term_mod_HEAD_FOOTER_SIZE_ROW))"
+      term_mod_HEAD_FOOTER_ROW_0="$(($term_mod_ROW0 + $term_mod_ROWS))"
+    fi
+
+    if [ -z "$term_mod_HEAD_FOOTER_COL_0" ]
+    then
+      term_mod_HEAD_FOOTER_COL_0="$term_mod_COL0"
+    fi
+  fi
+}
+
+screen_background_render()
+{
+  if [ -n "$term_mod_HEAD_HEADER" ]
+  then
+echo    term_render_text_at "$term_mod_HEAD_HEADER" "$term_mod_HEAD_HEADER_ROW_0" "$term_mod_HEAD_HEADER_COL_0"
+    term_render_text_at "$term_mod_HEAD_HEADER" "$term_mod_HEAD_HEADER_ROW_0" "$term_mod_HEAD_HEADER_COL_0"
+  fi
+
+  if [ -n "$term_mod_HEAD_FOOTER" ]
+  then
+echo    term_render_text_at "$term_mod_HEAD_FOOTER" "$term_mod_HEAD_FOOTER_ROW_0" "$term_mod_HEAD_FOOTER_COL_0"
+    term_render_text_at "$term_mod_HEAD_FOOTER" "$term_mod_HEAD_FOOTER_ROW_0" "$term_mod_HEAD_FOOTER_COL_0"
+  fi
+  read x
+}
+
+#-------------------------------------------------------------------------------
+
+main()
+{
+  term_mod_HEAD_HEADER="$1"
+  shift
+  term_mod_HEAD_FOOTER="$1"
+  shift
+
+  # ENV_RETURN="export"
+  # ENV_LIST="$(env_list "HEADER\|FOOTER")"
+
+  screen_vars_update
+  screen_background_render
+  "$@"
+
+  ENV_LIST="$(env_list "term_mod_HEAD_")"
+  env_return && exit 0
+}
+
+#-------------------------------------------------------------------------------
+
+main "$@"

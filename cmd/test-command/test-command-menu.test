@@ -61,14 +61,24 @@ test_menu()
   # term-mod menu $menu_entries
   # menuexec "" "" "" term-mod menu $menu_entries
   # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
-  res="$(term-mod menu $menu_entries)"
-  echo "res=$res"
+  # res="$(term-mod menu $menu_entries)"
+  # echo "res=$res"
 
   # term-mod multimenu $menu_entries
   # res="$(term-mod multimenu $menu_entries)"
   # echo "res=$res"
   # menuexec "" "" "" term-mod multimenu $menu_entries
   # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
+
+  menuset header "$(printf "HEAD Header - ROW 1\n---Row 2---\n---Row 3---\n\n")"
+  menuset footer "$(printf "HEAD Footer - ROW 1\n---Row 2---")"
+  res="$(term-mod head "$m_menu_MENU_HEADER" "$m_menu_MENU_FOOTER" term-mod-menu $menu_entries)"
+  echo "res=$res"
+
+  # term-mod region 5 10 25 35
+  # term-mod head "$m_menu_MENU_HEADER" "$m_menu_MENU_FOOTER" term-mod-menu $menu_entries
+  # res="$(term-mod region 1 1 25 35 echo "term_mod_ROWS=\$term_mod_ROWS")"
+  # echo "res=$res"
 }
 
 #-------------------------------------------------------------------------------

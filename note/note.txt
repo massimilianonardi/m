@@ -36,11 +36,14 @@ command:
     env to make preselection
     env to pass arrays by name (ids, texts, selection by booleans, ids or indexes?) -> only to lib sourced function
   - term-mod: inits and resets terminal at end and call specified term module
+    should recognize if already initialized, if possible term lib should handle this
+    rendering regions are controlled by env vars and never by command line! each composite module can then adjust region for submodules
+    each mod if has no arg, then loads everything fron env vars previously exported)
+    by command line only args specific to particular mod
     (eg term-mod menu calls term-mod-menu). a term module does not need to init or reset terminal,
     thus mods can be combined to create a complex tui app.
     each mod must standardize return env vars and switch off key loop
     (allows initial renders of all mods into tui and only after recall active mod with key loop)
-    lib function to export vars by list/prefix/regex
 --------------------------------------------------------------------------------
 https://sed.js.org/
 https://ato.pxeger.com/about

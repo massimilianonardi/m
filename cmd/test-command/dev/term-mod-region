@@ -1,0 +1,64 @@
+#!/bin/sh
+
+#-------------------------------------------------------------------------------
+
+. env.lib.sh
+. term.lib.sh
+. menu.lib.sh
+
+#-------------------------------------------------------------------------------
+
+vars_init()
+{
+  if [ -z "$term_mod_ROW0" ]
+  then
+    term_mod_ROW0="0"
+  fi
+
+  if [ -z "$term_mod_COL0" ]
+  then
+    term_mod_COL0="0"
+  fi
+
+  if [ -z "$term_mod_ROWS" ]
+  then
+    term_mod_ROWS="$TERM_ROWS"
+  fi
+
+  if [ -z "$term_mod_COLS" ]
+  then
+    term_mod_COLS="$TERM_COLS"
+  fi
+}
+
+#-------------------------------------------------------------------------------
+
+main()
+{
+  ENV_LIST="term_mod_ROW0 term_mod_COL0 term_mod_ROWS term_mod_COLS"
+
+  if [ "$#" -gt "4" ]
+  then
+    term_mod_ROW0="$1"
+    shift
+    term_mod_COL0="$1"
+    shift
+    term_mod_ROWS="$1"
+    shift
+    term_mod_COLS="$1"
+    shift
+
+    vars_init
+    eval $(env_return cmdscope $ENV_LIST) \"\$@\"
+    # term_mod_ROW0="$term_mod_ROW0" term_mod_COL0="$term_mod_COL0" term_mod_ROWS="$term_mod_ROWS" term_mod_COLS="$term_mod_COLS" "$@"
+  else
+    vars_init
+    eval $(env_return export $ENV_LIST)
+  fi
+
+  env_return && exit 0
+}
+
+#-------------------------------------------------------------------------------
+
+main "$@"
