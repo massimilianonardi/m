@@ -1,1 +1,1 @@
-term-mod complete
+term-mod renamed as tui

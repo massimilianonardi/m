@@ -33,21 +33,21 @@ test_term()
   # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
   # fsencdec
 
-  # term-mod menu $menu_entries
+  # tui menu $menu_entries
 
-  # menuexec "" "" "" term-mod menu $menu_entries
+  # menuexec "" "" "" tui menu $menu_entries
   # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
-  res="$(term-mod menu $menu_entries)"
+  res="$(tui menu $menu_entries)"
   echo "res=$res"
 
-  # term-mod head "$MENU_HEADER" "$MENU_FOOTER" term-mod-menu $menu_entries
-  # res="$(term-mod head "$MENU_HEADER" "$MENU_FOOTER" term-mod-menu $menu_entries)"
+  # tui head "$MENU_HEADER" "$MENU_FOOTER" tui-menu $menu_entries
+  # res="$(tui head "$MENU_HEADER" "$MENU_FOOTER" tui-menu $menu_entries)"
   # echo "res=$res"
 
-  # term-mod multimenu $menu_entries
-  # res="$(term-mod multimenu $menu_entries)"
+  # tui multimenu $menu_entries
+  # res="$(tui multimenu $menu_entries)"
   # echo "res=$res"
-  # menuexec "" "" "" term-mod multimenu $menu_entries
+  # menuexec "" "" "" tui multimenu $menu_entries
   # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
 }
 

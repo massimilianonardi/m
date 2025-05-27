@@ -1,0 +1,447 @@
+#!/bin/sh
+
+# MENU_ID="false" # disables id detection from menu entries "menu_entry_id=menu_entry_text"
+# MENU_MULTISELECTION="true" # enables multi selection
+# ROW_0 # row coordinate to start render
+# COL_0 # col coordinate to start render
+# ROWS # max rows to render
+# COLS # max cols to render
+# MENU_CUSTOM_KEYS="key1:key2:key3" # returns selection also with these keys in the form "key:selection"
+# MENU_HEADER # text above menu
+# MENU_FOOTER # text below menu
+
+#-------------------------------------------------------------------------------
+
+. env.lib.sh
+. array.lib.sh
+. term.lib.sh
+
+#-------------------------------------------------------------------------------
+
+vars_set()
+{
+  # init limits
+  if [ -z "$term_mod_MENU_ENTRY_SIZE_MIN" ]
+  then
+    term_mod_MENU_ENTRY_SIZE_MIN="3"
+  fi
+
+  # init menu id detection
+  if [ -z "$term_mod_MENU_ID" ]
+  then
+    term_mod_MENU_ID="true"
+  fi
+
+  # init multi selection
+  if [ -z "$term_mod_MENU_MULTISELECTION" ]
+  then
+    term_mod_MENU_MULTISELECTION="false"
+  fi
+
+  if [ -z "$term_mod_MENU_SEL_ITEM_TRUE_STRING" ]
+  then
+    term_mod_MENU_SEL_ITEM_TRUE_STRING="+"
+  fi
+
+  if [ -z "$term_mod_MENU_SEL_ITEM_FALSE_STRING" ]
+  then
+    term_mod_MENU_SEL_ITEM_FALSE_STRING="-"
+  fi
+
+  # return key pressed
+  if [ -z "$term_mod_MENU_KEY_SEPARATOR" ]
+  then
+    term_mod_MENU_KEY_SEPARATOR=":"
+  fi
+
+  # adjust render region for small menus
+  # if [ "$#" -lt "$term_ROWS" ]
+  # then
+  #   term_ROWS="$#"
+  # fi
+  # if [ "$term_mod_MENU_ARRAY_SIZE" -lt "$term_ROWS" ]
+  # then
+  #   term_ROWS="$term_mod_MENU_ARRAY_SIZE"
+  # fi
+}
+
+#-------------------------------------------------------------------------------
+
+return_selection()
+{
+  # term_mod_MENU_RETURN_KEY="$key"
+  # term_mod_MENU_RETURN_ITEM="$(array term_mod_MENU_IDS get "$term_mod_MENU_ARRAY_POS")"
+  # array term_mod_MENU_SELECTED_ITEMS
+  # i="0"
+  # n="$(array term_mod_MENU_SEL size)"
+  # while [ "$i" -lt "$n" ]
+  # do
+  #   if [ "$(array term_mod_MENU_SEL get "$i")" = "$term_mod_MENU_SEL_ITEM_TRUE_STRING" ]
+  #   then
+  #     array term_mod_MENU_SELECTED_ITEMS add "$(array term_mod_MENU_IDS get "$i")"
+  #   fi
+  #   i="$(($i + 1))"
+  # done
+  # term_mod_MENU_RETURN_SELECTION="$(array term_mod_MENU_SELECTED_ITEMS get)"
+
+
+
+  # ENV_RETURN="export"
+  # ENV_LIST="$(env_list "term_mod_MENU_")"
+
+  env_return && exit 0
+
+  # if env_return
+  # then
+  #   term_output echo "returned env"
+  #   exit 0
+  # fi
+  # term_output echo "returning result"
+
+
+
+  if [ -n "$term_mod_MENU_CUSTOM_KEYS" ]
+  then
+    term_output quote "${key}"
+    term_output printf " "
+    term_output quote "$(array term_mod_MENU_IDS get "$term_mod_MENU_ARRAY_POS")"
+    term_output printf " "
+  fi
+
+  if [ ! "$term_mod_MENU_MULTISELECTION" = "true" ]
+  then
+    term_output array term_mod_MENU_IDS get "$term_mod_MENU_ARRAY_POS"
+  else
+    array term_mod_MENU_SELECTED_ITEMS
+    i="0"
+    n="$(array term_mod_MENU_SEL size)"
+    while [ "$i" -lt "$n" ]
+    do
+      if [ "$(array term_mod_MENU_SEL get "$i")" = "$term_mod_MENU_SEL_ITEM_TRUE_STRING" ]
+      then
+        array term_mod_MENU_SELECTED_ITEMS add "$(array term_mod_MENU_IDS get "$i")"
+      fi
+      i="$(($i + 1))"
+    done
+    term_output array term_mod_MENU_SELECTED_ITEMS get
+  fi
+
+  exit 0
+}
+
+check_key()
+{
+  if [ -z "$1" ]
+  then
+    return 0
+  fi
+
+  if [ -z "$term_mod_MENU_CUSTOM_KEYS" ]
+  then
+    return 0
+  fi
+
+  if [ "${term_mod_MENU_CUSTOM_KEYS#*${1}*}" = "$term_mod_MENU_CUSTOM_KEYS" ]
+  then
+    return 0
+  fi
+
+  return_selection
+}
+
+select_item_toggle()
+{
+  if [ ! "$term_mod_MENU_MULTISELECTION" = "true" ]
+  then
+    return 0
+  fi
+
+  term_mod_MENU_SELECTED_POS="$term_mod_MENU_ARRAY_POS"
+  term_mod_MENU_SEL_ITEM_CURR_STRING="$(array term_mod_MENU_SEL get "$term_mod_MENU_ARRAY_POS")"
+  if [ "$term_mod_MENU_SEL_ITEM_CURR_STRING" = "$term_mod_MENU_SEL_ITEM_TRUE_STRING" ]
+  then
+    array term_mod_MENU_SEL put "$term_mod_MENU_ARRAY_POS" "$term_mod_MENU_SEL_ITEM_FALSE_STRING"
+  elif [ "$term_mod_MENU_SEL_ITEM_CURR_STRING" = "$term_mod_MENU_SEL_ITEM_FALSE_STRING" ]
+  then
+    array term_mod_MENU_SEL put "$term_mod_MENU_ARRAY_POS" "$term_mod_MENU_SEL_ITEM_TRUE_STRING"
+  else
+    false
+  fi
+
+  print_menu_entry "$term_mod_MENU_ARRAY_POS" "$term_mod_MENU_CURSOR_POS"
+}
+
+menu_init()
+{
+  array term_mod_MENU_IDS
+  array term_mod_MENU_TEXTS
+  array term_mod_MENU_SEL
+
+  for k in "$@"
+  do
+    if [ ! "$term_mod_MENU_ID" = "false" ]
+    then
+      ID="${k%%=*}"
+      TEXT="${k#*=}"
+    else
+      ID="$k"
+      TEXT="$k"
+    fi
+
+    array term_mod_MENU_IDS add "$ID"
+    array term_mod_MENU_TEXTS add "$TEXT"
+    array term_mod_MENU_SEL add "$term_mod_MENU_SEL_ITEM_FALSE_STRING"
+  done
+
+  term_mod_MENU_ARRAY_SIZE="$(array term_mod_MENU_IDS size)"
+  term_mod_MENU_ARRAY_POS="0"
+  term_mod_MENU_CURSOR_POS="0"
+
+  if [ "$term_mod_MENU_ARRAY_SIZE" -lt "$term_ROWS" ]
+  then
+    term_ROWS="$term_mod_MENU_ARRAY_SIZE"
+  fi
+}
+
+print_menu_entry()
+{
+  term_mod_MENU_ENTRY_INDEX="$1"
+  term_mod_MENU_ENTRY_ROW="$2"
+
+  # clear whole line
+  term_render tput cup "$(($term_ROW0 + $term_mod_MENU_ENTRY_ROW))" "$term_COL0"
+  term_render printf "%${term_COLS}s"
+  term_render tput cup "$(($term_ROW0 + $term_mod_MENU_ENTRY_ROW))" "$term_COL0"
+
+  # limit too long lines (use line without ascii control codes)
+  if [ ! "$term_mod_MENU_MULTISELECTION" = "true" ]
+  then
+    line="$term_mod_MENU_ENTRY_INDEX $(array term_mod_MENU_TEXTS get "$term_mod_MENU_ENTRY_INDEX")"
+  else
+    line="$term_mod_MENU_ENTRY_INDEX [$(array term_mod_MENU_SEL get "$term_mod_MENU_ENTRY_INDEX")] $(array term_mod_MENU_TEXTS get "$term_mod_MENU_ENTRY_INDEX")"
+  fi
+  size="$(printf "$line" | wc -m)"
+  line="$(array term_mod_MENU_TEXTS get "$term_mod_MENU_ENTRY_INDEX")"
+  if [ "$size" -gt "$term_COLS" ]
+  then
+    sizeexceed="$(($size - $term_COLS))"
+    size="$(printf "$line" | wc -m)"
+    line="$(printf "$line" | cut -c "1-$(($size - $sizeexceed - 6))")$(tput setaf 1) [...]$(tput sgr0)"
+  fi
+
+  # print line
+  if [ ! "$term_mod_MENU_MULTISELECTION" = "true" ]
+  then
+    line="$(tput setaf 2)$term_mod_MENU_ENTRY_INDEX$(tput sgr0) $line"
+  else
+    line="$(tput setaf 2)$term_mod_MENU_ENTRY_INDEX$(tput sgr0) $(tput setaf 3)[$(array term_mod_MENU_SEL get "$term_mod_MENU_ENTRY_INDEX")]$(tput sgr0) $line"
+  fi
+  term_render printf "$line"
+
+  term_render tput cup "$(($term_ROW0 + $term_mod_MENU_ENTRY_ROW))" "$term_COL0"
+}
+
+screen_render()
+{
+  term_mod_MENU_ARRAY_POS_START="$1"
+
+  i="0"
+  n="$term_ROWS"
+  while [ "$i" -lt "$n" ]
+  do
+    print_menu_entry "$(($term_mod_MENU_ARRAY_POS_START + $i))" "$i"
+    i="$(($i + 1))"
+  done
+}
+
+menu_entry_highlight()
+{
+  term_render tput cup "$(($term_ROW0 + $1))" "$term_COL0"
+}
+
+scroll_cursor()
+{
+  if [ "$1" -lt "0" ]
+  then
+    if [ "$term_mod_MENU_CURSOR_POS" = "0" ] && [ "$term_mod_MENU_ARRAY_POS_START" = "0" ]
+    then
+      true
+    elif [ "$term_mod_MENU_CURSOR_POS" = "0" ] && [ "$term_mod_MENU_ARRAY_POS_START" -gt "0" ]
+    then
+      term_mod_MENU_ARRAY_POS_START="$(($term_mod_MENU_ARRAY_POS_START + $1))"
+      term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_POS + $1))"
+      screen_render "$term_mod_MENU_ARRAY_POS_START"
+      menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
+    else
+      term_mod_MENU_CURSOR_POS="$(($term_mod_MENU_CURSOR_POS + $1))"
+      term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_POS + $1))"
+      menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
+    fi
+  elif [ "$1" -gt "0" ]
+  then
+    if [ "$term_mod_MENU_CURSOR_POS" = "$(($term_ROWS - 1))" ] && [ "$term_mod_MENU_ARRAY_POS_START" = "$(($term_mod_MENU_ARRAY_SIZE - $term_ROWS))" ]
+    then
+      true
+    elif [ "$term_mod_MENU_CURSOR_POS" = "$(($term_ROWS - 1))" ] && [ "$term_mod_MENU_ARRAY_POS_START" -lt "$(($term_mod_MENU_ARRAY_SIZE - $term_ROWS))" ]
+    then
+      term_mod_MENU_ARRAY_POS_START="$(($term_mod_MENU_ARRAY_POS_START + $1))"
+      term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_POS + $1))"
+      screen_render "$term_mod_MENU_ARRAY_POS_START"
+      menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
+    else
+      term_mod_MENU_CURSOR_POS="$(($term_mod_MENU_CURSOR_POS + $1))"
+      term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_POS + $1))"
+      menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
+    fi
+  fi
+}
+
+check_cursor()
+{
+  if [ "$term_mod_MENU_CURSOR_POS" -lt "0" ]
+  then
+    term_mod_MENU_CURSOR_POS="0"
+  elif [ "$term_mod_MENU_CURSOR_POS" -gt "$(($term_ROWS - 1))" ]
+  then
+    term_mod_MENU_CURSOR_POS="$(($term_ROWS - 1))"
+  fi
+
+  if [ "$term_mod_MENU_ARRAY_POS" -lt "0" ]
+  then
+    term_mod_MENU_ARRAY_POS=0
+  elif [ "$term_mod_MENU_ARRAY_POS" -gt "$(($term_mod_MENU_ARRAY_SIZE - 1))" ]
+  then
+    term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_SIZE - 1))"
+  fi
+
+  if [ "$term_mod_MENU_ARRAY_POS_START" -lt "0" ]
+  then
+    term_mod_MENU_ARRAY_POS_START=0
+  elif [ "$term_mod_MENU_ARRAY_POS_START" -gt "$(($term_mod_MENU_ARRAY_SIZE - $term_ROWS))" ]
+  then
+    term_mod_MENU_ARRAY_POS_START="$(($term_mod_MENU_ARRAY_SIZE - $term_ROWS))"
+  fi
+}
+
+scroll_page()
+{
+  if [ "$1" -lt "0" ]
+  then
+    if [ "$term_mod_MENU_CURSOR_POS" = "0" ]
+    then
+      term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_POS - $term_ROWS))"
+      term_mod_MENU_ARRAY_POS_START="$(($term_mod_MENU_ARRAY_POS_START - $term_ROWS))"
+      check_cursor
+      screen_render "$term_mod_MENU_ARRAY_POS_START"
+      menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
+    elif [ "$term_mod_MENU_CURSOR_POS" -gt "0" ]
+    then
+      term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_POS - $term_mod_MENU_CURSOR_POS))"
+      term_mod_MENU_CURSOR_POS="0"
+      menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
+    fi
+  elif [ "$1" -gt "0" ]
+  then
+    if [ "$term_mod_MENU_CURSOR_POS" = "$(($term_ROWS - 1))" ]
+    then
+      term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_POS + $term_ROWS))"
+      term_mod_MENU_ARRAY_POS_START="$(($term_mod_MENU_ARRAY_POS_START + $term_ROWS))"
+      check_cursor
+      screen_render "$term_mod_MENU_ARRAY_POS_START"
+      menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
+    elif [ "$term_mod_MENU_CURSOR_POS" -lt "$(($term_ROWS - 1))" ]
+    then
+      term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_POS - $term_mod_MENU_CURSOR_POS))"
+      term_mod_MENU_CURSOR_POS="$(($term_ROWS - 1))"
+      menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
+    fi
+  fi
+}
+
+move_cursor_to_start()
+{
+  term_mod_MENU_CURSOR_POS="0"
+  term_mod_MENU_ARRAY_POS="0"
+  term_mod_MENU_ARRAY_POS_START="0"
+
+  screen_render "0"
+
+  menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
+}
+
+move_cursor_to_end()
+{
+  term_mod_MENU_CURSOR_POS="$(($term_ROWS - 1))"
+  term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_SIZE - 1))"
+
+  if [ "$term_mod_MENU_ARRAY_SIZE" -lt "$term_ROWS" ]
+  then
+    term_mod_MENU_ARRAY_POS_START="0"
+  else
+    term_mod_MENU_ARRAY_POS_START="$(($term_mod_MENU_ARRAY_SIZE - $term_ROWS))"
+  fi
+
+  screen_render "$term_mod_MENU_ARRAY_POS_START"
+  menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
+}
+
+key_loop()
+{
+  while true
+  do
+    key="$(readc)"
+
+    case "$key" in
+      "q") return 0;;
+      "esc") return 0;;
+      # "q")
+      #   if [ "$term_mod_MENU_RETURN_ENV" = "true" ]
+      #   then
+      #     return_selection
+      #   fi
+      #   exit 0
+      # ;;
+      # "esc")
+      #   if [ "$term_mod_MENU_RETURN_ENV" = "true" ]
+      #   then
+      #     return_selection
+      #   fi
+      #   exit 0
+      # ;;
+      "up") scroll_cursor "-1";;
+      "down") scroll_cursor "+1";;
+      "pageup") scroll_page "-1";;
+      "pagedown") scroll_page "+1";;
+      "home") move_cursor_to_start;;
+      "end") move_cursor_to_end;;
+      "space") select_item_toggle;;
+      "enter") return_selection;;
+      *) check_key "$key";;
+    esac
+  done
+}
+
+main()
+{
+  term_region_init
+  vars_set
+
+  if [ -n "$*" ]
+  then
+    menu_init "$@"
+  fi
+
+  term_region_clear
+  screen_render "${term_mod_MENU_ARRAY_POS_START:-"0"}"
+  menu_entry_highlight "${term_mod_MENU_CURSOR_POS:-"0"}"
+
+  if [ ! "$KEY_LOOP" = "false" ]
+  then
+    key_loop
+  fi
+
+  ENV_LIST="$(env_list "term_ROW\|term_COL\|term_mod_MENU_")"
+  env_return
+}
+
+main "$@"
