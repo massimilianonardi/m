@@ -69,20 +69,20 @@ vars_set()
 
 return_selection()
 {
-  term_mod_MENU_RETURN_KEY="$key"
-  term_mod_MENU_RETURN_ITEM="$(array term_mod_MENU_IDS get "$term_mod_MENU_ARRAY_POS")"
-  array term_mod_MENU_SELECTED_ITEMS
-  i="0"
-  n="$(array term_mod_MENU_SEL size)"
-  while [ "$i" -lt "$n" ]
-  do
-    if [ "$(array term_mod_MENU_SEL get "$i")" = "$term_mod_MENU_SEL_ITEM_TRUE_STRING" ]
-    then
-      array term_mod_MENU_SELECTED_ITEMS add "$(array term_mod_MENU_IDS get "$i")"
-    fi
-    i="$(($i + 1))"
-  done
-  term_mod_MENU_RETURN_SELECTION="$(array term_mod_MENU_SELECTED_ITEMS get)"
+  # term_mod_MENU_RETURN_KEY="$key"
+  # term_mod_MENU_RETURN_ITEM="$(array term_mod_MENU_IDS get "$term_mod_MENU_ARRAY_POS")"
+  # array term_mod_MENU_SELECTED_ITEMS
+  # i="0"
+  # n="$(array term_mod_MENU_SEL size)"
+  # while [ "$i" -lt "$n" ]
+  # do
+  #   if [ "$(array term_mod_MENU_SEL get "$i")" = "$term_mod_MENU_SEL_ITEM_TRUE_STRING" ]
+  #   then
+  #     array term_mod_MENU_SELECTED_ITEMS add "$(array term_mod_MENU_IDS get "$i")"
+  #   fi
+  #   i="$(($i + 1))"
+  # done
+  # term_mod_MENU_RETURN_SELECTION="$(array term_mod_MENU_SELECTED_ITEMS get)"
 
 
 
@@ -296,51 +296,6 @@ scroll_cursor()
   fi
 }
 
-___scroll_cursor()
-{
-  UPDATE_SCREEN="false"
-
-  term_mod_MENU_CURSOR_POS="$(($term_mod_MENU_CURSOR_POS + $1))"
-  term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_POS + $1))"
-
-  if [ "$term_mod_MENU_CURSOR_POS" -lt "0" ]
-  then
-    term_mod_MENU_ARRAY_POS_START="$(($term_mod_MENU_ARRAY_POS_START + $1))"
-    term_mod_MENU_CURSOR_POS="0"
-    UPDATE_SCREEN="true"
-  elif [ "$term_mod_MENU_CURSOR_POS" -gt "$(($term_ROWS - 1))" ]
-  then
-    term_mod_MENU_ARRAY_POS_START="$(($term_mod_MENU_ARRAY_POS_START + $1))"
-    term_mod_MENU_CURSOR_POS="$(($term_ROWS - 1))"
-    UPDATE_SCREEN="true"
-  fi
-
-  if [ "$term_mod_MENU_ARRAY_POS" -lt "0" ]
-  then
-    term_mod_MENU_ARRAY_POS=0
-  elif [ "$term_mod_MENU_ARRAY_POS" -gt "$(($term_mod_MENU_ARRAY_SIZE - 1))" ]
-  then
-    term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_SIZE - 1))"
-  fi
-
-  if [ "$term_mod_MENU_ARRAY_POS_START" -lt "0" ]
-  then
-    UPDATE_SCREEN="true"
-    term_mod_MENU_ARRAY_POS_START=0
-  elif [ "$term_mod_MENU_ARRAY_POS_START" -gt "$(($term_mod_MENU_ARRAY_SIZE - $term_ROWS))" ]
-  then
-    UPDATE_SCREEN="true"
-    term_mod_MENU_ARRAY_POS_START="$(($term_mod_MENU_ARRAY_SIZE - $term_ROWS))"
-  fi
-
-  if [ "$UPDATE_SCREEN" = true ]
-  then
-    screen_render "$term_mod_MENU_ARRAY_POS_START"
-  fi
-
-  menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
-}
-
 check_cursor()
 {
   if [ "$term_mod_MENU_CURSOR_POS" -lt "0" ]
@@ -370,7 +325,6 @@ check_cursor()
 
 scroll_page()
 {
-  # scroll_cursor $(($1 * ($term_ROWS - 1)))
   if [ "$1" -lt "0" ]
   then
     if [ "$term_mod_MENU_CURSOR_POS" = "0" ]
@@ -402,7 +356,6 @@ scroll_page()
       menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
     fi
   fi
-
 }
 
 move_cursor_to_start()
@@ -432,17 +385,6 @@ move_cursor_to_end()
   menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
 }
 
-___move_cursor_to()
-{
-  term_mod_MENU_ARRAY_POS="0"
-  term_mod_MENU_CURSOR_POS="0"
-  scroll_cursor "$1"
-  screen_render "$((term_mod_MENU_ARRAY_POS - $term_mod_MENU_CURSOR_POS))"
-
-  # term_render tput cup "$(($term_ROW0 + $term_mod_MENU_CURSOR_POS))" "$term_COL0"
-  menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
-}
-
 key_loop()
 {
   while true
@@ -450,22 +392,22 @@ key_loop()
     key="$(readc)"
 
     case "$key" in
-      # "q") exit 0;;
-      # "esc") exit 0;;
-      "q")
-        if [ "$term_mod_MENU_RETURN_ENV" = "true" ]
-        then
-          return_selection
-        fi
-        exit 0
-      ;;
-      "esc")
-        if [ "$term_mod_MENU_RETURN_ENV" = "true" ]
-        then
-          return_selection
-        fi
-        exit 0
-      ;;
+      "q") return 0;;
+      "esc") return 0;;
+      # "q")
+      #   if [ "$term_mod_MENU_RETURN_ENV" = "true" ]
+      #   then
+      #     return_selection
+      #   fi
+      #   exit 0
+      # ;;
+      # "esc")
+      #   if [ "$term_mod_MENU_RETURN_ENV" = "true" ]
+      #   then
+      #     return_selection
+      #   fi
+      #   exit 0
+      # ;;
       "up") scroll_cursor "-1";;
       "down") scroll_cursor "+1";;
       "pageup") scroll_page "-1";;
@@ -475,7 +417,6 @@ key_loop()
       "space") select_item_toggle;;
       "enter") return_selection;;
       *) check_key "$key";;
-      # *) exit 1;;
     esac
   done
 }
@@ -491,7 +432,6 @@ main()
   fi
 
   term_region_clear
-  # term_region_clear "$term_ROW0" "$term_COL0" "$term_ROWS" "$term_COLS"
   screen_render "${term_mod_MENU_ARRAY_POS_START:-"0"}"
   menu_entry_highlight "${term_mod_MENU_CURSOR_POS:-"0"}"
 
@@ -500,9 +440,8 @@ main()
     key_loop
   fi
 
-  ENV_LIST="$(env_list "term_mod_MENU_")"
+  ENV_LIST="$(env_list "term_ROW\|term_COL\|term_mod_MENU_")"
   env_return
 }
 
-# main "$@" 3>&2 2>&1 1>&3
 main "$@"

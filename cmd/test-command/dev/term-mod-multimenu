@@ -21,14 +21,11 @@ main()
   menuset id
   menuset multi
   menuset keys "b:n:m"
-  menuset header "$(printf "Menu Header - ROW 1\n---Row 2---\n---Row 3---\n\n")"
-  menuset footer "$(printf "Menu Footer - ROW 1\n---Row 2---")"
-  menuset region 5 10 20 30
 
-  export m_menu_MENU_RETURN_ENV="true"
+  export ENV_RETURN="export"
 
-  var1="$(KEY_LOOP="false"                   m_menu_CURSOR_POS_START="1" m_menu_ARRAY_POS_START="2" menucmd footer "footer 1" menucustom "$@")"
-  var2="$(KEY_LOOP="false" m_menu_COL_0="40" m_menu_CURSOR_POS_START="2" m_menu_ARRAY_POS_START="2" menucmd footer "footer 2" menucustom "$@")"
+  var1="$(KEY_LOOP="false"                   m_menu_CURSOR_POS_START="1" m_menu_ARRAY_POS_START="2" menucustom "$@")"
+  var2="$(KEY_LOOP="false" term_COL0="40" m_menu_CURSOR_POS_START="2" m_menu_ARRAY_POS_START="2" menucustom "$@")"
   # term_output echo "vars"
   # term_output eval "$var1"
   # term_output eval "$var2"
@@ -37,15 +34,15 @@ main()
   # read x
 
   # set -x
-  # while [ true ]
-  # do
+  while [ true ]
+  do
     # menucustom
     var1="$(eval "$var1" && menucustom)"
     var2="$(eval "$var2" && menucustom)"
     # menueval "var1" menucustom
     # menueval "var2" menucustom
     # read x
-  # done
+  done
   # set +x
 }
 
