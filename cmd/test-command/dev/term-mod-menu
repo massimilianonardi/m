@@ -261,6 +261,43 @@ menu_entry_highlight()
 
 scroll_cursor()
 {
+  if [ "$1" -lt "0" ]
+  then
+    if [ "$term_mod_MENU_CURSOR_POS" = "0" ] && [ "$term_mod_MENU_ARRAY_POS_START" = "0" ]
+    then
+      true
+    elif [ "$term_mod_MENU_CURSOR_POS" = "0" ] && [ "$term_mod_MENU_ARRAY_POS_START" -gt "0" ]
+    then
+      term_mod_MENU_ARRAY_POS_START="$(($term_mod_MENU_ARRAY_POS_START + $1))"
+      term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_POS + $1))"
+      screen_render "$term_mod_MENU_ARRAY_POS_START"
+      menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
+    else
+      term_mod_MENU_CURSOR_POS="$(($term_mod_MENU_CURSOR_POS + $1))"
+      term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_POS + $1))"
+      menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
+    fi
+  elif [ "$1" -gt "0" ]
+  then
+    if [ "$term_mod_MENU_CURSOR_POS" = "$(($term_ROWS - 1))" ] && [ "$term_mod_MENU_ARRAY_POS_START" = "$(($term_mod_MENU_ARRAY_SIZE - $term_ROWS))" ]
+    then
+      true
+    elif [ "$term_mod_MENU_CURSOR_POS" = "$(($term_ROWS - 1))" ] && [ "$term_mod_MENU_ARRAY_POS_START" -lt "$(($term_mod_MENU_ARRAY_SIZE - $term_ROWS))" ]
+    then
+      term_mod_MENU_ARRAY_POS_START="$(($term_mod_MENU_ARRAY_POS_START + $1))"
+      term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_POS + $1))"
+      screen_render "$term_mod_MENU_ARRAY_POS_START"
+      menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
+    else
+      term_mod_MENU_CURSOR_POS="$(($term_mod_MENU_CURSOR_POS + $1))"
+      term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_POS + $1))"
+      menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
+    fi
+  fi
+}
+
+___scroll_cursor()
+{
   UPDATE_SCREEN="false"
 
   term_mod_MENU_CURSOR_POS="$(($term_mod_MENU_CURSOR_POS + $1))"
@@ -288,9 +325,11 @@ scroll_cursor()
 
   if [ "$term_mod_MENU_ARRAY_POS_START" -lt "0" ]
   then
+    UPDATE_SCREEN="true"
     term_mod_MENU_ARRAY_POS_START=0
   elif [ "$term_mod_MENU_ARRAY_POS_START" -gt "$(($term_mod_MENU_ARRAY_SIZE - $term_ROWS))" ]
   then
+    UPDATE_SCREEN="true"
     term_mod_MENU_ARRAY_POS_START="$(($term_mod_MENU_ARRAY_SIZE - $term_ROWS))"
   fi
 
@@ -304,10 +343,67 @@ scroll_cursor()
 
 scroll_page()
 {
-  scroll_cursor $(($1 * ($term_ROWS - 1)))
+  # scroll_cursor $(($1 * ($term_ROWS - 1)))
+  if [ "$1" -lt "0" ]
+  then
+    if [ "$term_mod_MENU_CURSOR_POS" = "0" ]
+    then
+      term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_POS - $term_ROWS))"
+      term_mod_MENU_ARRAY_POS_START="$(($term_mod_MENU_ARRAY_POS_START - $term_ROWS))"
+      screen_render "$term_mod_MENU_ARRAY_POS_START"
+      menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
+    elif [ "$term_mod_MENU_CURSOR_POS" -gt "0" ]
+    then
+      term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_POS - $term_mod_MENU_CURSOR_POS))"
+      term_mod_MENU_CURSOR_POS="0"
+      menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
+    fi
+  elif [ "$1" -gt "0" ]
+  then
+    if [ "$term_mod_MENU_CURSOR_POS" = "$(($term_ROWS - 1))" ]
+    then
+      term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_POS + $term_ROWS))"
+      term_mod_MENU_ARRAY_POS_START="$(($term_mod_MENU_ARRAY_POS_START + $term_ROWS))"
+      screen_render "$term_mod_MENU_ARRAY_POS_START"
+      menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
+    elif [ "$term_mod_MENU_CURSOR_POS" -lt "$(($term_ROWS - 1))" ]
+    then
+      term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_POS - $term_mod_MENU_CURSOR_POS))"
+      term_mod_MENU_CURSOR_POS="$(($term_ROWS - 1))"
+      menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
+    fi
+  fi
+
 }
 
-move_cursor_to()
+move_cursor_to_start()
+{
+  term_mod_MENU_CURSOR_POS="0"
+  term_mod_MENU_ARRAY_POS="0"
+  term_mod_MENU_ARRAY_POS_START="0"
+  screen_render "0"
+
+  menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
+}
+
+move_cursor_to_end()
+{
+  if [ "$term_mod_MENU_ARRAY_SIZE" -lt "$term_ROWS" ]
+  then
+    term_mod_MENU_CURSOR_POS="$(($term_mod_MENU_ARRAY_SIZE - 1))"
+    term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_SIZE - 1))"
+    term_mod_MENU_ARRAY_POS_START="0"
+  else
+    term_mod_MENU_CURSOR_POS="$(($term_mod_MENU_ARRAY_SIZE - 1))"
+    term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_SIZE - 1))"
+    term_mod_MENU_ARRAY_POS_START="$(($term_mod_MENU_ARRAY_SIZE - $term_ROWS - 1))"
+  fi
+
+  screen_render "$term_mod_MENU_ARRAY_POS_START"
+  menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
+}
+
+___move_cursor_to()
 {
   term_mod_MENU_ARRAY_POS="0"
   term_mod_MENU_CURSOR_POS="0"
@@ -345,8 +441,8 @@ key_loop()
       "down") scroll_cursor "+1";;
       "pageup") scroll_page "-1";;
       "pagedown") scroll_page "+1";;
-      "home") move_cursor_to "0";;
-      "end") move_cursor_to "$(($term_mod_MENU_ARRAY_SIZE - 1))";;
+      "home") move_cursor_to_start;;
+      "end") move_cursor_to_end;;
       "space") select_item_toggle;;
       "enter") return_selection;;
       *) check_key "$key";;

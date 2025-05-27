@@ -92,3 +92,21 @@
 2025/05/27-14:03:05.662 16e3e compacted to: files[ 0 0 1 0 0 0 0 ]
 2025/05/27-14:03:05.662 16e3e Delete type=2 #32
 2025/05/27-14:03:05.663 16e3e Delete type=2 #34
+2025/05/27-14:31:43.845 19bbe Level-0 table #37: started
+2025/05/27-14:31:43.935 19bbe Level-0 table #37: 1810572 bytes OK
+2025/05/27-14:31:43.940 19bbe Delete type=0 #33
+2025/05/27-14:39:55.709 19bce Compacting 1@1 + 1@2 files
+2025/05/27-14:39:55.721 19bce Generated table #38@1: 39 keys, 8909 bytes
+2025/05/27-14:39:55.721 19bce Compacted 1@1 + 1@2 files => 8909 bytes
+2025/05/27-14:39:55.723 19bce compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/05/27-14:39:55.724 19bce Delete type=2 #37
+2025/05/27-14:39:55.724 19bce Delete type=2 #35
+2025/05/27-15:12:49.762 24da1 Level-0 table #40: started
+2025/05/27-15:12:49.843 24da1 Level-0 table #40: 1857635 bytes OK
+2025/05/27-15:12:49.848 24da1 Delete type=0 #36
+2025/05/27-15:19:30.858 24da1 Compacting 1@1 + 1@2 files
+2025/05/27-15:19:30.869 24da1 Generated table #41@1: 36 keys, 5473 bytes
+2025/05/27-15:19:30.869 24da1 Compacted 1@1 + 1@2 files => 5473 bytes
+2025/05/27-15:19:30.898 24da1 compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/05/27-15:19:30.898 24da1 Delete type=2 #38
+2025/05/27-15:19:30.898 24da1 Delete type=2 #40

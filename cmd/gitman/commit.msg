@@ -1,1 +1,1 @@
-term-mod head, menu, lib reworked
+term-mod menu fixing page up, page down, home, end

@@ -8,7 +8,7 @@ test_term()
   . menu.lib.sh
 
   menu_entries="id_0=Text_0 id_1=Text_1 id_2=Text_2 id_3=Text_3 id_4=Text_4 id_5=Text_5"
-  # menu_entries="$(ls /usr/share/applications)"
+  menu_entries="$(ls /usr/share/applications)"
 
   term_region 2 10 35 25
 
@@ -37,8 +37,8 @@ test_term()
 
   # menuexec "" "" "" term-mod menu $menu_entries
   # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
-  # res="$(term-mod menu $menu_entries)"
-  # echo "res=$res"
+  res="$(term-mod menu $menu_entries)"
+  echo "res=$res"
 
   # term-mod head "$MENU_HEADER" "$MENU_FOOTER" term-mod-menu $menu_entries
   # res="$(term-mod head "$MENU_HEADER" "$MENU_FOOTER" term-mod-menu $menu_entries)"
