@@ -1,1 +1,1 @@
-term-mod menu fixing page up, page down, home, end
+term-mod menu fixed page up+down, fixing home+end

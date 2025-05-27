@@ -341,6 +341,33 @@ ___scroll_cursor()
   menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
 }
 
+check_cursor()
+{
+  if [ "$term_mod_MENU_CURSOR_POS" -lt "0" ]
+  then
+    term_mod_MENU_CURSOR_POS="0"
+  elif [ "$term_mod_MENU_CURSOR_POS" -gt "$(($term_ROWS - 1))" ]
+  then
+    term_mod_MENU_CURSOR_POS="$(($term_ROWS - 1))"
+  fi
+
+  if [ "$term_mod_MENU_ARRAY_POS" -lt "0" ]
+  then
+    term_mod_MENU_ARRAY_POS=0
+  elif [ "$term_mod_MENU_ARRAY_POS" -gt "$(($term_mod_MENU_ARRAY_SIZE - 1))" ]
+  then
+    term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_SIZE - 1))"
+  fi
+
+  if [ "$term_mod_MENU_ARRAY_POS_START" -lt "0" ]
+  then
+    term_mod_MENU_ARRAY_POS_START=0
+  elif [ "$term_mod_MENU_ARRAY_POS_START" -gt "$(($term_mod_MENU_ARRAY_SIZE - $term_ROWS))" ]
+  then
+    term_mod_MENU_ARRAY_POS_START="$(($term_mod_MENU_ARRAY_SIZE - $term_ROWS))"
+  fi
+}
+
 scroll_page()
 {
   # scroll_cursor $(($1 * ($term_ROWS - 1)))
@@ -350,6 +377,7 @@ scroll_page()
     then
       term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_POS - $term_ROWS))"
       term_mod_MENU_ARRAY_POS_START="$(($term_mod_MENU_ARRAY_POS_START - $term_ROWS))"
+      check_cursor
       screen_render "$term_mod_MENU_ARRAY_POS_START"
       menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
     elif [ "$term_mod_MENU_CURSOR_POS" -gt "0" ]
@@ -364,6 +392,7 @@ scroll_page()
     then
       term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_POS + $term_ROWS))"
       term_mod_MENU_ARRAY_POS_START="$(($term_mod_MENU_ARRAY_POS_START + $term_ROWS))"
+      check_cursor
       screen_render "$term_mod_MENU_ARRAY_POS_START"
       menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
     elif [ "$term_mod_MENU_CURSOR_POS" -lt "$(($term_ROWS - 1))" ]
