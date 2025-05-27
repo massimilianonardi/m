@@ -6,9 +6,35 @@
 
 #-------------------------------------------------------------------------------
 
+vars_init()
+{
+  if [ -z "$term_mod_ROW0" ]
+  then
+    export term_mod_ROW0="0"
+  fi
+
+  if [ -z "$term_mod_COL0" ]
+  then
+    export term_mod_COL0="0"
+  fi
+
+  if [ -z "$term_mod_ROWS" ]
+  then
+    export term_mod_ROWS="$TERM_ROWS"
+  fi
+
+  if [ -z "$term_mod_COLS" ]
+  then
+    export term_mod_COLS="$TERM_COLS"
+  fi
+}
+
+#-------------------------------------------------------------------------------
+
 main()
 {
   term_screen_init
+  vars_init
   mod="$1"
   shift
   term-mod-"$mod" "$@"
@@ -17,5 +43,5 @@ main()
 
 #-------------------------------------------------------------------------------
 
-main "$@" 3>&2 2>&1 1>&3
-# main "$@"
+# main "$@" 3>&2 2>&1 1>&3
+main "$@"

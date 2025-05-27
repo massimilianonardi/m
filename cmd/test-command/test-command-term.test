@@ -37,14 +37,14 @@ test_term()
 
   # menuexec "" "" "" term-mod menu $menu_entries
   # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
-  # res="$(term-mod menu $menu_entries)"
-  # echo "res=$res"
+  res="$(term-mod menu $menu_entries)"
+  echo "res=$res"
 
   # term-mod head "$MENU_HEADER" "$MENU_FOOTER" term-mod-menu $menu_entries
   # res="$(term-mod head "$MENU_HEADER" "$MENU_FOOTER" term-mod-menu $menu_entries)"
   # echo "res=$res"
 
-  term-mod multimenu $menu_entries
+  # term-mod multimenu $menu_entries
   # res="$(term-mod multimenu $menu_entries)"
   # echo "res=$res"
   # menuexec "" "" "" term-mod multimenu $menu_entries

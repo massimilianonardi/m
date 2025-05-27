@@ -2,6 +2,27 @@
 
 #-------------------------------------------------------------------------------
 
+menueval()
+{
+  set -- "$1" $(eval eval \"\$$1\" && shift && "$@")
+#   set -- "$1" \
+#   $(
+# eval echo "arg1=\$$1"
+# eval echo "arg1=\$$1" 1>&2
+# read x
+#     if eval [ -n "\$$1" ]
+#     then
+#       # eval eval \"\$$1\"
+#       eval eval \$$1
+#     fi
+#     shift
+#     "$@"
+#   )
+  eval $1=\"$(shift && echo "$@")\"
+}
+
+#-------------------------------------------------------------------------------
+
 menuexec()
 {
   if [ "$#" -lt "3" ]
@@ -54,7 +75,7 @@ menuread()
   fi
 
   # set -- "${1:-"key"}" "${2:-"res"}" "${3:-"selection"}" $(shift 3; menu "$@")
-  set -- "${1:-"key"}" "${2:-"res"}" "${3:-"selection"}" $(shift 3; MENU_CUSTOM_KEYS="${MENU_CUSTOM_KEYS:-"unknown"}" menu "$@")
+  set -- "${1:-"key"}" "${2:-"res"}" "${3:-"selection"}" $(shift 3; term_mod_MENU_CUSTOM_KEYS="${term_mod_MENU_CUSTOM_KEYS:-"unknown"}" menu "$@")
 
   eval "$1=${4}"
   eval "$2=${5}"
@@ -74,19 +95,19 @@ menuset()
   case "$1" in
     "multi")
       shift
-      export MENU_MULTISELECTION="true"
+      export term_mod_MENU_MULTISELECTION="true"
     ;;
     "nomulti")
       shift
-      export MENU_MULTISELECTION="false"
+      export term_mod_MENU_MULTISELECTION="false"
     ;;
     "id")
       shift
-      export MENU_ID="true"
+      export term_mod_MENU_ID="true"
     ;;
     "noid")
       shift
-      export MENU_ID="false"
+      export term_mod_MENU_ID="false"
     ;;
     "keys")
       shift
@@ -96,43 +117,18 @@ menuset()
         return 1
       fi
 
-      export MENU_CUSTOM_KEYS="$1"
-    ;;
-    "header")
-      shift
-
-      if [ "$#" -lt "1" ]
-      then
-        return 1
-      fi
-
-      export MENU_HEADER="$1"
-    ;;
-    "footer")
-      shift
-
-      if [ "$#" -lt "1" ]
-      then
-        return 1
-      fi
-
-      export MENU_FOOTER="$1"
-    ;;
-    "region")
-      shift
-
-      if [ "$#" -lt "4" ]
-      then
-        return 1
-      fi
-
-      export ROW_0="$1"
-      export COL_0="$2"
-      export ROWS="$3"
-      export COLS="$4"
+      export term_mod_MENU_CUSTOM_KEYS="$1"
     ;;
     *) exit 1;;
   esac
+}
+
+#-------------------------------------------------------------------------------
+
+menucmdshift()
+{
+  shift "$(($1 + 1))"
+  "$@"
 }
 
 #-------------------------------------------------------------------------------
@@ -142,19 +138,19 @@ menucmd()
   case "$1" in
     "multi")
       shift
-      MENU_MULTISELECTION="true" "$@"
+      term_mod_MENU_MULTISELECTION="true" "$@"
     ;;
     "nomulti")
       shift
-      MENU_MULTISELECTION="false" "$@"
+      term_mod_MENU_MULTISELECTION="false" "$@"
     ;;
     "id")
       shift
-      MENU_ID="true" "$@"
+      term_mod_MENU_ID="true" "$@"
     ;;
     "noid")
       shift
-      MENU_ID="false" "$@"
+      term_mod_MENU_ID="false" "$@"
     ;;
     "keys")
       shift
@@ -164,51 +160,7 @@ menucmd()
         return 1
       fi
 
-      MENU_CUSTOM_KEYS="$1"
-      shift
-      MENU_CUSTOM_KEYS="$MENU_CUSTOM_KEYS" "$@"
-    ;;
-    "header")
-      shift
-
-      if [ "$#" -lt "1" ]
-      then
-        return 1
-      fi
-
-      MENU_HEADER="$1"
-      shift
-      MENU_HEADER="$MENU_HEADER" "$@"
-    ;;
-    "footer")
-      shift
-
-      if [ "$#" -lt "1" ]
-      then
-        return 1
-      fi
-
-      MENU_FOOTER="$1"
-      shift
-      MENU_FOOTER="$MENU_FOOTER" "$@"
-    ;;
-    "region")
-      shift
-
-      if [ "$#" -lt "4" ]
-      then
-        return 1
-      fi
-
-      ROW_0="$1"
-      shift
-      COL_0="$1"
-      shift
-      ROWS="$1"
-      shift
-      COLS="$1"
-      shift
-      ROW_0="$ROW_0" COL_0="$COL_0" ROWS="$ROWS" COLS="$COLS" "$@"
+      term_mod_MENU_CUSTOM_KEYS="$1" menucmdshift "1" "$@"
     ;;
     *) exit 1;;
   esac
