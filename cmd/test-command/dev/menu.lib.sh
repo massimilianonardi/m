@@ -75,7 +75,7 @@ menuread()
   fi
 
   # set -- "${1:-"key"}" "${2:-"res"}" "${3:-"selection"}" $(shift 3; menu "$@")
-  set -- "${1:-"key"}" "${2:-"res"}" "${3:-"selection"}" $(shift 3; m_menu_MENU_CUSTOM_KEYS="${m_menu_MENU_CUSTOM_KEYS:-"unknown"}" menu "$@")
+  set -- "${1:-"key"}" "${2:-"res"}" "${3:-"selection"}" $(shift 3; term_mod_MENU_CUSTOM_KEYS="${term_mod_MENU_CUSTOM_KEYS:-"unknown"}" menu "$@")
 
   eval "$1=${4}"
   eval "$2=${5}"
@@ -95,19 +95,19 @@ menuset()
   case "$1" in
     "multi")
       shift
-      export m_menu_MENU_MULTISELECTION="true"
+      export term_mod_MENU_MULTISELECTION="true"
     ;;
     "nomulti")
       shift
-      export m_menu_MENU_MULTISELECTION="false"
+      export term_mod_MENU_MULTISELECTION="false"
     ;;
     "id")
       shift
-      export m_menu_MENU_ID="true"
+      export term_mod_MENU_ID="true"
     ;;
     "noid")
       shift
-      export m_menu_MENU_ID="false"
+      export term_mod_MENU_ID="false"
     ;;
     "keys")
       shift
@@ -117,40 +117,7 @@ menuset()
         return 1
       fi
 
-      export m_menu_MENU_CUSTOM_KEYS="$1"
-    ;;
-    "header")
-      shift
-
-      if [ "$#" -lt "1" ]
-      then
-        return 1
-      fi
-
-      export m_menu_MENU_HEADER="$1"
-    ;;
-    "footer")
-      shift
-
-      if [ "$#" -lt "1" ]
-      then
-        return 1
-      fi
-
-      export m_menu_MENU_FOOTER="$1"
-    ;;
-    "region")
-      shift
-
-      if [ "$#" -lt "4" ]
-      then
-        return 1
-      fi
-
-      export m_menu_ROW_0="$1"
-      export m_menu_COL_0="$2"
-      export m_menu_ROWS="$3"
-      export m_menu_COLS="$4"
+      export term_mod_MENU_CUSTOM_KEYS="$1"
     ;;
     *) exit 1;;
   esac
@@ -171,19 +138,19 @@ menucmd()
   case "$1" in
     "multi")
       shift
-      m_menu_MENU_MULTISELECTION="true" "$@"
+      term_mod_MENU_MULTISELECTION="true" "$@"
     ;;
     "nomulti")
       shift
-      m_menu_MENU_MULTISELECTION="false" "$@"
+      term_mod_MENU_MULTISELECTION="false" "$@"
     ;;
     "id")
       shift
-      m_menu_MENU_ID="true" "$@"
+      term_mod_MENU_ID="true" "$@"
     ;;
     "noid")
       shift
-      m_menu_MENU_ID="false" "$@"
+      term_mod_MENU_ID="false" "$@"
     ;;
     "keys")
       shift
@@ -193,37 +160,7 @@ menucmd()
         return 1
       fi
 
-      m_menu_MENU_CUSTOM_KEYS="$1" menucmdshift "1" "$@"
-    ;;
-    "header")
-      shift
-
-      if [ "$#" -lt "1" ]
-      then
-        return 1
-      fi
-
-      m_menu_MENU_HEADER="$1" menucmdshift "1" "$@"
-    ;;
-    "footer")
-      shift
-
-      if [ "$#" -lt "1" ]
-      then
-        return 1
-      fi
-
-      m_menu_MENU_FOOTER="$1" menucmdshift "1" "$@"
-    ;;
-    "region")
-      shift
-
-      if [ "$#" -lt "4" ]
-      then
-        return 1
-      fi
-
-      m_menu_ROW_0="$1" m_menu_COL_0="$2" m_menu_ROWS="$3" m_menu_COLS="$4" menucmdshift "4" "$@"
+      term_mod_MENU_CUSTOM_KEYS="$1" menucmdshift "1" "$@"
     ;;
     *) exit 1;;
   esac

@@ -83,6 +83,118 @@ term_exit()
 
 #-------------------------------------------------------------------------------
 
+term_region_init()
+{
+  if [ -z "$TERM_ROWS" ] || [ -z "$TERM_COLS" ]
+  then
+    saved_tty_settings=$(stty -g)
+    stty -echo
+    term_render tput sc
+    term_render tput smcup
+    term_render tput clear
+    term_screen_size_update
+    term_render tput clear
+    term_render tput rmcup
+    term_render tput rc
+    stty "$saved_tty_settings"
+  fi
+
+  if [ -z "$term_ROW0" ]
+  then
+    export term_ROW0="0"
+  fi
+
+  if [ -z "$term_COL0" ]
+  then
+    export term_COL0="0"
+  fi
+
+  if [ -z "$term_ROWS" ]
+  then
+    export term_ROWS="$TERM_ROWS"
+  fi
+
+  if [ -z "$term_COLS" ]
+  then
+    export term_COLS="$TERM_COLS"
+  fi
+
+  if [ "$term_ROW0" -lt "0" ]
+  then
+    term_ROW0="0"
+  fi
+
+  if [ "$term_COL0" -lt "0" ]
+  then
+    term_COL0="0"
+  fi
+
+  if [ "$term_ROWS" -lt "0" ]
+  then
+    term_ROWS="$TERM_ROWS"
+  fi
+
+  if [ "$term_COLS" -lt "0" ]
+  then
+    term_COLS="$TERM_COLS"
+  fi
+
+  # limits
+  if [ -z "$term_ROWS_MIN" ]
+  then
+    term_ROWS_MIN="2"
+  fi
+
+  if [ -z "$term_COLS_MIN" ]
+  then
+    term_COLS_MIN="2"
+  fi
+
+  if [ "$term_ROW0" -gt "$(($TERM_ROWS - 1 - $term_ROWS_MIN))" ]
+  then
+    term_ROW0="$(($TERM_ROWS - 1 - $term_ROWS_MIN))"
+  fi
+
+  if [ "$term_COL0" -gt "$(($TERM_COLS - 1 - $term_COLS_MIN))" ]
+  then
+    term_COL0="$(($TERM_COLS - 1 - $term_COLS_MIN))"
+  fi
+
+  if [ "$(($term_ROW0 + $term_ROWS))" -gt "$TERM_ROWS" ]
+  then
+    term_ROWS="$(($TERM_ROWS - $term_ROW0))"
+  fi
+
+  if [ "$(($term_COL0 + $term_COLS))" -gt "$TERM_COLS" ]
+  then
+    term_COLS="$(($TERM_COLS - $term_COL0))"
+  fi
+}
+
+term_region()
+{
+  if [ "$#" -lt "4" ]
+  then
+    exit 1
+  fi
+
+  export term_ROW0="$1"
+  shift
+  export term_COL0="$1"
+  shift
+  export term_ROWS="$1"
+  shift
+  export term_COLS="$1"
+  shift
+
+  term_region_init
+
+  if [ "$#" -gt "0" ]
+  then
+    "$@"
+  fi
+}
+
 ___term_region_clear()
 {
 (
@@ -99,6 +211,11 @@ ___term_region_clear()
 
 term_region_clear()
 {
+  if [ "$#" -lt "4" ]
+  then
+    set -- "$term_ROW0" "$term_COL0" "$term_ROWS" "$term_COLS"
+  fi
+
   set -- "$1" "$2" "$3" "$4" "$1" "$(($1 + $3))"
   while [ "$5" -lt "$6" ]
   do
@@ -107,6 +224,8 @@ term_region_clear()
     set -- "$1" "$2" "$3" "$4" "$(($5 + 1))" "$6"
   done
 }
+
+#-------------------------------------------------------------------------------
 
 term_render_text_at()
 {
@@ -147,6 +266,16 @@ tty_get_cursor_pos()
   IFS='[;R' read -r dummy1 $1 $2 dummy2
 
   stty "$saved_tty_settings"
+}
+
+term_string_count_lines()
+{
+  if [ -z "$1" ]
+  then
+    return 1
+  fi
+
+  eval echo "\$(($(printf "${1}" | wc -l) + 1))"
 }
 
 #-------------------------------------------------------------------------------

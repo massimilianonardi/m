@@ -44,6 +44,16 @@ command:
     thus mods can be combined to create a complex tui app.
     each mod must standardize return env vars and switch off key loop
     (allows initial renders of all mods into tui and only after recall active mod with key loop)
+  - generic term mod:
+  # if not env export import, then process input args
+  # term region init
+  # vars check and set
+  # eventually clear region
+  # render
+  # cursor positioning and highlight
+  # if key loop is false, then skip key loop
+  # set dynamic env list
+  # if env export, then export vars
 --------------------------------------------------------------------------------
 https://sed.js.org/
 https://ato.pxeger.com/about

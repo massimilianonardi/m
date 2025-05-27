@@ -1,0 +1,54 @@
+#!/bin/sh
+
+#-------------------------------------------------------------------------------
+
+test_term()
+{
+  . term.lib.sh
+  . menu.lib.sh
+
+  menu_entries="id_0=Text_0 id_1=Text_1 id_2=Text_2 id_3=Text_3 id_4=Text_4 id_5=Text_5"
+  # menu_entries="$(ls /usr/share/applications)"
+
+  term_region 2 10 35 25
+
+  # export ENV_RETURN="export"
+
+  menuset id
+  menuset multi
+  menuset keys "b:n:m"
+
+  export MENU_HEADER="$(printf "Menu Header - ROW 1\n---Row 2---\n---Row 3---\n\n")"
+  export MENU_FOOTER="$(printf "Menu Footer - ROW 1\n---Row 2---")"
+
+  # menucmd id menucmd multi menucmd keys "b:n:m" \
+
+  # menuread "" "" "" $menu_entries
+  # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
+
+  # menu-fs
+  # menuexec "" "" "" menu-fs
+  # menufs "" "" "" "/home"
+  # menufs "" "" ""
+  # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
+  # fsencdec
+
+  # term-mod menu $menu_entries
+
+  # menuexec "" "" "" term-mod menu $menu_entries
+  # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
+  # res="$(term-mod menu $menu_entries)"
+  # echo "res=$res"
+
+  # term-mod head "$MENU_HEADER" "$MENU_FOOTER" term-mod-menu $menu_entries
+  # res="$(term-mod head "$MENU_HEADER" "$MENU_FOOTER" term-mod-menu $menu_entries)"
+  # echo "res=$res"
+
+  # term-mod multimenu $menu_entries
+  # res="$(term-mod multimenu $menu_entries)"
+  # echo "res=$res"
+  # menuexec "" "" "" term-mod multimenu $menu_entries
+  # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
+}
+
+#-------------------------------------------------------------------------------
