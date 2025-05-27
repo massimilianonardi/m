@@ -425,7 +425,7 @@ move_cursor_to_end()
   then
     term_mod_MENU_ARRAY_POS_START="0"
   else
-    term_mod_MENU_ARRAY_POS_START="$(($term_mod_MENU_ARRAY_SIZE - $term_ROWS - 1))"
+    term_mod_MENU_ARRAY_POS_START="$(($term_mod_MENU_ARRAY_SIZE - $term_ROWS))"
   fi
 
   screen_render "$term_mod_MENU_ARRAY_POS_START"
