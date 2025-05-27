@@ -9,9 +9,7 @@
 
 menucustom()
 {
-  term-mod-menu "$@"
-  # term-mod-menu "$@" 3>&2 2>&1 1>&3
-  # term-render-menu "$@"
+  tui-menu "$@"
 }
 
 #-------------------------------------------------------------------------------
@@ -24,8 +22,8 @@ main()
 
   export ENV_RETURN="export"
 
-  var1="$(KEY_LOOP="false"                   m_menu_CURSOR_POS_START="1" m_menu_ARRAY_POS_START="2" menucustom "$@")"
-  var2="$(KEY_LOOP="false" term_COL0="40" m_menu_CURSOR_POS_START="2" m_menu_ARRAY_POS_START="2" menucustom "$@")"
+  var1="$(KEY_LOOP="false"                menucustom "$@")"
+  var2="$(KEY_LOOP="false" term_COL0="40" menucustom "$@")"
   # term_output echo "vars"
   # term_output eval "$var1"
   # term_output eval "$var2"
@@ -37,10 +35,10 @@ main()
   while [ true ]
   do
     # menucustom
-    var1="$(eval "$var1" && menucustom)"
-    var2="$(eval "$var2" && menucustom)"
-    # menueval "var1" menucustom
-    # menueval "var2" menucustom
+    # var1="$(eval "$var1" && menucustom)"
+    # var2="$(eval "$var2" && menucustom)"
+    env_eval "var1" menucustom
+    env_eval "var2" menucustom
     # read x
   done
   # set +x

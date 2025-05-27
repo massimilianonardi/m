@@ -75,7 +75,7 @@ menuread()
   fi
 
   # set -- "${1:-"key"}" "${2:-"res"}" "${3:-"selection"}" $(shift 3; menu "$@")
-  set -- "${1:-"key"}" "${2:-"res"}" "${3:-"selection"}" $(shift 3; term_mod_MENU_CUSTOM_KEYS="${term_mod_MENU_CUSTOM_KEYS:-"unknown"}" menu "$@")
+  set -- "${1:-"key"}" "${2:-"res"}" "${3:-"selection"}" $(shift 3; tui_MENU_CUSTOM_KEYS="${tui_MENU_CUSTOM_KEYS:-"unknown"}" menu "$@")
 
   eval "$1=${4}"
   eval "$2=${5}"
@@ -95,19 +95,19 @@ menuset()
   case "$1" in
     "multi")
       shift
-      export term_mod_MENU_MULTISELECTION="true"
+      export tui_MENU_MULTISELECTION="true"
     ;;
     "nomulti")
       shift
-      export term_mod_MENU_MULTISELECTION="false"
+      export tui_MENU_MULTISELECTION="false"
     ;;
     "id")
       shift
-      export term_mod_MENU_ID="true"
+      export tui_MENU_ID="true"
     ;;
     "noid")
       shift
-      export term_mod_MENU_ID="false"
+      export tui_MENU_ID="false"
     ;;
     "keys")
       shift
@@ -117,7 +117,7 @@ menuset()
         return 1
       fi
 
-      export term_mod_MENU_CUSTOM_KEYS="$1"
+      export tui_MENU_CUSTOM_KEYS="$1"
     ;;
     *) exit 1;;
   esac
@@ -138,19 +138,19 @@ menucmd()
   case "$1" in
     "multi")
       shift
-      term_mod_MENU_MULTISELECTION="true" "$@"
+      tui_MENU_MULTISELECTION="true" "$@"
     ;;
     "nomulti")
       shift
-      term_mod_MENU_MULTISELECTION="false" "$@"
+      tui_MENU_MULTISELECTION="false" "$@"
     ;;
     "id")
       shift
-      term_mod_MENU_ID="true" "$@"
+      tui_MENU_ID="true" "$@"
     ;;
     "noid")
       shift
-      term_mod_MENU_ID="false" "$@"
+      tui_MENU_ID="false" "$@"
     ;;
     "keys")
       shift
@@ -160,7 +160,7 @@ menucmd()
         return 1
       fi
 
-      term_mod_MENU_CUSTOM_KEYS="$1" menucmdshift "1" "$@"
+      tui_MENU_CUSTOM_KEYS="$1" menucmdshift "1" "$@"
     ;;
     *) exit 1;;
   esac
