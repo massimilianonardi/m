@@ -53,9 +53,11 @@ EOF
       "[C") key="right";;
       "[D") key="left";;
       "[E") key="keypad_5_2";;
-      "[F") key="end_2";;
+      "[F") key="end";;
+      # "[F") key="end_2";;
       "[G") key="keypad_5";;
-      "[H") key="home_2";;
+      "[H") key="home";;
+      # "[H") key="home_2";;
       "[1P") key="f1_2";;
       "[1Q") key="f2_2";;
       "[1R") key="f3_2";;
@@ -67,8 +69,10 @@ EOF
       "[4~") key="end";;
       "[5~") key="pageup";;
       "[6~") key="pagedown";;
-      "[7~") key="home_3";;
-      "[8~") key="end_3";;
+      "[7~") key="home";;
+      # "[7~") key="home_3";;
+      "[8~") key="end";;
+      # "[8~") key="end_3";;
       # "[9~") key="unknown_[9~";;
       "[10~") key="f0";;
       "[11~") key="f1";;

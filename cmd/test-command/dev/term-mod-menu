@@ -410,6 +410,7 @@ move_cursor_to_start()
   term_mod_MENU_CURSOR_POS="0"
   term_mod_MENU_ARRAY_POS="0"
   term_mod_MENU_ARRAY_POS_START="0"
+
   screen_render "0"
 
   menu_entry_highlight "$term_mod_MENU_CURSOR_POS"
@@ -417,14 +418,13 @@ move_cursor_to_start()
 
 move_cursor_to_end()
 {
+  term_mod_MENU_CURSOR_POS="$(($term_ROWS - 1))"
+  term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_SIZE - 1))"
+
   if [ "$term_mod_MENU_ARRAY_SIZE" -lt "$term_ROWS" ]
   then
-    term_mod_MENU_CURSOR_POS="$(($term_mod_MENU_ARRAY_SIZE - 1))"
-    term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_SIZE - 1))"
     term_mod_MENU_ARRAY_POS_START="0"
   else
-    term_mod_MENU_CURSOR_POS="$(($term_mod_MENU_ARRAY_SIZE - 1))"
-    term_mod_MENU_ARRAY_POS="$(($term_mod_MENU_ARRAY_SIZE - 1))"
     term_mod_MENU_ARRAY_POS_START="$(($term_mod_MENU_ARRAY_SIZE - $term_ROWS - 1))"
   fi
 
