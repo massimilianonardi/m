@@ -426,10 +426,11 @@ main()
   term_region_init
   vars_set
 
-  if [ -n "$*" ]
-  then
-    menu_init "$@"
-  fi
+  # if [ -n "$*" ]
+  # then
+  #   menu_init "$@"
+  # fi
+  env_import menu_init "$@"
 
   term_region_clear
   screen_render "${tui_MENU_ARRAY_POS_START:-"0"}"

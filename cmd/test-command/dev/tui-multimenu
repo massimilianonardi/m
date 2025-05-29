@@ -38,8 +38,10 @@ main()
     # menucustom
     # var1="$(eval "$var1" && menucustom)"
     # var2="$(eval "$var2" && menucustom)"
-    env_eval "var1" menucustom
-    env_eval "var2" menucustom
+    env_eval "var1" tui-menu "$@"
+    env_eval "var2" tui-menu "$@"
+    # env_eval "var1" tui-menu
+    # env_eval "var2" tui-menu
     # read x
   done
   # set +x

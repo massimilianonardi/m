@@ -23,7 +23,7 @@ term_error()
 
 #-------------------------------------------------------------------------------
 
-term_screen_init()
+term_init()
 {
   if [ ! -t 0 ]
   then
@@ -31,16 +31,31 @@ term_screen_init()
     exit 1
   fi
 
+  term_screen_init
+  trap "term_screen_reset; exit 2" INT QUIT TERM HUP PIPE ABRT TSTP
+  term_screen_size_update
+}
+
+term_exit()
+{
+  term_screen_reset
+
+  if [ -z "$1" ]
+  then
+    exit 1
+  else
+    exit "$1"
+  fi
+}
+
+term_screen_init()
+{
   saved_tty_settings=$(stty -g)
   stty -echo
 
   term_render tput sc
   term_render tput smcup
   term_render tput clear
-
-  trap "term_screen_reset; exit 2" INT QUIT TERM HUP PIPE ABRT TSTP
-
-  term_screen_size_update
 }
 
 term_screen_reset()
@@ -69,34 +84,15 @@ term_screen_size_update()
   export TERM_COLS="$(tput cols)"
 }
 
-term_exit()
-{
-  term_screen_reset
-
-  if [ -z "$1" ]
-  then
-    exit 1
-  else
-    exit "$1"
-  fi
-}
-
 #-------------------------------------------------------------------------------
 
 term_region_init()
 {
   if [ -z "$TERM_ROWS" ] || [ -z "$TERM_COLS" ]
   then
-    saved_tty_settings=$(stty -g)
-    stty -echo
-    term_render tput sc
-    term_render tput smcup
-    term_render tput clear
+    term_screen_init
     term_screen_size_update
-    term_render tput clear
-    term_render tput rmcup
-    term_render tput rc
-    stty "$saved_tty_settings"
+    term_screen_reset
   fi
 
   if [ -z "$term_ROW0" ]

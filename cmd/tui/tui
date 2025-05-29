@@ -8,7 +8,7 @@
 
 main()
 {
-  term_screen_init
+  term_init
   term_region_init
   mod="$1"
   shift
