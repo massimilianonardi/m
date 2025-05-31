@@ -80,6 +80,12 @@ key_loop()
       return 0
     fi
 
+    # if res is null then q or esc was pressed
+    # else enter was pressed (space for toggle is handled by tui-menu internally)
+    # then add returned selection to global selection and if res is a directory,
+    # then load newly selected dir and find a way to pass that dir selection to next call to tui-menu
+    # a possible way is to save all tui-menu state for each browsed dir, but may lead to huge memory usage
+
     case "$key" in
       "q") return 0;;
       "esc") return 0;;
