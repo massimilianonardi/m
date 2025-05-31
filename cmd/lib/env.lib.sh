@@ -132,10 +132,11 @@ env_return()
 
 env_import()
 {
-  if [ -z "$ENV_IMPORT" ]
-  then
-    "$@"
-  fi
+  [ -n "$ENV_IMPORT" ]
+  # if [ -z "$ENV_IMPORT" ]
+  # then
+  #   "$@"
+  # fi
 }
 
 #-------------------------------------------------------------------------------

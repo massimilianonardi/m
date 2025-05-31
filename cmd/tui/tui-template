@@ -1,0 +1,67 @@
+#!/bin/sh
+
+#-------------------------------------------------------------------------------
+
+. env.lib.sh
+. term.lib.sh
+
+#-------------------------------------------------------------------------------
+
+env_defaults()
+{
+  true
+  # set proper initial variables values
+}
+
+args_init()
+{
+  true
+  # process args "$@"
+}
+
+render()
+{
+  true
+  # only render inside region
+}
+
+key_default()
+{
+  true
+  # handle keys not explicitly mapped
+}
+
+key_q()
+{
+  return 1
+  # exits from key loop
+}
+
+key_esc()
+{
+  return 1
+  # exits from key loop
+}
+
+key_mykey()
+{
+  true
+  # handle explicitly mapped "mykey"
+}
+
+key_loop()
+{
+  true
+  # process key presses
+}
+
+env_list_get()
+{
+  true
+  # echo "myvar1 myvar2 myvar3"
+  # env_list "term_TEMPLATE_\|custom_var_pattern"
+}
+
+#-------------------------------------------------------------------------------
+
+. tui-main.src.sh

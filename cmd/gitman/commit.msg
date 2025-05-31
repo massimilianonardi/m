@@ -1,1 +1,1 @@
-term_init function
+tui main + template to quickly build new tui modules
