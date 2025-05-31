@@ -80,6 +80,12 @@ key_loop()
       return 0
     fi
 
+    if [ ! "$key" = "enter" ]
+    then
+      # return key and selection to caller to do custom action on selection
+      return 0
+    fi
+
     # if res is null then q or esc was pressed
     # else enter was pressed (space for toggle is handled by tui-menu internally)
     # then add returned selection to global selection and if res is a directory,
