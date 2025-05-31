@@ -21,6 +21,9 @@ env_init()
   args_init "$@"
 }
 
+#-------------------------------------------------------------------------------
+
+exist_function key_loop || \
 key_loop()
 {
   while true

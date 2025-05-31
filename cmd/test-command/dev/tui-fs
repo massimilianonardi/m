@@ -10,6 +10,48 @@
 
 #-------------------------------------------------------------------------------
 
+menu_dir()
+{
+  if [ ! -d "$1" ]
+  then
+    return 1
+  fi
+
+  cd "$1"
+  set -- "$(cd -L -- "$1" && pwd -L)"
+
+  array DIR_ARRAY
+
+  if [ "$(pwd)" = "/" ]
+  then
+    set -- ""
+  else
+    array DIR_ARRAY add "${1}/..=.."
+  fi
+
+  for k in ..?* .[!.]* *
+  do
+    if [ -e "$k" ]
+    then
+      # array DIR_ARRAY add "${1}/$k=$k"
+      if [ -d "$k" ]
+      then
+        array DIR_ARRAY add "${1}/$k=[D] $k"
+      elif [ -f "$k" ]
+      then
+        array DIR_ARRAY add "${1}/$k=[F] $k"
+      fi
+    fi
+  done
+
+  # eval menuread "key" "file" "selection" $(array DIR_ARRAY get)
+  # array FILE_SELECTION add "$selection"
+  #
+  # array DIR_ARRAY unset
+}
+
+#-------------------------------------------------------------------------------
+
 env_defaults()
 {
   true
@@ -18,48 +60,39 @@ env_defaults()
 
 args_init()
 {
-  true
-  # process args "$@"
+  menu_dir "$@"
 }
 
 render()
 {
-  true
-  # only render inside region
+  eval KEY_LOOP="false" tui-menu $(array DIR_ARRAY get)
 }
 
-key_default()
+key_loop()
 {
-  true
-  # handle keys not explicitly mapped
-}
+  while true
+  do
+    term_region_clear
+    eval menuexec key res selection tui-menu $(array DIR_ARRAY get)
 
-key_q()
-{
-  return 1
-  # exits from key loop
-}
+    if [ -z "$res" ]
+    then
+      return 0
+    fi
 
-key_esc()
-{
-  return 1
-  # exits from key loop
-}
-
-key_enter()
-{
-  # if dir then browse new dir, else do nothing
-  if [ -d "$file" ]
-  then
-    menu_dir "$file"
-  fi
+    case "$key" in
+      "q") return 0;;
+      "esc") return 0;;
+      # "space") select_item_toggle;;
+      "enter") menu_dir "$res";;
+      # *) check_key "$key";;
+    esac
+  done
 }
 
 env_list_get()
 {
-  true
-  # echo "myvar1 myvar2 myvar3"
-  # env_list "term_TEMPLATE_\|custom_var_pattern"
+  env_list "term_ROW\|term_COL\|term_FS_"
 }
 
 #-------------------------------------------------------------------------------
