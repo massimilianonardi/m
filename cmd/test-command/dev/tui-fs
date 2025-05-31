@@ -2,32 +2,66 @@
 
 #-------------------------------------------------------------------------------
 
-# . term.lib.sh
+. env.lib.sh
+. term.lib.sh
+
+. array.lib.sh
 . menu.lib.sh
 
 #-------------------------------------------------------------------------------
 
-menucustom()
+env_defaults()
 {
-  # term-mod-menu "$@" 3>&2 2>&1 1>&3
-  term-mod-menu "$@"
+  true
+  # set proper initial variables values
+}
+
+args_init()
+{
+  true
+  # process args "$@"
+}
+
+render()
+{
+  true
+  # only render inside region
+}
+
+key_default()
+{
+  true
+  # handle keys not explicitly mapped
+}
+
+key_q()
+{
+  return 1
+  # exits from key loop
+}
+
+key_esc()
+{
+  return 1
+  # exits from key loop
+}
+
+key_enter()
+{
+  # if dir then browse new dir, else do nothing
+  if [ -d "$file" ]
+  then
+    menu_dir "$file"
+  fi
+}
+
+env_list_get()
+{
+  true
+  # echo "myvar1 myvar2 myvar3"
+  # env_list "term_TEMPLATE_\|custom_var_pattern"
 }
 
 #-------------------------------------------------------------------------------
 
-main()
-{
-  menuset id
-  menuset multi
-  menuset keys "b:n:m"
-  menuset header "$(printf "Menu Header - ROW 1\n---Row 2---\n---Row 3---\n\n")"
-  menuset footer "$(printf "Menu Footer - ROW 1\n---Row 2---")"
-  menuset region 5 10 20 30
-
-  m_menu_CURSOR_POS_START="1" m_menu_ARRAY_POS_START="2" menucmd footer "footer 1" menucustom "$@"
-}
-
-#-------------------------------------------------------------------------------
-
-# main "$@" 3>&2 2>&1 1>&3
-main "$@"
+. tui-main.src.sh

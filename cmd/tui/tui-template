@@ -49,12 +49,6 @@ key_mykey()
   # handle explicitly mapped "mykey"
 }
 
-key_loop()
-{
-  true
-  # process key presses
-}
-
 env_list_get()
 {
   true
