@@ -86,13 +86,9 @@ key_loop()
     # then load newly selected dir and find a way to pass that dir selection to next call to tui-menu
     # a possible way is to save all tui-menu state for each browsed dir, but may lead to huge memory usage
 
-    case "$key" in
-      "q") return 0;;
-      "esc") return 0;;
-      # "space") select_item_toggle;;
-      "enter") menu_dir "$res";;
-      # *) check_key "$key";;
-    esac
+    menu_dir "$res"
+    # add returned selection to global selection
+    # get current dir selection from global selection
   done
 }
 
