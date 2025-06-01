@@ -1,1 +1,1 @@
-map associative arrays lib
+map.lib.sh associative arrays
