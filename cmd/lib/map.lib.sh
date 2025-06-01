@@ -98,7 +98,11 @@ map()
             # eval echo "\$(quote \"\$$1\")"
             # echo "$1"
             # echo "${1#*_}" | tr '_' ' '
-            echo "${1#*_}" | tr '_' ' ' | sed 's/\([0-9A-F]\{2\}\)/\\\\\\\x/gI'
+            # echo "${1#*_}" | tr '_' ' ' | sed 's/\([0-9A-F]\{2\}\)/\\\\\\x\1/gI' | xargs printf
+            # echo "${1#*_}" | tr '_' ' ' | sed 's/\(..\)/\\x\1/g' | xargs printf
+            # echo "${1#*_}" | tr '_' ' ' | xxd -r -p
+            echo "${1#*_}" | tr -d '_' | xxd -r -p
+            # echo "${1#*_}" | tr '_' ' ' | od -c
             shift
           done
         # )
