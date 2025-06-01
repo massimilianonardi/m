@@ -1,72 +1,42 @@
-2025/05/31-08:15:10.124 bf2 Reusing MANIFEST /m/src/git/m/cmd/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/MANIFEST-000001
-2025/05/31-08:15:10.125 bf2 Recovering log #54
-2025/05/31-08:15:10.229 bf2 Reusing old log /m/src/git/m/cmd/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/000054.log 
-2025/05/31-08:25:08.589 1443 Compacting 1@1 + 1@2 files
-2025/05/31-08:25:08.597 1443 Generated table #57@1: 39 keys, 10684 bytes
-2025/05/31-08:25:08.597 1443 Compacted 1@1 + 1@2 files => 10684 bytes
-2025/05/31-08:25:08.598 1443 compacted to: files[ 0 0 1 0 0 0 0 ]
-2025/05/31-08:25:08.599 1443 Delete type=2 #53
-2025/05/31-08:25:08.599 1443 Delete type=2 #55
-2025/05/31-08:32:44.406 3027 Level-0 table #59: started
-2025/05/31-08:32:44.436 3027 Level-0 table #59: 1539254 bytes OK
-2025/05/31-08:32:44.438 3027 Delete type=0 #54
-2025/05/31-09:02:51.455 6c42 Compacting 1@1 + 1@2 files
-2025/05/31-09:02:51.462 6c42 Generated table #60@1: 41 keys, 11552 bytes
-2025/05/31-09:02:51.462 6c42 Compacted 1@1 + 1@2 files => 11552 bytes
-2025/05/31-09:02:51.463 6c42 compacted to: files[ 0 0 1 0 0 0 0 ]
-2025/05/31-09:02:51.463 6c42 Delete type=2 #57
-2025/05/31-09:02:51.463 6c42 Delete type=2 #59
-2025/05/31-09:08:48.859 6c42 Level-0 table #62: started
-2025/05/31-09:08:48.893 6c42 Level-0 table #62: 1508909 bytes OK
-2025/05/31-09:08:48.895 6c42 Delete type=0 #58
-2025/05/31-09:25:45.056 6e00 Compacting 1@1 + 1@2 files
-2025/05/31-09:25:45.061 6e00 Generated table #63@1: 41 keys, 11190 bytes
-2025/05/31-09:25:45.061 6e00 Compacted 1@1 + 1@2 files => 11190 bytes
-2025/05/31-09:25:45.062 6e00 compacted to: files[ 0 0 1 0 0 0 0 ]
-2025/05/31-09:25:45.062 6e00 Delete type=2 #60
-2025/05/31-09:25:45.062 6e00 Delete type=2 #62
-2025/05/31-09:32:53.887 6e00 Level-0 table #65: started
-2025/05/31-09:32:53.913 6e00 Level-0 table #65: 1464111 bytes OK
-2025/05/31-09:32:53.915 6e00 Delete type=0 #61
-2025/05/31-09:34:39.131 6e00 Compacting 1@1 + 1@2 files
-2025/05/31-09:34:39.136 6e00 Generated table #66@1: 41 keys, 12580 bytes
-2025/05/31-09:34:39.136 6e00 Compacted 1@1 + 1@2 files => 12580 bytes
-2025/05/31-09:34:39.136 6e00 compacted to: files[ 0 0 1 0 0 0 0 ]
-2025/05/31-09:34:39.137 6e00 Delete type=2 #65
-2025/05/31-09:34:39.137 6e00 Delete type=2 #63
-2025/05/31-10:45:33.350 7fa1 Level-0 table #68: started
-2025/05/31-10:45:33.376 7fa1 Level-0 table #68: 1486329 bytes OK
-2025/05/31-10:45:33.378 7fa1 Delete type=0 #64
-2025/05/31-10:50:15.064 a32a Compacting 1@1 + 1@2 files
-2025/05/31-10:50:15.070 a32a Generated table #69@1: 41 keys, 11180 bytes
-2025/05/31-10:50:15.070 a32a Compacted 1@1 + 1@2 files => 11180 bytes
-2025/05/31-10:50:15.070 a32a compacted to: files[ 0 0 1 0 0 0 0 ]
-2025/05/31-10:50:15.071 a32a Delete type=2 #66
-2025/05/31-10:50:15.071 a32a Delete type=2 #68
-2025/05/31-11:04:41.213 a479 Level-0 table #71: started
-2025/05/31-11:04:41.240 a479 Level-0 table #71: 1482248 bytes OK
-2025/05/31-11:04:41.243 a479 Delete type=0 #67
-2025/05/31-11:15:21.395 b608 Compacting 1@1 + 1@2 files
-2025/05/31-11:15:21.400 b608 Generated table #72@1: 41 keys, 11544 bytes
-2025/05/31-11:15:21.400 b608 Compacted 1@1 + 1@2 files => 11544 bytes
-2025/05/31-11:15:21.401 b608 compacted to: files[ 0 0 1 0 0 0 0 ]
-2025/05/31-11:15:21.401 b608 Delete type=2 #71
-2025/05/31-11:15:21.401 b608 Delete type=2 #69
-2025/05/31-11:27:04.392 bbce Level-0 table #74: started
-2025/05/31-11:27:04.432 bbce Level-0 table #74: 1484933 bytes OK
-2025/05/31-11:27:04.434 bbce Delete type=0 #70
-2025/05/31-11:49:35.048 c92d Compacting 1@1 + 1@2 files
-2025/05/31-11:49:35.053 c92d Generated table #75@1: 41 keys, 10360 bytes
-2025/05/31-11:49:35.053 c92d Compacted 1@1 + 1@2 files => 10360 bytes
-2025/05/31-11:49:35.053 c92d compacted to: files[ 0 0 1 0 0 0 0 ]
-2025/05/31-11:49:35.053 c92d Delete type=2 #72
-2025/05/31-11:49:35.053 c92d Delete type=2 #74
-2025/05/31-12:14:30.609 fea2 Level-0 table #77: started
-2025/05/31-12:14:30.637 fea2 Level-0 table #77: 1683121 bytes OK
-2025/05/31-12:14:30.639 fea2 Delete type=0 #73
-2025/05/31-12:21:36.559 10b7d Compacting 1@1 + 1@2 files
-2025/05/31-12:21:36.564 10b7d Generated table #78@1: 41 keys, 10386 bytes
-2025/05/31-12:21:36.564 10b7d Compacted 1@1 + 1@2 files => 10386 bytes
-2025/05/31-12:21:36.565 10b7d compacted to: files[ 0 0 1 0 0 0 0 ]
-2025/05/31-12:21:36.565 10b7d Delete type=2 #75
-2025/05/31-12:21:36.565 10b7d Delete type=2 #77
+2025/06/01-10:05:42.199 bff Reusing MANIFEST /m/src/git/m/cmd/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/MANIFEST-000001
+2025/06/01-10:05:42.199 bff Recovering log #76
+2025/06/01-10:05:42.234 bff Reusing old log /m/src/git/m/cmd/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/000076.log 
+2025/06/01-10:25:54.182 f7f Level-0 table #81: started
+2025/06/01-10:25:54.219 f7f Level-0 table #81: 1501651 bytes OK
+2025/06/01-10:25:54.222 f7f Delete type=0 #76
+2025/06/01-10:54:19.229 1a2d Compacting 1@1 + 1@2 files
+2025/06/01-10:54:19.234 1a2d Generated table #82@1: 41 keys, 11229 bytes
+2025/06/01-10:54:19.234 1a2d Compacted 1@1 + 1@2 files => 11229 bytes
+2025/06/01-10:54:19.235 1a2d compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/06/01-10:54:19.235 1a2d Delete type=2 #81
+2025/06/01-10:54:19.235 1a2d Delete type=2 #78
+2025/06/01-10:54:22.052 1a2c Level-0 table #84: started
+2025/06/01-10:54:22.079 1a2c Level-0 table #84: 1450009 bytes OK
+2025/06/01-10:54:22.082 1a2c Delete type=0 #80
+2025/06/01-11:15:41.354 1e2d Compacting 1@1 + 1@2 files
+2025/06/01-11:15:41.359 1e2d Generated table #85@1: 41 keys, 11235 bytes
+2025/06/01-11:15:41.359 1e2d Compacted 1@1 + 1@2 files => 11235 bytes
+2025/06/01-11:15:41.360 1e2d compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/06/01-11:15:41.361 1e2d Delete type=2 #84
+2025/06/01-11:15:41.361 1e2d Delete type=2 #82
+2025/06/01-11:21:59.618 1e2e Level-0 table #87: started
+2025/06/01-11:21:59.644 1e2e Level-0 table #87: 1460387 bytes OK
+2025/06/01-11:21:59.647 1e2e Delete type=0 #83
+2025/06/01-11:40:52.057 3c6e Compacting 1@1 + 1@2 files
+2025/06/01-11:40:52.062 3c6e Generated table #88@1: 41 keys, 11410 bytes
+2025/06/01-11:40:52.062 3c6e Compacted 1@1 + 1@2 files => 11410 bytes
+2025/06/01-11:40:52.063 3c6e compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/06/01-11:40:52.063 3c6e Delete type=2 #87
+2025/06/01-11:40:52.063 3c6e Delete type=2 #85
+2025/06/01-11:54:08.139 3c6e Level-0 table #90: started
+2025/06/01-11:54:08.167 3c6e Level-0 table #90: 1467335 bytes OK
+2025/06/01-11:54:08.170 3c6e Delete type=0 #86
+2025/06/01-12:05:22.295 4190 Compacting 1@1 + 1@2 files
+2025/06/01-12:05:22.300 4190 Generated table #91@1: 41 keys, 11571 bytes
+2025/06/01-12:05:22.300 4190 Compacted 1@1 + 1@2 files => 11571 bytes
+2025/06/01-12:05:22.301 4190 compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/06/01-12:05:22.302 4190 Delete type=2 #90
+2025/06/01-12:05:22.302 4190 Delete type=2 #88
+2025/06/01-12:28:34.553 4be5 Level-0 table #93: started
+2025/06/01-12:28:34.581 4be5 Level-0 table #93: 1460369 bytes OK
+2025/06/01-12:28:34.584 4be5 Delete type=0 #89

@@ -82,6 +82,9 @@ map()
         eval "${3}=\"$(env_list "${1}_" | wc -l | tr -d '\n' | sed 's/\n//g')\""
       fi
     ;;
+    "keys")
+      true
+    ;;
     "get")
       if [ -z "$3" ]
       then
