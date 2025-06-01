@@ -1,0 +1,44 @@
+#!/bin/sh
+
+#-------------------------------------------------------------------------------
+
+. map.lib.sh
+
+#-------------------------------------------------------------------------------
+
+test_map()
+{
+  # mymap_test="testval"
+  # map mymap
+  # map mymap
+  # map mymap "my first key" "second arg" "3rd arg" "4 arg" "5 arg" "6 arg"
+  # map mymap size
+  # map mymap size my_map_size; echo "my_map_size=$my_map_size"
+  map mymap put "my_first_key" "first key value"
+  map mymap put "my wrong key" "wrong key value"
+  # map mymap get "my_first_key"
+  # map mymap get "my_first_key" myvar; echo "myvar=$myvar"
+  # map mymap get "my wrong key"
+  # map mymap get "my wrong key" myvar; echo "myvar=$myvar"
+  echo ""
+  echo ""
+  echo ""
+  map mymap get
+  # map mymap size
+  set | grep mymap
+  # map mymap set "new val 0" "new val 1" "new val 2" "new val 3" "new val 4"
+  # map mymap set "new 'val 0'" "new 'val \'1'" "new val 2" "new val 3" "new val 4"
+  # saveargs "new 'val 0'" "new 'val \'1'" "new val 2" "new val 3" "new val 4"
+  # map mymap get
+  # set | grep mymap
+  # map mymap rem 1
+  # set | grep mymap
+  # map mymap get
+  # eval set -- $(map mymap get); for k in "$@"; do echo "$k"; done
+  # for k in eval echo "$(map mymap get)"; do echo "$k"; done
+  # map mymap unset
+  # echo "map unset"
+  # set | grep mymap
+}
+
+#-------------------------------------------------------------------------------
