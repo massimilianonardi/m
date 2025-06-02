@@ -31,6 +31,7 @@ command:
   - app: reorganize menus flow + decide if standalone or not -> no
       because system is modified with desktop files, thus modifiy environment is the cleaner solution
       BUT do not rewrite "upload" function to use libs and keep it standalone to avoid problems
+  - env: import export helper functions
   - menu: make multi window menus + key to switch active one
     env to make return only selected index (no ids or texts)
     env to make preselection

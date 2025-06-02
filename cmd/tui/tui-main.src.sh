@@ -23,7 +23,7 @@ env_init()
 
 #-------------------------------------------------------------------------------
 
-exist_function key_loop || \
+exist_function "key_loop" || \
 key_loop()
 {
   while true
@@ -53,7 +53,7 @@ main()
   [ "$KEY_LOOP" = "false" ] || key_loop
 
   ENV_LIST="$(env_list_get)"
-  env_return
+  env_return || (exist_function "return_res" && return_res)
 }
 
 #-------------------------------------------------------------------------------

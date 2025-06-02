@@ -49,11 +49,34 @@ key_mykey()
   # handle explicitly mapped "mykey"
 }
 
+key_loop()
+{
+  # if defined, handles all key presses
+  while true
+  do
+    key="$(readc)"
+
+    case "$key" in
+      "q") return 0;;
+      "esc") return 0;;
+      "space") true;;
+      "enter") true;;
+      *) return 1;;
+    esac
+  done
+}
+
 env_list_get()
 {
   true
   # echo "myvar1 myvar2 myvar3"
   # env_list "term_TEMPLATE_\|custom_var_pattern"
+}
+
+return_res()
+{
+  true
+  # return result
 }
 
 #-------------------------------------------------------------------------------

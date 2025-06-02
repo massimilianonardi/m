@@ -74,91 +74,31 @@ key_loop()
   key="enter"
   res="$(pwd)"
 
-  while [ "$key" = "enter" ] && [ -d "$res" ]
+  while [ "$key" = "enter" ] && [ -n "$res" ]
   do
     term_region_clear
-    eval menuexec key res selection tui-menu $(array DIR_ARRAY get)
-
-    if [ -z "$res" ]
+    vars="$(eval ENV_RETURN="export" tui-menu $(array DIR_ARRAY get))"
+    # term_error echo "vars=$vars"
+    KEY_LOOP="false" ENV_IMPORT="true" eval "$vars; menuexec key res selection tui-menu"
+    term_region_clear; term_render echo "key=$key"; term_render echo "res=$res"; term_render echo "selection=$selection"; read x
+    if [ -d "$res" ]
     then
-      return 0
-    elif [ "$key" = "enter" ]
-    then
-      true
-      # add selection to global selection in easy way to recall for such dir
-      if [ -d "$res" ]
-      then
-        # pass eventual previous selection for new dir
-        init_menu_dir "$res"
-      fi
-    else
-      true
-      # return custom key pressed and global selection
+      # save dir state
+      init_menu_dir "$res"
+      # get dir state and pass it
     fi
-
-    # if [ ! "$key" = "enter" ]
-    # then
-    #   # return key and selection to caller to do custom action on selection
-    #   return 0
-    # fi
-    #
-    # # if res is null then q or esc was pressed
-    # # else if enter was pressed (space for toggle is handled by tui-menu internally)
-    # # then add returned selection to global selection and if res is a directory,
-    # # then load newly selected dir and find a way to pass that dir selection to next call to tui-menu
-    # # a possible way is to save all tui-menu state for each browsed dir, but may lead to huge memory usage
-    #
-    # menu_dir "$res"
-    # # add returned selection to global selection
-    # # get current dir selection from global selection
-  done
-}
-
-___key_loop()
-{
-  while true
-  do
-    term_region_clear
-    eval menuexec key res selection tui-menu $(array DIR_ARRAY get)
-
-    if [ -z "$res" ]
-    then
-      return 0
-    elif [ "$key" = "enter" ]
-    then
-      true
-      # add selection to global selection in easy way to recall for such dir
-      if [ -d "$res" ]
-      then
-        # pass eventual previous selection for new dir
-        init_menu_dir "$res"
-      fi
-    else
-      true
-      # return custom key pressed and global selection
-    fi
-
-    # if [ ! "$key" = "enter" ]
-    # then
-    #   # return key and selection to caller to do custom action on selection
-    #   return 0
-    # fi
-    #
-    # # if res is null then q or esc was pressed
-    # # else if enter was pressed (space for toggle is handled by tui-menu internally)
-    # # then add returned selection to global selection and if res is a directory,
-    # # then load newly selected dir and find a way to pass that dir selection to next call to tui-menu
-    # # a possible way is to save all tui-menu state for each browsed dir, but may lead to huge memory usage
-    #
-    # menu_dir "$res"
-    # # add returned selection to global selection
-    # # get current dir selection from global selection
   done
 }
 
 env_list_get()
 {
   env_list "term_ROW\|term_COL\|term_FS_"
+}
+
+return_res()
+{
+  true
+  # return result: custom key pressed + global selection
 }
 
 #-------------------------------------------------------------------------------

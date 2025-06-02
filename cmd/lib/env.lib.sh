@@ -140,7 +140,7 @@ env_import()
 env_eval()
 {
   # export ENV_RETURN="export"
-  set -- "$1" $(eval eval \"\$$1\" && shift && ENV_IMPORT="true" "$@")
+  set -- "$1" $(eval eval \"\$$1\" && shift && ENV_IMPORT="true" ENV_RETURN="${ENV_RETURN:-"export"}" "$@")
 #   set -- "$1" \
 #   $(
 # eval echo "arg1=\$$1"
