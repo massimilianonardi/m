@@ -1,28 +1,5 @@
 #!/bin/sh
 
-  # openssl enc -e -aes-256-cbc -in un_encrypted.data -out encrypted.data
-  # openssl enc -d -aes-256-cbc -in encrypted.data -out un_encrypted.data
-
-  # unenc_file="/m/env/rpr/#webgis-deploy-include-users"
-  # enc_file="/m/env/rpr/#webgis-deploy-include-users.enc"
-  # unenc_file="/m/env/rpr/#postgres-servers"
-  # enc_file="/m/env/rpr/#postgres-servers.enc"
-
-  # log "encoding..."
-  # openssl enc -e -aes-256-cbc -pbkdf2 -in "$unenc_file" -out "$enc_file"
-  # log "decoding..."
-  # openssl enc -d -aes-256-cbc -pbkdf2 -in "$enc_file" -out "$unenc_file".unenc
-
-  # openssl enc -d -aes-256-cbc -pbkdf2 -in "$enc_file"
-  # eval "$(openssl enc -d -aes-256-cbc -pbkdf2 -in "$enc_file")"
-  # set | grep HOST
-
-  # env_enc_file="rpr-env.enc"
-  # env_enc_file="$(command -v "$env_enc_file")"
-  # echo "env_enc_file: $env_enc_file"
-  # eval "$(openssl enc -d -aes-256-cbc -pbkdf2 -in "$env_enc_file")"
-  # unset env_enc_file
-
 #------------------------------------------------------------------------------
 
 file_enc()
@@ -76,3 +53,37 @@ import_enc()
 }
 
 #------------------------------------------------------------------------------
+
+a2o()
+{
+  if [ -z "$*" ]
+  then
+    od -A n -b | tr -d '\t\r\n'
+  else
+    while [ "$#" -gt "0" ]
+    do
+      printf "$1" | od -A n -b | tr -d '\t\r\n'
+      shift
+    done
+  fi
+}
+
+o2a()
+{
+  if [ -z "$*" ]
+  then
+    set -- $(cat)
+    # tr ' ' '\n' | xargs -I % printf "\\%"
+  elif [ "$#" = "1" ]
+  then
+    set -- $@
+  fi
+
+  while [ "$#" -gt "0" ]
+  do
+    printf "\\$1"
+    shift
+  done
+}
+
+#-------------------------------------------------------------------------------

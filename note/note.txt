@@ -28,8 +28,6 @@ because of real dir need to be calculated by path full resolve, or per-app env
   m
 
 command:
-  - reorganize libs and functions (make enc a2o and o2a work with stdin)
-  - map: lib for associative arrays -> think if "set" command makes sense
   - app: reorganize menus flow + decide if standalone or not -> no
       because system is modified with desktop files, thus modifiy environment is the cleaner solution
       BUT do not rewrite "upload" function to use libs and keep it standalone to avoid problems

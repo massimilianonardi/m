@@ -239,9 +239,9 @@ term_render_text_at()
 )
 }
 
-# to be put under subshell
-tty_get_cursor_pos()
+term_get_cursor_pos()
 {
+(
   if [ -z "$1" ]
   then
     if [ -z "$2" ]
@@ -262,6 +262,7 @@ tty_get_cursor_pos()
   IFS='[;R' read -r dummy1 $1 $2 dummy2
 
   stty "$saved_tty_settings"
+)
 }
 
 term_string_count_lines()

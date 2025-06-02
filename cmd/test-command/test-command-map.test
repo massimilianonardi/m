@@ -2,40 +2,10 @@
 
 #-------------------------------------------------------------------------------
 
-. map.lib.sh
-
-#-------------------------------------------------------------------------------
-
 test_map()
 {
-  # printf "Test Encoding/Decoding - # @ $ _ ? ' §" | od -A n -t x1
-  # printf "Test Encoding/Decoding - # @ $ _ ? ' §" | od -A n -b
-
-  # encoded="$(
-  # printf "Test Encoding/Decoding - # @ $ _ ? ' §" | od -A n -b | tr -d '\t\r\n'
-  # printf "Test Encoding/Decoding - # @ $ _ ? ' §" | od -A n -t x1 | tr -d '\t\r\n ' | xxd -r -p
-  # printf "Test Encoding/Decoding - # @ $ _ ? ' §" | od -A n -t x1 | tr -d '\t\r\n ' | sed -e 's/^\(.\(.\{2\}\)*\)$/0\1/' -e 's/\(.\{2\}\)/\\x\1/g'
-  # printf "Test Encoding/Decoding - # @ $ _ ? ' §" | od -A n -t x1 | tr -d '\t\r\n ' | sed -e 's/^\(.\(.\{2\}\)*\)$/0\1/' -e 's/\(.\{2\}\)/ 0x\1/g'
-  # printf "Test Encoding/Decoding - # @ $ _ ? ' §" | od -A n -t x1 | tr -d '\t\r\n '
-  # printf "Test Encoding/Decoding - # @ $ _ ? ' §" | od -A n -t x1 | tr -d '\t\r\n ' | sed -e 's/^\(.\(.\{2\}\)*\)$/0\1/' -e 's/\(.\{2\}\)/ 0x\1/g' | xargs -I % printf "%d\n" %
-  # printf "Test Encoding/Decoding - # @ $ _ ? ' §" | od -A n -t x1 | tr -d '\t\r\n ' | sed -e 's/^\(.\(.\{2\}\)*\)$/0\1/' -e 's/\(.\{2\}\)/ 0x\1/g' | xargs -I % printf "%d\n" %
-  # printf "Test Encoding/Decoding - # @ $ _ ? ' §" | od -A n -t x1 | tr -d '\t\r\n ' | od -An -t uC
-# )"
-
-  # for k in $(printf "Test Encoding/Decoding - # @ $ _ ? ' §" | od -A n -b | tr -d '\t\r\n')
-  # do
-  #   # echo "$k"
-  #   printf "\\$k"
-  # done
-
-  # echo "encoded=$encoded"
-  # printf "%d\n" "$encoded"
-  # printf "%d\n" 0xFF
-
-  # a2o "Test Encoding/Decoding - # @ $ _ ? ' §"
-  # o2a "$(a2o "Test Encoding/Decoding - # @ $ _ ? ' §")"
-
-  # exit 0
+  . arg.lib.sh
+  . map.lib.sh
 
   # mymap_test="testval"
   map mymap

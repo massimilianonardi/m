@@ -2,12 +2,11 @@
 
 #-------------------------------------------------------------------------------
 
-. array.lib.sh
-
-#-------------------------------------------------------------------------------
-
 test_array()
 {
+  . arg.lib.sh
+  . array.lib.sh
+
   # array ARRAY_NAME [size|get|set|add|unset] args...
   # array ARRAY_NAME size SIZE_VAR_NAME
   # array ARRAY_NAME get INDEX ELEM_VAR_NAME
