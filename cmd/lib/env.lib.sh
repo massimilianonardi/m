@@ -6,6 +6,20 @@
 
 #-------------------------------------------------------------------------------
 
+exist_function()
+{
+  type "$1">/dev/null 2>&1
+}
+
+#-------------------------------------------------------------------------------
+
+exec_if_exist_function()
+{
+  exist_function "$1" && "$@"
+}
+
+#-------------------------------------------------------------------------------
+
 env_list()
 {
   if [ -z "$*" ]
@@ -126,6 +140,7 @@ env_return()
 
 #-------------------------------------------------------------------------------
 
+# rework to call env-aware script to import env
 env_import()
 {
   [ -n "$ENV_IMPORT" ]
@@ -155,6 +170,21 @@ env_eval()
 #     "$@"
 #   )
   eval $1=\"$(shift && echo "$@")\"
+}
+
+#-------------------------------------------------------------------------------
+
+# caller functions to be eventually defined:
+# env_init "$@", main "$@", env_list_get, env_return_res
+env_main()
+{
+  [ -n "$ENV_IMPORT" ] || exec_if_exist_function env_init "$@"
+
+  # exec_if_exist_function main "$@"
+  exec_if_exist_function main
+
+  ENV_LIST="$(exec_if_exist_function env_list_get)"
+  env_return || exec_if_exist_function env_return_res
 }
 
 #-------------------------------------------------------------------------------
