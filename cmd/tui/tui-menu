@@ -416,6 +416,21 @@ key_enter()
 
 env_list_get()
 {
+  tui_MENU_RETURN_KEY="$key"
+  tui_MENU_RETURN_ITEM="$(array tui_MENU_IDS get "$tui_MENU_ARRAY_POS")"
+  array tui_MENU_SELECTED_ITEMS
+  i="0"
+  n="$(array tui_MENU_SEL size)"
+  while [ "$i" -lt "$n" ]
+  do
+    if [ "$(array tui_MENU_SEL get "$i")" = "$tui_MENU_SEL_ITEM_TRUE_STRING" ]
+    then
+      array tui_MENU_SELECTED_ITEMS add "$(array tui_MENU_IDS get "$i")"
+    fi
+    i="$(($i + 1))"
+  done
+  tui_MENU_RETURN_SELECTION="$(array tui_MENU_SELECTED_ITEMS get)"
+
   env_list "term_ROW\|term_COL\|tui_MENU_\|key"
 }
 

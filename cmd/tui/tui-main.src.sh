@@ -38,20 +38,6 @@ key_loop()
 
 #-------------------------------------------------------------------------------
 
-___main()
-{
-  env_import || env_init "$@"
-
-  render
-
-  [ "$KEY_LOOP" = "false" ] || key_loop
-
-  ENV_LIST="$(env_list_get)"
-  env_return || (exist_function "return_res" && return_res)
-}
-
-#-------------------------------------------------------------------------------
-
 main()
 {
   render

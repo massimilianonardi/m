@@ -17,9 +17,11 @@ test_env()
   # exit 0
 
   env_export state tui menu entry_1 entry_2
-  # echo "state=$state"
+  echo "state=$state"
   env_read_state "$state" "key term_ROW0 term_ROWS"
   echo "key=$key"; echo "term_ROW0=$term_ROW0"; echo "term_ROWS=$term_ROWS"
+  env_read_state "$state" "key tui_MENU_RETURN_ITEM tui_MENU_RETURN_SELECTION"
+  echo "key=$key"; echo "tui_MENU_RETURN_ITEM=$tui_MENU_RETURN_ITEM"; echo "tui_MENU_RETURN_SELECTION=$tui_MENU_RETURN_SELECTION"
   exit 0
 
   export TEST_VAR_1='aaa
