@@ -6,8 +6,20 @@ test_env()
 {
   . env.lib.sh
 
-  env_read "var1 var2 var3" ls .
-  echo "var1=$var1"; echo "var2=$var2"; echo "var3=$var3"
+  # quote ""
+  # saveargs "res1" "res 2" ""
+  # exit 0
+
+  # env_read "var1 var2 var3" ls .
+  # env_read "var1 var2 var3" echo "'res1' 'res 2' ''"
+  # env_read "var1 var2 var3" echo "'res1' 'res 2'"
+  # echo "var1=$var1"; echo "var2=$var2"; echo "var3=$var3"
+  # exit 0
+
+  env_export state tui menu entry_1 entry_2
+  # echo "state=$state"
+  env_read_state "$state" "key term_ROW0 term_ROWS"
+  echo "key=$key"; echo "term_ROW0=$term_ROW0"; echo "term_ROWS=$term_ROWS"
   exit 0
 
   export TEST_VAR_1='aaa

@@ -172,29 +172,23 @@ env_read()
   set -- "$(set -- $1 && echo "$#")" "$1" "$(shift && "$@")"
   while [ "$1" -gt "0" ]
   do
-    eval $(shift && set -- $1 && echo "$1")=\"$(shift 2 && set -- $1 && echo "$1")\"
-    set -- "$(set -- $2 && shift && echo "$#")" "$(set -- $2 && shift && echo "$@")" "$(set -- $3 && shift && echo "$@")"
+# echo "arg1='$1'"; echo "arg2='$2'"; echo "arg3='$3'"; read x
+    eval "$(shift && set -- $1 && echo "$1")=\"$(shift 2 && eval set -- $1 && echo "$1")\""
+    set -- "$(set -- $2 && shift && echo "$#")" "$(set -- $2 && shift && echo "$@")" "$(eval set -- $3 && [ "$#" -gt "0" ] && shift && saveargs "$@")"
   done
 }
 
-___env_eval()
+#-------------------------------------------------------------------------------
+
+env_read_state()
 {
-  # export ENV_RETURN="export"
-  set -- "$1" $(eval eval \"\$$1\" && shift && ENV_IMPORT="true" ENV_RETURN="${ENV_RETURN:-"export"}" "$@")
-#   set -- "$1" \
-#   $(
-# eval echo "arg1=\$$1"
-# eval echo "arg1=\$$1" 1>&2
-# read x
-#     if eval [ -n "\$$1" ]
-#     then
-#       # eval eval \"\$$1\"
-#       eval eval \$$1
-#     fi
-#     shift
-#     "$@"
-#   )
-  eval $1=\"$(shift && echo "$@")\"
+  env_read "$2" echo "$(eval "$1" && set -- $2 && \
+    for k in "$@"
+    do
+      eval quote \"\$$k\"
+      printf " "
+    done
+  )"
 }
 
 #-------------------------------------------------------------------------------

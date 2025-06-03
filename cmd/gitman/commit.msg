@@ -1,1 +1,1 @@
-env_read automatically split command result into multiple vars
+env_read_state extracts vars from state
