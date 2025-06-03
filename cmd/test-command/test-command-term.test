@@ -37,8 +37,9 @@ test_term()
   # tui menu $menu_entries
 
   # env_export res tui menu $menu_entries
-  menuexec "" "" "" tui menu $menu_entries
-  echo "key=$key"; echo "res=$res"; echo "selection=$selection"
+  # env_import "$res" tui menu
+  # menuexec "" "" "" tui menu $menu_entries
+  # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
   # res="$(tui menu $menu_entries)"
   # echo "res=$res"
 
@@ -46,8 +47,8 @@ test_term()
   # res="$(tui head "$MENU_HEADER" "$MENU_FOOTER" tui-menu $menu_entries)"
   # echo "res=$res"
 
-  # res="$(tui head "FILE BROWSER" "e=Encode, d=Decode" tui-fs .)"
-  # echo "res=$res"
+  res="$(tui head "FILE BROWSER" "e=Encode, d=Decode" tui-fs .)"
+  echo "res=$res"
 
   # tui multimenu $menu_entries
   # res="$(tui multimenu $menu_entries)"

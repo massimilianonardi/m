@@ -167,7 +167,17 @@ env_export()
 
 #-------------------------------------------------------------------------------
 
-env_eval()
+env_read()
+{
+  set -- "$(set -- $1 && echo "$#")" "$1" "$(shift && "$@")"
+  while [ "$1" -gt "0" ]
+  do
+    eval $(shift && set -- $1 && echo "$1")=\"$(shift 2 && set -- $1 && echo "$1")\"
+    set -- "$(set -- $2 && shift && echo "$#")" "$(set -- $2 && shift && echo "$@")" "$(set -- $3 && shift && echo "$@")"
+  done
+}
+
+___env_eval()
 {
   # export ENV_RETURN="export"
   set -- "$1" $(eval eval \"\$$1\" && shift && ENV_IMPORT="true" ENV_RETURN="${ENV_RETURN:-"export"}" "$@")

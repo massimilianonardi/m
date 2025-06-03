@@ -1,1 +1,1 @@
-tui-menu reworked for env export/import
+env_read automatically split command result into multiple vars

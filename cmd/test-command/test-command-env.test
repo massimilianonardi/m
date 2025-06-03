@@ -6,6 +6,10 @@ test_env()
 {
   . env.lib.sh
 
+  env_read "var1 var2 var3" ls .
+  echo "var1=$var1"; echo "var2=$var2"; echo "var3=$var3"
+  exit 0
+
   export TEST_VAR_1='aaa
 bbb
 ccc'
@@ -25,26 +29,26 @@ ggg'
   echo "\n\n\n - env_list THIS|TEST_VAR: "
   env_list "THIS\|TEST_VAR"
 
-  echo "\n\n\n - env_export: "
-  env_export
+  echo "\n\n\n - env_return_export: "
+  env_return_export
 
-  echo "\n\n\n - env_export THIS: "
-  env_export $(env_list "THIS")
+  echo "\n\n\n - env_return_export THIS: "
+  env_return_export $(env_list "THIS")
 
-  echo "\n\n\n - env_cmdscope THIS: "
-  env_cmdscope $(env_list "THIS")
+  echo "\n\n\n - env_return_cmd THIS: "
+  env_return_cmd $(env_list "THIS")
 
   echo "\n\n\n - env_set THIS: "
-  env_set $(env_list "THIS")
+  env_return_set $(env_list "THIS")
 
-  echo "\n\n\n - env_export THIS quoted: "
-  env_export "$(env_list "THIS")"
+  echo "\n\n\n - env_return_export THIS quoted: "
+  env_return_export "$(env_list "THIS")"
 
-  echo "\n\n\n - env_cmdscope THIS quoted: "
-  env_cmdscope "$(env_list "THIS")"
+  echo "\n\n\n - env_return_cmd THIS quoted: "
+  env_return_cmd "$(env_list "THIS")"
 
   echo "\n\n\n - env_set THIS quoted: "
-  env_set "$(env_list "THIS")"
+  env_return_set "$(env_list "THIS")"
 
   echo "\n\n\n - env_return by command line: "
   env_return "set" $(env_list "THIS")

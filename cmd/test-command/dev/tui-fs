@@ -79,13 +79,14 @@ key_loop()
   while [ "$key" = "enter" ] && [ -n "$res" ]
   do
     term_region_clear
+
     env_import "$term_FS_MENU_CURRENT_STATE" env_export "term_FS_MENU_CURRENT_STATE" tui-menu
-    # vars="$(eval ENV_RETURN="export" tui-menu $(array DIR_ARRAY get))"
-    # term_error echo "vars=$vars"
-  # term_render echo "state=$term_FS_MENU_CURRENT_STATE"
-  # read x
-    KEY_LOOP="false" env_import "$term_FS_MENU_CURRENT_STATE" menuexec key res selection tui-menu
+    # KEY_LOOP="false" env_import "$term_FS_MENU_CURRENT_STATE" menuexec key res selection tui-menu
+    KEY_LOOP="false" env_import "$term_FS_MENU_CURRENT_STATE" env_eval "key res selection" tui-menu
+    # env_import "$term_FS_MENU_CURRENT_STATE" menuexec key res selection tui-menu
+
     term_region_clear; term_render echo "key=$key"; term_render echo "res=$res"; term_render echo "selection=$selection"; read x
+# echo "$term_FS_MENU_CURRENT_STATE"; exit 0
     if [ -d "$res" ]
     then
       # save dir state
