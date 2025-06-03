@@ -13,6 +13,11 @@
 
 #-------------------------------------------------------------------------------
 
+env_return_res()
+{
+  return_selection
+}
+
 return_selection()
 {
   # tui_MENU_RETURN_KEY="$key"
@@ -35,7 +40,7 @@ return_selection()
   # ENV_RETURN="export"
   # ENV_LIST="$(env_list "tui_MENU_")"
 
-  env_return && exit 0
+  # env_return && exit 0
 
   # if env_return
   # then
@@ -72,7 +77,7 @@ return_selection()
     term_output array tui_MENU_SELECTED_ITEMS get
   fi
 
-  exit 0
+  # exit 0
 }
 
 check_key()
@@ -92,7 +97,8 @@ check_key()
     return 0
   fi
 
-  return_selection
+  # return_selection
+  return 1
 }
 
 select_item_toggle()
@@ -439,7 +445,8 @@ key_space()
 
 key_enter()
 {
-  return_selection
+  # return_selection
+  return 1
 }
 
 env_list_get()

@@ -32,7 +32,8 @@ env_list()
 
 #-------------------------------------------------------------------------------
 
-env_set()
+# env_set()
+env_return_set()
 {
   if [ -z "$*" ]
   then
@@ -54,7 +55,8 @@ env_set()
 
 #-------------------------------------------------------------------------------
 
-env_cmdscope()
+# env_cmdscope()
+env_return_cmd()
 {
   if [ -z "$*" ]
   then
@@ -76,7 +78,8 @@ env_cmdscope()
 
 #-------------------------------------------------------------------------------
 
-env_export()
+# env_export()
+env_return_export()
 {
   if [ -z "$*" ]
   then
@@ -121,33 +124,45 @@ env_return()
     ENV_LIST="$(env_list)"
   fi
 
-#   ENV_LIST='ENV_RETURN
-# ENV_LIST
-# '"$ENV_LIST"
-
   if [ "$ENV_RETURN" = "export" ]
   then
-    env_export "$ENV_LIST"
-  elif [ "$ENV_RETURN" = "cmdscope" ]
+    env_return_export "$ENV_LIST"
+  elif [ "$ENV_RETURN" = "cmd" ]
   then
-    env_cmdscope "$ENV_LIST"
-  elif [ "$ENV_RETURN" = "set" ] || [ -z "$ENV_RETURN" ]
+    env_return_cmd "$ENV_LIST"
+  elif [ "$ENV_RETURN" = "set" ]
   then
-    env_set "$ENV_LIST"
+    env_return_set "$ENV_LIST"
   fi
 )
 }
 
 #-------------------------------------------------------------------------------
 
-# rework to call env-aware script to import env
 env_import()
 {
-  [ -n "$ENV_IMPORT" ]
-  # if [ -z "$ENV_IMPORT" ]
-  # then
-  #   "$@"
-  # fi
+  if [ "$#" -lt "1" ]
+  then
+    return 1
+  fi
+
+  eval "$1"
+  shift
+
+  ENV_IMPORT="true" "$@"
+}
+
+#-------------------------------------------------------------------------------
+
+env_export()
+{
+  if [ "$#" -lt "1" ]
+  then
+    return 1
+  fi
+
+  set -- "$1" $(shift && ENV_RETURN="${ENV_RETURN:-"export"}" "$@")
+  eval $1=\"$(shift && echo "$@")\"
 }
 
 #-------------------------------------------------------------------------------

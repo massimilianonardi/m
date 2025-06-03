@@ -65,7 +65,9 @@ args_init()
 
 render()
 {
-  eval KEY_LOOP="false" tui-menu $(array DIR_ARRAY get)
+  eval KEY_LOOP="false" env_export "term_FS_MENU_CURRENT_STATE" tui-menu $(array DIR_ARRAY get)
+  # term_render echo "state=$term_FS_MENU_CURRENT_STATE"
+  # read x
 }
 
 
@@ -77,9 +79,12 @@ key_loop()
   while [ "$key" = "enter" ] && [ -n "$res" ]
   do
     term_region_clear
-    vars="$(eval ENV_RETURN="export" tui-menu $(array DIR_ARRAY get))"
+    env_import "$term_FS_MENU_CURRENT_STATE" env_export "term_FS_MENU_CURRENT_STATE" tui-menu
+    # vars="$(eval ENV_RETURN="export" tui-menu $(array DIR_ARRAY get))"
     # term_error echo "vars=$vars"
-    KEY_LOOP="false" ENV_IMPORT="true" eval "$vars; menuexec key res selection tui-menu"
+  # term_render echo "state=$term_FS_MENU_CURRENT_STATE"
+  # read x
+    KEY_LOOP="false" env_import "$term_FS_MENU_CURRENT_STATE" menuexec key res selection tui-menu
     term_region_clear; term_render echo "key=$key"; term_render echo "res=$res"; term_render echo "selection=$selection"; read x
     if [ -d "$res" ]
     then
@@ -95,7 +100,7 @@ env_list_get()
   env_list "term_ROW\|term_COL\|term_FS_"
 }
 
-return_res()
+env_return_res()
 {
   true
   # return result: custom key pressed + global selection

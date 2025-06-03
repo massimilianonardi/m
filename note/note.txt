@@ -28,6 +28,7 @@ because of real dir need to be calculated by path full resolve, or per-app env
   m
 
 command:
+  - rework array lib to use saveargs function to save all array into one var and set it to helper function args to manipulate
   - app: reorganize menus flow + decide if standalone or not -> no
       because system is modified with desktop files, thus modifiy environment is the cleaner solution
       BUT do not rewrite "upload" function to use libs and keep it standalone to avoid problems
