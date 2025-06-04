@@ -7,13 +7,13 @@
 
 #-------------------------------------------------------------------------------
 
-exist_function "env_init" || \
-env_init()
-{
-  term_region_init
-  env_defaults
-  args_init "$@"
-}
+# exist_function "env_init" || \
+# env_init()
+# {
+#   term_region_init
+#   env_defaults
+#   args_init "$@"
+# }
 
 #-------------------------------------------------------------------------------
 
@@ -40,6 +40,8 @@ key_loop()
 
 main()
 {
+  term_region_init
+
   render
 
   [ "$KEY_LOOP" = "false" ] || key_loop

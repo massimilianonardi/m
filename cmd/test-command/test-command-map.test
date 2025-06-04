@@ -9,6 +9,7 @@ test_map()
 
   # mymap_test="testval"
   map mymap
+  map mymap get "not existing key"
   # map mymap
   # map mymap "my first key" "second arg" "3rd arg" "4 arg" "5 arg" "6 arg"
   map mymap size

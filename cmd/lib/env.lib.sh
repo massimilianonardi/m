@@ -194,16 +194,20 @@ env_read_state()
 #-------------------------------------------------------------------------------
 
 # caller functions to be eventually defined:
-# env_init "$@", main "$@", env_list_get, env_return_res
+# env_init "$@": is the only function that accepts command line arguments and initilizes all environment variables
+# main: no command line arguments are directly available, must use variables initialized previously
+# env_list_get: returns the dynamic list of variables to be exported
+# env_result: called by a trap on exit, must echo on stdin the final result to be returned to caller (any other output from other functions to stdin must be forbidden)
 env_main()
 {
-  [ -n "$ENV_IMPORT" ] || exec_if_exist_function env_init "$@"
+  trap 'ENV_LIST="$(exec_if_exist_function env_list_get)"; env_return || exec_if_exist_function env_result' EXIT
 
-  # exec_if_exist_function main "$@"
-  exec_if_exist_function main
+  [ -n "$ENV_IMPORT" ] || exec_if_exist_function env_init "$@" > /dev/null
 
-  ENV_LIST="$(exec_if_exist_function env_list_get)"
-  env_return || exec_if_exist_function env_return_res
+  exec_if_exist_function main > /dev/null
+
+  # ENV_LIST="$(exec_if_exist_function env_list_get)"
+  # env_return || exec_if_exist_function env_result
 }
 
 #-------------------------------------------------------------------------------

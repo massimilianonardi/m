@@ -48,7 +48,7 @@ main()
   fi
 
   eval "set -- $tui_HEAD_ARGS"
-  term_ROW0="$term_ROW0" term_COL0="$term_COL0" term_ROWS="$term_ROWS" term_COLS="$term_COLS" "$@"
+  tui_HEAD_RESULT="$(term_ROW0="$term_ROW0" term_COL0="$term_COL0" term_ROWS="$term_ROWS" term_COLS="$term_COLS" "$@")"
 }
 
 env_list_get()
@@ -56,10 +56,9 @@ env_list_get()
   env_list "tui_HEAD_"
 }
 
-env_return_res()
+env_result()
 {
-  true
-  # return result
+  term_output printf "$tui_HEAD_RESULT"
 }
 
 #-------------------------------------------------------------------------------

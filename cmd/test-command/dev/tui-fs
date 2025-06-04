@@ -6,6 +6,7 @@
 . term.lib.sh
 
 . array.lib.sh
+. map.lib.sh
 . menu.lib.sh
 
 #-------------------------------------------------------------------------------
@@ -20,80 +21,85 @@ init_menu_dir()
   cd "$1"
   set -- "$(cd -L -- "$1" && pwd -L)"
 
-  array DIR_ARRAY
+  array term_FS_DIR_ARRAY
 
   if [ "$(pwd)" = "/" ]
   then
     set -- ""
   else
-    array DIR_ARRAY add "${1}/..=.."
+    array term_FS_DIR_ARRAY add "${1}/..=.."
   fi
 
   for k in ..?* .[!.]* *
   do
     if [ -e "$k" ]
     then
-      # array DIR_ARRAY add "${1}/$k=$k"
+      # array term_FS_DIR_ARRAY add "${1}/$k=$k"
       if [ -d "$k" ]
       then
-        array DIR_ARRAY add "${1}/$k=[D] $k"
+        array term_FS_DIR_ARRAY add "${1}/$k=[D] $k"
       elif [ -f "$k" ]
       then
-        array DIR_ARRAY add "${1}/$k=[F] $k"
+        array term_FS_DIR_ARRAY add "${1}/$k=[F] $k"
       fi
     fi
   done
 
-  # eval menuread "key" "file" "selection" $(array DIR_ARRAY get)
-  # array FILE_SELECTION add "$selection"
-  #
-  # array DIR_ARRAY unset
+  term_FS_MENU_DIR="$(array term_FS_DIR_ARRAY get)"
+
+  array term_FS_DIR_ARRAY unset
+}
+
+load_menu_dir()
+{
+  if [ ! -d "$1" ]
+  then
+    set -- "$(pwd)"
+  fi
+
+  cd "$1"
+  set -- "$(cd -L -- "$1" && pwd -L)"
+
+  term_FS_MENU_CURRENT_STATE="$(map term_FS_DIR_STATES get "$(pwd)")"
+
+  if [ -z "$term_FS_MENU_CURRENT_STATE" ]
+  then
+    init_menu_dir "$@"
+    eval env_export "term_FS_MENU_CURRENT_STATE" tui-menu $term_FS_MENU_DIR
+    map term_FS_DIR_STATES put "$(pwd)" "$term_FS_MENU_CURRENT_STATE"
+  else
+    env_export "term_FS_MENU_CURRENT_STATE" env_import "$term_FS_MENU_CURRENT_STATE" tui-menu
+  fi
+
+  env_read_state "$term_FS_MENU_CURRENT_STATE" "key tui_MENU_RETURN_ITEM tui_MENU_RETURN_SELECTION"
+  res="$tui_MENU_RETURN_ITEM"
 }
 
 #-------------------------------------------------------------------------------
 
-env_defaults()
+env_init()
 {
-  true
-  # set proper initial variables values
-}
+  map term_FS_DIR_STATES
 
-args_init()
-{
   init_menu_dir "$@"
 }
 
 render()
 {
-  eval KEY_LOOP="false" env_export "term_FS_MENU_CURRENT_STATE" tui-menu $(array DIR_ARRAY get)
-  # term_render echo "state=$term_FS_MENU_CURRENT_STATE"
-  # read x
+  # eval KEY_LOOP="false" env_export "term_FS_MENU_CURRENT_STATE" tui-menu $term_FS_MENU_DIR
+  eval env_export "term_FS_MENU_CURRENT_STATE" tui-menu $term_FS_MENU_DIR
 }
-
 
 key_loop()
 {
-  key="enter"
-  res="$(pwd)"
+  map term_FS_DIR_STATES put "$(pwd)" "$term_FS_MENU_CURRENT_STATE"
+  env_read_state "$term_FS_MENU_CURRENT_STATE" "key tui_MENU_RETURN_ITEM tui_MENU_RETURN_SELECTION"
+  res="$tui_MENU_RETURN_ITEM"
 
   while [ "$key" = "enter" ] && [ -n "$res" ]
   do
     term_region_clear
-
-    env_export "term_FS_MENU_CURRENT_STATE" env_import "$term_FS_MENU_CURRENT_STATE" tui-menu
-    env_read_state "$term_FS_MENU_CURRENT_STATE" "key tui_MENU_RETURN_ITEM tui_MENU_RETURN_SELECTION"
-    res="$tui_MENU_RETURN_ITEM"
-    # KEY_LOOP="false" env_import "$term_FS_MENU_CURRENT_STATE" env_read "key res selection" tui-menu
-    term_region_clear; term_render echo "key=$key"; term_render echo "res=$res"; term_render echo "selection=$selection"; read x
-# echo "$term_FS_MENU_CURRENT_STATE"; exit 0
-
-    if [ -d "$res" ]
-    then
-      # save dir state
-      init_menu_dir "$res"
-      render
-      # get dir state and pass it
-    fi
+    load_menu_dir "$res"
   done
 }
 
@@ -102,10 +108,16 @@ env_list_get()
   env_list "term_ROW\|term_COL\|term_FS_"
 }
 
-env_return_res()
+env_result()
 {
-  true
-  # return result: custom key pressed + global selection
+  # build global selection
+  # term_region_clear; term_render echo "env_result"; read x
+
+  term_output quote "${key}"
+  term_output printf " "
+  term_output quote "${tui_MENU_RETURN_ITEM}"
+  term_output printf " "
+  term_output quote "${tui_MENU_RETURN_SELECTION}"
 }
 
 #-------------------------------------------------------------------------------

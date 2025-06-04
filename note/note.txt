@@ -46,6 +46,7 @@ command:
     thus mods can be combined to create a complex tui app.
     each mod must standardize return env vars and switch off key loop
     (allows initial renders of all mods into tui and only after recall active mod with key loop)
+    problem env import/export for composite modules
 --------------------------------------------------------------------------------
 https://sed.js.org/
 https://ato.pxeger.com/about
