@@ -22,6 +22,14 @@ test_env()
   echo "key=$key"; echo "term_ROW0=$term_ROW0"; echo "term_ROWS=$term_ROWS"
   env_read_state "$state" "key tui_MENU_RETURN_ITEM tui_MENU_RETURN_SELECTION"
   echo "key=$key"; echo "tui_MENU_RETURN_ITEM=$tui_MENU_RETURN_ITEM"; echo "tui_MENU_RETURN_SELECTION=$tui_MENU_RETURN_SELECTION"
+
+  tui_MENU_RETURN_ITEM='"'"'/m/src/git/m/cmd/test-command/dev/menu'"'"'
+  tui_MENU_RETURN_KEY='"'"'b'"'"'
+  tui_MENU_RETURN_SELECTION='"''"'\'"''"'/m/src/git/m/cmd/test-command/dev/tui-fs'"'"'\'"''"' '"'"'\'"''"'/m/src/git/m/cmd/test-command/dev/tui-menu_bak'"'"'\'""'''"'
+
+  echo "tui_MENU_RETURN_ITEM=$tui_MENU_RETURN_ITEM"
+  echo "tui_MENU_RETURN_KEY=$tui_MENU_RETURN_KEY"
+  echo "tui_MENU_RETURN_SELECTION=$tui_MENU_RETURN_SELECTION"
   exit 0
 
   export TEST_VAR_1='aaa

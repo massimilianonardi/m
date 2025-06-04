@@ -107,6 +107,11 @@ env_list_get()
   env_list "term_ROW\|term_COL\|term_FS_"
 }
 
+log()
+{
+  echo "$@" >>/m/src/git/m/cmd/test-command/dev/term.log
+}
+
 env_result()
 {
   tui_MENU_RETURN_GLOBAL_SELECTION=""
@@ -114,8 +119,14 @@ env_result()
   for k in $(map term_FS_DIR_STATES keys)
   do
     state="$(map term_FS_DIR_STATES get "$k")"
+    tui_MENU_RETURN_SELECTION=""
     env_read_state "$state" "tui_MENU_RETURN_SELECTION"
     tui_MENU_RETURN_GLOBAL_SELECTION="$tui_MENU_RETURN_GLOBAL_SELECTION $tui_MENU_RETURN_SELECTION"
+
+    log "k=$k"
+    log "tui_MENU_RETURN_SELECTION=$tui_MENU_RETURN_SELECTION"
+    log "tui_MENU_RETURN_GLOBAL_SELECTION=$tui_MENU_RETURN_GLOBAL_SELECTION"
+
     term_output echo "k=$k"
     term_output echo "tui_MENU_RETURN_SELECTION=$tui_MENU_RETURN_SELECTION"
     term_output echo "tui_MENU_RETURN_GLOBAL_SELECTION=$tui_MENU_RETURN_GLOBAL_SELECTION"
@@ -130,6 +141,8 @@ env_result()
   term_output printf " "
   term_output quote "${tui_MENU_RETURN_GLOBAL_SELECTION}"
   # term_output printf "${tui_MENU_RETURN_GLOBAL_SELECTION}"
+
+  # set >>/m/src/git/m/cmd/test-command/dev/term.log
 }
 
 #-------------------------------------------------------------------------------
