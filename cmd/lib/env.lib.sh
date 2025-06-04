@@ -205,9 +205,6 @@ env_main()
   [ -n "$ENV_IMPORT" ] || exec_if_exist_function env_init "$@" > /dev/null
 
   exec_if_exist_function main > /dev/null
-
-  # ENV_LIST="$(exec_if_exist_function env_list_get)"
-  # env_return || exec_if_exist_function env_result
 }
 
 #-------------------------------------------------------------------------------

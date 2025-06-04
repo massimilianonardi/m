@@ -113,10 +113,12 @@ env_result()
 
   for k in $(map term_FS_DIR_STATES keys)
   do
-    # term_output echo "$k"
     state="$(map term_FS_DIR_STATES get "$k")"
     env_read_state "$state" "tui_MENU_RETURN_SELECTION"
     tui_MENU_RETURN_GLOBAL_SELECTION="$tui_MENU_RETURN_GLOBAL_SELECTION $tui_MENU_RETURN_SELECTION"
+    term_output echo "k=$k"
+    term_output echo "tui_MENU_RETURN_SELECTION=$tui_MENU_RETURN_SELECTION"
+    term_output echo "tui_MENU_RETURN_GLOBAL_SELECTION=$tui_MENU_RETURN_GLOBAL_SELECTION"
   done
 
   # term_region_clear; term_render echo "env_result"; read x
