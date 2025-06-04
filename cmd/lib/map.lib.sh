@@ -54,11 +54,12 @@ map()
       fi
     ;;
     "keys")
-      set -- $(env_list "${1}__")
+      set -- $(env_list "${1}__" | sed "s/${1}_//g")
       set -- $(
         while [ "$#" -gt "0" ]
         do
-          quote "$(o2a "$(echo "${1#*_}" | tr '_' ' ')")"
+          # quote "$(o2a "$(echo "${1#*_}" | tr '_' ' ')")"
+          quote "$(o2a "$(echo "${1}" | tr '_' ' ')")"
           echo ""
           shift
         done

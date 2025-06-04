@@ -4,7 +4,6 @@
 
 . env.lib.sh
 . term.lib.sh
-
 . array.lib.sh
 . map.lib.sh
 . menu.lib.sh
@@ -110,14 +109,25 @@ env_list_get()
 
 env_result()
 {
-  # build global selection
+  tui_MENU_RETURN_GLOBAL_SELECTION=""
+
+  for k in $(map term_FS_DIR_STATES keys)
+  do
+    # term_output echo "$k"
+    state="$(map term_FS_DIR_STATES get "$k")"
+    env_read_state "$state" "tui_MENU_RETURN_SELECTION"
+    tui_MENU_RETURN_GLOBAL_SELECTION="$tui_MENU_RETURN_GLOBAL_SELECTION $tui_MENU_RETURN_SELECTION"
+  done
+
   # term_region_clear; term_render echo "env_result"; read x
+  # term_output echo "${tui_MENU_RETURN_GLOBAL_SELECTION}"
 
   term_output quote "${key}"
   term_output printf " "
   term_output quote "${tui_MENU_RETURN_ITEM}"
   term_output printf " "
-  term_output quote "${tui_MENU_RETURN_SELECTION}"
+  term_output quote "${tui_MENU_RETURN_GLOBAL_SELECTION}"
+  # term_output printf "${tui_MENU_RETURN_GLOBAL_SELECTION}"
 }
 
 #-------------------------------------------------------------------------------

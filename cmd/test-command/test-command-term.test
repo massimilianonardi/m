@@ -48,8 +48,8 @@ test_term()
   # echo "res=$res"
 
   # res="$(KEY_LOOP="false" tui head "FILE BROWSER" "e=Encode, d=Decode" tui-fs .)"
-  res="$(tui head "FILE BROWSER" "e=Encode, d=Decode" tui-fs .)"
-  # res="$(tui fs .)"
+  # res="$(tui head "FILE BROWSER" "e=Encode, d=Decode" tui-fs .)"
+  res="$(tui fs .)"
   echo "res=$res"
 
   # tui multimenu $menu_entries

@@ -427,7 +427,8 @@ env_result()
       fi
       i="$(($i + 1))"
     done
-    term_output array tui_MENU_SELECTED_ITEMS get
+    # term_output array tui_MENU_SELECTED_ITEMS get
+    term_output quote "$(array tui_MENU_SELECTED_ITEMS get)"
   fi
 }
 
