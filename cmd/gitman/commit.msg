@@ -1,1 +1,1 @@
-tui-fs needs fixing of global selection return
+tui-fs fixed return of global selection

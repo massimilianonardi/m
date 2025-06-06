@@ -116,20 +116,26 @@ env_result()
 {
   tui_MENU_RETURN_GLOBAL_SELECTION=""
 
-  for k in $(map term_FS_DIR_STATES keys)
+  eval set -- $(map term_FS_DIR_STATES keys)
+
+  # for k in $(map term_FS_DIR_STATES keys)
+  for k in "$@"
   do
     state="$(map term_FS_DIR_STATES get "$k")"
     tui_MENU_RETURN_SELECTION=""
     env_read_state "$state" "tui_MENU_RETURN_SELECTION"
     tui_MENU_RETURN_GLOBAL_SELECTION="$tui_MENU_RETURN_GLOBAL_SELECTION $tui_MENU_RETURN_SELECTION"
 
-    log "k=$k"
-    log "tui_MENU_RETURN_SELECTION=$tui_MENU_RETURN_SELECTION"
-    log "tui_MENU_RETURN_GLOBAL_SELECTION=$tui_MENU_RETURN_GLOBAL_SELECTION"
+    # log $state
+    # log "k=$k"
+    # log "tui_MENU_RETURN_SELECTION=$tui_MENU_RETURN_SELECTION"
+    # log "tui_MENU_RETURN_GLOBAL_SELECTION=$tui_MENU_RETURN_GLOBAL_SELECTION"
 
-    term_output echo "k=$k"
-    term_output echo "tui_MENU_RETURN_SELECTION=$tui_MENU_RETURN_SELECTION"
-    term_output echo "tui_MENU_RETURN_GLOBAL_SELECTION=$tui_MENU_RETURN_GLOBAL_SELECTION"
+    # term_output echo "args=$@"
+    # term_output echo "state=$state"
+    # term_output echo "k=$k"
+    # term_output echo "tui_MENU_RETURN_SELECTION=$tui_MENU_RETURN_SELECTION"
+    # term_output echo "tui_MENU_RETURN_GLOBAL_SELECTION=$tui_MENU_RETURN_GLOBAL_SELECTION"
   done
 
   # term_region_clear; term_render echo "env_result"; read x

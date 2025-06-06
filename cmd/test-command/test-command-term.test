@@ -38,7 +38,10 @@ test_term()
 
   # env_export res tui menu $menu_entries
   # env_import "$res" tui menu
+  # env_read_state "$res" "key tui_MENU_RETURN_ITEM tui_MENU_RETURN_SELECTION"
+  # echo "key=$key"; echo "tui_MENU_RETURN_ITEM=$tui_MENU_RETURN_ITEM"; echo "tui_MENU_RETURN_SELECTION=$tui_MENU_RETURN_SELECTION"
   # menuexec "" "" "" tui menu $menu_entries
+  # env_read "key res selection" tui menu $menu_entries
   # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
   # res="$(tui menu $menu_entries)"
   # echo "res=$res"
