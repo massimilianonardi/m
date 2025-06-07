@@ -7,15 +7,10 @@
 
 #-------------------------------------------------------------------------------
 
-env_defaults()
+env_init()
 {
   true
   # set proper initial variables values
-}
-
-args_init()
-{
-  true
   # process args "$@"
 }
 
@@ -73,7 +68,7 @@ env_list_get()
   # env_list "term_TEMPLATE_\|custom_var_pattern"
 }
 
-return_res()
+env_result()
 {
   true
   # return result

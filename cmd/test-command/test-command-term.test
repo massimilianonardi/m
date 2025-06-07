@@ -24,23 +24,12 @@ test_term()
 
   # menucmd id menucmd multi menucmd keys "b:n:m" \
 
-  # menuread "" "" "" $menu_entries
-  # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
-
-  # menu-fs
-  # menuexec "" "" "" menu-fs
-  # menufs "" "" "" "/home"
-  # menufs "" "" ""
-  # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
-  # fsencdec
-
   # tui menu $menu_entries
 
   # env_export res tui menu $menu_entries
   # env_import "$res" tui menu
   # env_read_state "$res" "key tui_MENU_RETURN_ITEM tui_MENU_RETURN_SELECTION"
   # echo "key=$key"; echo "tui_MENU_RETURN_ITEM=$tui_MENU_RETURN_ITEM"; echo "tui_MENU_RETURN_SELECTION=$tui_MENU_RETURN_SELECTION"
-  # menuexec "" "" "" tui menu $menu_entries
   # env_read "key res selection" tui menu $menu_entries
   # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
   # res="$(tui menu $menu_entries)"
@@ -52,8 +41,9 @@ test_term()
 
   # res="$(KEY_LOOP="false" tui head "FILE BROWSER" "e=Encode, d=Decode" tui-fs .)"
   # res="$(tui head "FILE BROWSER" "e=Encode, d=Decode" tui-fs .)"
-  res="$(tui fs .)"
-  echo "res=$res"
+  # env_export res tui head "FILE BROWSER" "e=Encode, d=Decode" tui-fs .
+  # res="$(tui fs .)"
+  # echo "res=$res"
 
   # tui multimenu $menu_entries
   # res="$(tui multimenu $menu_entries)"

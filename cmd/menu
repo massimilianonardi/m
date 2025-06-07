@@ -12,40 +12,9 @@
 
 #-------------------------------------------------------------------------------
 
-# . realpaths.lib.sh
-# . waituser.lib.sh
-# . enc.lib.sh
 . array.lib.sh
 
 #-------------------------------------------------------------------------------
-
-tty_get_cursor_pos()
-{
-  if [ -z "$1" ]
-  then
-    if [ -z "$2" ]
-    then
-      set -- "row" "col"
-    else
-      set -- "row" "$2"
-    fi
-  elif [ -z "$2" ]
-  then
-    set -- "$1" "col"
-  fi
-
-  saved_tty_settings=$(stty -g)
-
-  stty -echo -icanon min 0 time 1
-  tput u7
-  IFS='[;R' read -r dummy1 $1 $2 dummy2
-
-  stty "$saved_tty_settings"
-
-  # echo "row=$row"
-  # echo "col=$col"
-  # read x
-}
 
 string_count_lines()
 {
