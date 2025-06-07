@@ -40,3 +40,9 @@
 2025/06/07-09:36:38.074 c5e3 Level-0 table #239: started
 2025/06/07-09:36:38.104 c5e3 Level-0 table #239: 1783904 bytes OK
 2025/06/07-09:36:38.106 c5e3 Delete type=0 #235
+2025/06/07-10:09:16.794 face Compacting 1@0 + 1@1 files
+2025/06/07-10:09:16.802 face Generated table #240@0: 3359 keys, 38868 bytes
+2025/06/07-10:09:16.802 face Compacted 1@0 + 1@1 files => 38868 bytes
+2025/06/07-10:09:16.803 face compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/06/07-10:09:16.803 face Delete type=2 #237
+2025/06/07-10:09:16.803 face Delete type=2 #239
