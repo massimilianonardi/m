@@ -12,10 +12,6 @@
 
 init_menu_dir()
 {
-  # rsudo "$COMMAND" "$REMOTE_HOST" "$REMOTE_USER" "$@"
-  # term_render rsudo "execute" "localhost" "$USER" "ls"
-  term_render rsudo "execute" "localhost" "$USER" << 'EOF'
-# qwe123
     quote()
     {
       if [ -z "$1" ]
@@ -32,22 +28,26 @@ init_menu_dir()
     #   echo "k=$k"
     # done
 
-    set -- "'${1}'"
-    echo "args: $@"
-
+  # rsudo "$COMMAND" "$REMOTE_HOST" "$REMOTE_USER" "$@"
+  # term_render rsudo "execute" "localhost" "$USER" "ls"
+  term_render rsudo "execute" "localhost" "$USER" << EOF
+  # term_render rsudo "execute" "localhost" "$USER" << 'EOF'
+# qwe123
+    set -- "${1}"
+    echo "args: \$@"
     for k in ..?* .[!.]* *
     do
-      if [ -d "$k" ]
+      if [ -d "\$k" ]
       then
-        echo "${1}/$k=[D] $k"
+        echo "\${1}/\$k=[D] \$k"
       fi
     done
 
     for k in ..?* .[!.]* *
     do
-      if [ -f "$k" ]
+      if [ -f "\$k" ]
       then
-        echo "${1}/$k=[F] $k"
+        echo "\${1}/\$k=[F] \$k"
       fi
     done
 EOF

@@ -62,10 +62,12 @@ log "SUDO_NO_PASS=$SUDO_NO_PASS"
     log "no password provided to sudo"
     setsid ssh -o 'StrictHostKeyChecking no' -l "$REMOTE_USER" "$REMOTE_HOST" "$RSUDO_SSH_COMMAND" "$@"
   else
+    export RSUDO_PASSWORD="qwe123"
     log "password provided to sudo"
-    # (echo "$RSUDO_PASSWORD"; [ ! -t 0 ] && cat) | setsid ssh -o 'StrictHostKeyChecking no' -l "$REMOTE_USER" "$REMOTE_HOST" "$RSUDO_SSH_COMMAND" "$@"
-    (export RSUDO_PASSWORD="qwe123"; echo "$RSUDO_PASSWORD") | \
-    setsid ssh -o 'StrictHostKeyChecking no' -l "$REMOTE_USER" "$REMOTE_HOST" echo "$RSUDO_PASSWORD" | sudo -S --prompt='' -- "$@"
+    (echo "$RSUDO_PASSWORD"; [ ! -t 0 ] && cat) | setsid ssh -o 'StrictHostKeyChecking no' -l "$REMOTE_USER" "$REMOTE_HOST" "$RSUDO_SSH_COMMAND" "$@"
+    # cat | (export RSUDO_PASSWORD="qwe123"; echo "$RSUDO_PASSWORD"; cat) | \
+    # setsid ssh -o 'StrictHostKeyChecking no' -l "$REMOTE_USER" "$REMOTE_HOST" \
+    # '(echo "qwe123"; cat) | sudo -S --prompt='' -- /bin/sh -s'
   fi
 # )
 }
