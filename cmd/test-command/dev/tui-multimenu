@@ -9,32 +9,6 @@
 
 #-------------------------------------------------------------------------------
 
-_main()
-{
-  # term_output echo "vars"
-  # term_output eval "$var1"
-  # term_output eval "$var2"
-  # term_output echo "var1=$var1"
-  # term_output echo "var2=$var2"
-  # read x
-
-  # set -x
-  while [ true ]
-  do
-    # menucustom
-    # var1="$(eval "$var1" && menucustom)"
-    # var2="$(eval "$var2" && menucustom)"
-    env_eval "var1" tui-menu "$@"
-    env_eval "var2" tui-menu "$@"
-    # env_eval "var1" tui-menu
-    # env_eval "var2" tui-menu
-    # read x
-  done
-  # set +x
-}
-
-#-------------------------------------------------------------------------------
-
 env_init()
 {
   menuset id
@@ -48,23 +22,26 @@ render()
 {
   term_region_clear
   eval "set -- $tui_MULTI_MENU_ARGS"
-  term_COL0="10" env_export var1 tui-menu "$@"
-  term_COL0="50" env_export var2 tui-menu "$@"
+  term_COL0="10" env_export tui_MULTI_MENU_STATE_1 tui-menu "$@"
+  term_COL0="50" env_export tui_MULTI_MENU_STATE_2 tui-menu "$@"
 }
 
 key_loop()
 {
   while true
   do
-    key="$(readc)"
+    env_export "tui_MULTI_MENU_STATE_1" env_import "$tui_MULTI_MENU_STATE_1" tui-menu
+    env_export "tui_MULTI_MENU_STATE_2" env_import "$tui_MULTI_MENU_STATE_2" tui-menu
 
-    case "$key" in
-      "q") exit 0;;
-      "esc") exit 0;;
-      "space") true;;
-      "enter") true;;
-      *) exit 1;;
-    esac
+    # key="$(readc)"
+    #
+    # case "$key" in
+    #   "q") exit 0;;
+    #   "esc") exit 0;;
+    #   "space") true;;
+    #   "enter") true;;
+    #   *) exit 1;;
+    # esac
   done
 }
 
