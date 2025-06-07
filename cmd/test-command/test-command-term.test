@@ -47,9 +47,9 @@ test_term()
 
   # file-enc-dec
 
-  tui multimenu $menu_entries
-  # res="$(tui multimenu $menu_entries)"
-  # echo "res=$res"
+  # tui multimenu $menu_entries
+  res="$(tui multimenu $menu_entries)"
+  echo "res=$res"
   # menuexec "" "" "" tui multimenu $menu_entries
   # echo "key=$key"; echo "res=$res"; echo "selection=$selection"
 }
