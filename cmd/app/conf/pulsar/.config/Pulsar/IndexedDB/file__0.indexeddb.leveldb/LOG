@@ -28,3 +28,12 @@
 2025/06/07-09:09:10.461 9ebf compacted to: files[ 0 1 1 0 0 0 0 ]
 2025/06/07-09:09:10.461 9ebf Delete type=2 #233
 2025/06/07-09:09:10.461 9ebf Delete type=2 #231
+2025/06/07-09:19:08.744 c5e3 Level-0 table #236: started
+2025/06/07-09:19:08.776 c5e3 Level-0 table #236: 1729921 bytes OK
+2025/06/07-09:19:08.778 c5e3 Delete type=0 #232
+2025/06/07-09:23:28.869 c141 Compacting 1@0 + 1@1 files
+2025/06/07-09:23:28.876 c141 Generated table #237@0: 2667 keys, 33885 bytes
+2025/06/07-09:23:28.876 c141 Compacted 1@0 + 1@1 files => 33885 bytes
+2025/06/07-09:23:28.877 c141 compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/06/07-09:23:28.877 c141 Delete type=2 #234
+2025/06/07-09:23:28.877 c141 Delete type=2 #236

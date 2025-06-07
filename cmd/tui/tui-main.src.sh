@@ -42,7 +42,7 @@ main()
 {
   term_region_init
 
-  render
+  KEY_LOOP="false" render
 
   [ "$KEY_LOOP" = "false" ] || key_loop
 }

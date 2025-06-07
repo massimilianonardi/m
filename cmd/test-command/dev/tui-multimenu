@@ -2,29 +2,15 @@
 
 #-------------------------------------------------------------------------------
 
+. arg.lib.sh
 . env.lib.sh
 . term.lib.sh
 . menu.lib.sh
 
 #-------------------------------------------------------------------------------
 
-menucustom()
+_main()
 {
-  tui-menu "$@"
-}
-
-#-------------------------------------------------------------------------------
-
-main()
-{
-  menuset id
-  menuset multi
-  menuset keys "b:n:m"
-
-  export ENV_RETURN="export"
-
-  var1="$(KEY_LOOP="false"                menucustom "$@")"
-  var2="$(KEY_LOOP="false" term_COL0="40" menucustom "$@")"
   # term_output echo "vars"
   # term_output eval "$var1"
   # term_output eval "$var2"
@@ -49,5 +35,49 @@ main()
 
 #-------------------------------------------------------------------------------
 
-# main "$@" 3>&2 2>&1 1>&3
-main "$@"
+env_init()
+{
+  menuset id
+  menuset multi
+  menuset keys "b:n:m"
+
+  tui_MULTI_MENU_ARGS="$(saveargs "$@")"
+}
+
+render()
+{
+  term_region_clear
+  eval "set -- $tui_MULTI_MENU_ARGS"
+  term_COL0="10" env_export var1 tui-menu "$@"
+  term_COL0="50" env_export var2 tui-menu "$@"
+}
+
+key_loop()
+{
+  while true
+  do
+    key="$(readc)"
+
+    case "$key" in
+      "q") exit 0;;
+      "esc") exit 0;;
+      "space") true;;
+      "enter") true;;
+      *) exit 1;;
+    esac
+  done
+}
+
+env_list_get()
+{
+  env_list "term_ROW\|term_COL\|tui_MULTI_MENU_\|key"
+}
+
+env_result()
+{
+  true
+}
+
+#-------------------------------------------------------------------------------
+
+. tui-main.src.sh

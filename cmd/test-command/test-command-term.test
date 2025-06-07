@@ -45,9 +45,9 @@ test_term()
   # res="$(tui menu-file .)"
   # echo "res=$res"
 
-  file-enc-dec
-  
-  # tui multimenu $menu_entries
+  # file-enc-dec
+
+  tui multimenu $menu_entries
   # res="$(tui multimenu $menu_entries)"
   # echo "res=$res"
   # menuexec "" "" "" tui multimenu $menu_entries
