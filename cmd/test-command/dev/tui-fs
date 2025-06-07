@@ -29,18 +29,34 @@ init_menu_dir()
     array term_FS_DIR_ARRAY add "${1}/..=.."
   fi
 
+  # for k in ..?* .[!.]* *
+  # do
+  #   if [ -e "$k" ]
+  #   then
+  #     # array term_FS_DIR_ARRAY add "${1}/$k=$k"
+  #     if [ -d "$k" ]
+  #     then
+  #       array term_FS_DIR_ARRAY add "${1}/$k=[D] $k"
+  #     elif [ -f "$k" ]
+  #     then
+  #       array term_FS_DIR_ARRAY add "${1}/$k=[F] $k"
+  #     fi
+  #   fi
+  # done
+
   for k in ..?* .[!.]* *
   do
-    if [ -e "$k" ]
+    if [ -d "$k" ]
     then
-      # array term_FS_DIR_ARRAY add "${1}/$k=$k"
-      if [ -d "$k" ]
-      then
-        array term_FS_DIR_ARRAY add "${1}/$k=[D] $k"
-      elif [ -f "$k" ]
-      then
-        array term_FS_DIR_ARRAY add "${1}/$k=[F] $k"
-      fi
+      array term_FS_DIR_ARRAY add "${1}/$k=[D] $k"
+    fi
+  done
+
+  for k in ..?* .[!.]* *
+  do
+    if [ -f "$k" ]
+    then
+      array term_FS_DIR_ARRAY add "${1}/$k=[F] $k"
     fi
   done
 
@@ -107,39 +123,19 @@ env_list_get()
   env_list "term_ROW\|term_COL\|term_FS_"
 }
 
-log()
-{
-  echo "$@" >>/m/src/git/m/cmd/test-command/dev/term.log
-}
-
 env_result()
 {
   tui_MENU_RETURN_GLOBAL_SELECTION=""
 
   eval set -- $(map term_FS_DIR_STATES keys)
 
-  # for k in $(map term_FS_DIR_STATES keys)
   for k in "$@"
   do
     state="$(map term_FS_DIR_STATES get "$k")"
     tui_MENU_RETURN_SELECTION=""
     env_read_state "$state" "tui_MENU_RETURN_SELECTION"
     tui_MENU_RETURN_GLOBAL_SELECTION="$tui_MENU_RETURN_GLOBAL_SELECTION $tui_MENU_RETURN_SELECTION"
-
-    # log $state
-    # log "k=$k"
-    # log "tui_MENU_RETURN_SELECTION=$tui_MENU_RETURN_SELECTION"
-    # log "tui_MENU_RETURN_GLOBAL_SELECTION=$tui_MENU_RETURN_GLOBAL_SELECTION"
-
-    # term_output echo "args=$@"
-    # term_output echo "state=$state"
-    # term_output echo "k=$k"
-    # term_output echo "tui_MENU_RETURN_SELECTION=$tui_MENU_RETURN_SELECTION"
-    # term_output echo "tui_MENU_RETURN_GLOBAL_SELECTION=$tui_MENU_RETURN_GLOBAL_SELECTION"
   done
-
-  # term_region_clear; term_render echo "env_result"; read x
-  # term_output echo "${tui_MENU_RETURN_GLOBAL_SELECTION}"
 
   term_output quote "${key}"
   term_output printf " "
@@ -147,8 +143,6 @@ env_result()
   term_output printf " "
   term_output quote "${tui_MENU_RETURN_GLOBAL_SELECTION}"
   # term_output printf "${tui_MENU_RETURN_GLOBAL_SELECTION}"
-
-  # set >>/m/src/git/m/cmd/test-command/dev/term.log
 }
 
 #-------------------------------------------------------------------------------
