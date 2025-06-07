@@ -42,9 +42,11 @@ test_term()
   # res="$(KEY_LOOP="false" tui head "FILE BROWSER" "e=Encode, d=Decode" tui-menu-file .)"
   # res="$(tui head "FILE BROWSER" "e=Encode, d=Decode" tui-menu-file .)"
   # env_export res tui head "FILE BROWSER" "e=Encode, d=Decode" tui-menu-file .
-  res="$(tui menu-file .)"
-  echo "res=$res"
+  # res="$(tui menu-file .)"
+  # echo "res=$res"
 
+  file-enc-dec
+  
   # tui multimenu $menu_entries
   # res="$(tui multimenu $menu_entries)"
   # echo "res=$res"

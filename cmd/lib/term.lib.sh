@@ -226,6 +226,11 @@ term_region_clear()
 term_render_text_at()
 {
 (
+  if [ -z "$1" ]
+  then
+    return 0
+  fi
+
   # IFS=$(printf '\n+'); IFS=${IFS%?}
   IFS='
 '

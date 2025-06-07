@@ -14,7 +14,7 @@ env_init()
   tui_HEAD_FOOTER="$1"
   shift
 
-  tui_HEAD_ARGS=$(saveargs "$@")
+  tui_HEAD_ARGS="$(saveargs "$@")"
 
   tui_HEAD_HEADER_ROW_0="$term_ROW0"
   tui_HEAD_FOOTER_ROW_0="$(($term_ROW0 + $term_ROWS))"
