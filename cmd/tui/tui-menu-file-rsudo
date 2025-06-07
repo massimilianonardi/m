@@ -13,7 +13,44 @@
 init_menu_dir()
 {
   # rsudo "$COMMAND" "$REMOTE_HOST" "$REMOTE_USER" "$@"
-  term_render rsudo "execute" "localhost" "$USER" "ls"
+  # term_render rsudo "execute" "localhost" "$USER" "ls"
+  term_render rsudo "execute" "localhost" "$USER" << 'EOF'
+# qwe123
+    quote()
+    {
+      if [ -z "$1" ]
+      then
+        printf "''"
+      fi
+
+      printf "%s" "$1" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/"
+    }
+
+    # for k in ..?* .[!.]* *
+    # # for k in "$(ls)"
+    # do
+    #   echo "k=$k"
+    # done
+
+    set -- "'${1}'"
+    echo "args: $@"
+
+    for k in ..?* .[!.]* *
+    do
+      if [ -d "$k" ]
+      then
+        echo "${1}/$k=[D] $k"
+      fi
+    done
+
+    for k in ..?* .[!.]* *
+    do
+      if [ -f "$k" ]
+      then
+        echo "${1}/$k=[F] $k"
+      fi
+    done
+EOF
   read x
 
   if [ ! -d "$1" ]
