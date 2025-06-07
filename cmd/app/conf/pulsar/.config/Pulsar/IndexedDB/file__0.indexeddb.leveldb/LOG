@@ -22,3 +22,9 @@
 2025/06/07-08:52:05.036 5462 Level-0 table #233: started
 2025/06/07-08:52:05.066 5462 Level-0 table #233: 1725538 bytes OK
 2025/06/07-08:52:05.068 5462 Delete type=0 #229
+2025/06/07-09:09:10.453 9ebf Compacting 1@0 + 1@1 files
+2025/06/07-09:09:10.460 9ebf Generated table #234@0: 1995 keys, 28505 bytes
+2025/06/07-09:09:10.460 9ebf Compacted 1@0 + 1@1 files => 28505 bytes
+2025/06/07-09:09:10.461 9ebf compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/06/07-09:09:10.461 9ebf Delete type=2 #233
+2025/06/07-09:09:10.461 9ebf Delete type=2 #231

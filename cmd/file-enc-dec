@@ -17,7 +17,10 @@ MENU_FOOTER=""
 
 env_read "key file selection" tui head "$MENU_HEADER" "$MENU_FOOTER" tui-menu-file .
 
-if [ ! -f "$file" ]
+if [ "$key" = "esc" ] || [ "$key" = "q" ]
+then
+  false
+elif [ ! -f "$file" ]
 then
   echo "not a file: $file"
 else
@@ -27,9 +30,6 @@ else
   elif [ "$key" = "d" ]
   then
     file_dec "$file"
-  # elif [ "$key" = "space" ]
-  # then
-  #   eval "$(menuset keys "" && tui-menu file_enc="Encode file: $file" file_dec="Decode file: $file") '$file'"
   fi
 fi
 
