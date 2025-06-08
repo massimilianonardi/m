@@ -82,3 +82,12 @@
 2025/06/08-12:39:30.954 8119 Level-0 table #278: started
 2025/06/08-12:39:30.980 8119 Level-0 table #278: 1668671 bytes OK
 2025/06/08-12:39:30.982 8119 Delete type=0 #274
+2025/06/08-12:55:53.665 85ba Compacting 1@0 + 1@1 files
+2025/06/08-12:55:53.673 85ba Generated table #279@0: 5208 keys, 54458 bytes
+2025/06/08-12:55:53.673 85ba Compacted 1@0 + 1@1 files => 54458 bytes
+2025/06/08-12:55:53.674 85ba compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/06/08-12:55:53.674 85ba Delete type=2 #278
+2025/06/08-12:55:53.674 85ba Delete type=2 #276
+2025/06/08-13:16:03.030 8a56 Level-0 table #281: started
+2025/06/08-13:16:03.059 8a56 Level-0 table #281: 1661695 bytes OK
+2025/06/08-13:16:03.061 8a56 Delete type=0 #277

@@ -41,9 +41,16 @@ test_rsudo()
 # pwd; cat
 # EOF
 
-#   # correct way to combine stdin commands with commands from heredoc
-#   (echo 'echo "ls -lA"'; cat << EOF) | rsudo execute "$REMOTE_HOST" "$REMOTE_USER"
+#   # correct way to combine stdin commands with commands from heredoc (heredoc and stdin commands cannot access stdin)
+#   (echo 'echo "ls -lA"'; echo "cat"; echo 'var="test value"'; cat << EOF; echo "echo after heredoc") | rsudo execute "$REMOTE_HOST" "$REMOTE_USER"
 # pwd; cat
+# echo "var=\$var"
+# echo "end of cat"
+# EOF
+
+#   (echo 'echo "ls -lA"'; echo "cat"; echo 'var="test value"'; cat << 'EOF'; echo "echo after heredoc") | rsudo execute "$REMOTE_HOST" "$REMOTE_USER"
+# pwd; cat
+# echo "var=$var"
 # echo "end of cat"
 # EOF
 
