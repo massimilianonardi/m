@@ -231,11 +231,7 @@ delete()
     exit 1
   fi
 
-  # REMOTE_PATH="$1"
-  #
-  # log "delete REMOTE_PATH=$REMOTE_PATH"
-
-  shell "rm -rf -- $(saveargs "$@")"
+  shell "rm -rf -- $@"
 # )
 }
 

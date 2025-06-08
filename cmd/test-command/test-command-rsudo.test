@@ -56,8 +56,8 @@ test_rsudo()
   test_files_start
 
   read x
-  rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/*" # not working because globbin is not interpreted on server
-  # rsudo shell "$REMOTE_HOST" "$REMOTE_USER" "rm -rf -- '${TEST_DIR}'/*" # force glob interpreting at server side
+  # rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/*" # working because globbin is interpreted server side
+  # rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "'${TEST_DIR}/000/'* '${TEST_DIR}/aaa'/*" # globbin server side + multiple entries (with eventual spaces or special characters)
 
   # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/link-recursive" "${TEST_DIR}/upload/link-aaa-recursive"
   # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/bbb/ccc/link-absolute" "${TEST_DIR}/upload/link-absolute"

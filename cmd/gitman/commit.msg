@@ -1,1 +1,1 @@
-rsudo working on implicit support for globbing on delete
+rsudo delete support for multiple arguments and globbing server side
