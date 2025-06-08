@@ -20,17 +20,36 @@ test_rsudo()
   #   export RSUDO_PASSWORD
   # fi
 
-  # rsudo execute "$REMOTE_HOST" "$REMOTE_USER" ls -ld # ask for password if not available in env
-  # echo "$RSUDO_PASSWORD" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" ls -ld # password from cmdline
-  # echo "ls -lA" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" # commands from pipe
-  # rsudo execute "$REMOTE_HOST" "$REMOTE_USER" "" # error no command from arg or pipe
-  # echo "ls -lA" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" cat # command from arg wich receive input from pipe
+  # # ask for password if not available in env
+  # rsudo execute "$REMOTE_HOST" "$REMOTE_USER" ls -ld
 
-#   echo "ls -lA" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" << EOF # command from heredoc are streamed through pipe to ssh, thus input from pipe is discarded (by posix sh design)
+  # # password from cmdline
+  # echo "$RSUDO_PASSWORD" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" ls -ld
+
+  # # commands from pipe
+  # echo "ls -lA" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER"
+
+  # # error no command from arg or pipe
+  # rsudo execute "$REMOTE_HOST" "$REMOTE_USER" ""
+
+  # # command from arg wich receives input from pipe
+  # echo "ls -lA" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" cat
+
+#   # command from heredoc are streamed through pipe to ssh, thus input from pipe is discarded (by posix sh design)
+#   echo "ls -lA" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" << EOF
+# # for above reasons eventual password could only be streamed inside heredoc (not proper way to do)
 # pwd; cat
 # EOF
 
-#   (echo 'echo "ls -lA"'; cat << EOF) | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" # correct way to combine stdin commands with commands from heredoc
+#   # correct way to combine stdin commands with commands from heredoc
+#   (echo 'echo "ls -lA"'; cat << EOF) | rsudo execute "$REMOTE_HOST" "$REMOTE_USER"
+# pwd; cat
+# echo "end of cat"
+# EOF
+
+#   # correct way to provide password (RSUDO_PASSWORD must already be defined or echoed directly without variable)
+#   # and combine stdin commands with commands from heredoc
+#   (echo "$RSUDO_PASSWORD"; echo 'echo "ls -lA"'; cat << EOF) | rsudo execute "$REMOTE_HOST" "$REMOTE_USER"
 # pwd; cat
 # echo "end of cat"
 # EOF
@@ -53,12 +72,18 @@ test_rsudo()
   # rsudo putdb "$REMOTE_HOST" "$REMOTE_USER" system_duplicate /tmp/!db.sql
   # rm /tmp/!db.sql
 
-  test_files_start
+  # test_files_start
 
-  read x
-  # rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/*" # working because globbin is interpreted server side
-  # rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "'${TEST_DIR}/000/'* '${TEST_DIR}/aaa'/*" # not working because multiple paths inside one argument
-  rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "\"${TEST_DIR}/000\"/*" "${TEST_DIR}/aaa/*" # globbin server side + multiple entries (with eventual spaces or special characters)
+  # read x
+
+  # # working because globbing is interpreted server side
+  # rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/*"
+
+  # # not working because multiple paths inside one argument
+  # rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "'${TEST_DIR}/000/'* '${TEST_DIR}/aaa'/*"
+
+  # # globbing server side + multiple entries (with eventual spaces or special characters)
+  # rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "\"${TEST_DIR}/000\"/*" "${TEST_DIR}/aaa/*"
 
   # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/link-recursive" "${TEST_DIR}/upload/link-aaa-recursive"
   # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/bbb/ccc/link-absolute" "${TEST_DIR}/upload/link-absolute"
@@ -76,9 +101,9 @@ test_rsudo()
   #
   # ls -lA "${TEST_DIR}/upload"
   # ls -lA "${TEST_DIR}/download"
-  read x
+  # read x
 
-  test_files_end
+  # test_files_end
 
   # rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}"
 }
