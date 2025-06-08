@@ -91,3 +91,36 @@
 2025/06/08-13:16:03.030 8a56 Level-0 table #281: started
 2025/06/08-13:16:03.059 8a56 Level-0 table #281: 1661695 bytes OK
 2025/06/08-13:16:03.061 8a56 Delete type=0 #277
+2025/06/08-14:02:20.453 9dea Compacting 1@0 + 1@1 files
+2025/06/08-14:02:20.474 9dea Generated table #282@0: 5800 keys, 58370 bytes
+2025/06/08-14:02:20.474 9dea Compacted 1@0 + 1@1 files => 58370 bytes
+2025/06/08-14:02:20.475 9dea compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/06/08-14:02:20.476 9dea Delete type=2 #279
+2025/06/08-14:02:20.476 9dea Delete type=2 #281
+2025/06/08-14:10:57.416 a80e Level-0 table #284: started
+2025/06/08-14:10:57.445 a80e Level-0 table #284: 1649785 bytes OK
+2025/06/08-14:10:57.447 a80e Delete type=0 #280
+2025/06/08-14:43:35.771 e05e Compacting 1@0 + 1@1 files
+2025/06/08-14:43:35.779 e05e Generated table #285@0: 6392 keys, 61951 bytes
+2025/06/08-14:43:35.779 e05e Compacted 1@0 + 1@1 files => 61951 bytes
+2025/06/08-14:43:35.780 e05e compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/06/08-14:43:35.780 e05e Delete type=2 #284
+2025/06/08-14:43:35.780 e05e Delete type=2 #282
+2025/06/08-15:01:11.474 fa7c Level-0 table #287: started
+2025/06/08-15:01:11.502 fa7c Level-0 table #287: 1654377 bytes OK
+2025/06/08-15:01:11.503 fa7c Delete type=0 #283
+2025/06/08-15:07:48.084 106aa Compacting 1@0 + 1@1 files
+2025/06/08-15:07:48.093 106aa Generated table #288@0: 6996 keys, 66605 bytes
+2025/06/08-15:07:48.093 106aa Compacted 1@0 + 1@1 files => 66605 bytes
+2025/06/08-15:07:48.094 106aa compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/06/08-15:07:48.094 106aa Delete type=2 #287
+2025/06/08-15:07:48.094 106aa Delete type=2 #285
+2025/06/08-15:18:01.312 1217d Level-0 table #290: started
+2025/06/08-15:18:01.340 1217d Level-0 table #290: 1662553 bytes OK
+2025/06/08-15:18:01.342 1217d Delete type=0 #286
+2025/06/08-15:26:34.004 14808 Compacting 1@0 + 1@1 files
+2025/06/08-15:26:34.016 14808 Generated table #291@0: 7604 keys, 71479 bytes
+2025/06/08-15:26:34.016 14808 Compacted 1@0 + 1@1 files => 71479 bytes
+2025/06/08-15:26:34.017 14808 compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/06/08-15:26:34.017 14808 Delete type=2 #288
+2025/06/08-15:26:34.017 14808 Delete type=2 #290

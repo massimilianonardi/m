@@ -41,6 +41,7 @@ command:
     switch off key loop
     (allows initial renders of all mods into tui and only after recall active mod with key loop)
     problem env import/export for composite modules
+    mod for scroll text (useful for log)
 --------------------------------------------------------------------------------
 https://sed.js.org/
 https://ato.pxeger.com/about

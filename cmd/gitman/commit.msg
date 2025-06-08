@@ -1,1 +1,1 @@
-test rsudo
+tui-menu-file-rsudo

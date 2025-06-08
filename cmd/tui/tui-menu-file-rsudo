@@ -12,6 +12,11 @@
 
 init_menu_dir()
 {
+  REMOTE_HOST="localhost"
+  REMOTE_USER="$USER"
+  export RSUDO_PASSWORD="qwe123"
+
+  heredoc="$(echo "set -- '$1'"; cat << 'EOF'
     quote()
     {
       if [ -z "$1" ]
@@ -22,89 +27,41 @@ init_menu_dir()
       printf "%s" "$1" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/"
     }
 
-    # for k in ..?* .[!.]* *
-    # # for k in "$(ls)"
-    # do
-    #   echo "k=$k"
-    # done
+    if [ ! -d "$1" ]
+    then
+      return 1
+    fi
 
-  # rsudo "$COMMAND" "$REMOTE_HOST" "$REMOTE_USER" "$@"
-  # term_render rsudo "execute" "localhost" "$USER" "ls"
-  # term_render rsudo "execute" "localhost" "$USER" << 'EOF'
-  # RSUDO_PASSWORD="qwe123" term_render rsudo "execute_as" "localhost" "$USER" "root" << EOF
-  # RSUDO_PASSWORD="qwe123" term_render rsudo "execute" "localhost" "$USER" << EOF
-  term_render rsudo "execute" "localhost" "$USER" << EOF
-    set -- "${1}"
-    echo "args: \$@"
+    cd "$1"
+    set -- "$(cd -L -- "$1" && pwd -L)"
+
+    if [ ! "$(pwd)" = "/" ]
+    then
+      quote "${1}/..=.."
+      printf " "
+    fi
+
     for k in ..?* .[!.]* *
     do
-      if [ -d "\$k" ]
+      if [ -d "$k" ]
       then
-        echo "\${1}/\$k=[D] \$k"
+        quote "${1}/$k=[D] $k"
+        printf " "
       fi
     done
 
     for k in ..?* .[!.]* *
     do
-      if [ -f "\$k" ]
+      if [ -f "$k" ]
       then
-        echo "\${1}/\$k=[F] \$k"
+        quote "${1}/$k=[F] $k"
+        printf " "
       fi
     done
 EOF
-  read x
+)"
 
-  if [ ! -d "$1" ]
-  then
-    return 1
-  fi
-
-  cd "$1"
-  set -- "$(cd -L -- "$1" && pwd -L)"
-
-  array term_MFRS_DIR_ARRAY
-
-  if [ "$(pwd)" = "/" ]
-  then
-    set -- ""
-  else
-    array term_MFRS_DIR_ARRAY add "${1}/..=.."
-  fi
-
-  # for k in ..?* .[!.]* *
-  # do
-  #   if [ -e "$k" ]
-  #   then
-  #     # array term_MFRS_DIR_ARRAY add "${1}/$k=$k"
-  #     if [ -d "$k" ]
-  #     then
-  #       array term_MFRS_DIR_ARRAY add "${1}/$k=[D] $k"
-  #     elif [ -f "$k" ]
-  #     then
-  #       array term_MFRS_DIR_ARRAY add "${1}/$k=[F] $k"
-  #     fi
-  #   fi
-  # done
-
-  for k in ..?* .[!.]* *
-  do
-    if [ -d "$k" ]
-    then
-      array term_MFRS_DIR_ARRAY add "${1}/$k=[D] $k"
-    fi
-  done
-
-  for k in ..?* .[!.]* *
-  do
-    if [ -f "$k" ]
-    then
-      array term_MFRS_DIR_ARRAY add "${1}/$k=[F] $k"
-    fi
-  done
-
-  term_MFRS_MENU_DIR="$(array term_MFRS_DIR_ARRAY get)"
-
-  array term_MFRS_DIR_ARRAY unset
+  term_MFRS_MENU_DIR="$( (echo "arg='$1'"; echo "$heredoc") | rsudo execute "$REMOTE_HOST" "$REMOTE_USER")"
 }
 
 load_menu_dir()
@@ -136,6 +93,8 @@ load_menu_dir()
 
 env_init()
 {
+  term_MFRS_DIR_START="$1"
+
   map term_MFRS_DIR_STATES
 
   init_menu_dir "$@"
@@ -151,7 +110,9 @@ key_loop()
 {
   map term_MFRS_DIR_STATES put "$(pwd)" "$term_MFRS_MENU_CURRENT_STATE"
   env_read_state "$term_MFRS_MENU_CURRENT_STATE" "key tui_MENU_RETURN_ITEM tui_MENU_RETURN_SELECTION"
+  # key="enter"
   res="$tui_MENU_RETURN_ITEM"
+read x
 
   while [ "$key" = "enter" ] && [ -n "$res" ]
   do
