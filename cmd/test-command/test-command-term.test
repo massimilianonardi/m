@@ -45,7 +45,7 @@ test_term()
   # res="$(tui menu-file .)"
   # echo "res=$res"
 
-  res="$(tui menu-file-rsudo .)"
+  res="$(tui menu-file-rsudo "localhost" "$USER" .)"
   echo "res=$res"
 
   # file-enc-dec

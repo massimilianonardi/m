@@ -12,10 +12,6 @@
 
 init_menu_dir()
 {
-  REMOTE_HOST="localhost"
-  REMOTE_USER="$USER"
-  export RSUDO_PASSWORD="qwe123"
-
   heredoc="$(echo "set -- '$1'"; cat << 'EOF'
     quote()
     {
@@ -61,7 +57,7 @@ init_menu_dir()
 EOF
 )"
 
-  term_MFRS_MENU_DIR="$( (echo "arg='$1'"; echo "$heredoc") | rsudo execute "$REMOTE_HOST" "$REMOTE_USER")"
+  term_MFRS_MENU_DIR="$(echo "$heredoc" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" 2>/dev/null)"
 }
 
 load_menu_dir()
@@ -93,7 +89,34 @@ load_menu_dir()
 
 env_init()
 {
+  if [ "$#" -lt "2" ]
+  then
+    exit 1
+  fi
+
+  REMOTE_HOST="$1"
+  shift
+
+  REMOTE_USER="$1"
+  shift
+
   term_MFRS_DIR_START="$1"
+
+  if [ -z "$RSUDO_PASSWORD" ]
+  then
+    if [ -t 0 ]
+    then
+      term_render tput rmcup
+      echo "[rsudo] Enter password for ${REMOTE_HOST}@${REMOTE_USER}:" 1>&2
+      # stty -echo
+      read -r RSUDO_PASSWORD
+      # stty echo
+      term_render tput smcup
+    else
+      read -r RSUDO_PASSWORD
+    fi
+    export RSUDO_PASSWORD
+  fi
 
   map term_MFRS_DIR_STATES
 
@@ -102,7 +125,6 @@ env_init()
 
 render()
 {
-  # eval KEY_LOOP="false" env_export "term_MFRS_MENU_CURRENT_STATE" tui-menu $term_MFRS_MENU_DIR
   eval env_export "term_MFRS_MENU_CURRENT_STATE" tui-menu $term_MFRS_MENU_DIR
 }
 
@@ -110,9 +132,7 @@ key_loop()
 {
   map term_MFRS_DIR_STATES put "$(pwd)" "$term_MFRS_MENU_CURRENT_STATE"
   env_read_state "$term_MFRS_MENU_CURRENT_STATE" "key tui_MENU_RETURN_ITEM tui_MENU_RETURN_SELECTION"
-  # key="enter"
   res="$tui_MENU_RETURN_ITEM"
-read x
 
   while [ "$key" = "enter" ] && [ -n "$res" ]
   do
