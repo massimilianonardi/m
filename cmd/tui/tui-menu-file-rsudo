@@ -30,7 +30,11 @@ init_menu_dir()
 
   # rsudo "$COMMAND" "$REMOTE_HOST" "$REMOTE_USER" "$@"
   # term_render rsudo "execute" "localhost" "$USER" "ls"
-  term_render rsudo "execute" "localhost" "$USER" << EOF
+  # RSUDO_PASSWORD="qwe123" term_render rsudo "execute" "localhost" "$USER" << EOF
+  RSUDO_PASSWORD="qwe123" term_render rsudo "shell_as" "localhost" "$USER" "root" 'echo "aaa bbb"'
+  read x
+  exit 0
+  RSUDO_PASSWORD="qwe123" term_render rsudo "execute_as" "localhost" "$USER" "root" << EOF
   # term_render rsudo "execute" "localhost" "$USER" << 'EOF'
 # qwe123
     set -- "${1}"

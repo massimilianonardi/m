@@ -9,65 +9,78 @@ log()
 
 #------------------------------------------------------------------------------
 
+quote()
+{
+  if [ -z "$1" ]
+  then
+    printf "''"
+  fi
+
+  # printf %s\\n "$1" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/"
+  printf "%s" "$1" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/"
+}
+
+#------------------------------------------------------------------------------
+
 execute()
 {
 # (
+  # check if commands are provided via stdin instead of command line
   if [ "$#" -eq "0" ] || [ -z "$*" ]
   then
     if [ -t 0 ]
     then
-      exit 1
+      log "no command provided to execute!"
+      exit 0
     fi
-log "input commands from stdin"
 
     set -- /bin/sh -s
   fi
 
+  # quote args because ssh command line will eveluate them removing quotes
   for k in "$@"
   do
     shift
-    set -- "$@" \""$k"\"
+    set -- "$@" "$(quote "$k")"
   done
-log "args: $@"
+  log "rsudo execute args (quoted): $@"
 
-  setsid ssh -n -o 'StrictHostKeyChecking no' -l "$REMOTE_USER" "$REMOTE_HOST" sudo -K\; sudo -n true 1>/dev/null 2>/dev/null
+  # need for password check
+  setsid ssh -n -o 'StrictHostKeyChecking no' -l "$REMOTE_USER" "$REMOTE_HOST" \
+  sudo -K\; sudo -n true 1>/dev/null 2>/dev/null
   SUDO_NO_PASS="$?"
-log "SUDO_NO_PASS=$SUDO_NO_PASS"
+  log "SUDO_NO_PASS=$SUDO_NO_PASS"
 
-  if [ -z "$EXECUTE_AS" ]
+  # build eventual sudo ssh command with proper options
+  if [ "$REMOTE_USER" = "root" ] && [ -z "$EXECUTE_AS" ]
   then
-    if [ "$REMOTE_USER" = "root" ]
-    then
-      RSUDO_SSH_COMMAND=""
-    elif [ "$SUDO_NO_PASS" = "0" ]
-    then
-      RSUDO_SSH_COMMAND="sudo --"
-    else
-      RSUDO_SSH_COMMAND="sudo -S --prompt='' --"
-    fi
+    RSUDO_SSH_COMMAND=""
   else
-    if [ "$REMOTE_USER" = "root" ] || [ "$SUDO_NO_PASS" = "0" ]
+    RSUDO_SSH_COMMAND="sudo"
+
+    if [ ! "$SUDO_NO_PASS" = "0" ]
     then
-      RSUDO_SSH_COMMAND="sudo --user=\"$EXECUTE_AS\" --"
-    else
-      RSUDO_SSH_COMMAND="sudo -S --prompt='' --user=\"$EXECUTE_AS\" --"
+      RSUDO_SSH_COMMAND="$RSUDO_SSH_COMMAND -S --prompt=''"
     fi
+
+    if [ -n "$EXECUTE_AS" ]
+    then
+      RSUDO_SSH_COMMAND="$RSUDO_SSH_COMMAND --user=\"$EXECUTE_AS\""
+    fi
+
+    RSUDO_SSH_COMMAND="$RSUDO_SSH_COMMAND --"
   fi
-  # RSUDO_SSH_COMMAND="pwd 1>&2; cd /; $RSUDO_SSH_COMMAND"
-  RSUDO_SSH_COMMAND="pwd 1>&2; $RSUDO_SSH_COMMAND"
+
   log "RSUDO_SSH_COMMAND=$RSUDO_SSH_COMMAND"
 
+  # execute ssh command
   if [ "$SUDO_NO_PASS" = "0" ]
   then
-    log "no password provided to sudo"
+    log "NO password provided to sudo"
     setsid ssh -o 'StrictHostKeyChecking no' -l "$REMOTE_USER" "$REMOTE_HOST" "$RSUDO_SSH_COMMAND" "$@"
   else
-    export RSUDO_PASSWORD="qwe123"
     log "password provided to sudo"
     (echo "$RSUDO_PASSWORD"; [ ! -t 0 ] && cat) | setsid ssh -o 'StrictHostKeyChecking no' -l "$REMOTE_USER" "$REMOTE_HOST" "$RSUDO_SSH_COMMAND" "$@"
-    # cat | (export RSUDO_PASSWORD="qwe123"; echo "$RSUDO_PASSWORD"; cat) | \
-    # setsid ssh -o 'StrictHostKeyChecking no' -l "$REMOTE_USER" "$REMOTE_HOST" \
-    # '(echo "qwe123"; cat) | sudo -S --prompt='' -- /bin/sh -s'
   fi
 # )
 }
@@ -99,6 +112,8 @@ execute_as()
   EXECUTE_AS="$1"
   shift
 
+  log "EXECUTE_AS=$EXECUTE_AS"
+
   execute "$@"
 # )
 }
@@ -115,6 +130,8 @@ shell_as()
 
   EXECUTE_AS="$1"
   shift
+
+  log "EXECUTE_AS=$EXECUTE_AS"
 
   shell "$@"
 # )
@@ -287,36 +304,6 @@ put()
   if [ -n "$REMOTE_OWNER_GROUP" ]; then execute chown -R "$REMOTE_OWNER_GROUP" "$REMOTE_PATH"; fi && \
   if [ -n "$REMOTE_PERMISSIONS" ]; then execute chmod -R "$REMOTE_PERMISSIONS" "$REMOTE_PATH"; fi
 # )
-}
-
-s2s_direct()
-{
-  if [ -z "$1" ] || [ -z "$2" ]
-  then
-    exit 1
-  fi
-
-  SOURCE_PATH="$1"
-  DEST_PATH="$2"
-  REMOTE_OWNER_GROUP="$3"
-  REMOTE_PERMISSIONS="$4"
-
-  #todo
-}
-
-s2s_proxy()
-{
-  if [ -z "$1" ] || [ -z "$2" ]
-  then
-    exit 1
-  fi
-
-  SOURCE_PATH="$1"
-  DEST_PATH="$2"
-  REMOTE_OWNER_GROUP="$3"
-  REMOTE_PERMISSIONS="$4"
-
-  #todo
 }
 
 #------------------------------------------------------------------------------
