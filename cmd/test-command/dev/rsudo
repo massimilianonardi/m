@@ -226,12 +226,16 @@ putdb()
 delete()
 {
 # (
-  if [ -z "$1" ]
+  if [ -z "$*" ]
   then
     exit 1
   fi
 
-  shell "rm -rf -- $@"
+  log "delete args: $@"
+
+  set -- rm -rf -- "$@"
+
+  shell "$*"
 # )
 }
 
