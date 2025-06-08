@@ -20,6 +20,15 @@ quote()
   printf "%s" "$1" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/"
 }
 
+saveargs()
+{
+  for i
+  do
+    quote "$i"
+    printf " "
+  done
+}
+
 #------------------------------------------------------------------------------
 
 execute()
@@ -222,7 +231,25 @@ delete()
     exit 1
   fi
 
+  # REMOTE_PATH="$1"
+  #
+  # log "delete REMOTE_PATH=$REMOTE_PATH"
+
+  shell "rm -rf -- $(saveargs "$@")"
+# )
+}
+
+_delete()
+{
+# (
+  if [ -z "$1" ]
+  then
+    exit 1
+  fi
+
   REMOTE_PATH="$1"
+
+  log "delete REMOTE_PATH=$REMOTE_PATH"
 
   execute rm -rf -- "$REMOTE_PATH"
 # )

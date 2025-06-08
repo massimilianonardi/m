@@ -1,1 +1,1 @@
-rsudo dev fixed args quoting + need password check + build proper ssh command
+rsudo working on implicit support for globbing on delete

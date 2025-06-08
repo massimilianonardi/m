@@ -2,39 +2,45 @@
 
 test_rsudo()
 {
-  . "/m/cmd/#rsudo_test_include"
+  REMOTE_HOST="localhost"
+  REMOTE_USER="$USER"
 
-  if [ -z "$RSUDO_PASSWORD" ]
-  then
-    if [ -t 0 ]
-    then
-      echo "[test_command rsudo] Enter password for ${REMOTE_HOST}@${REMOTE_USER}:" 1>&2
-      stty -echo
-      read -r RSUDO_PASSWORD
-      stty echo
-    else
-      read -r RSUDO_PASSWORD
-    fi
-    export RSUDO_PASSWORD
-  fi
+  export RSUDO_PASSWORD="qwe123"
+  # if [ -z "$RSUDO_PASSWORD" ]
+  # then
+  #   if [ -t 0 ]
+  #   then
+  #     echo "[test_command rsudo] Enter password for ${REMOTE_HOST}@${REMOTE_USER}:" 1>&2
+  #     stty -echo
+  #     read -r RSUDO_PASSWORD
+  #     stty echo
+  #   else
+  #     read -r RSUDO_PASSWORD
+  #   fi
+  #   export RSUDO_PASSWORD
+  # fi
 
-  # rsudo execute "$REMOTE_HOST" "$REMOTE_USER" "ls -ld" # ask for password if not available in env
-  # echo "$RSUDO_PASSWORD" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" "ls -ld" # command from arg
-  # echo "ls -lA" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" "" # command from pipe converted into arg
+  # rsudo execute "$REMOTE_HOST" "$REMOTE_USER" ls -ld # ask for password if not available in env
+  # echo "$RSUDO_PASSWORD" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" ls -ld # password from cmdline
+  # echo "ls -lA" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" # commands from pipe
   # rsudo execute "$REMOTE_HOST" "$REMOTE_USER" "" # error no command from arg or pipe
-  # echo "ls -lA" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" "pwd; cat" # command from arg wich receive input from pipe
-#   echo "ls -lA" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" << EOF # command from heredoc are streamed through pipe (converted manually by rsudo into arg), thus input from pipe is discarded
+  # echo "ls -lA" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" cat # command from arg wich receive input from pipe
+
+#   echo "ls -lA" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" << EOF # command from heredoc are streamed through pipe to ssh, thus input from pipe is discarded (by posix sh design)
 # pwd; cat
 # EOF
-#   (echo "ls -lA"; cat << EOF) | rsudo execute "$REMOTE_HOST" "$REMOTE_USER"
+
+#   (echo 'echo "ls -lA"'; cat << EOF) | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" # correct way to combine stdin commands with commands from heredoc
 # pwd; cat
 # echo "end of cat"
 # EOF
-# #   (echo "ls -lA"; cat /dev/stdin << EOF) | cat
-# #   test
-# # EOF
+
+#   (echo "ls -lA"; cat /dev/stdin << EOF) | cat
+#   test
+# EOF
+
   # rsudo execute "$REMOTE_HOST" "$REMOTE_USER" sh -c "ls -ld"
-  #
+
   # rsudo execute_as "$REMOTE_HOST" "$REMOTE_USER" postgres psql
   # echo "select * from auth.roles;" | rsudo sql "$REMOTE_HOST" "$REMOTE_USER" system
   # rsudo sql "$REMOTE_HOST" "$REMOTE_USER" system "select * from auth.roles;"
@@ -46,14 +52,13 @@ test_rsudo()
   # rsudo getdb "$REMOTE_HOST" "$REMOTE_USER" system > /tmp/!db.sql
   # rsudo putdb "$REMOTE_HOST" "$REMOTE_USER" system_duplicate /tmp/!db.sql
   # rm /tmp/!db.sql
-  #
-  # test_files_start
-  #
-  # rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/*" # not working because globbin must be outside quotes on server
-  # rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}\"/*\"" # force glob outside quotes
-  # rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000/111/222/file_\"*\"" # force server glob by surrounding * with escaped quotes
-  # solve simpler delete globbing support??? -> not easy
-  #
+
+  test_files_start
+
+  read x
+  rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/*" # not working because globbin is not interpreted on server
+  # rsudo shell "$REMOTE_HOST" "$REMOTE_USER" "rm -rf -- '${TEST_DIR}'/*" # force glob interpreting at server side
+
   # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/link-recursive" "${TEST_DIR}/upload/link-aaa-recursive"
   # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/bbb/ccc/link-absolute" "${TEST_DIR}/upload/link-absolute"
   # rsudo put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/file_a1" "${TEST_DIR}/upload/file_a1"
@@ -70,8 +75,9 @@ test_rsudo()
   #
   # ls -lA "${TEST_DIR}/upload"
   # ls -lA "${TEST_DIR}/download"
-  #
-  # test_files_end
-  #
+  read x
+
+  test_files_end
+
   # rsudo delete "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}"
 }
