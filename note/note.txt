@@ -32,16 +32,11 @@ command:
   - app: reorganize menus flow + decide if standalone or not -> no
       because system is modified with desktop files, thus modifiy environment is the cleaner solution
       BUT do not rewrite "upload" function to use libs and keep it standalone to avoid problems
-  - menu: make multi window menus + key to switch active one
-  - term-mod: inits and resets terminal at end and call specified term module
-    should recognize if already initialized, if possible term lib should handle this
+  - term-mod: should recognize if already initialized, if possible term lib should handle this
+    term mods don't change term settings, thus mods can be combined to create a complex tui app.
     rendering regions are controlled by env vars and never by command line! each composite module can then adjust region for submodules
-    a term module does not need to init, reset, or set terminal,
-    thus mods can be combined to create a complex tui app.
-    switch off key loop
-    (allows initial renders of all mods into tui and only after recall active mod with key loop)
+    switch off key loop (allows initial renders of all mods into tui and only after recall active mod with key loop)
     problem env import/export for composite modules
-    mod for scroll text (useful for log)
 --------------------------------------------------------------------------------
 https://sed.js.org/
 https://ato.pxeger.com/about

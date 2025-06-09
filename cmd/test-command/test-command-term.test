@@ -22,6 +22,82 @@ test_term()
   export MENU_HEADER="$(printf "Menu Header - ROW 1\n---Row 2---\n---Row 3---\n\n")"
   export MENU_FOOTER="$(printf "Menu Footer - ROW 1\n---Row 2---")"
 
+  export TEXT="$(printf "Text example for tui control - ROW 1\n---Row 2---\n---Row 3---\n\nlast text line of sample text ------------------------------------------------ END")"
+  export TEXT='Text example for tui control - ROW 1
+  ---Row 2---
+  ---Row 3---
+ZZZZZZZZZZZZZZZZZZZZZ
+  ---Row 2---
+  ---Row 3---
+ZZZZZZZZZZZZZZZZZZZZZ
+  ---Row 2---
+  ---Row 3---
+ZZZZZZZZZZZZZZZZZZZZZ
+  ---Row 2---
+  ---Row 3---
+ZZZZZZZZZZZZZZZZZZZZZ
+  ---Row 2---
+  ---Row 3---
+ZZZZZZZZZZZZZZZZZZZZZ
+  ---Row 2---
+  ---Row 3---
+ZZZZZZZZZZZZZZZZZZZZZ
+  ---Row 2---
+  ---Row 3---
+ZZZZZZZZZZZZZZZZZZZZZ
+  ---Row 2---
+  ---Row 3---
+ZZZZZZZZZZZZZZZZZZZZZ
+  ---Row 2---
+  ---Row 3---
+ZZZZZZZZZZZZZZZZZZZZZ
+  ---Row 2---
+  ---Row 3---
+ZZZZZZZZZZZZZZZZZZZZZ
+  ---Row 2---
+  ---Row 3---
+ZZZZZZZZZZZZZZZZZZZZZ
+  ---Row 2---
+  ---Row 3---
+ZZZZZZZZZZZZZZZZZZZZZ
+  ---Row 2---
+  ---Row 3---
+ZZZZZZZZZZZZZZZZZZZZZ
+  ---Row 2---
+  ---Row 3---
+ZZZZZZZZZZZZZZZZZZZZZ
+  ---Row 2---
+  ---Row 3---
+ZZZZZZZZZZZZZZZZZZZZZ
+  ---Row 2---
+  ---Row 3---
+ZZZZZZZZZZZZZZZZZZZZZ
+  ---Row 2---
+  ---Row 3---
+ZZZZZZZZZZZZZZZZZZZZZ
+  ---Row 2---
+  ---Row 3---
+ZZZZZZZZZZZZZZZZZZZZZ
+  ---Row 2---
+  ---Row 3---
+ZZZZZZZZZZZZZZZZZZZZZ
+  ---Row 2---
+  ---Row 3---
+ZZZZZZZZZZZZZZZZZZZZZ
+  ---Row 2---
+  ---Row 3---
+ZZZZZZZZZZZZZZZZZZZZZ
+  ---Row 2---
+  ---Row 3---
+ZZZZZZZZZZZZZZZZZZZZZ
+  ---Row 2---
+  ---Row 3---
+ZZZZZZZZZZZZZZZZZZZZZ
+  ---Row 2---
+  ---Row 3---
+ZZZZZZZZZZZZZZZZZZZZZ
+  last text line of sample text ------------------------------------------------ END'
+
   # menucmd id menucmd multi menucmd keys "b:n:m" \
 
   # tui menu $menu_entries
@@ -48,7 +124,10 @@ test_term()
   # res="$(tui menu-file-rsudo "localhost" "$USER" .)"
   # echo "res=$res"
 
-  res="$(tui menu-file-rsudo "10.1.0.25" "mnardi" .)"
+  # res="$(tui menu-file-rsudo "10.1.0.25" "mnardi" .)"
+  # echo "res=$res"
+
+  res="$(tui text "$TEXT")"
   echo "res=$res"
 
   # file-enc-dec

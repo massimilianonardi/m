@@ -4,6 +4,7 @@
 
 . arg.lib.sh
 . env.lib.sh
+. array.lib.sh
 . term.lib.sh
 
 #-------------------------------------------------------------------------------
@@ -227,17 +228,56 @@ return_selection()
 env_init()
 {
   tui_TEXT_ARGS="$(saveargs "$@")"
+
   init_text_array "$@"
+
+  tui_TEXT_ARRAY_SIZE="$(array tui_TEXT_TEXTS size)"
+  tui_TEXT_ARRAY_POS="0"
+  tui_TEXT_CURSOR_POS="0"
+
+  if [ "$tui_TEXT_ARRAY_SIZE" -lt "$term_ROWS" ]
+  then
+    term_ROWS="$tui_TEXT_ARRAY_SIZE"
+  fi
 }
 
 init_text_array()
 {
   array tui_TEXT_TEXTS
 
-  for line in "$@"
-  do
-    array tui_TEXT_TEXTS add "$line"
-  done
+  eval set -- $(
+    IFS='
+'
+    for line in $@
+    do
+      # term_render echo "line=$line"
+      array tui_TEXT_TEXTS add "$line"
+    done
+  # term_render echo "$(array "tui_TEXT_TEXTS" get)"
+    array "tui_TEXT_TEXTS" get
+  )
+  eval array "tui_TEXT_TEXTS" set $@
+  term_render echo "$(array "tui_TEXT_TEXTS" get)"
+  read x
+}
+
+_init_text_array()
+{
+  array tui_TEXT_TEXTS
+
+  eval array tui_TEXT_TEXTS set $(
+    IFS='
+'
+    for line in $@
+    do
+      # term_render echo "line=$line"
+      array tui_TEXT_TEXTS add "$line"
+    done
+  term_render echo "$(array "tui_TEXT_TEXTS" get)"
+    array "tui_TEXT_TEXTS" get
+  )
+  term_render echo "$(array "tui_TEXT_TEXTS" get)"
+  read x
 }
 
 render()
