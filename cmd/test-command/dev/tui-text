@@ -244,8 +244,8 @@ env_init()
 init_text_array()
 {
   array tui_TEXT_TEXTS
-
-  eval set -- $(
+OLD_IFS="$IFS"
+  # eval set -- $(
     IFS='
 '
     for line in $@
@@ -254,9 +254,10 @@ init_text_array()
       array tui_TEXT_TEXTS add "$line"
     done
   # term_render echo "$(array "tui_TEXT_TEXTS" get)"
-    array "tui_TEXT_TEXTS" get
-  )
-  eval array "tui_TEXT_TEXTS" set $@
+    # array "tui_TEXT_TEXTS" get
+  # )
+  # eval array "tui_TEXT_TEXTS" set $@
+  IFS="$OLD_IFS"
   term_render echo "$(array "tui_TEXT_TEXTS" get)"
   read x
 }
