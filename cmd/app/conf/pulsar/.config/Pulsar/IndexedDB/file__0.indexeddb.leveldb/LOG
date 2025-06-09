@@ -1,12 +1,21 @@
-2025/06/08-22:00:56.561 bc0 Reusing MANIFEST /m/src/git/m/cmd/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/MANIFEST-000001
-2025/06/08-22:00:56.561 bc0 Recovering log #289
-2025/06/08-22:00:56.613 bc0 Reusing old log /m/src/git/m/cmd/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/000289.log 
-2025/06/08-22:14:05.147 da5 Compacting 1@1 + 1@2 files
-2025/06/08-22:14:05.150 da5 Generated table #293@1: 41 keys, 11960 bytes
-2025/06/08-22:14:05.150 da5 Compacted 1@1 + 1@2 files => 11960 bytes
-2025/06/08-22:14:05.151 da5 compacted to: files[ 0 0 1 0 0 0 0 ]
-2025/06/08-22:14:05.151 da5 Delete type=2 #226
-2025/06/08-22:14:05.152 da5 Delete type=2 #291
-2025/06/08-22:15:51.773 da5 Level-0 table #295: started
-2025/06/08-22:15:51.802 da5 Level-0 table #295: 1626815 bytes OK
-2025/06/08-22:15:51.805 da5 Delete type=0 #289
+2025/06/09-07:32:37.433 db2 Reusing MANIFEST /m/src/git/m/cmd/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/MANIFEST-000001
+2025/06/09-07:32:37.433 db2 Recovering log #294
+2025/06/09-07:32:37.440 db2 Reusing old log /m/src/git/m/cmd/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/000294.log 
+2025/06/09-07:50:02.976 104f Compacting 1@1 + 1@2 files
+2025/06/09-07:50:03.011 104f Generated table #297@1: 41 keys, 11889 bytes
+2025/06/09-07:50:03.011 104f Compacted 1@1 + 1@2 files => 11889 bytes
+2025/06/09-07:50:03.014 104f compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/06/09-07:50:03.015 104f Delete type=2 #293
+2025/06/09-07:50:03.015 104f Delete type=2 #295
+2025/06/09-07:52:29.206 dc6 Level-0 table #299: started
+2025/06/09-07:52:29.287 dc6 Level-0 table #299: 1595570 bytes OK
+2025/06/09-07:52:29.293 dc6 Delete type=0 #294
+2025/06/09-08:06:50.351 dc6 Compacting 1@1 + 1@2 files
+2025/06/09-08:06:50.390 dc6 Generated table #300@1: 41 keys, 12663 bytes
+2025/06/09-08:06:50.390 dc6 Compacted 1@1 + 1@2 files => 12663 bytes
+2025/06/09-08:06:50.393 dc6 compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/06/09-08:06:50.394 dc6 Delete type=2 #299
+2025/06/09-08:06:50.394 dc6 Delete type=2 #297
+2025/06/09-08:19:47.138 1143 Level-0 table #302: started
+2025/06/09-08:19:47.206 1143 Level-0 table #302: 1382233 bytes OK
+2025/06/09-08:19:47.211 1143 Delete type=0 #298

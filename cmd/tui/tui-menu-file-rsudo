@@ -62,21 +62,13 @@ EOF
 
 load_menu_dir()
 {
-  if [ ! -d "$1" ]
-  then
-    set -- "$(pwd)"
-  fi
-
-  cd "$1"
-  set -- "$(cd -L -- "$1" && pwd -L)"
-
-  term_MFRS_MENU_CURRENT_STATE="$(map term_MFRS_DIR_STATES get "$(pwd)")"
+  term_MFRS_MENU_CURRENT_STATE="$(map term_MFRS_DIR_STATES get "$1")"
 
   if [ -z "$term_MFRS_MENU_CURRENT_STATE" ]
   then
     init_menu_dir "$@"
     eval env_export "term_MFRS_MENU_CURRENT_STATE" tui-menu $term_MFRS_MENU_DIR
-    map term_MFRS_DIR_STATES put "$(pwd)" "$term_MFRS_MENU_CURRENT_STATE"
+    map term_MFRS_DIR_STATES put "$1" "$term_MFRS_MENU_CURRENT_STATE"
   else
     env_export "term_MFRS_MENU_CURRENT_STATE" env_import "$term_MFRS_MENU_CURRENT_STATE" tui-menu
   fi
