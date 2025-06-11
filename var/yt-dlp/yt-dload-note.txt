@@ -1,0 +1,24 @@
+https://github.com/yt-dlp/yt-dlp
+
+https://github.com/yt-dlp/FFmpeg-Builds#ffmpeg-static-auto-builds
+
+https://stacher.io/
+
+--------------------------------------------------------------------------------
+yt-dlp: /m/data/ytdload/yt-dlp
+url: for https://music.youtube.com/playlist?list=PLnF-KbiW6sEzfqk7cPkboW83H5Gjoo-y_
+args: 
+--output /m/data/download/stacher7/%(title)s.%(ext)s
+--extract-audio
+--audio-format m4a
+--audio-quality 0
+--restrict-filenames
+--abort-on-unavailable-fragments
+--embed-thumbnail
+--convert-thumbnails jpg
+--no-check-certificate
+--write-info-json
+--add-metadata
+--abort-on-error
+--ffmpeg-location /m/data/ytdload
+

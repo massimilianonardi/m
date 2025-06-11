@@ -45,3 +45,7 @@ qgis
 dbeaver
 libre office
 
+https://github.com/josdejong/jsoneditor
+https://jless.io/
+https://fx.wtf/
+
