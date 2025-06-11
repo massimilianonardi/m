@@ -9,6 +9,7 @@ waituser()
   then
     echo ""
     echo "--------------------------------------------------------------------------------"
-    read -p "press ENTER to exit" EXIT_VAR
+    echo "press ENTER to exit"
+    read -r EXIT_VAR
   fi
 }
