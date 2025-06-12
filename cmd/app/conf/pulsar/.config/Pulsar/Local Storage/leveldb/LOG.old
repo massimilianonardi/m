@@ -1,3 +1,5 @@
-2025/06/11-21:52:43.333 d00 Reusing MANIFEST /m/src/git/m/cmd/app/conf/pulsar/.config/Pulsar/Local Storage/leveldb/MANIFEST-000001
-2025/06/11-21:52:43.333 d00 Recovering log #9
-2025/06/11-21:52:43.333 d00 Reusing old log /m/src/git/m/cmd/app/conf/pulsar/.config/Pulsar/Local Storage/leveldb/000009.log 
+2025/06/12-11:29:07.755 ce9 Reusing MANIFEST /m/src/git/m/cmd/app/conf/pulsar/.config/Pulsar/Local Storage/leveldb/MANIFEST-000001
+2025/06/12-11:29:07.756 ce9 Recovering log #9
+2025/06/12-11:29:07.761 ce9 Level-0 table #12: started
+2025/06/12-11:29:07.778 ce9 Level-0 table #12: 117895 bytes OK
+2025/06/12-11:29:07.780 ce9 Delete type=0 #9

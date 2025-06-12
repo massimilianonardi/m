@@ -1,0 +1,39 @@
+#!/bin/sh
+
+cd -L -- "${0%/*}"
+
+pwd
+
+export PATH="$(pwd):$(pwd)/bin:$PATH"
+
+printf "playlist name to process: "
+read -r pl_name
+
+cd "$(pwd)/music/tmp"
+cd "$pl_name"
+dest_dir="/m/data/music/artist"
+
+# for k in ..?* .[!.]* *
+for k in *.info.json
+do
+  if [ -e "${k%*.info.json}.m4a" ]
+  then
+    move-rename-file "$k" "${k%*.info.json}.m4a" "$dest_dir"
+  fi
+done
+
+# json="/m/data/music/tmp/Pop/01.info.json"
+# json="/m/src/git/m/var/yt-dlp/music/tmp/Album_-_VITA_FUSA/1.info.json"
+# json="/m/src/git/m/var/yt-dlp/music/tmp/NA/NA.info.json"
+
+# cat "$json" | jq -r '.title'
+# cat "$json" | jq '.artists'
+# cat "$json" | jq '.release_year'
+# cat "$json" | jq '.artist + " - " + .title'
+
+# move-rename-file "$json" "-" "-"
+
+echo ""
+echo "--------------------------------------------------------------------------------"
+echo "press ENTER to exit"
+read -r EXIT_VAR
