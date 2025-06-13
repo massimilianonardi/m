@@ -38,7 +38,6 @@ if [ "${PARENT_PROCESS%sh}" = "$PARENT_PROCESS" ]
 then
   echo ""
   echo "--------------------------------------------------------------------------------"
-  read -p "press ENTER to exit" EXIT_VAR
+  echo "press ENTER to exit"
+  read -r EXIT_VAR
 fi
-
-exit "$EXIT_CODE"

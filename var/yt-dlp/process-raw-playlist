@@ -2,9 +2,7 @@
 
 cd -L -- "${0%/*}"
 
-pwd
-
-export PATH="$(pwd):$(pwd)/bin:$PATH"
+export PATH="$(pwd):$PATH"
 
 printf "playlist name to process: "
 read -r pl_name

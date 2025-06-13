@@ -2,9 +2,9 @@
 
 cd -L -- "${0%/*}"
 
-pwd
-
-PATH="$(pwd):$(pwd)/bin:$PATH"
+PATH="$(pwd):$PATH"
+FFMPEG_DIR="$(command -v ffmpeg)"
+FFMPEG_DIR="${FFMPEG_DIR%/ffmpeg}"
 
 printf "download url: "
 read -r url
@@ -23,7 +23,7 @@ yt-dlp \
 --add-metadata \
 --write-info-json \
 --abort-on-error \
---ffmpeg-location "$(pwd)/bin" \
+--ffmpeg-location "$FFMPEG_DIR" \
 --output "$(pwd)/music/tmp/%(playlist_title)s/%(playlist_index)s.%(ext)s" "$url"
 
 echo ""
