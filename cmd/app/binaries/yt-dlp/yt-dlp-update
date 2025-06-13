@@ -1,0 +1,12 @@
+#!/bin/sh
+
+VERSION="2025.06.09"
+DOWNLOAD_URL="https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux"
+FILE_TYPE="none"
+SYMLINKS="yt-dlp=yt-dlp_linux"
+
+postinstall()
+(
+  cd ./latest
+  sudo chmod +x ./yt-dlp_linux
+)

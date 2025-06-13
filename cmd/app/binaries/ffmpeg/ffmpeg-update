@@ -1,0 +1,12 @@
+#!/bin/sh
+
+VERSION="2025.06.12"
+DOWNLOAD_URL="https://github.com/yt-dlp/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz"
+FILE_TYPE="tar.xz"
+SYMLINKS="ffmpeg=bin/ffmpeg ffplay=bin/ffplay ffprobe=bin/ffprobe"
+
+postinstall()
+(
+  cd ./latest
+  sudo chmod +x ./bin/*
+)
