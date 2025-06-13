@@ -1,1 +1,1 @@
-yt-dlp
+yt-download
