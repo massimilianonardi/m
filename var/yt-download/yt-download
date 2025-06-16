@@ -9,20 +9,25 @@ FFMPEG_DIR="${FFMPEG_DIR%/ffmpeg}"
 printf "download url: "
 read -r url
 
+echo ""
+echo "--------------------------------------------------------------------------------"
+echo "press ENTER to start download"
+echo "--------------------------------------------------------------------------------"
+read -r EXIT_VAR
+echo ""
+
 echo "downloading -> $url"
 
 yt-dlp \
 --extract-audio \
 --audio-format m4a \
 --audio-quality 0 \
---restrict-filenames \
 --abort-on-unavailable-fragments \
 --embed-thumbnail \
 --convert-thumbnails jpg \
 --no-check-certificate \
 --add-metadata \
 --write-info-json \
---abort-on-error \
 --ffmpeg-location "$FFMPEG_DIR" \
 --output "$(pwd)/music/tmp/%(playlist_title)s/%(playlist_index)s.%(ext)s" "$url"
 
