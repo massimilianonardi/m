@@ -131,6 +131,9 @@ process_playlist()
     if [ -e "${k%*.info.json}.m4a" ]
     then
       move_rename_file "$source_dir/$k" "$source_dir/${k%*.info.json}.m4a" "$dest_dir"
+    elif [ -e "${k%*.info.json}.mp3" ]
+    then
+      move_rename_file "$source_dir/$k" "$source_dir/${k%*.info.json}.mp3" "$dest_dir"
     fi
   done
 

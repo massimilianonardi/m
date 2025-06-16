@@ -20,7 +20,7 @@ echo "downloading -> $url"
 
 yt-dlp \
 --extract-audio \
---audio-format m4a \
+--audio-format mp3 \
 --audio-quality 0 \
 --abort-on-unavailable-fragments \
 --embed-thumbnail \
@@ -28,8 +28,9 @@ yt-dlp \
 --no-check-certificate \
 --add-metadata \
 --write-info-json \
+--restrict-filenames \
 --ffmpeg-location "$FFMPEG_DIR" \
---output "$(pwd)/music/tmp/%(playlist_title)s/%(playlist_index)s.%(ext)s" "$url"
+--output "$(pwd)/music/tmp/$(date +"[%Y-%m-%d %H:%M:%S]") %(playlist_title)s/%(playlist_index)s.%(ext)s" "$url"
 
 echo ""
 echo "--------------------------------------------------------------------------------"
