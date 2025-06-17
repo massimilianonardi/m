@@ -30,7 +30,7 @@ yt-dlp \
 --write-info-json \
 --restrict-filenames \
 --ffmpeg-location "$FFMPEG_DIR" \
---output "$(pwd)/music/tmp/$(date +"[%Y-%m-%d %H:%M:%S]") %(playlist_title)s/%(playlist_index)s.%(ext)s" "$url"
+--output "$(pwd)/music/%(artist)s - %(album)s - %(playlist_title)s/%(playlist_index)s.%(ext)s" "$url"
 
 echo ""
 echo "--------------------------------------------------------------------------------"
