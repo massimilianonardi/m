@@ -21,7 +21,7 @@ then
   dest_dir="$(pwd)/music/download"
 fi
 
-dest_dir="$dest_dir/$(date +"[%Y-%m-%d %H:%M:%S]")"
+# dest_dir="$dest_dir/$(date +"[%Y-%m-%d %H:%M:%S]")"
 
 echo ""
 echo "--------------------------------------------------------------------------------"

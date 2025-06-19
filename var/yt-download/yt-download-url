@@ -43,7 +43,8 @@ yt-dlp \
 --add-metadata \
 --restrict-filenames \
 --ffmpeg-location "$FFMPEG_DIR" \
---output "$dest_dir/%(artist)s - %(album)s/%(playlist_index)s - %(title)s.%(ext)s" "$url"
+--output "$dest_dir/$(date +"[%Y-%m-%d %H:%M:%S]")/%(album)s/%(playlist_index)s - %(title)s.%(ext)s" "$url"
+# --output "$dest_dir/%(artist)s - %(album)s/%(playlist_index)s - %(title)s.%(ext)s" "$url"
 
 EXIT_STATUS="$?"
 
