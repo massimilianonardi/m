@@ -50,7 +50,6 @@ process_line()
     album_dir=""
   fi
 
-  # echo "album_dir: $album_dir --- artist: $artist --- file: $@"
   if [ "$album_dir" = "$album_dir_current" ]
   then
     artist_list="$(printf "${artist_list}\n${artist}")"
