@@ -32,6 +32,11 @@ echo ""
 
 for k in $(cat "$list")
 do
+  if [ "$k" = "${k#http}" ]
+  then
+    continue
+  fi
+
   echo "processing list element: $k"
   yt-download-url "$k" "$dest_dir"
 done

@@ -6,6 +6,9 @@
     highlightMatchingLineNumber: true
   core:
     allowPendingPaneItems: false
+    disabledPackages: [
+      "spell-check"
+    ]
     openEmptyEditorOnStart: false
     themes: [
       "one-light-ui"

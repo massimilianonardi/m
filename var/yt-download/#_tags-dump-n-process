@@ -1,11 +1,11 @@
 #!/bin/sh
 
 # source_dir="/m/data/music/tmp/test"
-source_dir="/m/src/git/m/var/yt-download/music/download"
-dest_dir="/m/src/git/m/var/yt-download/music/artist"
+source_dir="/m/src/git/m/var/yt-download/music/download_old"
+dest_dir="/m/src/git/m/var/yt-download/music/artist_old"
 
-dump_file="/m/src/git/m/var/yt-download/music/tags.dump"
-dump_file_tmp="/m/src/git/m/var/yt-download/music/tags.dump.tmp"
+dump_file="/m/src/git/m/var/yt-download/music/_tags.dump"
+dump_file_tmp="/m/src/git/m/var/yt-download/music/_tags.dump.tmp"
 
 . arg.lib.sh
 
