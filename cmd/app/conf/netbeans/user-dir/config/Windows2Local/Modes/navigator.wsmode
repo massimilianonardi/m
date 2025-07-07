@@ -10,5 +10,6 @@
   </constraints>
   <bounds x="131" y="426" width="460" height="446" />
   <frame state="0"/>
+    <active-tc  id="navigatorTC" />
     <empty-behavior permanent="true"/>
 </mode>

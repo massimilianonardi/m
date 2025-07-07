@@ -40,6 +40,14 @@
   </constraints>
   <bounds x="434" y="238" width="552" height="436" />
     </editor-area>
-    <screen width="1366" height="1024"/>
+    <screen width="1920" height="1080"/>
+    <active-mode name="editor"/>
     <toolbar configuration="Standard" preferred-icon-size="24"/>
+    <tc-list>
+  <tc-id id="MultiView-cpp#002Esou7E81436Ftext#002Ehistory#007C"/>
+  <tc-id id="projectTabLogical_tc"/>
+  <tc-id id="projectTab_tc"/>
+  <tc-id id="navigatorTC"/>
+  <tc-id id="services"/>
+    </tc-list>
 </windowmanager>

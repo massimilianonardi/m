@@ -212,13 +212,15 @@ term_region_clear()
     set -- "$term_ROW0" "$term_COL0" "$term_ROWS" "$term_COLS"
   fi
 
-  set -- "$1" "$2" "$3" "$4" "$1" "$(($1 + $3))"
+  # set -- "$1" "$2" "$3" "$4" "$1" "$(($1 + $3))"
+  set -- "$1" "$2" "$3" "$(($4 - 2))" "$1" "$(($1 + $3 - 2))"
   while [ "$5" -lt "$6" ]
   do
     term_render tput cup "$5" "$2"
     term_render printf "%${4}s"
     set -- "$1" "$2" "$3" "$4" "$(($5 + 1))" "$6"
   done
+    term_render printf "# $4 - $term_COLS - $term_COL0"
 }
 
 #-------------------------------------------------------------------------------
