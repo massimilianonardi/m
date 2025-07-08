@@ -27,4 +27,5 @@ sudo apt install -y cmake-qt-gui
 
 sudo apt install -y ccls
 sudo apt install -y codeblocks
+sudo apt install -y kdevelop
 # sudo apt install -y ubuntu-sdk
