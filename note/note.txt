@@ -48,6 +48,12 @@ https://www.grymoire.com/Unix/Sed.html
 https://github.com/dylanaraps/pure-sh-bible
 --------------------------------------------------------------------------------
 
+MONITOR OUTBOUND HTTPS TRAFFIC
+
+(sudo tcpdump dst port 443 | sed 's/^.*> //g' | sed 's/.https.*//g' | tee /tmp/tcpdump-https.log); cat /tmp/tcpdump-https.log | sort | uniq; rm -f /tmp/tcpdump-https.log
+
+--------------------------------------------------------------------------------
+
 SSH TUNNEL
 
 local port forwarding:
