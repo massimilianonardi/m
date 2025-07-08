@@ -1,1 +1,1 @@
-term rows and cols detection fix + term_region_clear
+note tcpdump monitor outbound https traffic

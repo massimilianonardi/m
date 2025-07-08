@@ -49,3 +49,20 @@ https://github.com/josdejong/jsoneditor
 https://jless.io/
 https://fx.wtf/
 
+
+
+monitor net traffic:
+
+watch -n1 lsof -i TCP:80,443
+lsof -i TCP:80,443 -r 1
+sudo tcpdump -i lo -A | grep Host:
+sudo apt-get install nethogs
+sudo nethogs
+netstat -nputwc
+sudo apt-get install wireshark
+sudo tcpdump -l dst port 443
+tcpdump -D
+sudo tcpdump src host 10.1.80.13 and \( port 80 or port 443 \)
+sudo tcpdump -l src host 10.1.80.13 and dst port 443 and \( tcp or udp \)
+sudo tcpdump -l dst port 443 | sed 's/^.*> //g' | sed 's/.https.*//g'
+(sudo tcpdump dst port 443 | sed 's/^.*> //g' | sed 's/.https.*//g' | tee /tmp/tcpdump-https.log); cat /tmp/tcpdump-https.log | sort | uniq; rm -f /tmp/tcpdump-https.log
