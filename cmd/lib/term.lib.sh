@@ -72,9 +72,12 @@ term_screen_size_update()
   # fix fo initial wrong values of size from tput
   term_render tput clear
   i=0
-  while [ "$i" -lt "999" ]
+  # while [ "$i" -lt "999" ]
+  while [ "$i" -lt "99" ]
   do
-    term_render printf "                                                 "
+    export TERM_ROWS="$(tput lines)"
+    export TERM_COLS="$(tput cols)"
+    # term_render printf "                                                 "
     i="$(($i + 1))"
   done
   term_render tput clear
@@ -213,14 +216,15 @@ term_region_clear()
   fi
 
   # set -- "$1" "$2" "$3" "$4" "$1" "$(($1 + $3))"
-  set -- "$1" "$2" "$3" "$(($4 - 2))" "$1" "$(($1 + $3 - 2))"
+  # set -- "$1" "$2" "$3" "$(($4 - 1))" "$1" "$(($1 + $3))"
+  set -- "$1" "$2" "$3" "$(printf "%${4}s")" "$1" "$(($1 + $3))"
   while [ "$5" -lt "$6" ]
   do
     term_render tput cup "$5" "$2"
-    term_render printf "%${4}s"
+    # term_render printf "%${4}s"
+    term_render printf "${4}"
     set -- "$1" "$2" "$3" "$4" "$(($5 + 1))" "$6"
   done
-    term_render printf "# $4 - $term_COLS - $term_COL0"
 }
 
 #-------------------------------------------------------------------------------

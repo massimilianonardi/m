@@ -1,15 +1,22 @@
-2025/07/07-10:11:59.304 e69 Reusing MANIFEST /m/src/git/m/cmd/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/MANIFEST-000001
-2025/07/07-10:11:59.305 e69 Recovering log #610
-2025/07/07-10:11:59.374 e69 Reusing old log /m/src/git/m/cmd/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/000610.log 
-2025/07/07-12:36:28.886 53a4 Compacting 1@0 + 1@1 files
-2025/07/07-12:36:28.938 53a4 Generated table #613@0: 15611 keys, 139253 bytes
-2025/07/07-12:36:28.938 53a4 Compacted 1@0 + 1@1 files => 139253 bytes
-2025/07/07-12:36:28.942 53a4 compacted to: files[ 0 1 1 0 0 0 0 ]
-2025/07/07-12:36:28.942 53a4 Delete type=2 #611
-2025/07/07-12:36:28.942 53a4 Delete type=2 #609
-2025/07/07-15:16:01.952 82d2 Level-0 table #615: started
-2025/07/07-15:16:02.023 82d2 Level-0 table #615: 1406306 bytes OK
-2025/07/07-15:16:02.029 82d2 Delete type=0 #610
-2025/07/07-15:34:09.540 880d Level-0 table #617: started
-2025/07/07-15:34:09.599 880d Level-0 table #617: 1392479 bytes OK
-2025/07/07-15:34:09.603 880d Delete type=0 #614
+2025/07/08-07:27:12.351 65e8 Reusing MANIFEST /m/src/git/m/cmd/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/MANIFEST-000001
+2025/07/08-07:27:12.351 65e8 Recovering log #616
+2025/07/08-07:27:12.406 65e8 Reusing old log /m/src/git/m/cmd/app/conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/000616.log 
+2025/07/08-07:28:37.334 65e8 Compacting 2@0 + 1@1 files
+2025/07/08-07:28:37.418 65e8 Generated table #619@0: 15611 keys, 139784 bytes
+2025/07/08-07:28:37.418 65e8 Compacted 2@0 + 1@1 files => 139784 bytes
+2025/07/08-07:28:37.423 65e8 compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/07/08-07:28:37.423 65e8 Delete type=2 #613
+2025/07/08-07:28:37.423 65e8 Delete type=2 #615
+2025/07/08-07:28:37.423 65e8 Delete type=2 #617
+2025/07/08-07:37:45.360 6b85 Level-0 table #621: started
+2025/07/08-07:37:45.413 6b85 Level-0 table #621: 1397926 bytes OK
+2025/07/08-07:37:45.418 6b85 Delete type=0 #616
+2025/07/08-07:47:33.467 6b85 Compacting 1@0 + 1@1 files
+2025/07/08-07:47:33.516 6b85 Generated table #622@0: 15611 keys, 139726 bytes
+2025/07/08-07:47:33.516 6b85 Compacted 1@0 + 1@1 files => 139726 bytes
+2025/07/08-07:47:33.519 6b85 compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/07/08-07:47:33.519 6b85 Delete type=2 #621
+2025/07/08-07:47:33.519 6b85 Delete type=2 #619
+2025/07/08-07:59:31.795 13df4 Level-0 table #624: started
+2025/07/08-07:59:31.863 13df4 Level-0 table #624: 1414312 bytes OK
+2025/07/08-07:59:31.868 13df4 Delete type=0 #620
