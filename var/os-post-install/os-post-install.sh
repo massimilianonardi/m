@@ -17,7 +17,6 @@ sudo apt install -y openjdk-21-jdk
 sudo apt install -y remmina remmina-plugin-vnc
 sudo apt install -y libreoffice
 sudo dpkg -i "${0%/*}/../omnissa/Omnissa-Horizon-Client-2412-8.14.0-12437214089.x64.deb"
-sudo dpkg -i "${0%/*}/../pulsar_1.127.2025033016_amd64.deb"
 
 sudo apt install -y build-essential
 sudo apt install -y g++
@@ -28,4 +27,8 @@ sudo apt install -y cmake-qt-gui
 sudo apt install -y ccls
 sudo apt install -y codeblocks
 sudo apt install -y kdevelop
+sudo apt install -y qt6-base-dev
+sudo apt install -y qtcreator
+# sudo apt install -y libxcb-cursor0
+# sudo apt install -y build-essential libgl1-mesa-dev
 # sudo apt install -y ubuntu-sdk
