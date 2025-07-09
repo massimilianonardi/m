@@ -23,12 +23,13 @@ sudo apt install -y g++
 sudo apt install -y gdb
 sudo apt install -y cmake
 sudo apt install -y cmake-qt-gui
+# sudo apt install -y ninja-build
 
-sudo apt install -y ccls
-sudo apt install -y codeblocks
-sudo apt install -y kdevelop
-sudo apt install -y qt6-base-dev
-sudo apt install -y qtcreator
+# sudo apt install -y ccls
+# sudo apt install -y codeblocks
+# sudo apt install -y kdevelop
+# sudo apt install -y qt6-base-dev
+# sudo apt install -y qtcreator
 # sudo apt install -y libxcb-cursor0
 # sudo apt install -y build-essential libgl1-mesa-dev
 # sudo apt install -y ubuntu-sdk
