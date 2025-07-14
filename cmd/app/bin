@@ -30,9 +30,11 @@ update()
 
     if [ "$FILE_TYPE" = "none" ]
     then
-      wget "$DOWNLOAD_URL"
+      # wget "$DOWNLOAD_URL"
+      wget --no-check-certificate "$DOWNLOAD_URL"
     else
-      wget -O "$DOWNLOAD_FILE" "$DOWNLOAD_URL"
+      # wget -O "$DOWNLOAD_FILE" "$DOWNLOAD_URL"
+      wget --no-check-certificate -O "$DOWNLOAD_FILE" "$DOWNLOAD_URL"
     fi
 
     echo "unpacking..."
@@ -66,7 +68,7 @@ update()
       UNPACKED_SUB_DIR="$(ls)"
       ls "$UNPACKED_SUB_DIR"
       echo "UNPACKED_SUB_DIR=$UNPACKED_SUB_DIR"
-      if [ "$(ls "$UNPACKED_SUB_DIR" | wc -l)" = "1" ]
+      if [ "$(ls "$UNPACKED_SUB_DIR" | wc -l)" = "1" ] && [ -d "$(ls "$UNPACKED_SUB_DIR")" ]
       then
         UNPACKED_SUB_DIR="$UNPACKED_SUB_DIR/$(ls "$UNPACKED_SUB_DIR")"
         echo "UNPACKED_SUB_DIR=$UNPACKED_SUB_DIR"

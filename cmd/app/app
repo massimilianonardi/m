@@ -28,7 +28,8 @@ update()
     cd $VERSION
     echo "fetching $DOWNLOAD_URL"
     #curl -# "$DOWNLOAD_URL" > "$DOWNLOAD_FILE"
-    wget -O "$DOWNLOAD_FILE" "$DOWNLOAD_URL"
+    # wget -O "$DOWNLOAD_FILE" "$DOWNLOAD_URL"
+    wget --no-check-certificate -O "$DOWNLOAD_FILE" "$DOWNLOAD_URL"
     echo "unpacking..."
     if [ "$FILE_TYPE" = "zip" ]
     then
@@ -50,7 +51,7 @@ update()
       UNPACKED_SUB_DIR="$(ls)"
       ls "$UNPACKED_SUB_DIR"
       echo "UNPACKED_SUB_DIR=$UNPACKED_SUB_DIR"
-      if [ "$(ls "$UNPACKED_SUB_DIR" | wc -l)" = "1" ]
+      if [ "$(ls "$UNPACKED_SUB_DIR" | wc -l)" = "1" ] && [ -d "$(ls "$UNPACKED_SUB_DIR")" ]
       then
         UNPACKED_SUB_DIR="$UNPACKED_SUB_DIR/$(ls "$UNPACKED_SUB_DIR")"
         echo "UNPACKED_SUB_DIR=$UNPACKED_SUB_DIR"

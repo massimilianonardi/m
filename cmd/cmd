@@ -10,7 +10,7 @@ realpaths
 if [ -z "$*" ]
 then
   # set -- "$(menu ./app/app=app ./gitman/gitman=gitman rsudo ls)"
-  set -- "$(menu app desktop gitman rsudo-jobs)"
+  set -- "$(menu app bin desktop gitman rsudo-jobs)"
 fi
 
 "$@"
