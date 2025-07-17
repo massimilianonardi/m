@@ -1,1 +1,1 @@
-bin electron
+bin deno javascript interpreter
