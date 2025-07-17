@@ -1,1 +1,1 @@
-bin deno javascript interpreter
+electron app text editor
