@@ -35,6 +35,7 @@ command:
   - app: reorganize menus flow + decide if standalone or not -> no
       because system is modified with desktop files, thus modifiy environment is the cleaner solution
       BUT do not rewrite "upload" function to use libs and keep it standalone to avoid problems
+      allow to map specific subfolders/files to app/conf dir to allow to save important conf to git
   - term-mod: should recognize if already initialized, if possible term lib should handle this
     term mods don't change term settings, thus mods can be combined to create a complex tui app.
     rendering regions are controlled by env vars and never by command line! each composite module can then adjust region for submodules

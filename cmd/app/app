@@ -62,6 +62,56 @@ update()
     rm -f ./latest
     ln -s "$VERSION/$UNPACKED_SUB_DIR" ./latest
 
+    if [ "$CONF_VC" = "*" ]
+    then
+      export HOME_VC="$HOME_VC_DIR/$APP_NAME"
+
+      if [ -e "$HOME_VC" ]
+      then
+        echo "vc dir '$HOME_VC' exists, removing eventual regular conf dir '$HOME'"
+        rm -rf "$HOME"
+      elif [ -e "$HOME" ]
+      then
+        echo "vc dir '$HOME_VC' DO NOT exists, moving regular conf dir '$HOME' under vc"
+        mv -T "$HOME" "$HOME_VC"
+      else
+        echo "vc dir '$HOME_VC' and regular conf dir '$HOME' DO NOT exists, creating vc dir"
+        mkdir -p "$HOME_VC"
+      fi
+      echo "linking vc element '$HOME_VC' to path '$HOME'"
+      ln -s "$HOME_VC" "$HOME"
+    elif [ -n "$CONF_VC" ]
+    then
+      export HOME_VC="$HOME_VC_DIR/$APP_NAME"
+      if [ ! -d "$HOME_VC" ]
+      then
+        mkdir -p "$HOME_VC"
+      fi
+
+      eval set -- $CONF_VC
+      for k in "$@"
+      do
+        echo "putting conf dir under version control: $k"
+        mkdir -p "$(dirname "$HOME_VC/$k")"
+        mkdir -p "$(dirname "$HOME/$k")"
+
+        if [ -e "$HOME_VC/$k" ]
+        then
+          echo "vc dir '$HOME_VC/$k' exists, removing eventual regular conf dir '$HOME/$k'"
+          rm -rf "$HOME/$k"
+        elif [ -e "$HOME/$k" ]
+        then
+          echo "vc dir '$HOME_VC/$k' DO NOT exists, moving regular conf dir '$HOME/$k' under vc"
+          mv -T "$HOME/$k" "$HOME_VC/$k"
+        else
+          echo "vc dir '$HOME_VC/$k' and regular conf dir '$HOME/$k' DO NOT exists, creating vc dir"
+          mkdir -p "$HOME_VC/$k"
+        fi
+        echo "linking vc element '$HOME_VC/$k' to path '$HOME/$k'"
+        ln -s "$HOME_VC/$k" "$HOME/$k"
+      done
+    fi
+
     if exist_function postinstall
     then
       postinstall

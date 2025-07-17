@@ -1,4 +1,3 @@
 #!/bin/sh
 
-./latest/dbeaver "$@"
-
+./latest/dbeaver -data "$HOME/data-dir" "$@"
