@@ -7,3 +7,6 @@
 2025/07/17-11:05:44.809 993c compacted to: files[ 0 0 1 0 0 0 0 ]
 2025/07/17-11:05:44.810 993c Delete type=2 #18
 2025/07/17-11:05:44.810 993c Delete type=2 #20
+2025/07/17-11:36:59.340 aab9 Level-0 table #24: started
+2025/07/17-11:36:59.424 aab9 Level-0 table #24: 1735380 bytes OK
+2025/07/17-11:36:59.428 aab9 Delete type=0 #19
