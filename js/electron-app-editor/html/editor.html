@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Electron App</title>
+    <link rel="stylesheet" href="style/editor.css">
+    <script src="js/main.js"></script>
+  </head>
+  <body>
+
+    <a href="index.html">index</a>
+
+    <pre class="code" contenteditable="true" spellcheck="false">
+    <!-- <pre class="code" contenteditable="plaintext-only" spellcheck="false"> -->
+      <div><code>x</code></div>
+    </pre>
+    https://css-tricks.com/creating-an-editable-textarea-that-supports-syntax-highlighted-code/
+
+  </body>
+    <script>
+      document.execCommand('defaultParagraphSeparator', false, 'p');
+    </script>
+</html>

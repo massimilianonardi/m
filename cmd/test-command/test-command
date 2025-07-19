@@ -1,5 +1,10 @@
 #!/bin/sh
 
+. realpaths.lib.sh
+. waituser.lib.sh
+
+#-------------------------------------------------------------------------------
+
 # resolve caller dir
 CALL_DIR="$(cd -L -- "${0%/*}" && pwd -L)"
 
@@ -39,7 +44,16 @@ done
 if [ -z "$*" ]
 then
   echo "no test argument passed!"
-  exit 1
+  if [ -f "${THIS_DIR}/${THIS_FILE}.conf" ]
+  then
+    echo "reading test to perform from conf!"
+    set -- "$(cat "${THIS_DIR}/${THIS_FILE}.conf")"
+  else
+    echo "no test conf available!"
+    exit 1
+  fi
 fi
 
 test_"$@"
+
+waituser

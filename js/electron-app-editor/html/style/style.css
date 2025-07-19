@@ -1,4 +1,4 @@
-body, .section, .item-browser
+body
 {
   border: 0;
   margin: 0;
@@ -13,86 +13,55 @@ body, .section, .item-browser
   overflow: hidden;
 }
 
-.switch-section-buttons-container
+pre.code
 {
-  position: absolute;
-  top: 0;
-  right: 0;
+  white-space: pre-wrap;
 }
 
-.item-browser
+pre.code::before
 {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
+  counter-reset: listing;
 }
 
-.item-browser > .toolbar, .paged-browser > .toolbar
+pre.code code
 {
-  max-width: 100%;
-  height: fit-content;
-
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: flex-start;
+  counter-increment: listing;
 }
 
-.item-browser > .paged-browser
+pre.code code::before
 {
-  max-width: 100%;
-  height: -webkit-fill-available;
-  overflow: hidden;
-
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
+  content: counter(listing) ". ";
+  display: inline-block;
+  width: 8em;
+  padding-left: auto;
+  margin-left: auto;
+  text-align: right;
 }
 
-.item-browser > .paged-browser > .item-list
-{
-  width: fit-content;
-  height: -webkit-fill-available;
-  overflow: auto;
 
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  /* justify-content: space-between; */
+
+
+pre.code
+{
+  white-space: pre-wrap;
 }
 
-.item
+pre.code::before
 {
-  width: fit-content;
-  padding: 10px;
-  margin: 5px;
-  border-color: darkgray;
-  border-style: solid;
-  border-width: 1px;
-  border-radius: 10px;
+  counter-reset: listing;
 }
 
-.description
+pre.code div
 {
-  font-family: sans-serif;
-  font-size: x-small;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-  padding-bottom: 10px;
-  max-width: 320px;
+  counter-increment: listing;
 }
 
-.description > .price
+pre.code div::before
 {
-  font-size: large;
-}
-
-.description > .selector
-{
-  transform: scale(2.0);
+  content: counter(listing) ". ";
+  display: inline-block;
+  width: 8em;
+  padding-left: auto;
+  margin-left: auto;
+  text-align: right;
 }
