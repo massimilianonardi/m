@@ -4,20 +4,18 @@
     <meta charset="UTF-8">
     <title>Electron App</title>
     <link rel="stylesheet" href="style/editor.css">
-    <script src="js/main.js"></script>
+    <script src="js/editor.js"></script>
   </head>
   <body>
 
     <a href="index.html">index</a>
 
-    <pre class="code" contenteditable="true" spellcheck="false">
+    <pre id="m-edit" class="m-edit-pre" contenteditable="true" spellcheck="false">
     <!-- <pre class="code" contenteditable="plaintext-only" spellcheck="false"> -->
-      <div><code>x</code></div>
+      <!-- <code></code> -->
     </pre>
-    https://css-tricks.com/creating-an-editable-textarea-that-supports-syntax-highlighted-code/
+
+    <textarea id="m-edit-text" spellcheck="false"></textarea>
 
   </body>
-    <script>
-      document.execCommand('defaultParagraphSeparator', false, 'p');
-    </script>
 </html>

@@ -1,12 +1,24 @@
-2025/07/18-21:45:04.392 d72 Reusing MANIFEST /m/app/.conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/MANIFEST-000001
-2025/07/18-21:45:04.393 d72 Recovering log #37
-2025/07/18-21:45:04.418 d72 Reusing old log /m/app/.conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/000037.log 
-2025/07/18-21:47:47.917 d56 Compacting 1@1 + 1@2 files
-2025/07/18-21:47:47.923 d56 Generated table #40@1: 41 keys, 12479 bytes
-2025/07/18-21:47:47.923 d56 Compacted 1@1 + 1@2 files => 12479 bytes
-2025/07/18-21:47:47.924 d56 compacted to: files[ 0 0 1 0 0 0 0 ]
-2025/07/18-21:47:47.924 d56 Delete type=2 #35
-2025/07/18-21:47:47.925 d56 Delete type=2 #38
-2025/07/18-22:06:59.934 1a54 Level-0 table #42: started
-2025/07/18-22:06:59.964 1a54 Level-0 table #42: 1567065 bytes OK
-2025/07/18-22:06:59.966 1a54 Delete type=0 #37
+2025/07/19-20:49:40.147 d48 Reusing MANIFEST /m/app/.conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/MANIFEST-000001
+2025/07/19-20:49:40.148 d48 Recovering log #41
+2025/07/19-20:49:40.183 d48 Reusing old log /m/app/.conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/000041.log 
+2025/07/19-20:53:28.386 f7a Compacting 1@1 + 1@2 files
+2025/07/19-20:53:28.392 f7a Generated table #44@1: 41 keys, 12025 bytes
+2025/07/19-20:53:28.392 f7a Compacted 1@1 + 1@2 files => 12025 bytes
+2025/07/19-20:53:28.393 f7a compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/07/19-20:53:28.393 f7a Delete type=2 #40
+2025/07/19-20:53:28.393 f7a Delete type=2 #42
+2025/07/19-21:10:32.530 f7a Level-0 table #46: started
+2025/07/19-21:10:32.599 f7a Level-0 table #46: 1521796 bytes OK
+2025/07/19-21:10:32.602 f7a Delete type=0 #41
+2025/07/19-21:49:41.758 22df Level-0 table #48: started
+2025/07/19-21:49:41.782 22df Level-0 table #48: 1366064 bytes OK
+2025/07/19-21:49:41.784 22df Delete type=0 #45
+2025/07/19-21:56:58.647 2526 Compacting 1@0 + 1@1 files
+2025/07/19-21:56:58.655 2526 Generated table #49@0: 943 keys, 21702 bytes
+2025/07/19-21:56:58.655 2526 Compacted 1@0 + 1@1 files => 21702 bytes
+2025/07/19-21:56:58.656 2526 compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/07/19-21:56:58.657 2526 Delete type=2 #48
+2025/07/19-21:56:58.657 2526 Delete type=2 #46
+2025/07/19-23:07:05.908 31d6 Level-0 table #51: started
+2025/07/19-23:07:05.932 31d6 Level-0 table #51: 1375758 bytes OK
+2025/07/19-23:07:05.935 31d6 Delete type=0 #47

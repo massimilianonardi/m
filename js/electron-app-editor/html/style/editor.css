@@ -17,24 +17,25 @@ body
 
 /* *[contenteditable="true"]{display: inline-block;} */
 
-pre.code
+pre.m-edit-pre
 {
   white-space: pre-wrap;
 }
 
-pre.code::before
+pre.m-edit-pre::before
 {
-  counter-reset: listing;
+  counter-reset: line_number;
 }
 
-pre.code div
+pre.m-edit-pre code
 {
-  counter-increment: listing;
+  display: block;
+  counter-increment: line_number;
 }
 
-pre.code div::before
+pre.m-edit-pre code::before
 {
-  content: counter(listing) ". ";
+  content: counter(line_number) ". ";
   display: inline-block;
   width: 8em;
   padding-left: auto;

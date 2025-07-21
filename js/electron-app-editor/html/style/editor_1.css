@@ -12,3 +12,32 @@ body
   height: 100vh;
   overflow: hidden;
 }
+
+
+
+/* *[contenteditable="true"]{display: inline-block;} */
+
+pre.code
+{
+  white-space: pre-wrap;
+}
+
+pre.code::before
+{
+  counter-reset: listing;
+}
+
+pre.code div
+{
+  counter-increment: listing;
+}
+
+pre.code div::before
+{
+  content: counter(listing) ". ";
+  display: inline-block;
+  width: 8em;
+  padding-left: auto;
+  margin-left: auto;
+  text-align: right;
+}

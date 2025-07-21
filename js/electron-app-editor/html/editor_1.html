@@ -10,11 +10,18 @@
 
     <a href="index.html">index</a>
 
-<ol>
-  <li><pre>code</pre></li>
-  <li><pre>code</pre></li>
-  <li><pre>...</pre></li>
-</ol>
+    <pre id="m-edit" class="code" contenteditable="true" spellcheck="false">
+    <!-- <pre class="code" contenteditable="plaintext-only" spellcheck="false"> -->
+      <!-- <div><code>x</code></div> -->
+    </pre>
 
   </body>
+
+    <script>
+      var m_edit = document.getElementById("m-edit");
+      m_edit.innerHTML="";
+      var initialElem = document.createElement("div");
+      m_edit.appendChild(initialElem);
+    </script>
+
 </html>
