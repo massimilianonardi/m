@@ -159,10 +159,8 @@ function main()
   m_edit = document.getElementById("m-edit");
   m_edit_text = document.getElementById("m-edit-text");
 
-  m_edit.innerHTML="";
+  m_edit.innerHTML = "";
   var initialElem = document.createElement("code");
-  // initialElem.setAttribute("data-row-number", "1");
-  // initialElem.setAttribute("data-col-number", "1");
   m_edit.appendChild(initialElem);
 
   // m_edit.addEventListener("click", m_edit_click);

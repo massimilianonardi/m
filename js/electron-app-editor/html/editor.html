@@ -2,23 +2,14 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Electron App</title>
+    <title>m-edit</title>
     <link rel="stylesheet" href="style/editor.css">
     <script src="js/editor.js"></script>
   </head>
   <body>
-
-    <a href="index.html">index</a>
-
-    <pre id="m-edit-gutter" class="m-edit-pre-gutter">
-    </pre>
-    
-    <pre id="m-edit" class="m-edit-pre" contenteditable="true" spellcheck="false">
-    <!-- <pre class="code" contenteditable="plaintext-only" spellcheck="false"> -->
-      <!-- <code></code> -->
-    </pre>
-
-    <textarea id="m-edit-text" spellcheck="false"></textarea>
-
+    <div id="m-edit-container" class="m-edit-container">
+      <pre id="m-edit" class="m-edit" contenteditable="true" spellcheck="false">
+      </pre>
+    </div>
   </body>
 </html>

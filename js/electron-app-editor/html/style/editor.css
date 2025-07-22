@@ -1,3 +1,20 @@
+
+/* -------------------------------------------------------------------------- */
+
+:root
+{
+  --container-pad-top: 1rem;
+  --container-pad-bottom: 1rem;
+  --container-pad-left: 1rem;
+  --container-pad-right: 1rem;
+  --gutter-width: 5rem;
+  --gutter-edit-pad: 2rem;
+
+  font-size: initial;
+}
+
+/* -------------------------------------------------------------------------- */
+
 body
 {
   border: 0;
@@ -13,39 +30,83 @@ body
   overflow: hidden;
 }
 
+/* -------------------------------------------------------------------------- */
 
-
-/* *[contenteditable="true"]{display: inline-block;} */
-
-/* #m-edit-gutter, #m-edit
+pre.m-edit
 {
-  display: inline-block;
-  border: solid black 1px;
-} */
+  font-family: monospace;
+  white-space-collapse: preserve;
+  text-wrap-mode: wrap;
+  outline: none;
 
-pre.m-edit-pre
-{
-  white-space: pre-wrap;
-  padding: 10px;
+  margin-left: calc(var(--gutter-width) + var(--gutter-edit-pad));
 }
 
-pre.m-edit-pre::before
+/* -------------------------------------------------------------------------- */
+
+pre.m-edit::before
 {
   counter-reset: line_number;
 }
 
-pre.m-edit-pre code
+/* -------------------------------------------------------------------------- */
+
+pre.m-edit code
 {
-  display: block;
   counter-increment: line_number;
+
+  display: block;
+  min-height: 1rem;
 }
 
-pre.m-edit-pre code::before
+/* -------------------------------------------------------------------------- */
+
+pre.m-edit code::before
 {
   content: counter(line_number) ". ";
-  display: inline-block;
-  width: 8em;
-  /* padding-left: auto;
-  margin-left: auto; */
   text-align: right;
+
+  display: inline-block;
+  position: absolute;
+  width: var(--gutter-width);
+  left: var(--container-pad-left);
+  /* left: calc(-1 * var(--gutter-width)); */
 }
+
+/* -------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------- */
+
+div.m-edit-container
+{
+  padding-top: var(--container-pad-top);
+  padding-bottom: var(--container-pad-bottom);
+  padding-left: var(--container-pad-left);
+  padding-right: var(--container-pad-right);
+
+  border: 1px solid black;
+}
+
+/* -------------------------------------------------------------------------- */
+
+pre.m-edit
+{
+  border: 1px solid grey;
+}
+
+/* -------------------------------------------------------------------------- */
+
+pre.m-edit code::before
+{
+  border: 1px solid red;
+}
+
+/* -------------------------------------------------------------------------- */
+
+pre.m-edit code
+{
+  border: 1px solid green;
+  margin: 2px;
+}
+
+/* -------------------------------------------------------------------------- */

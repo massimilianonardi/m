@@ -11,6 +11,7 @@
     {type: "separator"},
     {role: "togglefullscreen"}
   ]},
+  {label: "index", type: "normal", click: function(){win.loadFile(indexPagePath).then(pageReady);}},
   {label: "Test_01", type: "normal", click: function(){console.log('Test_01');}},
   {label: "Test_02", type: "normal", click: function(){console.log('Test_02');}}
 ]
