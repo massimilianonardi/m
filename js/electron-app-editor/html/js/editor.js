@@ -59,6 +59,7 @@ function ___m_edit_paste(event)
 
   var pastedText = (event.clipboardData || window.clipboardData).getData("text");
   document.execCommand("insertText", false, pastedText);
+  // document.execCommand("insertHTML", false, pastedText);
 
   event.preventDefault();
   return false;
@@ -87,12 +88,25 @@ function m_edit_paste(event)
     console.log("m_edit_keyDown", "focusNode -> m_edit.firstElementChild", [focusNode], focusNode);
   }
 
-  focusNode.innerHTML = "AAAAAAAAAAAAA<code>BBBBB</code>" + pastedText;
+  var pastedArray = pastedText.split("\n");
+  console.log(pastedArray);
+  // todo: keep track of undo/redo cache
+  // todo: split focusNode before/after current selection (already deleted) and do proper edit on first/last node
+  for(var i = 0; i < pastedArray.length; i++)
+  {
+    var lineElem = document.createElement("code");
+    lineElem.innerHTML = pastedArray[i];
+    focusNode.after(lineElem);
+    focusNode = lineElem;
+  }
+  // focusNode.innerHTML = "AAAAAAAAAAAAA</code><code>BBBBB" + pastedText;
   // // selection.getRangeAt(0).insertNode(document.createTextNode("AAAAAAAAAAAAA<code>BBBBB</code>" + pastedText));
   // var elem = document.createElement("code");
   // elem.innerText = "AAAAAAAAAAAAA<code>BBBBB</code>" + pastedText;
   // selection.getRangeAt(0).insertNode(elem);
-  selection.collapseToEnd();
+  // selection.collapseToEnd();
+  // https://medium.com/@python-javascript-php-html-css/how-to-update-content-in-a-contenteditable-element-while-maintaining-the-undo-stack-e17c48e36466
+
 
   event.preventDefault();
   return false;
@@ -102,6 +116,8 @@ function m_edit_paste(event)
 
 function m_edit_keyDown(event)
 {
+  // todo: keep track of undo/redo cache
+
   // console.log("m_edit_keyDown", event);
   if(event.key === "Enter")
   {
