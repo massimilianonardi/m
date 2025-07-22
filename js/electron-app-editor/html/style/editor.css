@@ -17,9 +17,16 @@ body
 
 /* *[contenteditable="true"]{display: inline-block;} */
 
+/* #m-edit-gutter, #m-edit
+{
+  display: inline-block;
+  border: solid black 1px;
+} */
+
 pre.m-edit-pre
 {
   white-space: pre-wrap;
+  padding: 10px;
 }
 
 pre.m-edit-pre::before
@@ -38,7 +45,7 @@ pre.m-edit-pre code::before
   content: counter(line_number) ". ";
   display: inline-block;
   width: 8em;
-  padding-left: auto;
-  margin-left: auto;
+  /* padding-left: auto;
+  margin-left: auto; */
   text-align: right;
 }
