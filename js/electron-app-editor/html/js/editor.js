@@ -5,6 +5,65 @@
 
 var m_edit = null;
 var m_edit_text = null;
+var textEditor = null;
+
+//------------------------------------------------------------------------------
+// CLASS
+//------------------------------------------------------------------------------
+
+function TextEditor()
+{
+  if(!(this instanceof TextEditor))
+  {
+    throw new ReferenceError();
+  }
+
+  this.text = "";
+}
+
+//------------------------------------------------------------------------------
+
+TextEditor.prototype.addCaret = function()
+{
+  return this;
+};
+
+//------------------------------------------------------------------------------
+
+TextEditor.prototype.remCaret = function()
+{
+  return this;
+};
+
+//------------------------------------------------------------------------------
+
+TextEditor.prototype.getCarets = function()
+{
+  return this;
+};
+
+//------------------------------------------------------------------------------
+
+TextEditor.prototype.setCarets = function()
+{
+  return this;
+};
+
+//------------------------------------------------------------------------------
+
+TextEditor.prototype.remAllCarets = function()
+{
+  return this;
+};
+
+//------------------------------------------------------------------------------
+
+TextEditor.prototype.expandSelection = function()
+{
+  return this;
+};
+
+//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 // FUNCTION
@@ -106,6 +165,7 @@ function m_edit_paste(event)
   // selection.getRangeAt(0).insertNode(elem);
   // selection.collapseToEnd();
   // https://medium.com/@python-javascript-php-html-css/how-to-update-content-in-a-contenteditable-element-while-maintaining-the-undo-stack-e17c48e36466
+  // https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
 
 
   event.preventDefault();
@@ -173,6 +233,7 @@ function main()
 
   m_edit = document.getElementById("m-edit");
   m_edit_text = document.getElementById("m-edit-text");
+  textEditor = new TextEditor();
 
   m_edit.innerHTML = "";
   var initialElem = document.createElement("code");

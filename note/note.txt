@@ -41,6 +41,22 @@ command:
     rendering regions are controlled by env vars and never by command line! each composite module can then adjust region for submodules
     switch off key loop (allows initial renders of all mods into tui and only after recall active mod with key loop)
     problem env import/export for composite modules
+
+electron editor:
+  - process typing for syntax highlight, hints and code completion, bracket matching, folding blocks detection, linting (error/warning detection), smart indent
+  - multiple undo/redo
+  - json / xml / html wysiwyg edit without typing delimiters and keywords
+  - memorize actual text to be saved and show vidsual effects and keep indexing between the two
+  - source of modifications is: keyboard, mouse (cut, copy, custom commands, etc.), function api offered to external sources
+  - start of modifications: first define carets positions + modifing functions with parameters (eg type char "a", type word "etc", paste text from clipboard)
+  - carets definitions: arrow keys, mouse, mouse+keys
+  - type of modifications: typed key (char or control key (eg canc, backspace, enter, etc.)), mouse (context menu via modification api)
+  - generalize typed keys via modification api -> thus is possible to
+  - integrate, generalize and make transparent undos/redos into the modification api -> maybe a class object to keep state (carets, selections, etc.)
+  - also integrate detectors into modification api that can be added dynamically and transparently
+  - detectors can be abstracted at different levels (eg key, word, line, etc.) and should be well thought
+  - pre/code contenteditable keyboard/mouse events handlers should detect hotkeys that map into modifications api???
+
 --------------------------------------------------------------------------------
 https://sed.js.org/
 https://ato.pxeger.com/about
