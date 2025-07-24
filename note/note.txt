@@ -45,7 +45,7 @@ command:
 electron editor:
   - process typing for syntax highlight, hints and code completion, bracket matching, folding blocks detection, linting (error/warning detection), smart indent
   - multiple undo/redo
-  - json / xml / html wysiwyg edit without typing delimiters and keywords
+  - json / xml / html (hex/octal/etc. ???) wysiwyg edit without typing delimiters and keywords
   - memorize actual text to be saved and show vidsual effects and keep indexing between the two
   - source of modifications is: keyboard, mouse (cut, copy, custom commands, etc.), function api offered to external sources
   - start of modifications: first define carets positions + modifing functions with parameters (eg type char "a", type word "etc", paste text from clipboard)
@@ -56,6 +56,21 @@ electron editor:
   - also integrate detectors into modification api that can be added dynamically and transparently
   - detectors can be abstracted at different levels (eg key, word, line, etc.) and should be well thought
   - pre/code contenteditable keyboard/mouse events handlers should detect hotkeys that map into modifications api???
+  - insertText accepts strings (one char from key event, text from paste event or other)
+    it deletes current selections (if not empty) and insert text after the current carets (one for each selection range)
+  - detections are calculated on inserted text with surrounding text delimited by particular chars (space, brackets, etc.)
+  - selection: is an array of ranges
+  - range: array of two indexes, start->end, with an implicit direction parameter:
+    forward if start<end, reverse if start>end, for start=end default is forward,
+    but reversed direction can be forced by explicit parameter
+    ranges cannot intersect/overlap!!!
+    at the end index is always positioned a "directional caret" (visually and logically)
+    ranges without caret seems to be meaningless...maybe for column block paste?
+    multiline text default is to be pasted as whole column, but paste block for each caret can be choosen
+  - persistent selections, selections in global history and only selection history
+  - copy/paste columns to/from external apps tables
+  - smart selections: draw a rectangle and each line selection is expanded/stretched on delimiters (space, comma, etc.)
+  - editable selections (adjust conrers, borders, etc.) by hotkeys, but also mouse
 
 --------------------------------------------------------------------------------
 https://sed.js.org/
