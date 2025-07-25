@@ -19,54 +19,102 @@ function TextEditor()
   }
 
   this.text = "";
+  this.selectionRanges = [];
 }
 
 //------------------------------------------------------------------------------
 
-TextEditor.prototype.addCaret = function()
+TextEditor.prototype.addSelectionRange = function(start, end, reverse, index)
 {
+  var range = {};
+
+  if(reverse === true)
+  {
+    if(start > end)
+    {
+      range.start = end;
+      range.end = start;
+      range.forward = true;
+    }
+    else
+    {
+      range.start = start;
+      range.end = end;
+      range.forward = false;
+    }
+  }
+  else
+  {
+    if(start > end)
+    {
+      range.start = end;
+      range.end = start;
+      range.forward = false;
+    }
+    else
+    {
+      range.start = start;
+      range.end = end;
+      range.forward = true;
+    }
+  }
+
+  // todo check if not overlap
+
+  this.selectionRanges.splice(index, 0, range);
+
   return this;
 };
 
 //------------------------------------------------------------------------------
 
-TextEditor.prototype.remCaret = function()
+TextEditor.prototype.remSelectionRange = function(index)
 {
+  this.selectionRanges.splice(index, 1);
+
   return this;
 };
 
 //------------------------------------------------------------------------------
 
-TextEditor.prototype.getCarets = function()
+// TextEditor.prototype.getSelectionRanges = function()
+// {
+//   return this.selectionRanges;
+// };
+
+//------------------------------------------------------------------------------
+
+// TextEditor.prototype.setSelectionRanges = function(selectionRanges)
+// {
+//   this.selectionRanges = selectionRanges;
+//
+//   return this;
+// };
+
+//------------------------------------------------------------------------------
+
+TextEditor.prototype.remAllSelectionRanges = function()
 {
+  this.selectionRanges = [];
+
   return this;
 };
 
 //------------------------------------------------------------------------------
 
-TextEditor.prototype.setCarets = function()
+TextEditor.prototype.insertText = function(text, columnMode)
 {
-  return this;
-};
+  // todo detection of multiline text:
+  // must be a clever method!!!
+  // maybe check for \n, \r, \r\n, but also for csv, excel, html columns???
 
-//------------------------------------------------------------------------------
+  if(columnMode === false)
+  {
+  }
+  else
+  {
+  }
 
-TextEditor.prototype.remAllCarets = function()
-{
-  return this;
-};
-
-//------------------------------------------------------------------------------
-
-TextEditor.prototype.expandSelection = function()
-{
-  return this;
-};
-
-//------------------------------------------------------------------------------
-
-TextEditor.prototype.insertText = function()
-{
   return this;
 };
 
