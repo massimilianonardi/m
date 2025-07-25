@@ -27,44 +27,53 @@ TextEditor.LineSeparator = "\n";
 
 //------------------------------------------------------------------------------
 
-TextEditor.prototype.addSelectionRange = function(start, end, reverse, index)
+TextEditor.prototype.addSelectionRange = function(start, end, reverse)
 {
-  var range = {};
+  if(start > this.text.length || end > this.text.length) throw new ReferenceError();
+
+  var rangeToInsert = {};
 
   if(reverse === true)
   {
     if(start > end)
     {
-      range.start = end;
-      range.end = start;
-      range.forward = true;
+      rangeToInsert.start = end;
+      rangeToInsert.end = start;
+      rangeToInsert.forward = true;
     }
     else
     {
-      range.start = start;
-      range.end = end;
-      range.forward = false;
+      rangeToInsert.start = start;
+      rangeToInsert.end = end;
+      rangeToInsert.forward = false;
     }
   }
   else
   {
     if(start > end)
     {
-      range.start = end;
-      range.end = start;
-      range.forward = false;
+      rangeToInsert.start = end;
+      rangeToInsert.end = start;
+      rangeToInsert.forward = false;
     }
     else
     {
-      range.start = start;
-      range.end = end;
-      range.forward = true;
+      rangeToInsert.start = start;
+      rangeToInsert.end = end;
+      rangeToInsert.forward = true;
     }
   }
 
-  // todo check if not overlap
-
-  this.selectionRanges.splice(index, 0, range);
+  if(this.selectionRanges.length === 0) this.selectionRanges.push(rangeToInsert);
+  else for(var i = 0; i < this.selectionRanges.length; i++)
+  {
+    var range = this.selectionRanges[i];
+    if(range.start < rangeToInsert.start) continue;
+    if(range.start < rangeToInsert.end) throw new ReferenceError();
+    range = this.selectionRanges[i - 1];
+    if(range.end > rangeToInsert.start) throw new ReferenceError();
+    this.selectionRanges.splice(i, 0, rangeToInsert);
+  }
 
   return this;
 };
@@ -80,22 +89,6 @@ TextEditor.prototype.remSelectionRange = function(index)
 
 //------------------------------------------------------------------------------
 
-// TextEditor.prototype.getSelectionRanges = function()
-// {
-//   return this.selectionRanges;
-// };
-
-//------------------------------------------------------------------------------
-
-// TextEditor.prototype.setSelectionRanges = function(selectionRanges)
-// {
-//   this.selectionRanges = selectionRanges;
-//
-//   return this;
-// };
-
-//------------------------------------------------------------------------------
-
 TextEditor.prototype.remAllSelectionRanges = function()
 {
   this.selectionRanges = [];
@@ -106,67 +99,40 @@ TextEditor.prototype.remAllSelectionRanges = function()
 
 //------------------------------------------------------------------------------
 
+TextEditor.prototype.insertTextAtRange = function(text, range)
+{
+  if(range.start > range.end) throw new ReferenceError();
+
+  this.text = this.text.slice(0, range.start) + (text || "") + this.text.slice(range.end);
+
+  range.start = range.start + text.length;
+  range.end = range.start;
+};
+
+//------------------------------------------------------------------------------
+
 TextEditor.prototype.insertText = function(text, columnMode)
 {
-  // todo detection of multiline text:
-  // must be a clever method!!!
-  // maybe check for \n, \r, \r\n, but also for csv, excel, html columns???
+  if(this.selectionRanges.length === 0) this.addSelectionRange(0, 0);
 
   var lines = text.split(TextEditor.LineSeparator);
 
   if(lines.length === 1 || columnMode === false)
   {
-    for(var i = 0; i < this.selectionRanges.length; i++)
+    for(var i = this.selectionRanges.length - 1; i >= 0; i--)
     {
-      var range = this.selectionRanges[i];
-      if(range.start <= range.end)
-      {
-        this.text = this.text.slice(0, range.start) + (text || "") + this.text.slice(range.end);
-        // this.text.splice(range.start, range.end - range.start, text);
-        range.start = range.start + text.length;
-        range.end = range.start + text.length;
-      }
-      else
-      {
-        throw new ReferenceError();
-      }
+      this.insertTextAtRange(text, this.selectionRanges[i]);
     }
   }
   else
   {
-    var length = Math.min(this.selectionRanges.length, lines.length) - 1;
+    var lastIndex = Math.min(this.selectionRanges.length, lines.length) - 1;
 
-    for(var i = 0; i < length; i++)
+    this.insertTextAtRange(lines.slice(lastIndex).join(TextEditor.LineSeparator), this.selectionRanges[lastIndex]);
+
+    for(var i = lastIndex - 1; i >= 0; i--)
     {
-      var range = this.selectionRanges[i];
-      var line = lines[i];
-
-      if(range.start <= range.end)
-      {
-        this.text = this.text.slice(0, range.start) + (line || "") + this.text.slice(range.end);
-        // this.text.splice(range.start, range.end - range.start, line);
-        range.start = range.start + text.length;
-        range.end = range.start + text.length;
-      }
-      else
-      {
-        throw new ReferenceError();
-      }
-    }
-
-    var range = this.selectionRanges[length];
-    var line = lines.slice(length).join(TextEditor.LineSeparator);
-
-    if(range.start <= range.end)
-    {
-        this.text = this.text.slice(0, range.start) + (line || "") + this.text.slice(range.end);
-      // this.text.splice(range.start, range.end - range.start, line);
-        range.start = range.start + text.length;
-        range.end = range.start + text.length;
-    }
-    else
-    {
-      throw new ReferenceError();
+      this.insertTextAtRange(lines[i], this.selectionRanges[i]);
     }
   }
 

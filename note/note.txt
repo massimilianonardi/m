@@ -82,6 +82,7 @@ electron editor:
     but can also be requested to insert all text at each caret (its the straightforward implementation, but the less common wanted behaviour).
     -> most clever way is to have one api which defaults to coumn mode insert but can be disabled ->
     insertText(text, columnMode) where columnMode=null -> defaults to true
+  - ranges must be ordered and inserts must be done from the last range to the first (reversed order) thus insert operation is the fastest possible
 
 --------------------------------------------------------------------------------
 https://sed.js.org/
