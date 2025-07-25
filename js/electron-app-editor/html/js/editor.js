@@ -20,7 +20,10 @@ function TextEditor()
 
   this.text = "";
   this.selectionRanges = [];
+  this.addSelectionRange(0, 0);
 }
+
+TextEditor.LineSeparator = "\n";
 
 //------------------------------------------------------------------------------
 
@@ -96,6 +99,7 @@ TextEditor.prototype.remSelectionRange = function(index)
 TextEditor.prototype.remAllSelectionRanges = function()
 {
   this.selectionRanges = [];
+  this.addSelectionRange(0, 0);
 
   return this;
 };
@@ -108,11 +112,62 @@ TextEditor.prototype.insertText = function(text, columnMode)
   // must be a clever method!!!
   // maybe check for \n, \r, \r\n, but also for csv, excel, html columns???
 
-  if(columnMode === false)
+  var lines = text.split(TextEditor.LineSeparator);
+
+  if(lines.length === 1 || columnMode === false)
   {
+    for(var i = 0; i < this.selectionRanges.length; i++)
+    {
+      var range = this.selectionRanges[i];
+      if(range.start <= range.end)
+      {
+        this.text = this.text.slice(0, range.start) + (text || "") + this.text.slice(range.end);
+        // this.text.splice(range.start, range.end - range.start, text);
+        range.start = range.start + text.length;
+        range.end = range.start + text.length;
+      }
+      else
+      {
+        throw new ReferenceError();
+      }
+    }
   }
   else
   {
+    var length = Math.min(this.selectionRanges.length, lines.length) - 1;
+
+    for(var i = 0; i < length; i++)
+    {
+      var range = this.selectionRanges[i];
+      var line = lines[i];
+
+      if(range.start <= range.end)
+      {
+        this.text = this.text.slice(0, range.start) + (line || "") + this.text.slice(range.end);
+        // this.text.splice(range.start, range.end - range.start, line);
+        range.start = range.start + text.length;
+        range.end = range.start + text.length;
+      }
+      else
+      {
+        throw new ReferenceError();
+      }
+    }
+
+    var range = this.selectionRanges[length];
+    var line = lines.slice(length).join(TextEditor.LineSeparator);
+
+    if(range.start <= range.end)
+    {
+        this.text = this.text.slice(0, range.start) + (line || "") + this.text.slice(range.end);
+      // this.text.splice(range.start, range.end - range.start, line);
+        range.start = range.start + text.length;
+        range.end = range.start + text.length;
+    }
+    else
+    {
+      throw new ReferenceError();
+    }
   }
 
   return this;
@@ -236,6 +291,8 @@ function m_edit_keyDown(event)
   // console.log("m_edit_keyDown", event);
   if(event.key === "Enter")
   {
+    textEditor.insertText(TextEditor.LineSeparator);
+
     // override default contenteditable behaviour
 
     event.preventDefault();
@@ -275,6 +332,7 @@ function m_edit_keyDown(event)
   else
   {
     // process typing for syntax highlight, hints and code completion, bracket matching, folding blocks detection, linting (error/warning detection), smart indent
+    textEditor.insertText(event.key);
   }
 }
 
