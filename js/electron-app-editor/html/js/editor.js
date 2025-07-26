@@ -70,9 +70,13 @@ TextEditor.prototype.addSelectionRange = function(start, end, reverse)
     var range = this.selectionRanges[i];
     if(range.start < rangeToInsert.start) continue;
     if(range.start < rangeToInsert.end) throw new ReferenceError();
-    range = this.selectionRanges[i - 1];
-    if(range.end > rangeToInsert.start) throw new ReferenceError();
+    if(i > 0)
+    {
+      range = this.selectionRanges[i - 1];
+      if(range.end > rangeToInsert.start) throw new ReferenceError();
+    }
     this.selectionRanges.splice(i, 0, rangeToInsert);
+    break;
   }
 
   return this;
@@ -99,6 +103,21 @@ TextEditor.prototype.remAllSelectionRanges = function()
 
 //------------------------------------------------------------------------------
 
+TextEditor.prototype.getSelectionRangesCopy = function()
+{
+  selectionRangesCopy = [];
+
+  for(var i = 0; i < this.selectionRanges.length; i++)
+  {
+    var rangeCopy = Object.assign({}, this.selectionRanges[i]);
+    selectionRangesCopy.push(rangeCopy);
+  }
+
+  return selectionRangesCopy;
+};
+
+//------------------------------------------------------------------------------
+
 TextEditor.prototype.insertTextAtRange = function(text, range)
 {
   if(range.start > range.end) throw new ReferenceError();
@@ -113,6 +132,9 @@ TextEditor.prototype.insertTextAtRange = function(text, range)
 
 TextEditor.prototype.insertText = function(text, columnMode)
 {
+  // todo notify selectionHistoryHandler that current selection is about to be collapsed
+  // todo handle text smart history (fine grained for recent, word/block for older)
+
   if(this.selectionRanges.length === 0) this.addSelectionRange(0, 0);
 
   var lines = text.split(TextEditor.LineSeparator);
@@ -135,6 +157,8 @@ TextEditor.prototype.insertText = function(text, columnMode)
       this.insertTextAtRange(lines[i], this.selectionRanges[i]);
     }
   }
+
+  // todo notify selectionHistoryHandler that current selection is now collapsed
 
   return this;
 };
