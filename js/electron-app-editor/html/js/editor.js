@@ -134,6 +134,7 @@ TextEditor.prototype.insertText = function(text, columnMode)
 {
   // todo notify selectionHistoryHandler that current selection is about to be collapsed
   // todo handle text smart history (fine grained for recent, word/block for older)
+  // todo handle deletions: del/canc keys or redefine actions via selection+insertText???
 
   if(this.selectionRanges.length === 0) this.addSelectionRange(0, 0);
 

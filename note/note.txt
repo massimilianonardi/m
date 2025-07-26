@@ -46,7 +46,7 @@ electron editor:
   - process typing for syntax highlight, hints and code completion, bracket matching, folding blocks detection, linting (error/warning detection), smart indent
   - multiple undo/redo
   - json / xml / html (hex/octal/etc. ???) wysiwyg edit without typing delimiters and keywords
-  - memorize actual text to be saved and show vidsual effects and keep indexing between the two
+  - memorize actual text to be saved and show visual effects and keep indexing between the two
   - source of modifications is: keyboard, mouse (cut, copy, custom commands, etc.), function api offered to external sources
   - start of modifications: first define carets positions + modifing functions with parameters (eg type char "a", type word "etc", paste text from clipboard)
   - carets definitions: arrow keys, mouse, mouse+keys
