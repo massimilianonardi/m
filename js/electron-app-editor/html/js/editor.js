@@ -29,6 +29,8 @@ TextEditor.LineSeparator = "\n";
 
 TextEditor.prototype.addSelectionRange = function(start, end, reverse)
 {
+  // todo notify selectionHistoryHandler that current selection is about to be modified (added range)
+
   if(start > this.text.length || end > this.text.length) throw new ReferenceError();
 
   var rangeToInsert = {};
@@ -86,6 +88,8 @@ TextEditor.prototype.addSelectionRange = function(start, end, reverse)
 
 TextEditor.prototype.remSelectionRange = function(index)
 {
+  // todo notify selectionHistoryHandler that current selection is about to be modified (remove range)
+
   this.selectionRanges.splice(index, 1);
 
   return this;
@@ -95,6 +99,8 @@ TextEditor.prototype.remSelectionRange = function(index)
 
 TextEditor.prototype.remAllSelectionRanges = function()
 {
+  // todo notify selectionHistoryHandler that current selection is about to be modified (rem all ranges)
+
   this.selectionRanges = [];
   this.addSelectionRange(0, 0);
 
@@ -132,6 +138,7 @@ TextEditor.prototype.insertTextAtRange = function(text, range)
 
 TextEditor.prototype.insertText = function(text, columnMode)
 {
+  // todo shift ranges below current being modified
   // todo notify selectionHistoryHandler that current selection is about to be collapsed
   // todo handle text smart history (fine grained for recent, word/block for older)
   // todo handle deletions: del/canc keys or redefine actions via selection+insertText???
@@ -157,6 +164,55 @@ TextEditor.prototype.insertText = function(text, columnMode)
     {
       this.insertTextAtRange(lines[i], this.selectionRanges[i]);
     }
+  }
+
+  // todo notify selectionHistoryHandler that current selection is now collapsed
+
+  return this;
+};
+
+//------------------------------------------------------------------------------
+
+TextEditor.prototype.removeTextAtRange = function(nchars, range, index)
+{
+  // differently from insertText, remove can make ranges overlap -> check against this situation!!!
+
+  if(range.start > range.end) throw new ReferenceError();
+
+  if(0 <= nchars)
+  {
+    this.text = this.text.slice(0, range.start) + this.text.slice(range.end + nchars);
+
+    range.end = range.start;
+  }
+  else if(nchars < 0)
+  {
+    this.text = this.text.slice(0, range.start + nchars) + this.text.slice(range.end);
+
+    range.start = range.start + nchars;
+    range.end = range.start;
+  }
+  else throw new ReferenceError();
+};
+
+//------------------------------------------------------------------------------
+
+TextEditor.prototype.removeText = function(nchars)
+{
+  // differently from insertText, remove can make ranges overlap -> check against this situation!!!
+
+  // nchars positive remove left (del), nchars negative remove right (canc)
+  // todo notify selectionHistoryHandler that current selection is about to be collapsed
+  // todo handle text smart history (fine grained for recent, word/block for older)
+  // todo handle deletions: del/canc keys or redefine actions via selection+insertText???
+
+  if(this.selectionRanges.length === 0) this.addSelectionRange(0, 0);
+
+  if(nchars === 0) return;
+
+  for(var i = this.selectionRanges.length - 1; i >= 0; i--)
+  {
+    this.removeTextAtRange(nchars, this.selectionRanges[i], i);
   }
 
   // todo notify selectionHistoryHandler that current selection is now collapsed

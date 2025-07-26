@@ -58,31 +58,19 @@ electron editor:
   - pre/code contenteditable keyboard/mouse events handlers should detect hotkeys that map into modifications api???
   - insertText accepts strings (one char from key event, text from paste event or other)
     it deletes current selections (if not empty) and insert text after the current carets (one for each selection range)
+    inser/remove text is processed by reversed array of ranges, but any range modification affects indexes of following ranges
   - detections are calculated on inserted text with surrounding text delimited by particular chars (space, brackets, etc.)
-  - selection: is an array of ranges
-  - range: array of two indexes, start->end, with an implicit direction parameter:
-    default forward if start<=end, reverse if start>end, but defaults can be overridden by additional
-    direction parameter (null/true = default, false=reverse default)
-    ranges cannot intersect/overlap!!!
+  - range: ranges cannot intersect/overlap!!!
     ranges are ordered by insertion order, but they can be ordered by start index (most common situation)
     at the end index is always positioned a "directional caret" (visually and logically)
-    ranges without caret seems to be meaningless...maybe for column block paste? NO, they are meaningless
-    range that span over multiple lines is one caret only and cannot be a "column range".
-    "column range" is an array of ranges that usually are one below other, this allows "column ranges"
+    "column range" is an array of single line ranges that usually are one below other, this allows "column ranges"
     that can be of any shape and not only rectangular (eg like magic wand, draw a closed perimeter that defines it)
     multiline text default is to be pasted as whole column, but paste block for each caret can be choosen
     every caret remain at end of each insertion (range is collapsed, that is start=end)
   - persistent selections, selections in global history and only selection history
   - copy/paste columns to/from external apps tables
   - smart selections: draw a rectangle and each line selection is expanded/stretched on delimiters (space, comma, etc.)
-  - editable selections (adjust conrers, borders, etc.) by hotkeys, but also mouse
-  - insert behaviour: one caret -> everything inserted after it despite of it is multiline or not.
-    multiple carets, insert text no multiline -> same text replicated at every caret (it the only meaningful behaviour).
-    multiple carets, insert text multiline -> default is to insert each line at each caret (with its order within rages -> that is lines can be shuffled),
-    but can also be requested to insert all text at each caret (its the straightforward implementation, but the less common wanted behaviour).
-    -> most clever way is to have one api which defaults to coumn mode insert but can be disabled ->
-    insertText(text, columnMode) where columnMode=null -> defaults to true
-  - ranges must be ordered and inserts must be done from the last range to the first (reversed order) thus insert operation is the fastest possible
+  - editable selections (adjust conrers, borders, etc.) by hotkeys, but also mouse.
 
 --------------------------------------------------------------------------------
 https://sed.js.org/
