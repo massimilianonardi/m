@@ -339,6 +339,7 @@ function m_edit_keyDown(event)
   if(event.key === "Enter")
   {
     textEditor.insertText(TextEditor.LineSeparator);
+    m_edit_text.value = textEditor.text;
 
     // override default contenteditable behaviour
 
@@ -376,10 +377,45 @@ function m_edit_keyDown(event)
     selection.removeAllRanges();
     selection.addRange(range);
   }
+  else if(event.key === "Backspace")
+  {
+    textEditor.removeText(-1);
+    m_edit_text.value = textEditor.text;
+  }
+  else if(event.key === "Delete")
+  {
+    textEditor.removeText(1);
+    m_edit_text.value = textEditor.text;
+  }
+  else if(event.key === "Shift")
+  {
+  }
+  else if(event.key === "Control")
+  {
+  }
+  else if(event.key === "Alt")
+  {
+  }
+  else if(event.key === "CapsLock")
+  {
+  }
+  else if(event.key === "ArrowUp")
+  {
+  }
+  else if(event.key === "ArrowDown")
+  {
+  }
+  else if(event.key === "ArrowLeft")
+  {
+  }
+  else if(event.key === "ArrowRight")
+  {
+  }
   else
   {
     // process typing for syntax highlight, hints and code completion, bracket matching, folding blocks detection, linting (error/warning detection), smart indent
     textEditor.insertText(event.key);
+    m_edit_text.value = textEditor.text;
   }
 }
 
