@@ -114,7 +114,6 @@ TextEditor.prototype.addSelectionRange = function(start, end, forward)
     for(var i = 0; i < this.selectionRanges.length; i++)
     {
       var range = this.selectionRanges[i];
-console.log(i, rangeToInsert, range);
       if(range.start < rangeToInsert.start) continue;
       if(range.start < rangeToInsert.end) throw new ReferenceError();
       if(i > 0)
@@ -124,7 +123,6 @@ console.log(i, rangeToInsert, range);
       }
       this.selectionRanges.splice(i, 0, rangeToInsert);
       inserted = true;
-console.log(i, rangeToInsert, range, "splice + break");
       break;
     }
 
