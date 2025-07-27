@@ -27,58 +27,108 @@ TextEditor.LineSeparator = "\n";
 
 //------------------------------------------------------------------------------
 
-TextEditor.prototype.addSelectionRange = function(start, end, reverse)
+// TextEditor.prototype.addSelectionRange = function(start, end, reverse)
+// {
+//   // todo notify selectionHistoryHandler that current selection is about to be modified (added range)
+//
+//   if(start > this.text.length || end > this.text.length) throw new ReferenceError();
+//
+//   var rangeToInsert = {};
+//
+//   if(reverse === true)
+//   {
+//     if(start > end)
+//     {
+//       rangeToInsert.start = end;
+//       rangeToInsert.end = start;
+//       rangeToInsert.forward = true;
+//     }
+//     else
+//     {
+//       rangeToInsert.start = start;
+//       rangeToInsert.end = end;
+//       rangeToInsert.forward = false;
+//     }
+//   }
+//   else
+//   {
+//     if(start > end)
+//     {
+//       rangeToInsert.start = end;
+//       rangeToInsert.end = start;
+//       rangeToInsert.forward = false;
+//     }
+//     else
+//     {
+//       rangeToInsert.start = start;
+//       rangeToInsert.end = end;
+//       rangeToInsert.forward = true;
+//     }
+//   }
+//
+//   var inserted = false;
+//   if(this.selectionRanges.length === 0) this.selectionRanges.push(rangeToInsert);
+//   else for(var i = 0; i < this.selectionRanges.length; i++)
+//   {
+//     var range = this.selectionRanges[i];
+//     console.log(i, rangeToInsert, range);
+//     if(range.start < rangeToInsert.start) continue;
+//     if(range.start < rangeToInsert.end) throw new ReferenceError();
+//     if(i > 0)
+//     {
+//       range = this.selectionRanges[i - 1];
+//       if(range.end > rangeToInsert.start) throw new ReferenceError();
+//     }
+//     this.selectionRanges.splice(i, 0, rangeToInsert);
+//     console.log(i, rangeToInsert, range, "splice + break");
+//     break;
+//   }
+//
+//   if(!inserted) this.selectionRanges.push(rangeToInsert);
+//
+//   return this;
+// };
+
+
+TextEditor.prototype.addSelectionRange = function(start, end, forward)
 {
   // todo notify selectionHistoryHandler that current selection is about to be modified (added range)
 
-  if(start > this.text.length || end > this.text.length) throw new ReferenceError();
+  if(start > end || start > this.text.length || end > this.text.length) throw new ReferenceError();
 
-  var rangeToInsert = {};
-
-  if(reverse === true)
+  var rangeToInsert =
   {
-    if(start > end)
-    {
-      rangeToInsert.start = end;
-      rangeToInsert.end = start;
-      rangeToInsert.forward = true;
-    }
-    else
-    {
-      rangeToInsert.start = start;
-      rangeToInsert.end = end;
-      rangeToInsert.forward = false;
-    }
+    start: start,
+    end: end,
+    forward: forward
+  };
+
+  if(this.selectionRanges.length === 0)
+  {
+    this.selectionRanges.push(rangeToInsert);
   }
   else
   {
-    if(start > end)
-    {
-      rangeToInsert.start = end;
-      rangeToInsert.end = start;
-      rangeToInsert.forward = false;
-    }
-    else
-    {
-      rangeToInsert.start = start;
-      rangeToInsert.end = end;
-      rangeToInsert.forward = true;
-    }
-  }
+    var inserted = false;
 
-  if(this.selectionRanges.length === 0) this.selectionRanges.push(rangeToInsert);
-  else for(var i = 0; i < this.selectionRanges.length; i++)
-  {
-    var range = this.selectionRanges[i];
-    if(range.start < rangeToInsert.start) continue;
-    if(range.start < rangeToInsert.end) throw new ReferenceError();
-    if(i > 0)
+    for(var i = 0; i < this.selectionRanges.length; i++)
     {
-      range = this.selectionRanges[i - 1];
-      if(range.end > rangeToInsert.start) throw new ReferenceError();
+      var range = this.selectionRanges[i];
+console.log(i, rangeToInsert, range);
+      if(range.start < rangeToInsert.start) continue;
+      if(range.start < rangeToInsert.end) throw new ReferenceError();
+      if(i > 0)
+      {
+        range = this.selectionRanges[i - 1];
+        if(range.end > rangeToInsert.start) throw new ReferenceError();
+      }
+      this.selectionRanges.splice(i, 0, rangeToInsert);
+      inserted = true;
+console.log(i, rangeToInsert, range, "splice + break");
+      break;
     }
-    this.selectionRanges.splice(i, 0, rangeToInsert);
-    break;
+
+    if(!inserted) this.selectionRanges.push(rangeToInsert);
   }
 
   return this;
