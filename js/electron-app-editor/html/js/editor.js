@@ -65,13 +65,17 @@ async function testEditor()
   var textToInsert = "";
   // textToInsert = "abc";
   // textToInsert = "ab\ncd";
-  textToInsert = "ab\ncdef\tgh\n";
+  // textToInsert = "ab\ncdef\tgh\n";
+  textToInsert = "ab\ncdef\tgh\nijk\nlmn\nopq";
 
   textEditor.text = initText;
   m_edit_text.value = textEditor.text;
 
+  // textEditor.addSelectionRange(12, 13, true);
+  // textEditor.addSelectionRange(22, 23, true);
+  // textEditor.addSelectionRange(32, 33, true);
   textEditor.addSelectionRange(12, 13, true);
-  textEditor.addSelectionRange(22, 23, true);
+  textEditor.addSelectionRange(22, 23, false);
   textEditor.addSelectionRange(32, 33, true);
   // textEditor.addSelectionRange(12, 15, true);
   // textEditor.addSelectionRange(22, 25, true);
@@ -91,8 +95,8 @@ async function testEditor()
   await sleep(3000);
   textEditor.text = initText;
   m_edit_text.value = textEditor.text;
-  // textEditor.insertText(textToInsert);
-  textEditor.insertText(textToInsert, false);
+  textEditor.insertText(textToInsert);
+  // textEditor.insertText(textToInsert, false);
   await sleep(1000);
   m_edit_text.value = textEditor.text;
 }
@@ -247,7 +251,7 @@ TextEditor.prototype.insertText = function(text, columnMode)
   {
     lines = text.split(TextEditor.LineSeparator);
 
-    // console.log("TextEditor.prototype.insertText", "_columnMode !== false", "lines.length", lines.length);
+    console.log("TextEditor.prototype.insertText", "_columnMode !== false", "lines.length", lines.length, lines);
 
     if(lines.length === 1) _columnMode = false;
     else if(lines.length === this.selectionRanges.length)
@@ -274,6 +278,7 @@ TextEditor.prototype.insertText = function(text, columnMode)
   for(var i = 0; i < this.selectionRanges.length; i++)
   {
     if(_columnMode !== false) _text = lines[i];
+    else _text = text;
 
     var range = this.selectionRanges[i];
 
