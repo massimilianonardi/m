@@ -1,1 +1,1 @@
-electron app text editor - column ranges, insert text
+electron app text editor - remove text

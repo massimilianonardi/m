@@ -95,8 +95,9 @@ async function testEditor()
   await sleep(3000);
   textEditor.text = initText;
   m_edit_text.value = textEditor.text;
-  textEditor.insertText(textToInsert);
+  // textEditor.insertText(textToInsert);
   // textEditor.insertText(textToInsert, false);
+  textEditor.removeText(2);
   await sleep(1000);
   m_edit_text.value = textEditor.text;
 }
@@ -251,7 +252,7 @@ TextEditor.prototype.insertText = function(text, columnMode)
   {
     lines = text.split(TextEditor.LineSeparator);
 
-    console.log("TextEditor.prototype.insertText", "_columnMode !== false", "lines.length", lines.length, lines);
+    // console.log("TextEditor.prototype.insertText", "_columnMode !== false", "lines.length", lines.length, lines);
 
     if(lines.length === 1) _columnMode = false;
     else if(lines.length === this.selectionRanges.length)
@@ -307,7 +308,6 @@ TextEditor.prototype.insertText = function(text, columnMode)
   return this;
 };
 
-
 //------------------------------------------------------------------------------
 
 TextEditor.prototype.removeTextAtRange = function(nchars, index)
@@ -339,25 +339,76 @@ TextEditor.prototype.removeTextAtRange = function(nchars, index)
 
 //------------------------------------------------------------------------------
 
+// TextEditor.prototype.removeText = function(nchars)
+// {
+//   // differently from insertText, remove can make ranges overlap -> check against this situation!!!
+//
+//   // nchars positive remove left (del), nchars negative remove right (canc)
+//   // todo notify selectionHistoryHandler that current selection is about to be collapsed
+//   // todo handle text smart history (fine grained for recent, word/block for older)
+//   // todo handle deletions: del/canc keys or redefine actions via selection+insertText???
+//
+//   if(this.selectionRanges.length === 0) this.addSelectionRange(0, 0);
+//
+//   if(nchars === 0) return;
+//
+//   for(var i = this.selectionRanges.length - 1; i >= 0; i--)
+//   {
+//     this.removeTextAtRange(nchars, i);
+//   }
+//
+//   // todo notify selectionHistoryHandler that current selection is now collapsed
+//
+//   return this;
+// };
+
 TextEditor.prototype.removeText = function(nchars)
 {
-  // differently from insertText, remove can make ranges overlap -> check against this situation!!!
+  if(typeof nchars !== "number") throw new ReferenceError();
 
-  // nchars positive remove left (del), nchars negative remove right (canc)
-  // todo notify selectionHistoryHandler that current selection is about to be collapsed
-  // todo handle text smart history (fine grained for recent, word/block for older)
-  // todo handle deletions: del/canc keys or redefine actions via selection+insertText???
-
-  if(this.selectionRanges.length === 0) this.addSelectionRange(0, 0);
-
-  if(nchars === 0) return;
-
-  for(var i = this.selectionRanges.length - 1; i >= 0; i--)
+  var delta = 0;
+  for(var i = 0; i < this.selectionRanges.length; i++)
   {
-    this.removeTextAtRange(nchars, i);
-  }
+    var range = this.selectionRanges[i];
 
-  // todo notify selectionHistoryHandler that current selection is now collapsed
+    if(range.start > range.end) throw new ReferenceError();
+
+    var _nchars = nchars;
+    if(range.forward === false) _nchars = -nchars;
+
+    console.log("delta - before", delta, range.start, range.end);
+    range.start = range.start + delta;
+    range.end = range.end + delta;
+    console.log("delta - after", delta, range.start, range.end);
+
+    if(0 === _nchars)
+    {
+      this.text = this.text.slice(0, range.start) + this.text.slice(range.end);
+      range.end = range.start;
+    }
+    else if(0 < _nchars)
+    {
+      if(i + 1 < this.selectionRanges.length)
+      {
+        // todo check and "eat" forward overlaps
+      }
+      this.text = this.text.slice(0, range.start) + this.text.slice(range.end + _nchars);
+      range.end = range.start;
+    }
+    else
+    {
+      if(0 < i)
+      {
+        // todo check and "eat" reverse overlaps
+      }
+      this.text = this.text.slice(0, range.start + _nchars) + this.text.slice(range.end);
+      range.start = range.start + _nchars;
+      range.end = range.start;
+    }
+
+    delta = delta - (range.end - range.start) - Math.abs(_nchars);
+    console.log("delta - new", delta, _nchars, Math.abs(_nchars));
+  }
 
   return this;
 };
