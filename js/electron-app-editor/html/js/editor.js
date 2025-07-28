@@ -1,4 +1,102 @@
 
+var regexSymbolWithCombiningMarks = /(<%= allExceptCombiningMarks %>)(<%= combiningMarks %>+)/g;
+var regexSurrogatePair = /([\uD800-\uDBFF])([\uDC00-\uDFFF])/g;
+
+var testString = "foo 𝌆 bar mañana mañana";
+var reverse = function(string)
+{
+	// Step 1: deal with combining marks and astral symbols (surrogate pairs)
+	string = string
+		// Swap symbols with their combining marks so the combining marks go first
+		.replace(regexSymbolWithCombiningMarks, function($0, $1, $2)
+    {
+			// Reverse the combining marks so they will end up in the same order
+			// later on (after another round of reversing)
+			return reverse($2) + $1;
+		})
+		// Swap high and low surrogates so the low surrogates go first
+		.replace(regexSurrogatePair, '$2$1');
+	// Step 2: reverse the code units in the string
+	var result = [];
+	var index = string.length;
+	while (index--)
+  {
+		result.push(string.charAt(index));
+	}
+	return result.join('');
+};
+
+function sleep(ms)
+{
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// function sleep(millis)
+// {
+//     var date = new Date();
+//     var curDate = null;
+//     do{curDate = new Date();}
+//     while(curDate-date < millis);
+// }
+
+async function testEditor()
+{
+  var initText = "";
+  initText += "012345678\n";
+  initText += "012345678\n";
+  initText += "012345678\n";
+  initText += "012345678\n";
+  initText += "012345678\n";
+  initText += "0123456789\n";
+  initText += "0123456789\n";
+  initText += "0123456789\n";
+  initText += "0123456789\n";
+  initText += "0123456789\n";
+  initText += "ABCDEFGHIJ\n";
+  initText += "KLMNOPQRST\n";
+  initText += "UVWXYZ+-/*\n";
+  initText += "\n";
+  initText += "asd\tqwe\tzxc\n";
+  initText += "\n";
+  initText += "\n";
+  initText += "___foo 𝌆 bar mañana mañana___\n";
+  initText += "\n";
+
+  var textToInsert = "";
+  // textToInsert = "abc";
+  // textToInsert = "ab\ncd";
+  textToInsert = "ab\ncdef\tgh\n";
+
+  textEditor.text = initText;
+  m_edit_text.value = textEditor.text;
+
+  textEditor.addSelectionRange(12, 13, true);
+  textEditor.addSelectionRange(22, 23, true);
+  textEditor.addSelectionRange(32, 33, true);
+  // textEditor.addSelectionRange(12, 15, true);
+  // textEditor.addSelectionRange(22, 25, true);
+  // textEditor.addSelectionRange(32, 35, true);
+
+  // textEditor.insertText(textToInsert);
+  // await sleep(2000);
+  // m_edit_text.value = textEditor.text;
+
+  // for(var i = 0; i < textToInsert.length; i++)
+  // {
+  //   textEditor.insertText(textToInsert[i]);
+  //   await sleep(1000);
+  //   m_edit_text.value = textEditor.text;
+  // }
+
+  await sleep(3000);
+  textEditor.text = initText;
+  m_edit_text.value = textEditor.text;
+  // textEditor.insertText(textToInsert);
+  textEditor.insertText(textToInsert, false);
+  await sleep(1000);
+  m_edit_text.value = textEditor.text;
+}
+
 //------------------------------------------------------------------------------
 // GLOBAL
 //------------------------------------------------------------------------------
@@ -20,80 +118,15 @@ function TextEditor()
 
   this.text = "";
   this.selectionRanges = [];
-  this.addSelectionRange(0, 0);
+  // this.addSelectionRange(0, 0);
 }
 
 TextEditor.LineSeparator = "\n";
 
 //------------------------------------------------------------------------------
 
-// TextEditor.prototype.addSelectionRange = function(start, end, reverse)
-// {
-//   // todo notify selectionHistoryHandler that current selection is about to be modified (added range)
-//
-//   if(start > this.text.length || end > this.text.length) throw new ReferenceError();
-//
-//   var rangeToInsert = {};
-//
-//   if(reverse === true)
-//   {
-//     if(start > end)
-//     {
-//       rangeToInsert.start = end;
-//       rangeToInsert.end = start;
-//       rangeToInsert.forward = true;
-//     }
-//     else
-//     {
-//       rangeToInsert.start = start;
-//       rangeToInsert.end = end;
-//       rangeToInsert.forward = false;
-//     }
-//   }
-//   else
-//   {
-//     if(start > end)
-//     {
-//       rangeToInsert.start = end;
-//       rangeToInsert.end = start;
-//       rangeToInsert.forward = false;
-//     }
-//     else
-//     {
-//       rangeToInsert.start = start;
-//       rangeToInsert.end = end;
-//       rangeToInsert.forward = true;
-//     }
-//   }
-//
-//   var inserted = false;
-//   if(this.selectionRanges.length === 0) this.selectionRanges.push(rangeToInsert);
-//   else for(var i = 0; i < this.selectionRanges.length; i++)
-//   {
-//     var range = this.selectionRanges[i];
-//     console.log(i, rangeToInsert, range);
-//     if(range.start < rangeToInsert.start) continue;
-//     if(range.start < rangeToInsert.end) throw new ReferenceError();
-//     if(i > 0)
-//     {
-//       range = this.selectionRanges[i - 1];
-//       if(range.end > rangeToInsert.start) throw new ReferenceError();
-//     }
-//     this.selectionRanges.splice(i, 0, rangeToInsert);
-//     console.log(i, rangeToInsert, range, "splice + break");
-//     break;
-//   }
-//
-//   if(!inserted) this.selectionRanges.push(rangeToInsert);
-//
-//   return this;
-// };
-
-
 TextEditor.prototype.addSelectionRange = function(start, end, forward)
 {
-  // todo notify selectionHistoryHandler that current selection is about to be modified (added range)
-
   if(start > end || start > this.text.length || end > this.text.length) throw new ReferenceError();
 
   var rangeToInsert =
@@ -114,13 +147,17 @@ TextEditor.prototype.addSelectionRange = function(start, end, forward)
     for(var i = 0; i < this.selectionRanges.length; i++)
     {
       var range = this.selectionRanges[i];
+
       if(range.start < rangeToInsert.start) continue;
+
       if(range.start < rangeToInsert.end) throw new ReferenceError();
+
       if(i > 0)
       {
         range = this.selectionRanges[i - 1];
         if(range.end > rangeToInsert.start) throw new ReferenceError();
       }
+
       this.selectionRanges.splice(i, 0, rangeToInsert);
       inserted = true;
       break;
@@ -136,8 +173,6 @@ TextEditor.prototype.addSelectionRange = function(start, end, forward)
 
 TextEditor.prototype.remSelectionRange = function(index)
 {
-  // todo notify selectionHistoryHandler that current selection is about to be modified (remove range)
-
   this.selectionRanges.splice(index, 1);
 
   return this;
@@ -147,10 +182,8 @@ TextEditor.prototype.remSelectionRange = function(index)
 
 TextEditor.prototype.remAllSelectionRanges = function()
 {
-  // todo notify selectionHistoryHandler that current selection is about to be modified (rem all ranges)
-
   this.selectionRanges = [];
-  this.addSelectionRange(0, 0);
+  // this.addSelectionRange(0, 0);
 
   return this;
 };
@@ -172,69 +205,125 @@ TextEditor.prototype.getSelectionRangesCopy = function()
 
 //------------------------------------------------------------------------------
 
-TextEditor.prototype.insertTextAtRange = function(text, range)
+TextEditor.prototype.collapseSelectionRange = function(index)
 {
+  var range = this.selectionRanges[index];
+
   if(range.start > range.end) throw new ReferenceError();
 
-  this.text = this.text.slice(0, range.start) + (text || "") + this.text.slice(range.end);
+  this.text = this.text.slice(0, range.start) + this.text.slice(range.end);
 
-  range.start = range.start + text.length;
   range.end = range.start;
 };
 
 //------------------------------------------------------------------------------
 
-TextEditor.prototype.insertText = function(text, columnMode)
+TextEditor.prototype.collapseSelectionRanges = function(indexFrom, indexTo)
 {
-  // todo shift ranges below current being modified
-  // todo notify selectionHistoryHandler that current selection is about to be collapsed
-  // todo handle text smart history (fine grained for recent, word/block for older)
-  // todo handle deletions: del/canc keys or redefine actions via selection+insertText???
+  var _indexFrom = indexFrom || 0;
+  var _indexTo = indexTo || this.selectionRanges.length;
 
-  if(this.selectionRanges.length === 0) this.addSelectionRange(0, 0);
+  if(_indexFrom < 0 || _indexTo < 0 || this.selectionRanges.length < _indexFrom || this.selectionRanges.length < _indexTo || _indexTo < _indexFrom) throw new ReferenceError();
 
-  var lines = text.split(TextEditor.LineSeparator);
+  if(_indexFrom === _indexTo) return;
 
-  if(lines.length === 1 || columnMode === false)
+  for(var i = _indexTo - 1; i >= _indexFrom; i--)
   {
-    for(var i = this.selectionRanges.length - 1; i >= 0; i--)
-    {
-      this.insertTextAtRange(text, this.selectionRanges[i]);
-    }
+    this.collapseSelectionRange(i);
   }
-  else
-  {
-    var lastIndex = Math.min(this.selectionRanges.length, lines.length) - 1;
-
-    this.insertTextAtRange(lines.slice(lastIndex).join(TextEditor.LineSeparator), this.selectionRanges[lastIndex]);
-
-    for(var i = lastIndex - 1; i >= 0; i--)
-    {
-      this.insertTextAtRange(lines[i], this.selectionRanges[i]);
-    }
-  }
-
-  // todo notify selectionHistoryHandler that current selection is now collapsed
 
   return this;
 };
 
 //------------------------------------------------------------------------------
 
-TextEditor.prototype.removeTextAtRange = function(nchars, range, index)
+TextEditor.prototype.insertText = function(text, columnMode)
+{
+  var _columnMode = columnMode;
+  var _text = text;
+  var lines = null;
+
+  if(_columnMode !== false)
+  {
+    lines = text.split(TextEditor.LineSeparator);
+
+    // console.log("TextEditor.prototype.insertText", "_columnMode !== false", "lines.length", lines.length);
+
+    if(lines.length === 1) _columnMode = false;
+    else if(lines.length === this.selectionRanges.length)
+    {
+    }
+    else if(this.selectionRanges.length < lines.length)
+    {
+      // console.log("TextEditor.prototype.insertText", "_columnMode !== false", "this.selectionRanges.length < lines.length");
+      lines[this.selectionRanges.length - 1] = lines.slice(this.selectionRanges.length - 1).join(TextEditor.LineSeparator);
+      // console.log("TextEditor.prototype.insertText", "_columnMode !== false", "this.selectionRanges.length < lines.length", "joined exceeding lines", lines);
+    }
+    else
+    {
+      // console.log("TextEditor.prototype.insertText", "_columnMode !== false", "this.selectionRanges.length < lines.length -> else (lines is smaller)");
+      for(var i = lines.length; i < this.selectionRanges.length; i++)
+      {
+        lines[i] = "";
+      }
+      // console.log("TextEditor.prototype.insertText", "_columnMode !== false", "this.selectionRanges.length < lines.length -> else (lines is smaller)", "filled missing lines", lines);
+    }
+  }
+
+  var delta = 0;
+  for(var i = 0; i < this.selectionRanges.length; i++)
+  {
+    if(_columnMode !== false) _text = lines[i];
+
+    var range = this.selectionRanges[i];
+
+    if(range.start > range.end) throw new ReferenceError();
+
+    if(range.forward === false)
+    {
+      _text = reverse(_text);
+    }
+
+    // console.log("delta - before", delta, range.start, range.end);
+    range.start = range.start + delta;
+    range.end = range.end + delta;
+    // console.log("delta - after", delta, range.start, range.end);
+    // console.log("_text", _text.length, _text);
+
+    this.text = this.text.slice(0, range.start) + _text + this.text.slice(range.end);
+
+    delta = delta - (range.end - range.start) + _text.length;
+    // console.log("delta - new", delta);
+
+    range.start = range.start + _text.length;
+    range.end = range.start;
+  }
+
+  return this;
+};
+
+
+//------------------------------------------------------------------------------
+
+TextEditor.prototype.removeTextAtRange = function(nchars, index)
 {
   // differently from insertText, remove can make ranges overlap -> check against this situation!!!
+  var range = this.selectionRanges[index];
 
   if(range.start > range.end) throw new ReferenceError();
 
   if(0 <= nchars)
   {
+    // todo check if nchars will go into next ranges till end of ranges array
+
     this.text = this.text.slice(0, range.start) + this.text.slice(range.end + nchars);
 
     range.end = range.start;
   }
   else if(nchars < 0)
   {
+    // todo check if nchars will go into prev ranges till start of ranges array
+
     this.text = this.text.slice(0, range.start + nchars) + this.text.slice(range.end);
 
     range.start = range.start + nchars;
@@ -260,7 +349,7 @@ TextEditor.prototype.removeText = function(nchars)
 
   for(var i = this.selectionRanges.length - 1; i >= 0; i--)
   {
-    this.removeTextAtRange(nchars, this.selectionRanges[i], i);
+    this.removeTextAtRange(nchars, i);
   }
 
   // todo notify selectionHistoryHandler that current selection is now collapsed
@@ -491,6 +580,9 @@ function main()
   // m_edit_text.addEventListener("keydown", m_edit_text_keyDown);
 
   // m_edit.focus();
+
+  m_edit_text.style.width = "99%";
+  m_edit_text.style.height = "500px";
 }
 
 //------------------------------------------------------------------------------

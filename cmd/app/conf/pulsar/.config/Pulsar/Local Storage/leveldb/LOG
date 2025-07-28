@@ -1,3 +1,6 @@
-2025/07/27-21:33:50.214 bd7 Reusing MANIFEST /m/app/.conf/pulsar/.config/Pulsar/Local Storage/leveldb/MANIFEST-000001
-2025/07/27-21:33:50.215 bd7 Recovering log #17
-2025/07/27-21:33:50.216 bd7 Reusing old log /m/app/.conf/pulsar/.config/Pulsar/Local Storage/leveldb/000017.log 
+2025/07/28-08:28:24.674 2035 Reusing MANIFEST /m/app/.conf/pulsar/.config/Pulsar/Local Storage/leveldb/MANIFEST-000001
+2025/07/28-08:28:24.674 2035 Recovering log #17
+2025/07/28-08:28:24.675 2035 Reusing old log /m/app/.conf/pulsar/.config/Pulsar/Local Storage/leveldb/000017.log 
+2025/07/28-10:24:19.910 3bc9 Level-0 table #22: started
+2025/07/28-10:24:19.914 3bc9 Level-0 table #22: 29784 bytes OK
+2025/07/28-10:24:19.917 3bc9 Delete type=0 #17

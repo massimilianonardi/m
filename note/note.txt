@@ -58,7 +58,12 @@ electron editor:
   - pre/code contenteditable keyboard/mouse events handlers should detect hotkeys that map into modifications api???
   - insertText accepts strings (one char from key event, text from paste event or other)
     it deletes current selections (if not empty) and insert text after the current carets (one for each selection range)
-    inser/remove text is processed by reversed array of ranges, but any range modification affects indexes of following ranges
+    insert/remove text is processed by reversed array of ranges, but any range modification affects indexes of following ranges
+    insert -> first range results in a delta = range-collapsed + inserted-chars (despite of direction), next range add delta to range and process again
+    remove -> direction MATTERS A LOT! first range: collapse, if reverse no problem because no range can be before first, delete chars upto next range start,
+    if remains more chars are to be removed, then collapse next range and delete from ranges, then delete chars upto next range, and so on, then go to next range
+    if reverse ...
+    function to collapse ranges from->to can be useful to insert/remove actions especially to simplify remove alg
   - detections are calculated on inserted text with surrounding text delimited by particular chars (space, brackets, etc.)
   - range: ranges cannot intersect/overlap!!!
     ranges are ordered by insertion order, but they can be ordered by start index (most common situation)
