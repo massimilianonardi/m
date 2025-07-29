@@ -13,3 +13,25 @@
 2025/07/29-09:08:34.333 3088 Level-0 table #238: started
 2025/07/29-09:08:34.396 3088 Level-0 table #238: 1424489 bytes OK
 2025/07/29-09:08:34.401 3088 Delete type=0 #234
+2025/07/29-09:41:46.617 329f Level-0 table #240: started
+2025/07/29-09:41:46.687 329f Level-0 table #240: 1409804 bytes OK
+2025/07/29-09:41:46.692 329f Delete type=0 #237
+2025/07/29-09:45:17.971 329f Compacting 2@0 + 1@1 files
+2025/07/29-09:45:18.004 329f Generated table #241@0: 5361 keys, 56603 bytes
+2025/07/29-09:45:18.004 329f Compacted 2@0 + 1@1 files => 56603 bytes
+2025/07/29-09:45:18.008 329f compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/07/29-09:45:18.008 329f Delete type=2 #236
+2025/07/29-09:45:18.008 329f Delete type=2 #240
+2025/07/29-09:45:18.008 329f Delete type=2 #238
+2025/07/29-10:03:01.075 3cca Level-0 table #243: started
+2025/07/29-10:03:01.132 3cca Level-0 table #243: 1408153 bytes OK
+2025/07/29-10:03:01.136 3cca Delete type=0 #239
+2025/07/29-10:18:08.631 3fe1 Compacting 1@0 + 1@1 files
+2025/07/29-10:18:08.667 3fe1 Generated table #244@0: 5361 keys, 56726 bytes
+2025/07/29-10:18:08.667 3fe1 Compacted 1@0 + 1@1 files => 56726 bytes
+2025/07/29-10:18:08.670 3fe1 compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/07/29-10:18:08.671 3fe1 Delete type=2 #241
+2025/07/29-10:18:08.671 3fe1 Delete type=2 #243
+2025/07/29-10:24:43.189 3fe1 Level-0 table #246: started
+2025/07/29-10:24:43.257 3fe1 Level-0 table #246: 1417629 bytes OK
+2025/07/29-10:24:43.262 3fe1 Delete type=0 #242

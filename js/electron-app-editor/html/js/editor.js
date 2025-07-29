@@ -5,25 +5,25 @@ var regexSurrogatePair = /([\uD800-\uDBFF])([\uDC00-\uDFFF])/g;
 var testString = "foo 𝌆 bar mañana mañana";
 var reverse = function(string)
 {
-	// Step 1: deal with combining marks and astral symbols (surrogate pairs)
-	string = string
-		// Swap symbols with their combining marks so the combining marks go first
-		.replace(regexSymbolWithCombiningMarks, function($0, $1, $2)
+  // Step 1: deal with combining marks and astral symbols (surrogate pairs)
+  string = string
+    // Swap symbols with their combining marks so the combining marks go first
+    .replace(regexSymbolWithCombiningMarks, function($0, $1, $2)
     {
-			// Reverse the combining marks so they will end up in the same order
-			// later on (after another round of reversing)
-			return reverse($2) + $1;
-		})
-		// Swap high and low surrogates so the low surrogates go first
-		.replace(regexSurrogatePair, '$2$1');
-	// Step 2: reverse the code units in the string
-	var result = [];
-	var index = string.length;
-	while (index--)
+      // Reverse the combining marks so they will end up in the same order
+      // later on (after another round of reversing)
+      return reverse($2) + $1;
+    })
+    // Swap high and low surrogates so the low surrogates go first
+    .replace(regexSurrogatePair, '$2$1');
+  // Step 2: reverse the code units in the string
+  var result = [];
+  var index = string.length;
+  while (index--)
   {
-		result.push(string.charAt(index));
-	}
-	return result.join('');
+    result.push(string.charAt(index));
+  }
+  return result.join('');
 };
 
 function sleep(ms)
@@ -97,10 +97,19 @@ async function testEditor()
   m_edit_text.value = textEditor.text;
   // textEditor.insertText(textToInsert);
   // textEditor.insertText(textToInsert, false);
-	textEditor.removeText(3);
+  // textEditor.removeText(12);
+  // textEditor.removeText(11);
+  // textEditor.removeText(10);
+  // textEditor.removeText(9);
+  // textEditor.removeText(8);
+  // textEditor.removeText(7);
+  // textEditor.removeText(6);
+  // textEditor.removeText(5);
+  // textEditor.removeText(4);
+  // textEditor.removeText(3);
   // textEditor.removeText(2);
-	// textEditor.removeText(1);
-	// textEditor.removeText(0);
+  // textEditor.removeText(1);
+  // textEditor.removeText(0);
   await sleep(1000);
   m_edit_text.value = textEditor.text;
 }
@@ -370,6 +379,7 @@ TextEditor.prototype.removeText = function(nchars)
   if(typeof nchars !== "number") throw new ReferenceError();
 
   var delta = 0;
+  var rangesToRemoveLater = [];
   for(var i = 0; i < this.selectionRanges.length; i++)
   {
     var range = this.selectionRanges[i];
@@ -379,14 +389,14 @@ TextEditor.prototype.removeText = function(nchars)
     var _nchars = nchars;
     if(range.forward === false) _nchars = -nchars;
 
-		console.log("delta - before", delta, range.start, range.end, range.forward, "_nchars", _nchars);
+    console.log("delta - before", delta, range.start, range.end, range.forward, "_nchars", _nchars);
     range.start = range.start + delta;
     range.end = range.end + delta;
     // console.log("delta - after", delta, range.start, range.end);
     // console.log("nchars", nchars);
 
-		console.log("nchars", nchars, "_nchars", _nchars, Math.abs(_nchars));
-		console.log("delta", delta, range.end, range.start, - Math.abs(_nchars));
+    console.log("nchars", nchars, "_nchars", _nchars, Math.abs(_nchars));
+    console.log("delta", delta, range.end, range.start, - Math.abs(_nchars));
     delta = delta - (range.end - range.start) - Math.abs(_nchars);
     console.log("delta - new", delta, _nchars, Math.abs(_nchars));
 
@@ -398,25 +408,54 @@ TextEditor.prototype.removeText = function(nchars)
     }
     else if(0 < _nchars)
     {
-      if(i + 1 < this.selectionRanges.length)
+      for(var j = this.selectionRanges.length - 1; i < j; j--)
       {
-        // todo check and "eat" forward overlaps
+        if(this.selectionRanges[j].start < range.end)
+        {
+          if(this.selectionRanges[j].end < range.end)
+          {
+            console.log("removing selection range", j, this.selectionRanges[j].start, this.selectionRanges[j].end, this.selectionRanges[j].forward);
+            this.remSelectionRange(j);
+          }
+          else
+          {
+            this.selectionRanges[j].start = range.end;
+          }
+        }
       }
       this.text = this.text.slice(0, range.start) + this.text.slice(range.end + _nchars);
       range.end = range.start;
     }
     else
     {
-      if(0 < i)
+      for(var j = i - 1; 0 <= j; j--)
       {
-        // todo check and "eat" reverse overlaps
+        console.log("reverse check for overlaps", i, j, this.selectionRanges[j]);
+        if(range.start < this.selectionRanges[j].end)
+        {
+          if(range.start < this.selectionRanges[j].start)
+          {
+            console.log("marking for removing selection range", j, this.selectionRanges[j].start, this.selectionRanges[j].end, this.selectionRanges[j].forward);
+            rangesToRemoveLater.push(j);
+          }
+          else
+          {
+            this.selectionRanges[j].end = range.start;
+          }
+        }
       }
       this.text = this.text.slice(0, range.start + _nchars) + this.text.slice(range.end);
       range.start = range.start + _nchars;
       range.end = range.start;
     }
 
-		console.log(this.text);
+    console.log(this.text);
+  }
+
+  for(var i = 0; i < rangesToRemoveLater.length; i++)
+  {
+    console.log("removing 'marked for later' selection range", i, this.selectionRanges[rangesToRemoveLater[i]].start, this.selectionRanges[rangesToRemoveLater[i]].end, this.selectionRanges[rangesToRemoveLater[i]].forward);
+    this.remSelectionRange(rangesToRemoveLater[i]);
   }
 
   return this;

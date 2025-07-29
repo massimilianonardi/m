@@ -1,1 +1,1 @@
-electron app text editor - remove text OK without overlap check
+electron app text editor - remove text complete and working
