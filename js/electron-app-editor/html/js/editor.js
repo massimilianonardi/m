@@ -92,6 +92,11 @@ async function testEditor()
   //   m_edit_text.value = textEditor.text;
   // }
 
+  textEditor.modListeners.push(function(indexFrom, indexTo, removedText, text)
+  {
+    console.log("UNDO - reconstructed text", textEditor.text.slice(0, indexFrom) + removedText + textEditor.text.slice(indexFrom + (text || "").length));
+  });
+
   // await sleep(3000);
   textEditor.text = initText;
   m_edit_text.value = textEditor.text;
@@ -136,6 +141,7 @@ function TextEditor()
   this.text = "";
   this.selectionRanges = [];
   // this.addSelectionRange(0, 0);
+  this.modListeners = [];
 }
 
 TextEditor.LineSeparator = "\n";
@@ -256,7 +262,14 @@ TextEditor.prototype.collapseSelectionRanges = function(indexFrom, indexTo)
 
 TextEditor.prototype.modifyText = function(indexFrom, indexTo, text)
 {
+  var removedText = this.text.slice(indexFrom, indexTo);
+  console.log("TextEditor.prototype.modifyText", indexFrom, indexTo, "removed", removedText, "inserted", text);
   this.text = this.text.slice(0, indexFrom) + (text || "") + this.text.slice(indexTo);
+  for(var i = 0; i < this.modListeners.length; i++)
+  {
+    var f = this.modListeners[i];
+    if(typeof f === "function") f(indexFrom, indexTo, removedText, text);
+  }
 
   return this;
 };
