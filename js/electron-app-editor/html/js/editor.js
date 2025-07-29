@@ -254,6 +254,15 @@ TextEditor.prototype.collapseSelectionRanges = function(indexFrom, indexTo)
 
 //------------------------------------------------------------------------------
 
+TextEditor.prototype.modifyText = function(indexFrom, indexTo, text)
+{
+  this.text = this.text.slice(0, indexFrom) + (text || "") + this.text.slice(indexTo);
+
+  return this;
+};
+
+//------------------------------------------------------------------------------
+
 TextEditor.prototype.insertText = function(text, columnMode)
 {
   var _columnMode = columnMode;
@@ -308,7 +317,8 @@ TextEditor.prototype.insertText = function(text, columnMode)
     // console.log("delta - after", delta, range.start, range.end);
     // console.log("_text", _text.length, _text);
 
-    this.text = this.text.slice(0, range.start) + _text + this.text.slice(range.end);
+    // this.text = this.text.slice(0, range.start) + _text + this.text.slice(range.end);
+    this.modifyText(range.start, range.end, _text);
 
     delta = delta - (range.end - range.start) + _text.length;
     // console.log("delta - new", delta);
@@ -351,7 +361,8 @@ TextEditor.prototype.removeText = function(nchars)
 // range.end++;
     if(0 === _nchars)
     {
-      this.text = this.text.slice(0, range.start) + this.text.slice(range.end);
+      // this.text = this.text.slice(0, range.start) + this.text.slice(range.end);
+      this.modifyText(range.start, range.end);
       range.end = range.start;
     }
     else if(0 < _nchars)
@@ -371,7 +382,8 @@ TextEditor.prototype.removeText = function(nchars)
           }
         }
       }
-      this.text = this.text.slice(0, range.start) + this.text.slice(range.end + _nchars);
+      // this.text = this.text.slice(0, range.start) + this.text.slice(range.end + _nchars);
+      this.modifyText(range.start, range.end + _nchars);
       range.end = range.start;
     }
     else
@@ -392,7 +404,8 @@ TextEditor.prototype.removeText = function(nchars)
           }
         }
       }
-      this.text = this.text.slice(0, range.start + _nchars) + this.text.slice(range.end);
+      // this.text = this.text.slice(0, range.start + _nchars) + this.text.slice(range.end);
+      this.modifyText(range.start + _nchars, range.end);
       range.start = range.start + _nchars;
       range.end = range.start;
     }

@@ -1,1 +1,1 @@
-electron app text editor - remove text complete and working
+electron app text editor - architecture for detectors (history, syntax highlight, etc.)
