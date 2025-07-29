@@ -1,1 +1,1 @@
-bin nodejs
+electron app text edit - detector architecture

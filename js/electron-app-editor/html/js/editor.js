@@ -113,7 +113,7 @@ async function testEditor()
   // textEditor.removeText(4);
   // textEditor.removeText(3);
   // textEditor.removeText(2);
-  // textEditor.removeText(1);
+  textEditor.removeText(1);
   // textEditor.removeText(0);
   await sleep(1000);
   m_edit_text.value = textEditor.text;
