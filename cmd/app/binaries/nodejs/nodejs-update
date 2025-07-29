@@ -1,0 +1,10 @@
+#!/bin/sh
+
+LASTCHANGE_URL="https://api.github.com/repos/nodejs/node/releases/latest"
+
+VERSION=$(wget --no-check-certificate -qO- "$LASTCHANGE_URL" | grep -oP '"tag_name": "\K(.*)(?=")')
+VERSION="${VERSION#v}"
+DOWNLOAD_URL="https://github.com/nodejs/node/releases/download/v${VERSION}/node-v${VERSION}-linux-x64.tar.xz"
+DOWNLOAD_URL="https://nodejs.org/dist/v${VERSION}/node-v${VERSION}-linux-x64.tar.xz"
+FILE_TYPE="tar.xz"
+SYMLINKS="node=bin/node npm=bin/npm npx=bin/npx corepack=bin/corepack"

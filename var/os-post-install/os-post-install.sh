@@ -18,6 +18,8 @@ sudo apt install -y remmina remmina-plugin-vnc
 sudo apt install -y libreoffice
 sudo dpkg -i "${0%/*}/../omnissa/Omnissa-Horizon-Client-2412-8.14.0-12437214089.x64.deb"
 
+sudo apt install -y nodejs npm
+
 sudo apt install -y build-essential
 sudo apt install -y g++
 sudo apt install -y gdb
