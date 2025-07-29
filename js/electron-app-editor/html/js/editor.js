@@ -92,12 +92,15 @@ async function testEditor()
   //   m_edit_text.value = textEditor.text;
   // }
 
-  await sleep(3000);
+  // await sleep(3000);
   textEditor.text = initText;
   m_edit_text.value = textEditor.text;
   // textEditor.insertText(textToInsert);
   // textEditor.insertText(textToInsert, false);
-  textEditor.removeText(2);
+	textEditor.removeText(3);
+  // textEditor.removeText(2);
+	// textEditor.removeText(1);
+	// textEditor.removeText(0);
   await sleep(1000);
   m_edit_text.value = textEditor.text;
 }
@@ -376,11 +379,18 @@ TextEditor.prototype.removeText = function(nchars)
     var _nchars = nchars;
     if(range.forward === false) _nchars = -nchars;
 
-    console.log("delta - before", delta, range.start, range.end);
+		console.log("delta - before", delta, range.start, range.end, range.forward, "_nchars", _nchars);
     range.start = range.start + delta;
     range.end = range.end + delta;
-    console.log("delta - after", delta, range.start, range.end);
+    // console.log("delta - after", delta, range.start, range.end);
+    // console.log("nchars", nchars);
 
+		console.log("nchars", nchars, "_nchars", _nchars, Math.abs(_nchars));
+		console.log("delta", delta, range.end, range.start, - Math.abs(_nchars));
+    delta = delta - (range.end - range.start) - Math.abs(_nchars);
+    console.log("delta - new", delta, _nchars, Math.abs(_nchars));
+
+// range.end++;
     if(0 === _nchars)
     {
       this.text = this.text.slice(0, range.start) + this.text.slice(range.end);
@@ -406,8 +416,7 @@ TextEditor.prototype.removeText = function(nchars)
       range.end = range.start;
     }
 
-    delta = delta - (range.end - range.start) - Math.abs(_nchars);
-    console.log("delta - new", delta, _nchars, Math.abs(_nchars));
+		console.log(this.text);
   }
 
   return this;
