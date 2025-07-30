@@ -1,0 +1,17 @@
+#!/bin/sh
+
+. realpaths.lib.sh
+
+#-------------------------------------------------------------------------------
+
+realpaths
+
+# node "$THIS_DIR/jsc.js" "$@"
+# node "$THIS_DIR/jsc.js" "${1%/*}" "${1##*/}" > "${2:-"./lib.js"}"
+
+if [ -z "$2" ]
+then
+  node "$THIS_DIR/jsc.js" "${1%/*}" "${1##*/}"
+else
+  node "$THIS_DIR/jsc.js" "${1%/*}" "${1##*/}" > "${2}"
+fi

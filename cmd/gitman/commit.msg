@@ -1,1 +1,1 @@
-electron app text edit - detector architecture
+cmd jsc (javasacript compiler) + bin maven
