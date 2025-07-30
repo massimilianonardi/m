@@ -6,6 +6,12 @@ test_electron()
 {
   cd "/m/src/git/m/js/electron-app-editor"
 
+  jsc "/m/src/git/m/js/lib/core/modules_js.json" "./html/js/lib-core.js"
+  jsc "/m/src/git/m/js/lib/core/modules_css.json" "./html/style/lib-core.css"
+
+  rm -f "./html/js/core"
+  ln -s "/m/src/git/m/js/lib/core" "./html/js/core"
+
   electron .
 }
 

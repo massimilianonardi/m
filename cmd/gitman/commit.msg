@@ -1,1 +1,1 @@
-cmd jsc (javasacript compiler) + bin maven
+js lib core

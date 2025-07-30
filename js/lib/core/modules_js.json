@@ -1,0 +1,65 @@
+{
+  "modules":
+  [
+    {
+      "name": "m",
+      "modules":
+      [
+        {"name": "util", "modules":
+        [
+          {"file": "m/util/environment.js", "symbols": "environment,deviceMobility,isMobile"},
+          {"file": "m/util/timestamp.js", "symbols": "timestamp"},
+          {"file": "m/util/performance.js", "symbols": "performance"},
+          {"file": "m/util/uniqueID.js", "symbols": "uniqueID"},
+          {"file": "m/util/clone.js", "symbols": "clone"},
+          {"file": "m/util/merge.js", "symbols": "merge"},
+          {"file": "m/util/link.js", "symbols": "link,linkProperty"},
+          {"file": "m/util/ajax.js", "symbols": "ajax,ajaxAdvanced"},
+          {"file": "m/util/translate.js", "symbols": "translate"},
+          {"file": "m/util/jsonToObject.js", "symbols": "jsonToObject"},
+          {"file": "m/util/keyBindEnterEsc.js", "symbols": "keyBindEnterEsc"}
+        ]},
+        {"name": "json", "modules":
+        [
+          {"file": "m/json/path.js", "symbols": "path"},
+          {"file": "m/json/canonicalize.js", "symbols": "canonicalize"},
+          {"file": "m/json/traverse.js", "symbols": "traverse"},
+          {"file": "m/json/resolve.js", "symbols": "resolve"}
+        ]},
+        {"file": "m/sys.js", "symbols": "sys"},
+        {"file": "m/Class.js", "symbols": "Class"},
+        {"name": "log", "modules":
+        [
+          {"file": "m/log/Log.js", "symbols": "Log"},
+          {"file": "m/log/Logger.js", "symbols": "Logger"},
+          {"file": "m/log/LoggerConsoleSimple.js", "symbols": "LoggerConsoleSimple"},
+          {"file": "m/log/LoggerConsoleTrace.js", "symbols": "LoggerConsoleTrace"},
+          {"file": "m/log/LoggerStore.js", "symbols": "LoggerStore"}
+        ]},
+        {"name": "srv", "modules":
+        [
+          {"file": "m/srv/_functions.js", "symbols": "ajax,responseCallback"},
+          {"file": "m/srv/Service.js", "symbols": "Service"},
+          {"file": "m/srv/Authentication.js", "symbols": "Authentication"},
+          {"file": "m/srv/Authorization.js", "symbols": "Authorization"},
+          {"file": "m/srv/App.js", "symbols": "App"},
+          {"file": "m/srv/Store.js", "symbols": "Store"},
+          {"file": "m/srv/Data.js", "symbols": "Data"}
+        ]},
+        {"name": "mod", "modules":
+        [
+          {"file": "m/mod/Queue.js", "symbols": "Queue"},
+          {"file": "m/mod/Module.js", "symbols": "Module"},
+          {"file": "m/mod/LibraryDynamic.js", "symbols": "loadLibraryDynamically,loadJSLibraryDynamically,loadCSSLibraryDynamically,loadModulesDynamically"}
+        ]},
+        {"name": "conf", "modules":
+        [
+          {"file": "m/conf/Conf.js", "symbols": "Conf"},
+          {"file": "m/conf/Configuration.js", "symbols": "Configuration"},
+          {"file": "m/conf/Language.js", "symbols": "Language"}
+        ]},
+        {"file": "m/init.js", "symbols": ""}
+      ]
+    }
+  ]
+}
