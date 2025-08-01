@@ -1,3 +1,3 @@
-2025/07/30-07:26:36.635 e6d Reusing MANIFEST /m/app/.conf/pulsar/.config/Pulsar/Local Storage/leveldb/MANIFEST-000001
-2025/07/30-07:26:36.635 e6d Recovering log #21
-2025/07/30-07:26:36.661 e6d Reusing old log /m/app/.conf/pulsar/.config/Pulsar/Local Storage/leveldb/000021.log 
+2025/08/01-14:56:51.679 bcf Reusing MANIFEST /m/app/.conf/pulsar/.config/Pulsar/Local Storage/leveldb/MANIFEST-000001
+2025/08/01-14:56:51.680 bcf Recovering log #21
+2025/08/01-14:56:51.681 bcf Reusing old log /m/app/.conf/pulsar/.config/Pulsar/Local Storage/leveldb/000021.log 

@@ -3968,6 +3968,140 @@ return this;
 
 }.call(log));
 
+var mod = mod  || {};
+
+this.mod = mod;
+
+mod = (function ()
+{
+
+for(var $_sub_module_iterator in mod){eval("var " + $_sub_module_iterator + " = mod[$_sub_module_iterator];");}
+//------------------------------------------------------------------------------
+// Class -----------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+function Queue()
+{
+  return Queue.Class.construct(this, arguments);
+}
+
+Class(Queue)
+.compose("queue", []);
+;
+
+//------------------------------------------------------------------------------
+// Methods ---------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+Queue.prototype.add = function(callback)
+{
+  var _callback = callback;
+  
+  if(typeof _callback === "undefined" || _callback === null)
+  {
+    _callback = function(){};
+  }
+  
+  if(typeof _callback !== "function")
+  {
+    throw new TypeError();
+  }
+  
+  var _this = this;
+  var obj = {callback: _callback};
+  this.queue.push(obj);
+  return function()
+  {
+    obj.context = this;
+    obj.args = arguments;
+    obj.ready = true;
+    _this.exec();
+  };
+};
+
+//------------------------------------------------------------------------------
+
+Queue.prototype.exec = function()
+{
+  var c = this.queue[0];
+  if(typeof c !== "undefined" && c.ready === true)
+  {
+//    this.queue.splice(0, 1);
+    if(this.queue.splice(0, 1)[0] !== c)
+    {
+      console.log("thread race condition!");
+      throw new ReferenceError();
+    }
+    try
+    {
+      c.callback.apply(c.context, c.args);
+    }
+    catch(error)
+    {
+      console.error(error);
+    }
+    this.exec();
+  }
+  
+  return this;
+};
+
+//------------------------------------------------------------------------------
+this.Queue = Queue;
+
+return this;
+
+}.call(mod));
+
+m.global = {};
+m.g = m.global;
+
+//global = m.g;
+g = m.g;
+
+m.global.log = m.log.Log();
+m.global.log.add(new m.log.LoggerConsoleSimple());
+//m.global.log.add(new m.log.LoggerConsoleTrace());
+//m.global.log.level(m.log.Log.level.ALL);
+//m.global.log.level(m.log.Log.level.OFF);
+m.global.log.level(m.log.Log.level.WARN);
+//m.global.log.level(m.env.log.level);
+
+//m.global.queue = new mod.Queue();
+//m.global.conf = new conf.Configuration();
+//m.global.lang = new conf.Language();
+
+//m.global.environment = m.util.environment();
+//m.sys[m.global.environment].init();
+
+if(typeof this.root === "undefined" || this.root === null)
+{
+//  if(document.currentScript === null || (document.currentScript !== null && document.currentScript.src === ""))
+  if(document.currentScript === null)
+  {
+    this.root = location.pathname;
+  }
+  else
+  {
+    this.root = document.currentScript.src.replace(location.origin, "").replace(new RegExp("\/([^/]+)$"), "");
+    this.path = document.currentScript.src.replace(location.origin, "");
+  }
+}
+
+return this;
+
+}.call(m));
+
+
+var m = m  || {};
+
+this.m = m;
+
+m = (function ()
+{
+
+for(var $_sub_module_iterator in m){eval("var " + $_sub_module_iterator + " = m[$_sub_module_iterator];");}
+
 var srv = srv  || {};
 
 this.srv = srv;
@@ -5647,78 +5781,6 @@ mod = (function ()
 {
 
 for(var $_sub_module_iterator in mod){eval("var " + $_sub_module_iterator + " = mod[$_sub_module_iterator];");}
-//------------------------------------------------------------------------------
-// Class -----------------------------------------------------------------------
-//------------------------------------------------------------------------------
-
-function Queue()
-{
-  return Queue.Class.construct(this, arguments);
-}
-
-Class(Queue)
-.compose("queue", []);
-;
-
-//------------------------------------------------------------------------------
-// Methods ---------------------------------------------------------------------
-//------------------------------------------------------------------------------
-
-Queue.prototype.add = function(callback)
-{
-  var _callback = callback;
-  
-  if(typeof _callback === "undefined" || _callback === null)
-  {
-    _callback = function(){};
-  }
-  
-  if(typeof _callback !== "function")
-  {
-    throw new TypeError();
-  }
-  
-  var _this = this;
-  var obj = {callback: _callback};
-  this.queue.push(obj);
-  return function()
-  {
-    obj.context = this;
-    obj.args = arguments;
-    obj.ready = true;
-    _this.exec();
-  };
-};
-
-//------------------------------------------------------------------------------
-
-Queue.prototype.exec = function()
-{
-  var c = this.queue[0];
-  if(typeof c !== "undefined" && c.ready === true)
-  {
-//    this.queue.splice(0, 1);
-    if(this.queue.splice(0, 1)[0] !== c)
-    {
-      console.log("thread race condition!");
-      throw new ReferenceError();
-    }
-    try
-    {
-      c.callback.apply(c.context, c.args);
-    }
-    catch(error)
-    {
-      console.error(error);
-    }
-    this.exec();
-  }
-  
-  return this;
-};
-
-//------------------------------------------------------------------------------
-this.Queue = Queue;
 //------------------------------------------------------------------------------
 // Class -----------------------------------------------------------------------
 //------------------------------------------------------------------------------

@@ -1,1 +1,1 @@
-js lib core
+js lib ui-text-edit

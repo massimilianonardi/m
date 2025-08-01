@@ -1,0 +1,16 @@
+{
+  "modules":
+  [
+    {
+      "name": "m",
+      "modules":
+      [
+        {"name": "ui", "modules":
+        [
+          {"file": "m/ui/TextEdit.js", "symbols": "TextEdit"}
+        ]},
+        {"file": "m/init.js", "symbols": ""}
+      ]
+    }
+  ]
+}

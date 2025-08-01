@@ -36,27 +36,9 @@
           {"file": "m/log/LoggerConsoleTrace.js", "symbols": "LoggerConsoleTrace"},
           {"file": "m/log/LoggerStore.js", "symbols": "LoggerStore"}
         ]},
-        {"name": "srv", "modules":
-        [
-          {"file": "m/srv/_functions.js", "symbols": "ajax,responseCallback"},
-          {"file": "m/srv/Service.js", "symbols": "Service"},
-          {"file": "m/srv/Authentication.js", "symbols": "Authentication"},
-          {"file": "m/srv/Authorization.js", "symbols": "Authorization"},
-          {"file": "m/srv/App.js", "symbols": "App"},
-          {"file": "m/srv/Store.js", "symbols": "Store"},
-          {"file": "m/srv/Data.js", "symbols": "Data"}
-        ]},
         {"name": "mod", "modules":
         [
-          {"file": "m/mod/Queue.js", "symbols": "Queue"},
-          {"file": "m/mod/Module.js", "symbols": "Module"},
-          {"file": "m/mod/LibraryDynamic.js", "symbols": "loadLibraryDynamically,loadJSLibraryDynamically,loadCSSLibraryDynamically,loadModulesDynamically"}
-        ]},
-        {"name": "conf", "modules":
-        [
-          {"file": "m/conf/Conf.js", "symbols": "Conf"},
-          {"file": "m/conf/Configuration.js", "symbols": "Configuration"},
-          {"file": "m/conf/Language.js", "symbols": "Language"}
+          {"file": "m/mod/Queue.js", "symbols": "Queue"}
         ]},
         {"file": "m/init.js", "symbols": ""}
       ]
