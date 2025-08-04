@@ -12,6 +12,7 @@ test_electron()
   # jsc "/m/src/git/m/js/lib/core-ext/modules_js.json" >> "./html/js/lib-core.js"
   # jsc "/m/src/git/m/js/lib/core-ext/modules_css.json" >> "./html/style/lib-core.css"
 
+  LIB_NAME="dynamic-loader"; rm -f "./html/js/$LIB_NAME"; ln -s "/m/src/git/m/js/lib/$LIB_NAME" "./html/js/$LIB_NAME"
   LIB_NAME="core"; rm -f "./html/js/$LIB_NAME"; ln -s "/m/src/git/m/js/lib/$LIB_NAME" "./html/js/$LIB_NAME"
   LIB_NAME="core-ext"; rm -f "./html/js/$LIB_NAME"; ln -s "/m/src/git/m/js/lib/$LIB_NAME" "./html/js/$LIB_NAME"
   LIB_NAME="ui-text-edit"; rm -f "./html/js/$LIB_NAME"; ln -s "/m/src/git/m/js/lib/$LIB_NAME" "./html/js/$LIB_NAME"

@@ -590,21 +590,8 @@ function loadCSSLibraryDynamically(path, cssModulesFile, cssElement)
 
 function loadLibraryDynamically(path, jsModulesFile, cssModulesFile, jsElement, cssElement)
 {
-  console.log("loadLibraryDynamically", path, dynamicLibs);
-  if(!path && Array.isArray(dynamicLibs))
-  {
-    for(var i = 0; i < dynamicLibs.length; i++)
-    {
-      var path = dynamicLibs[i];
-      loadJSLibraryDynamically(path, jsModulesFile, jsElement);
-      loadCSSLibraryDynamically(path, cssModulesFile, cssElement);
-    }
-  }
-  else
-  {
-    loadJSLibraryDynamically(path, jsModulesFile, jsElement);
-    loadCSSLibraryDynamically(path, cssModulesFile, cssElement);
-  }
+  loadJSLibraryDynamically(path, jsModulesFile, jsElement);
+  loadCSSLibraryDynamically(path, cssModulesFile, cssElement);
 }
 
 //------------------------------------------------------------------------------
