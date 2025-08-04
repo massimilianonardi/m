@@ -338,7 +338,7 @@ function main()
 
   m_edit = document.getElementById("m-edit");
   m_edit_text = document.getElementById("m-edit-text");
-  textEditor = new m.ui.TextEdit();
+  textEditor = new m.text.TextEdit();
 
   m_edit.innerHTML = "";
   var initialElem = document.createElement("code");

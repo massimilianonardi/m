@@ -5,6 +5,11 @@
       "name": "m",
       "modules":
       [
+        {"name": "text", "modules":
+        [
+          {"file": "m/text/reverse.js", "symbols": "reverse"},
+          {"file": "m/text/TextEdit.js", "symbols": "TextEdit"}
+        ]},
         {"name": "ui", "modules":
         [
           {"file": "m/ui/TextEdit.js", "symbols": "TextEdit"}
