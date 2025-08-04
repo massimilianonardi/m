@@ -42,6 +42,9 @@ command:
     switch off key loop (allows initial renders of all mods into tui and only after recall active mod with key loop)
     problem env import/export for composite modules
 
+js-lib-dynamic: make it as a standalone project (with import from core lib for Queue, but specific functions insdide this project)
+  - find a way to pass path to modules.js.json and modules.css.json from browser (global variables???, maybe an array of paths so that one script tag is needed)
+
 electron editor:
   - process typing for syntax highlight, hints and code completion, bracket matching, folding blocks detection, linting (error/warning detection), smart indent
   - multiple undo/redo

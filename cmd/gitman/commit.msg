@@ -1,1 +1,1 @@
-js lib ui-text-edit
+js lib dynamic-loader
