@@ -6,14 +6,12 @@
 
 realpaths
 
-# node "$THIS_DIR/jsc.js" "$@"
-# node "$THIS_DIR/jsc.js" "${1%/*}" "${1##*/}" > "${2:-"./lib.js"}"
-
 if [ -z "$2" ]
 then
   node "$THIS_DIR/jsc.js" "${1%/*}" "${1##*/}"
 else
   node "$THIS_DIR/jsc.js" "${1%/*}" "${1##*/}" > "${2}"
+  
   if [ "${2}" != "${2%.js}" ]
   then
     echo "type javascript"
@@ -28,11 +26,6 @@ else
     echo "type unknown -> no minification available"
     MINIFIED_FILE="$2"
   fi
-  # yui_url="https://repo1.maven.org/maven2/com/yahoo/platform/yui/yuicompressor/2.4.8/yuicompressor-2.4.8.jar"
-  # wget --no-check-certificate -qO- "$yui_url" > "./yui-compressor.jar"
-  # java -jar "./yui-compressor.jar" --charset utf-8 --line-break 0 --nomunge --preserve-semi --disable-optimizations "${2}" -o "${2}.min"
-  # closure_url="https://repo1.maven.org/maven2/com/google/javascript/closure-compiler/v20250706/closure-compiler-v20250706.jar"
-  # wget --no-check-certificate -qO- "$closure_url" > "./closure-compiler.jar"
-  # java -jar "./closure-compiler.jar" --charset utf-8 "${2}" -o "${2}.min"
+
   gzip < "$MINIFIED_FILE" > "${MINIFIED_FILE}.gz"
 fi

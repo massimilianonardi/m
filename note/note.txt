@@ -85,7 +85,7 @@ electron editor:
   - code preprocessing for debug commands removal, different source code genration for different profiles (eg: release, debug,  inline-release, etc.)
   - code analyze, code graph generation, automatic uml, etc.
 
-    Internal code documentation—intended for developers inside the organization.
+    Internal code documentation—intended for developers inside the organization (doxygen for c/c++, php, etc. javadoc, jsdoc, etc.).
     External code documentation—intended for developers outside the organization who integrate with the product or need to understand its code.
     Low-level or inline documentation—resides within the source code and explains details of specific code parts in isolation, such as the purpose of certain functions and arguments.
     High-level documentation—describes the architecture, design principles, implementation guidelines, or other broader concerns.
