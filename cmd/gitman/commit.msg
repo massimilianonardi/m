@@ -1,1 +1,1 @@
-js lib dynamic-loader
+pkg pkg-inst
