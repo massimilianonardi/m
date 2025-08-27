@@ -1,0 +1,290 @@
+#!/bin/sh
+
+. env.lib.sh
+
+#-------------------------------------------------------------------------------
+
+find_latest_version()
+{
+  if [ -z "$TYPE" ] || [ "$TYPE" = "custom" ]
+  then
+    true
+  elif [ "$TYPE" = "github" ]
+  then
+    if [ -z "$GITHUB_REPO" ]
+    then
+      echo "repo is null"
+      exit 1
+    fi
+    LATEST_RELEASE_URL="https://api.github.com/repos/${GITHUB_REPO}/releases/latest"
+    VERSION="$(wget --no-check-certificate -qO- "$LATEST_RELEASE_URL" | grep -oP '"tag_name": "\K(.*)(?=")')"
+  elif [ "$TYPE" = "maven" ]
+  then
+    if [ -z "$MAVEN_REPO" ]
+    then
+      echo "repo is null"
+      exit 1
+    fi
+    MAVEN_GROUP_ID="${MAVEN_REPO%/*}"
+    MAVEN_ARTIFACT_ID="${MAVEN_REPO#*/}"
+    LATEST_RELEASE_URL="https://search.maven.org/solrsearch/select?q=g:%22${MAVEN_GROUP_ID}%22+AND+a:%22${MAVEN_ARTIFACT_ID}%22"
+    VERSION="$(wget --no-check-certificate -qO- "$LATEST_RELEASE_URL" | sed 's/^.*"latestVersion":"\([^"]*\)".*$/\1/')"
+  elif [ "$TYPE" = "sourceforge" ]
+  then
+    true
+  else
+    echo "wrong type! TYPE=$TYPE"
+    exit 1
+  fi
+}
+
+#-------------------------------------------------------------------------------
+
+get_download_url()
+{
+  if [ -z "$TYPE" ] || [ "$TYPE" = "custom" ]
+  then
+    true
+  elif [ "$TYPE" = "github" ]
+  then
+    if [ -z "$GITHUB_REPO" ]
+    then
+      echo "repo is null"
+      exit 1
+    fi
+    RELEASE_URL="https://api.github.com/repos/${GITHUB_REPO}/releases/tags/${PKG_VER}"
+    DOWNLOAD_URL="$(wget --no-check-certificate -qO- "$RELEASE_URL" | grep "browser_download_url" | grep "${GITHUB_ASSET_NAME_PATTERN}" | grep -oP '"browser_download_url": "\K(.*)(?=")' | head -1)"
+  elif [ "$TYPE" = "maven" ]
+  then
+    if [ -z "$MAVEN_REPO" ]
+    then
+      echo "repo is null"
+      exit 1
+    fi
+    MAVEN_GROUP_ID="${MAVEN_REPO%/*}"
+    MAVEN_ARTIFACT_ID="${MAVEN_REPO#*/}"
+    DOWNLOAD_URL="https://dlcdn.apache.org/maven/maven-4/${VERSION}/binaries/apache-maven-${VERSION}-bin.tar.gz"
+  elif [ "$TYPE" = "sourceforge" ]
+  then
+    true
+  else
+    echo "wrong type! TYPE=$TYPE"
+    exit 1
+  fi
+}
+
+#-------------------------------------------------------------------------------
+
+unpack()
+{
+  PACKED_FILE="$1"
+  shift
+  FILE_TYPE="$1"
+  shift
+  UNPACK_DIR="$1"
+  shift
+
+  echo "unpacking $PACKED_FILE to $UNPACK_DIR"
+  (
+    cd "$UNPACK_DIR"
+
+    if [ "$FILE_TYPE" = "zip" ]
+    then
+      unzip "$PACKED_FILE"
+    elif [ "$FILE_TYPE" = "tar.gz" ] || [ "$FILE_TYPE" = "tgz" ] || [ "$FILE_TYPE" = "tar" ] || [ "$FILE_TYPE" = "gzip" ] || [ "$FILE_TYPE" = "bzip" ] || [ "$FILE_TYPE" = "tar.xz" ] || [ "$FILE_TYPE" = "xz" ]
+    then
+      tar xvf "$PACKED_FILE"
+    elif [ "$FILE_TYPE" = "deb" ]
+    then
+      dpkg-deb -x "$PACKED_FILE" ./
+    elif [ "$FILE_TYPE" = "none" ]
+    then
+      true
+    else
+      echo "unknown file type: FILE_TYPE=$FILE_TYPE"
+      exit 1
+    fi
+  )
+}
+
+#-------------------------------------------------------------------------------
+
+download()
+{
+  echo "downloading $DOWNLOAD_URL"
+
+  rm -rf "$PKG_INST_DIR"
+  mkdir -p "$PKG_INST_DIR"
+
+  if [ "$FILE_TYPE" = "none" ]
+  then
+  (
+    cd "$PKG_INST_DIR"
+    # wget "$DOWNLOAD_URL"
+    wget --no-check-certificate "$DOWNLOAD_URL"
+  )
+  else
+    DOWNLOAD_FILE="${PKG_INST_DIR}-$(date +"[%Y-%m-%d %H:%M:%S]").${FILE_TYPE}"
+    # wget -O "$DOWNLOAD_FILE" "$DOWNLOAD_URL" && \
+    wget --no-check-certificate -O "$DOWNLOAD_FILE" "$DOWNLOAD_URL" && \
+    unpack "$DOWNLOAD_FILE" "$FILE_TYPE" "$PKG_INST_DIR" && \
+    rm -f "$DOWNLOAD_FILE"
+  fi
+}
+
+#-------------------------------------------------------------------------------
+
+find_deepest_dir()
+{
+  DEEPEST_DIR="$1"
+  shift
+
+  (
+    cd "$DEEPEST_DIR"
+
+    if [ "$(ls | wc -l)" = "1" ] && [ -d "$(ls)" ]
+    then
+      DEEPEST_DIR="$(ls)"
+      if [ "$(ls "$DEEPEST_DIR" | wc -l)" = "1" ] && [ -d "$(ls "$DEEPEST_DIR")" ]
+      then
+        DEEPEST_DIR="$DEEPEST_DIR/$(ls "$DEEPEST_DIR")"
+      fi
+    else
+      DEEPEST_DIR=""
+    fi
+
+    cd "$DEEPEST_DIR"
+
+    pwd
+  )
+}
+
+#-------------------------------------------------------------------------------
+
+install()
+{
+  if [ -z "$PKG_VER" ]
+  then
+    find_latest_version
+    PKG_VER="$VERSION"
+  fi
+
+  PKG_INST_DIR="$PKG_INST_ROOT_DIR/${PKG_NAME}-${PKG_VER}"
+
+  if [ -d "$PKG_INST_DIR" ]
+  then
+    echo "$PKG_INST_DIR already installed!"
+    return 0
+  fi
+
+  echo "installing $PKG_INST_DIR"
+
+  get_download_url
+
+  download
+
+  DEEPEST_DIR="$(find_deepest_dir "$PKG_INST_DIR")"
+
+  if exist_function postinstall
+  then
+    (
+      # cd "$PKG_INST_DIR"
+      cd "$DEEPEST_DIR"
+      postinstall
+    )
+  fi
+
+  if [ -e "$PKG_INST_DIR_LINK" ] && [ ! -L "$PKG_INST_DIR_LINK" ]
+  then
+    echo "$PKG_INST_DIR_LINK already exists and is not a symlink!!!"
+    exit 1
+  fi
+
+  rm -f "$PKG_INST_DIR_LINK"
+  ln -s "$DEEPEST_DIR" "$PKG_INST_DIR_LINK"
+
+  if [ -z "$SYMLINKS" ]
+  then
+    # todo link all binaries found
+    echo "SYMLINKS is empty! cannot create links"
+    exit 1
+  else
+    for k in $SYMLINKS
+    do
+      symlink="${k%%=*}"
+      target="${k#*=}"
+      rm -f "$LINKS_ROOT_DIR/$symlink"
+      ln -s "$PKG_INST_DIR_LINK/$target" "$LINKS_ROOT_DIR/$symlink"
+
+      sudo chmod +x "$PKG_INST_DIR_LINK/$target"
+    done
+  fi
+
+  if [ -f "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}.desktop" ]
+  then
+    sudo ln -s "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}.desktop" "/usr/share/applications/${PKG_NAME}.desktop"
+  fi
+}
+
+#-------------------------------------------------------------------------------
+
+uninstall()
+{
+  # uninstall specific version and rebuild default link to latest version installed, or remove completely (dir link and bin links and desktop file)
+  true
+}
+
+#-------------------------------------------------------------------------------
+
+versions()
+{
+  echo "$VERSIONS"
+}
+
+#-------------------------------------------------------------------------------
+
+PKG_COMMAND="$1"
+shift
+
+PKG_NAME="$1"
+shift
+
+PKG_VER="$1"
+shift
+
+PKG_INST_ROOT_DIR="$1"
+shift
+
+PKG_INST_CONF_ROOT_DIR="$1"
+shift
+
+LINKS_ROOT_DIR="$1"
+shift
+
+if [ -z "$PKG_COMMAND" ] || [ -z "$PKG_NAME" ] || [ -z "$PKG_INST_ROOT_DIR" ] || [ -z "$PKG_INST_CONF_ROOT_DIR" ] || [ -z "$LINKS_ROOT_DIR" ]
+then
+  echo "some args are null, required: pkg-command, pkg-name, pkg-ver, pkg-inst-dir, pkg-inst-conf-dir, symlinks-dir"
+  exit 1
+fi
+
+case "$PKG_COMMAND" in
+  "install") true;;
+  "uninstall") true;;
+  "versions") true;;
+  *) exit 1;;
+esac
+
+mkdir -p "$PKG_INST_ROOT_DIR"
+PKG_INST_ROOT_DIR="$(cd -- "$PKG_INST_ROOT_DIR" && pwd)"
+
+mkdir -p "$PKG_INST_CONF_ROOT_DIR"
+PKG_INST_CONF_ROOT_DIR="$(cd -- "$PKG_INST_CONF_ROOT_DIR" && pwd)"
+
+mkdir -p "$LINKS_ROOT_DIR"
+LINKS_ROOT_DIR="$(cd -- "$LINKS_ROOT_DIR" && pwd)"
+
+. "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}.conf"
+
+PKG_INST_DIR_LINK="$PKG_INST_ROOT_DIR/$PKG_NAME"
+
+"$PKG_COMMAND"
