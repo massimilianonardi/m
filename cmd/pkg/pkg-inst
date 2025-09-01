@@ -18,6 +18,15 @@ find_latest_version()
     fi
     LATEST_RELEASE_URL="https://api.github.com/repos/${GITHUB_REPO}/releases/latest"
     VERSION="$(wget --no-check-certificate -qO- "$LATEST_RELEASE_URL" | grep -oP '"tag_name": "\K(.*)(?=")')"
+  elif [ "$TYPE" = "codeberg" ]
+  then
+    if [ -z "$CODEBERG_REPO" ]
+    then
+      echo "repo is null"
+      exit 1
+    fi
+    LATEST_RELEASE_URL="https://codeberg.org/api/v1/repos/${CODEBERG_REPO}/releases/latest"
+    VERSION="$(wget --no-check-certificate -qO- "$LATEST_RELEASE_URL" | sed 's/^.*"tag_name":"\([^"]*\)".*$/\1/')"
   elif [ "$TYPE" = "maven" ]
   then
     if [ -z "$MAVEN_REPO" ]
@@ -52,8 +61,37 @@ get_download_url()
       echo "repo is null"
       exit 1
     fi
-    RELEASE_URL="https://api.github.com/repos/${GITHUB_REPO}/releases/tags/${PKG_VER}"
-    DOWNLOAD_URL="$(wget --no-check-certificate -qO- "$RELEASE_URL" | grep "browser_download_url" | grep "${GITHUB_ASSET_NAME_PATTERN}" | grep -oP '"browser_download_url": "\K(.*)(?=")' | head -1)"
+    if [ -z "$DOWNLOAD_URL" ]
+    then
+      RELEASE_URL="https://api.github.com/repos/${GITHUB_REPO}/releases/tags/${PKG_VER}"
+      DOWNLOAD_URL="$(wget --no-check-certificate -qO- "$RELEASE_URL" | grep "browser_download_url" | grep "${GITHUB_ASSET_NAME_PATTERN}" | grep -oP '"browser_download_url": "\K(.*)(?=")' | head -1)"
+    else
+      if [ -z "$VERSION" ]
+      then
+        VERSION="$PKG_VER"
+      fi
+      eval DOWNLOAD_URL="$DOWNLOAD_URL"
+      echo "DOWNLOAD_URL=$DOWNLOAD_URL"
+    fi
+  elif [ "$TYPE" = "codeberg" ]
+  then
+    if [ -z "$CODEBERG_REPO" ]
+    then
+      echo "repo is null"
+      exit 1
+    fi
+    if [ -z "$DOWNLOAD_URL" ]
+    then
+      RELEASE_URL="https://codeberg.org/api/v1/repos/${CODEBERG_REPO}/releases/tags/${PKG_VER}"
+      DOWNLOAD_URL="$(wget --no-check-certificate -qO- "$RELEASE_URL" | sed 's/"browser_download_url"/\n"browser_download_url"/g' | grep "browser_download_url" | grep "${CODEBERG_ASSET_NAME_PATTERN}" | sed 's/^.*"browser_download_url":"\([^"]*\)".*$/\1/' | head -1)"
+    else
+      if [ -z "$VERSION" ]
+      then
+        VERSION="$PKG_VER"
+      fi
+      eval DOWNLOAD_URL="$DOWNLOAD_URL"
+      echo "DOWNLOAD_URL=$DOWNLOAD_URL"
+    fi
   elif [ "$TYPE" = "maven" ]
   then
     if [ -z "$MAVEN_REPO" ]
@@ -63,7 +101,10 @@ get_download_url()
     fi
     MAVEN_GROUP_ID="${MAVEN_REPO%/*}"
     MAVEN_ARTIFACT_ID="${MAVEN_REPO#*/}"
-    DOWNLOAD_URL="https://dlcdn.apache.org/maven/maven-4/${VERSION}/binaries/apache-maven-${VERSION}-bin.tar.gz"
+    MAVEN_GROUP_PATH="$(echo "$MAVEN_GROUP_ID" | tr "." "/")"
+    MAVEN_BASE_URL="https://repo1.maven.org/maven2"
+    # DOWNLOAD_URL="${MAVEN_BASE_URL}/${MAVEN_GROUP_PATH}/${MAVEN_ARTIFACT_ID}/${VERSION}/${MAVEN_ARTIFACT_ID}-${VERSION}.${FILE_TYPE}"
+    DOWNLOAD_URL="${MAVEN_BASE_URL}/${MAVEN_GROUP_PATH}/${MAVEN_ARTIFACT_ID}/${VERSION}"
   elif [ "$TYPE" = "sourceforge" ]
   then
     true
@@ -97,6 +138,9 @@ unpack()
     elif [ "$FILE_TYPE" = "deb" ]
     then
       dpkg-deb -x "$PACKED_FILE" ./
+    elif [ "$FILE_TYPE" = "jar" ] || [ "$FILE_TYPE" = "war" ]
+    then
+      mv "$PACKED_FILE" "$UNPACK_DIR"
     elif [ "$FILE_TYPE" = "none" ]
     then
       true
@@ -122,6 +166,22 @@ download()
     cd "$PKG_INST_DIR"
     # wget "$DOWNLOAD_URL"
     wget --no-check-certificate "$DOWNLOAD_URL"
+  )
+  elif [ "$FILE_TYPE" = "jar" ] || [ "$FILE_TYPE" = "war" ]
+  then
+  (
+    cd "$PKG_INST_DIR"
+    # DOWNLOAD_URLS="$(wget --no-check-certificate -qO- "$DOWNLOAD_URL" | sed '1d')"
+    DOWNLOAD_URLS="$(wget \
+    --header="Accept: text/html" \
+    --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36" "https://httpbin.io/user-agent" \
+    --no-check-certificate -qO- "$DOWNLOAD_URL" | grep "href" | sed 's/^.*href="\([^"]*\)".*$/\1/' | head -n -1)"
+    echo "DOWNLOAD_URLS=$DOWNLOAD_URLS"
+    for k in $DOWNLOAD_URLS
+    do
+      DOWNLOAD_FILE="$(echo "$k" | sed "s/-$PKG_VER//g")"
+      wget --no-check-certificate -O "$DOWNLOAD_FILE" "${DOWNLOAD_URL}/${k}"
+    done
   )
   else
     DOWNLOAD_FILE="${PKG_INST_DIR}-$(date +"[%Y-%m-%d %H:%M:%S]").${FILE_TYPE}"
@@ -216,7 +276,10 @@ install()
       rm -f "$LINKS_ROOT_DIR/$symlink"
       ln -s "$PKG_INST_DIR_LINK/$target" "$LINKS_ROOT_DIR/$symlink"
 
-      sudo chmod +x "$PKG_INST_DIR_LINK/$target"
+      if [ -e "$PKG_INST_DIR_LINK/$target" ] && [ ! -x "$PKG_INST_DIR_LINK/$target" ]
+      then
+        sudo chmod +x "$PKG_INST_DIR_LINK/$target"
+      fi
     done
   fi
 
