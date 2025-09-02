@@ -40,7 +40,35 @@ find_latest_version()
     VERSION="$(wget --no-check-certificate -qO- "$LATEST_RELEASE_URL" | sed 's/^.*"latestVersion":"\([^"]*\)".*$/\1/')"
   elif [ "$TYPE" = "sourceforge" ]
   then
-    true
+    LATEST_RELEASE_URL="https://sourceforge.net/projects/${SOURCEFORGE_REPO}/rss?path=/"
+    VERSION="$(wget --no-check-certificate -qO- "$LATEST_RELEASE_URL" | tr "<" "\n" | grep "link" | grep "$SOURCEFORGE_ASSET_NAME_PATTERN" | sed 's/link>//g' | head -n 1 | sed 's/\/download//g' | sed 's/.*\///g')"
+    VERSION_PREFIX="$(printf "%s\n%s\n" "$SOURCEFORGE_ASSET_NAME_PATTERN" "$VERSION" | sed -e 'N;s/^\(.*\).*\n\1.*$/\1\n\1/;D')"
+
+    VERSION_REV="$(echo "$VERSION" | sed -e 's/^/\
+/' -e ':a' -e 's/\n\(.*\)\(.\)/\2\
+\1/
+ta' -e 's/\n//')"
+
+    PATTERN_REV="$(echo "$SOURCEFORGE_ASSET_NAME_PATTERN" | sed -e 's/^/\
+/' -e ':a' -e 's/\n\(.*\)\(.\)/\2\
+\1/
+ta' -e 's/\n//')"
+
+    VERSION_SUFFIX="$(printf "%s\n%s\n" "$PATTERN_REV" "$VERSION_REV" | sed -e 'N;s/^\(.*\).*\n\1.*$/\1\n\1/;D' | sed -e 's/^/\
+/' -e ':a' -e 's/\n\(.*\)\(.\)/\2\
+\1/
+ta' -e 's/\n//')"
+
+    VERSION="${VERSION#$VERSION_PREFIX}"
+    VERSION="${VERSION%$VERSION_SUFFIX}"
+
+    echo "VERSION=$VERSION"
+    echo "VERSION_REV=$VERSION_REV"
+    echo "PATTERN_REV=$PATTERN_REV"
+    echo "VERSION_PREFIX=$VERSION_PREFIX"
+    echo "VERSION_SUFFIX=$VERSION_SUFFIX"
+
+    # reverse string: sed -e 'G;:1' -e 's/\(.\)\(.*\n\)/\2\1/;t1' -e 's/.//'
   else
     echo "wrong type! TYPE=$TYPE"
     exit 1
@@ -64,7 +92,7 @@ get_download_url()
     if [ -z "$DOWNLOAD_URL" ]
     then
       RELEASE_URL="https://api.github.com/repos/${GITHUB_REPO}/releases/tags/${PKG_VER}"
-      DOWNLOAD_URL="$(wget --no-check-certificate -qO- "$RELEASE_URL" | grep "browser_download_url" | grep "${GITHUB_ASSET_NAME_PATTERN}" | grep -oP '"browser_download_url": "\K(.*)(?=")' | head -1)"
+      DOWNLOAD_URL="$(wget --no-check-certificate -qO- "$RELEASE_URL" | grep "browser_download_url" | grep "${GITHUB_ASSET_NAME_PATTERN}" | grep -oP '"browser_download_url": "\K(.*)(?=")' | head -n 1)"
     else
       if [ -z "$VERSION" ]
       then
@@ -83,7 +111,7 @@ get_download_url()
     if [ -z "$DOWNLOAD_URL" ]
     then
       RELEASE_URL="https://codeberg.org/api/v1/repos/${CODEBERG_REPO}/releases/tags/${PKG_VER}"
-      DOWNLOAD_URL="$(wget --no-check-certificate -qO- "$RELEASE_URL" | sed 's/"browser_download_url"/\n"browser_download_url"/g' | grep "browser_download_url" | grep "${CODEBERG_ASSET_NAME_PATTERN}" | sed 's/^.*"browser_download_url":"\([^"]*\)".*$/\1/' | head -1)"
+      DOWNLOAD_URL="$(wget --no-check-certificate -qO- "$RELEASE_URL" | sed 's/"browser_download_url"/\n"browser_download_url"/g' | grep "browser_download_url" | grep "${CODEBERG_ASSET_NAME_PATTERN}" | sed 's/^.*"browser_download_url":"\([^"]*\)".*$/\1/' | head -n 1)"
     else
       if [ -z "$VERSION" ]
       then
@@ -107,7 +135,8 @@ get_download_url()
     DOWNLOAD_URL="${MAVEN_BASE_URL}/${MAVEN_GROUP_PATH}/${MAVEN_ARTIFACT_ID}/${VERSION}"
   elif [ "$TYPE" = "sourceforge" ]
   then
-    true
+    LATEST_RELEASE_URL="https://sourceforge.net/projects/${SOURCEFORGE_REPO}/rss?path=/"
+    DOWNLOAD_URL="$(wget --no-check-certificate -qO- "$LATEST_RELEASE_URL" | tr "<" "\n" | grep "link" | grep "$SOURCEFORGE_ASSET_NAME_PATTERN" | sed 's/link>//g' | grep "$PKG_VER" | head -n 1 | sed 's/\/download//g')"
   else
     echo "wrong type! TYPE=$TYPE"
     exit 1
@@ -174,7 +203,7 @@ download()
     # DOWNLOAD_URLS="$(wget --no-check-certificate -qO- "$DOWNLOAD_URL" | sed '1d')"
     DOWNLOAD_URLS="$(wget \
     --header="Accept: text/html" \
-    --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36" "https://httpbin.io/user-agent" \
+    --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36" \
     --no-check-certificate -qO- "$DOWNLOAD_URL" | grep "href" | sed 's/^.*href="\([^"]*\)".*$/\1/' | head -n -1)"
     echo "DOWNLOAD_URLS=$DOWNLOAD_URLS"
     for k in $DOWNLOAD_URLS
