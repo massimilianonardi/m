@@ -40,8 +40,11 @@ find_latest_version()
     VERSION="$(wget --no-check-certificate -qO- "$LATEST_RELEASE_URL" | sed 's/^.*"latestVersion":"\([^"]*\)".*$/\1/')"
   elif [ "$TYPE" = "sourceforge" ]
   then
-    LATEST_RELEASE_URL="https://sourceforge.net/projects/${SOURCEFORGE_REPO}/rss?path=/"
-    VERSION="$(wget --no-check-certificate -qO- "$LATEST_RELEASE_URL" | tr "<" "\n" | grep "link" | grep "$SOURCEFORGE_ASSET_NAME_PATTERN" | sed 's/link>//g' | head -n 1 | sed 's/\/download//g' | sed 's/.*\///g')"
+    # LATEST_RELEASE_URL="https://sourceforge.net/projects/${SOURCEFORGE_REPO}/rss?path=/${SOURCEFORGE_PATH}"
+    # LATEST_RELEASE_URL="https://sourceforge.net/projects/${SOURCEFORGE_REPO}/files/${SOURCEFORGE_PATH}"
+    LATEST_RELEASE_URL="https://sourceforge.net/projects/${SOURCEFORGE_REPO}/best_release.json"
+    VERSION="$(wget --no-check-certificate -qO- "$LATEST_RELEASE_URL" | sed 's/", /\n/g' | grep "filename" | grep "${SOURCEFORGE_ASSET_NAME_PATTERN}" | head -n 1 | sed 's/.*\///g')"
+
     VERSION_PREFIX="$(printf "%s\n%s\n" "$SOURCEFORGE_ASSET_NAME_PATTERN" "$VERSION" | sed -e 'N;s/^\(.*\).*\n\1.*$/\1\n\1/;D')"
 
     VERSION_REV="$(echo "$VERSION" | sed -e 's/^/\
@@ -62,11 +65,11 @@ ta' -e 's/\n//')"
     VERSION="${VERSION#$VERSION_PREFIX}"
     VERSION="${VERSION%$VERSION_SUFFIX}"
 
-    echo "VERSION=$VERSION"
-    echo "VERSION_REV=$VERSION_REV"
-    echo "PATTERN_REV=$PATTERN_REV"
-    echo "VERSION_PREFIX=$VERSION_PREFIX"
-    echo "VERSION_SUFFIX=$VERSION_SUFFIX"
+    # echo "VERSION=$VERSION"
+    # echo "VERSION_REV=$VERSION_REV"
+    # echo "PATTERN_REV=$PATTERN_REV"
+    # echo "VERSION_PREFIX=$VERSION_PREFIX"
+    # echo "VERSION_SUFFIX=$VERSION_SUFFIX"
 
     # reverse string: sed -e 'G;:1' -e 's/\(.\)\(.*\n\)/\2\1/;t1' -e 's/.//'
   else
@@ -135,8 +138,14 @@ get_download_url()
     DOWNLOAD_URL="${MAVEN_BASE_URL}/${MAVEN_GROUP_PATH}/${MAVEN_ARTIFACT_ID}/${VERSION}"
   elif [ "$TYPE" = "sourceforge" ]
   then
-    LATEST_RELEASE_URL="https://sourceforge.net/projects/${SOURCEFORGE_REPO}/rss?path=/"
-    DOWNLOAD_URL="$(wget --no-check-certificate -qO- "$LATEST_RELEASE_URL" | tr "<" "\n" | grep "link" | grep "$SOURCEFORGE_ASSET_NAME_PATTERN" | sed 's/link>//g' | grep "$PKG_VER" | head -n 1 | sed 's/\/download//g')"
+    if [ -z "$VERSION" ]
+    then
+      VERSION="$PKG_VER"
+    fi
+    eval SOURCEFORGE_PATH="$SOURCEFORGE_PATH"
+    RELEASE_URL="https://sourceforge.net/projects/${SOURCEFORGE_REPO}/files/${SOURCEFORGE_PATH}"
+    # echo "RELEASE_URL=$RELEASE_URL"
+    DOWNLOAD_URL="$(wget --no-check-certificate -qO- "$RELEASE_URL" | tr "<" "\n" | grep 'href="' | grep "$SOURCEFORGE_ASSET_NAME_PATTERN" | grep "$PKG_VER" | head -n 1 | sed 's/.*href="//g' | sed 's/\/download"//g')"
   else
     echo "wrong type! TYPE=$TYPE"
     exit 1
