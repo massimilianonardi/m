@@ -173,6 +173,10 @@ unpack()
     elif [ "$FILE_TYPE" = "tar.gz" ] || [ "$FILE_TYPE" = "tgz" ] || [ "$FILE_TYPE" = "tar" ] || [ "$FILE_TYPE" = "gzip" ] || [ "$FILE_TYPE" = "bzip" ] || [ "$FILE_TYPE" = "tar.xz" ] || [ "$FILE_TYPE" = "xz" ]
     then
       tar xvf "$PACKED_FILE"
+    elif [ "$FILE_TYPE" = "AppImage" ] || [ "$FILE_TYPE" = "appimage" ]
+    then
+      chmod +x "$PACKED_FILE"
+      "$PACKED_FILE" --appimage-extract
     elif [ "$FILE_TYPE" = "deb" ]
     then
       dpkg-deb -x "$PACKED_FILE" ./
