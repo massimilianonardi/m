@@ -31,6 +31,45 @@ find_deepest_dir()
 
 #-------------------------------------------------------------------------------
 
+install_symlinks()
+{
+  if [ -e "$PKG_INST_DIR_LINK" ] && [ ! -L "$PKG_INST_DIR_LINK" ]
+  then
+    echo "$PKG_INST_DIR_LINK already exists and is not a symlink!!!"
+    exit 1
+  fi
+
+  rm -f "$PKG_INST_DIR_LINK"
+  ln -s "$DEEPEST_DIR" "$PKG_INST_DIR_LINK"
+
+  if [ -z "$SYMLINKS" ]
+  then
+    # todo link all binaries found
+    echo "SYMLINKS is empty! cannot create links"
+    exit 1
+  else
+    for k in $SYMLINKS
+    do
+      symlink="${k%%=*}"
+      target="${k#*=}"
+      rm -f "$LINKS_ROOT_DIR/$symlink"
+      ln -s "$PKG_INST_DIR_LINK/$target" "$LINKS_ROOT_DIR/$symlink"
+
+      if [ -e "$PKG_INST_DIR_LINK/$target" ] && [ ! -x "$PKG_INST_DIR_LINK/$target" ]
+      then
+        sudo chmod +x "$PKG_INST_DIR_LINK/$target"
+      fi
+    done
+  fi
+
+  if [ -f "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}.desktop" ]
+  then
+    sudo ln -s "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}.desktop" "/usr/share/applications/${PKG_NAME}.desktop"
+  fi
+}
+
+#-------------------------------------------------------------------------------
+
 install()
 {
   if [ -z "$PKG_VER" ]
@@ -54,7 +93,7 @@ install()
   DOWNLOAD_FILE="${PKG_INST_DIR}-$(date +"[%Y-%m-%d %H:%M:%S]").${FILE_TYPE}"
 
   UNPACK_DIR="$PKG_INST_DIR"
-  
+
   pkg-download "$DOWNLOAD_URL" "$DOWNLOAD_FILE" "$UNPACK_DIR" "$FILE_TYPE"
 
   DEEPEST_DIR="$(find_deepest_dir "$PKG_INST_DIR")"
@@ -67,6 +106,8 @@ install()
       postinstall
     )
   fi
+
+  install_symlinks
 }
 
 #-------------------------------------------------------------------------------
@@ -81,10 +122,29 @@ PKG_NAME="$1"
 shift
 
 PKG_VER="$1"
+shift
+
+LINKS_ROOT_DIR="$1"
+shift
+
+LIBS_ROOT_DIR="$1"
+shift
+
+CONF_ROOT_DIR="$1"
+shift
+
+MOVED_CONF_ROOT_DIR="$1"
+shift
 
 if [ -z "$PKG_INST_ROOT_DIR" ] || [ -z "$PKG_INST_CONF_ROOT_DIR" ] || [ -z "$PKG_NAME" ]
 then
   echo "some args are null, required: pkg-inst-dir, pkg-inst-conf-dir, pkg-name"
+  exit 1
+fi
+
+if [ -z "$PKG_NAME" ] || [ -z "$PKG_INST_ROOT_DIR" ] || [ -z "$PKG_INST_CONF_ROOT_DIR" ] || [ -z "$LINKS_ROOT_DIR" ]
+then
+  echo "some args are null, required: pkg-name, pkg-ver, pkg-inst-dir, pkg-inst-conf-dir, symlinks-dir"
   exit 1
 fi
 

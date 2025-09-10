@@ -145,3 +145,13 @@
 2025/09/10-14:17:58.458 21df2 Level-0 table #552: started
 2025/09/10-14:17:58.514 21df2 Level-0 table #552: 1257355 bytes OK
 2025/09/10-14:17:58.519 21df2 Delete type=0 #548
+2025/09/10-15:46:24.409 22d6e Level-0 table #554: started
+2025/09/10-15:46:24.459 22d6e Level-0 table #554: 1272175 bytes OK
+2025/09/10-15:46:24.464 22d6e Delete type=0 #551
+2025/09/10-15:48:16.545 22d6e Compacting 2@0 + 1@1 files
+2025/09/10-15:48:16.585 22d6e Generated table #555@0: 5794 keys, 66376 bytes
+2025/09/10-15:48:16.585 22d6e Compacted 2@0 + 1@1 files => 66376 bytes
+2025/09/10-15:48:16.588 22d6e compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/09/10-15:48:16.588 22d6e Delete type=2 #554
+2025/09/10-15:48:16.588 22d6e Delete type=2 #550
+2025/09/10-15:48:16.589 22d6e Delete type=2 #552
