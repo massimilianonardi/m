@@ -366,10 +366,34 @@ shift
 LINKS_ROOT_DIR="$1"
 shift
 
+LIBS_ROOT_DIR="$1"
+shift
+
+CONF_ROOT_DIR="$1"
+shift
+
+MOVED_CONF_ROOT_DIR="$1"
+shift
+
 if [ -z "$PKG_COMMAND" ] || [ -z "$PKG_NAME" ] || [ -z "$PKG_INST_ROOT_DIR" ] || [ -z "$PKG_INST_CONF_ROOT_DIR" ] || [ -z "$LINKS_ROOT_DIR" ]
 then
   echo "some args are null, required: pkg-command, pkg-name, pkg-ver, pkg-inst-dir, pkg-inst-conf-dir, symlinks-dir"
   exit 1
+fi
+
+if [ -z "$LIBS_ROOT_DIR" ]
+then
+  LIBS_ROOT_DIR="$LINKS_ROOT_DIR/.lib"
+fi
+
+if [ -z "$CONF_ROOT_DIR" ]
+then
+  CONF_ROOT_DIR="$HOME/.pkg-conf"
+fi
+
+if [ -z "$MOVED_CONF_ROOT_DIR" ]
+then
+  MOVED_CONF_ROOT_DIR="$HOME/.pkg-conf-alt"
 fi
 
 case "$PKG_COMMAND" in

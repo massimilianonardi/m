@@ -1,0 +1,99 @@
+#!/bin/sh
+
+. env.lib.sh
+
+#-------------------------------------------------------------------------------
+
+find_deepest_dir()
+{
+  DEEPEST_DIR="$1"
+  shift
+
+  (
+    cd "$DEEPEST_DIR"
+
+    if [ "$(ls | wc -l)" = "1" ] && [ -d "$(ls)" ]
+    then
+      DEEPEST_DIR="$(ls)"
+      if [ "$(ls "$DEEPEST_DIR" | wc -l)" = "1" ] && [ -d "$(ls "$DEEPEST_DIR")" ]
+      then
+        DEEPEST_DIR="$DEEPEST_DIR/$(ls "$DEEPEST_DIR")"
+      fi
+    else
+      DEEPEST_DIR=""
+    fi
+
+    cd "$DEEPEST_DIR"
+
+    pwd
+  )
+}
+
+#-------------------------------------------------------------------------------
+
+install()
+{
+  if [ -z "$PKG_VER" ]
+  then
+    VERSION="$(pkg-repo latest_version "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}.conf")"
+    PKG_VER="$VERSION"
+  fi
+
+  PKG_INST_DIR="$PKG_INST_ROOT_DIR/${PKG_NAME}-${PKG_VER}"
+
+  if [ -d "$PKG_INST_DIR" ]
+  then
+    echo "$PKG_INST_DIR already installed!"
+    return 0
+  fi
+
+  echo "installing $PKG_INST_DIR"
+
+  DOWNLOAD_URL="$(pkg-repo download_url "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}.conf" "$PKG_VER")"
+
+  DOWNLOAD_FILE="${PKG_INST_DIR}-$(date +"[%Y-%m-%d %H:%M:%S]").${FILE_TYPE}"
+
+  UNPACK_DIR="$PKG_INST_DIR"
+  
+  pkg-download "$DOWNLOAD_URL" "$DOWNLOAD_FILE" "$UNPACK_DIR" "$FILE_TYPE"
+
+  DEEPEST_DIR="$(find_deepest_dir "$PKG_INST_DIR")"
+
+  if exist_function postinstall
+  then
+    (
+      # cd "$PKG_INST_DIR"
+      cd "$DEEPEST_DIR"
+      postinstall
+    )
+  fi
+}
+
+#-------------------------------------------------------------------------------
+
+PKG_INST_ROOT_DIR="$1"
+shift
+
+PKG_INST_CONF_ROOT_DIR="$1"
+shift
+
+PKG_NAME="$1"
+shift
+
+PKG_VER="$1"
+
+if [ -z "$PKG_INST_ROOT_DIR" ] || [ -z "$PKG_INST_CONF_ROOT_DIR" ] || [ -z "$PKG_NAME" ]
+then
+  echo "some args are null, required: pkg-inst-dir, pkg-inst-conf-dir, pkg-name"
+  exit 1
+fi
+
+mkdir -p "$PKG_INST_ROOT_DIR"
+PKG_INST_ROOT_DIR="$(cd -- "$PKG_INST_ROOT_DIR" && pwd)"
+
+mkdir -p "$PKG_INST_CONF_ROOT_DIR"
+PKG_INST_CONF_ROOT_DIR="$(cd -- "$PKG_INST_CONF_ROOT_DIR" && pwd)"
+
+. "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}.conf"
+
+install
