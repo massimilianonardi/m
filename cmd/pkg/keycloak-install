@@ -1,0 +1,17 @@
+#!/bin/sh
+
+sudo -s << SUDO
+
+groupadd keycloak
+useradd -r -g keycloak -d "/m/src/git/m/cmd/pkg" -s /sbin/nologin keycloak
+chown -R keycloak:keycloak "/m/src/git/m/cmd/pkg"
+#chmod -R o+rwx "/m/src/git/m/cmd/pkg"
+
+cp "/m/src/git/m/cmd/pkg/keycloak.service" "/etc/systemd/system/keycloak.service"
+chown root:root "/etc/systemd/system/keycloak.service"
+chmod 644 "/etc/systemd/system/keycloak.service"
+systemctl daemon-reload
+systemctl enable keycloak
+
+SUDO
+

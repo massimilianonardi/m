@@ -1,0 +1,6 @@
+#!/bin/sh
+
+sudo systemctl status keycloak
+
+
+read x

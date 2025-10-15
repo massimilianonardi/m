@@ -33,14 +33,7 @@ find_deepest_dir()
 
 install_symlinks()
 {
-  if [ -e "$PKG_INST_DIR_LINK" ] && [ ! -L "$PKG_INST_DIR_LINK" ]
-  then
-    echo "$PKG_INST_DIR_LINK already exists and is not a symlink!!!"
-    exit 1
-  fi
-
-  rm -f "$PKG_INST_DIR_LINK"
-  ln -s "$DEEPEST_DIR" "$PKG_INST_DIR_LINK"
+  PKG_INST_DEEPEST_DIR="$DEEPEST_DIR"
 
   if [ -z "$SYMLINKS" ]
   then
@@ -53,11 +46,11 @@ install_symlinks()
       symlink="${k%%=*}"
       target="${k#*=}"
       rm -f "$LINKS_ROOT_DIR/$symlink"
-      ln -s "$PKG_INST_DIR_LINK/$target" "$LINKS_ROOT_DIR/$symlink"
+      ln -s "$PKG_INST_DEEPEST_DIR/$target" "$LINKS_ROOT_DIR/$symlink"
 
-      if [ -e "$PKG_INST_DIR_LINK/$target" ] && [ ! -x "$PKG_INST_DIR_LINK/$target" ]
+      if [ -e "$PKG_INST_DEEPEST_DIR/$target" ] && [ ! -x "$PKG_INST_DEEPEST_DIR/$target" ]
       then
-        sudo chmod +x "$PKG_INST_DIR_LINK/$target"
+        sudo chmod +x "$PKG_INST_DEEPEST_DIR/$target"
       fi
     done
   fi
@@ -112,16 +105,22 @@ install()
 
 #-------------------------------------------------------------------------------
 
-PKG_INST_ROOT_DIR="$1"
-shift
-
-PKG_INST_CONF_ROOT_DIR="$1"
-shift
+if [ "$#" -lt "8" ]
+then
+  echo "some args are null, required: pkg-name, pkg-ver, pkg-inst-conf-dir, pkg-inst-dir, symlinks-dir, libs-symlink-dir, conf-dir, separated-conf-dir"
+  exit 1
+fi
 
 PKG_NAME="$1"
 shift
 
 PKG_VER="$1"
+shift
+
+PKG_INST_CONF_ROOT_DIR="$1"
+shift
+
+PKG_INST_ROOT_DIR="$1"
 shift
 
 LINKS_ROOT_DIR="$1"
@@ -136,23 +135,67 @@ shift
 MOVED_CONF_ROOT_DIR="$1"
 shift
 
-if [ -z "$PKG_INST_ROOT_DIR" ] || [ -z "$PKG_INST_CONF_ROOT_DIR" ] || [ -z "$PKG_NAME" ]
+
+
+if [ -z "$PKG_INST_CONF_ROOT_DIR" ]
 then
-  echo "some args are null, required: pkg-inst-dir, pkg-inst-conf-dir, pkg-name"
+  echo "$0 - pkg-inst-conf-dir cannot be null"
   exit 1
 fi
+mkdir -p "$PKG_INST_CONF_ROOT_DIR"
+PKG_INST_CONF_ROOT_DIR="$(cd -- "$PKG_INST_CONF_ROOT_DIR" && pwd)"
 
-if [ -z "$PKG_NAME" ] || [ -z "$PKG_INST_ROOT_DIR" ] || [ -z "$PKG_INST_CONF_ROOT_DIR" ] || [ -z "$LINKS_ROOT_DIR" ]
+
+
+if [ -z "$PKG_INST_ROOT_DIR" ]
 then
-  echo "some args are null, required: pkg-name, pkg-ver, pkg-inst-dir, pkg-inst-conf-dir, symlinks-dir"
+  echo "$0 - pkg-inst-dir cannot be null"
   exit 1
 fi
-
 mkdir -p "$PKG_INST_ROOT_DIR"
 PKG_INST_ROOT_DIR="$(cd -- "$PKG_INST_ROOT_DIR" && pwd)"
 
-mkdir -p "$PKG_INST_CONF_ROOT_DIR"
-PKG_INST_CONF_ROOT_DIR="$(cd -- "$PKG_INST_CONF_ROOT_DIR" && pwd)"
+
+
+if [ -z "$LINKS_ROOT_DIR" ]
+then
+  echo "$0 - LINKS_ROOT_DIR cannot be null"
+  exit 1
+fi
+mkdir -p "$LINKS_ROOT_DIR"
+LINKS_ROOT_DIR="$(cd -- "$LINKS_ROOT_DIR" && pwd)"
+
+
+
+if [ -z "$LIBS_ROOT_DIR" ]
+then
+  echo "$0 - LIBS_ROOT_DIR cannot be null"
+  exit 1
+fi
+mkdir -p "$LIBS_ROOT_DIR"
+LIBS_ROOT_DIR="$(cd -- "$LIBS_ROOT_DIR" && pwd)"
+
+
+
+if [ -z "$CONF_ROOT_DIR" ]
+then
+  echo "$0 - CONF_ROOT_DIR cannot be null"
+  exit 1
+fi
+mkdir -p "$CONF_ROOT_DIR"
+CONF_ROOT_DIR="$(cd -- "$CONF_ROOT_DIR" && pwd)"
+
+
+
+if [ -z "$MOVED_CONF_ROOT_DIR" ]
+then
+  echo "$0 - MOVED_CONF_ROOT_DIR cannot be null"
+  exit 1
+fi
+mkdir -p "$MOVED_CONF_ROOT_DIR"
+MOVED_CONF_ROOT_DIR="$(cd -- "$MOVED_CONF_ROOT_DIR" && pwd)"
+
+
 
 . "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}.conf"
 

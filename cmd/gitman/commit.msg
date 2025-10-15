@@ -1,1 +1,1 @@
-pkg pkg-inst
+pkg pkg-install pkg-download pkg-repo

@@ -49,10 +49,24 @@ ta' -e 's/\n//')"
 
 get_download_url()
 {
+  if [ -z "$SOURCEFORGE_REPO" ]
+  then
+    echo "$0 - repo is null"
+    exit 1
+  fi
+
+  if [ -z "$SOURCEFORGE_PATH" ]
+  then
+    echo "$0 - repo is null"
+    exit 1
+  fi
+
   if [ -z "$VERSION" ]
   then
-    VERSION="$PKG_VER"
+    echo "$0 - version is null"
+    exit 1
   fi
+
   eval SOURCEFORGE_PATH="$SOURCEFORGE_PATH"
   RELEASE_URL="https://sourceforge.net/projects/${SOURCEFORGE_REPO}/files/${SOURCEFORGE_PATH}"
   # echo "RELEASE_URL=$RELEASE_URL"

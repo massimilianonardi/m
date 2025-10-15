@@ -13,9 +13,10 @@ find_latest_version()
 {
   if [ -z "$GITHUB_REPO" ]
   then
-    echo "repo is null"
+    echo "$0 - repo is null"
     exit 1
   fi
+
   LATEST_RELEASE_URL="https://api.github.com/repos/${GITHUB_REPO}/releases/latest"
   VERSION="$(wget --no-check-certificate -qO- "$LATEST_RELEASE_URL" | grep -oP '"tag_name": "\K(.*)(?=")')"
 }
@@ -26,9 +27,16 @@ get_download_url()
 {
   if [ -z "$GITHUB_REPO" ]
   then
-    echo "repo is null"
+    echo "$0 - repo is null"
     exit 1
   fi
+
+  if [ -z "$VERSION" ]
+  then
+    echo "$0 - version is null"
+    exit 1
+  fi
+
   if [ -z "$DOWNLOAD_URL" ]
   then
     RELEASE_URL="https://api.github.com/repos/${GITHUB_REPO}/releases/tags/${PKG_VER}"

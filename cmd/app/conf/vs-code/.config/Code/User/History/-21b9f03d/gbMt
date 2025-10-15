@@ -1,0 +1,11 @@
+#!/bin/sh
+
+export TESTVAR="testvar_value"
+
+sudo -s << SUDO
+
+echo "TESTVAR=$TESTVAR"
+
+SUDO
+
+read x

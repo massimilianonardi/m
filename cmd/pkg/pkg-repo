@@ -46,6 +46,12 @@ download_url()
 
 #-------------------------------------------------------------------------------
 
+if [ "$#" -lt "2" ]
+then
+  echo "$0 - some args are null, required: command, conf-file"
+  exit 1
+fi
+
 COMMAND="$1"
 shift
 
@@ -53,12 +59,6 @@ CONF_FILE="$1"
 shift
 
 VERSION="$1"
-
-if [ -z "$COMMAND" ] || [ -z "$CONF_FILE" ]
-then
-  echo "$0 - some args are null, required: command, conf-file"
-  exit 1
-fi
 
 case "$COMMAND" in
   "versions") true;;

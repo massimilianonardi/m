@@ -13,9 +13,10 @@ find_latest_version()
 {
   if [ -z "$CODEBERG_REPO" ]
   then
-    echo "repo is null"
+    echo "$0 - repo is null"
     exit 1
   fi
+
   LATEST_RELEASE_URL="https://codeberg.org/api/v1/repos/${CODEBERG_REPO}/releases/latest"
   VERSION="$(wget --no-check-certificate -qO- "$LATEST_RELEASE_URL" | sed 's/^.*"tag_name":"\([^"]*\)".*$/\1/')"
 }
@@ -26,18 +27,21 @@ get_download_url()
 {
   if [ -z "$CODEBERG_REPO" ]
   then
-    echo "repo is null"
+    echo "$0 - repo is null"
     exit 1
   fi
+
+  if [ -z "$VERSION" ]
+  then
+    echo "$0 - version is null"
+    exit 1
+  fi
+
   if [ -z "$DOWNLOAD_URL" ]
   then
-    RELEASE_URL="https://codeberg.org/api/v1/repos/${CODEBERG_REPO}/releases/tags/${PKG_VER}"
+    RELEASE_URL="https://codeberg.org/api/v1/repos/${CODEBERG_REPO}/releases/tags/${VERSION}"
     DOWNLOAD_URL="$(wget --no-check-certificate -qO- "$RELEASE_URL" | sed 's/"browser_download_url"/\n"browser_download_url"/g' | grep "browser_download_url" | grep "${CODEBERG_ASSET_NAME_PATTERN}" | sed 's/^.*"browser_download_url":"\([^"]*\)".*$/\1/' | head -n 1)"
   else
-    if [ -z "$VERSION" ]
-    then
-      VERSION="$PKG_VER"
-    fi
     eval DOWNLOAD_URL="$DOWNLOAD_URL"
     echo "DOWNLOAD_URL=$DOWNLOAD_URL"
   fi
