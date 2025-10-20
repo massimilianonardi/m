@@ -149,6 +149,12 @@ git push origin +master
 git push origin HEAD --force
 git log -10
 
+git rebase {my-branch} --update-refs
+git gc --aggressive --prune=now
+git gc --aggressive
+git prune
+git repack -ad
+
 
 
 UBUNTU RDP PERSISTENT:
