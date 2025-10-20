@@ -1,0 +1,15 @@
+[Unit]
+Description=KeyCloak Service
+# Requires=keycloak-vhome.service
+BindsTo=keycloak-vhome.service
+After=network.service keycloak-vhome.service
+
+[Service]
+Type=simple
+User=keycloak
+Group=keycloak
+ExecStart=/opt/keycloak/bin/kc.sh start-dev
+
+[Install]
+WantedBy=multi-user.target
+

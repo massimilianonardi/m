@@ -1,0 +1,73 @@
+#!/bin/sh
+
+KEYCLOAK_HOME="/m/src/git/m/cmd/pkg/zzz/pkg/keycloak-26.4.1/keycloak-26.4.1"
+
+echo "Enter virtual path where service is mapped with mount bind (default: /opt/keycloak)"
+read KEYCLOAK_VHOME
+if [ -z "$KEYCLOAK_VHOME" ]
+then
+  KEYCLOAK_VHOME="/opt/keycloak"
+fi
+
+USER_UID="$(id -u)"
+USER_GID="$(id -g)"
+
+sudo -s << SUDO
+
+echo "$KEYCLOAK_VHOME" > "$KEYCLOAK_HOME/keycloak-vhome.conf"
+mkdir -p "$KEYCLOAK_VHOME"
+mount --bind "$KEYCLOAK_HOME" "$KEYCLOAK_VHOME"
+
+groupadd keycloak
+useradd -r -g keycloak -d "$KEYCLOAK_VHOME" -s /sbin/nologin keycloak
+# chown -R keycloak:keycloak "$KEYCLOAK_VHOME"
+
+KEYCLOAK_UID="\$(id -u keycloak)"
+KEYCLOAK_GID="\$(id -g keycloak)"
+
+
+
+cat > "/etc/systemd/system/keycloak-vhome.service" << SERVICE
+[Unit]
+Description=KeyCloak Virtual Home Service
+After=network.service
+
+[Service]
+Type=simple
+# ExecStart=mount --bind "$KEYCLOAK_HOME" "$KEYCLOAK_VHOME"
+ExecStart=mount --bind -o "X-mount.idmap=u:\$KEYCLOAK_UID:$USER_UID:1 g:\$KEYCLOAK_GID:$USER_GID:1" "$KEYCLOAK_HOME" "$KEYCLOAK_VHOME"
+ExecStop=umount "$KEYCLOAK_VHOME"
+
+[Install]
+WantedBy=multi-user.target
+
+SERVICE
+
+
+
+cat > "/etc/systemd/system/keycloak.service" << SERVICE
+[Unit]
+Description=KeyCloak Service
+# Requires=keycloak-vhome.service
+BindsTo=keycloak-vhome.service
+After=network.service keycloak-vhome.service
+
+[Service]
+Type=simple
+User=keycloak
+Group=keycloak
+ExecStart=$KEYCLOAK_VHOME/bin/kc.sh start
+
+[Install]
+WantedBy=multi-user.target
+
+SERVICE
+
+
+
+chown root:root "/etc/systemd/system/keycloak.service"
+chmod 644 "/etc/systemd/system/keycloak.service"
+systemctl daemon-reload
+systemctl enable keycloak
+
+SUDO

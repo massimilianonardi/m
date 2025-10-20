@@ -1,0 +1,13 @@
+[Unit]
+Description=KeyCloak Virtual Home Service
+After=network.service
+
+[Service]
+Type=simple
+# ExecStart=mount --bind "/m/src/git/m/cmd/pkg/zzz/pkg/keycloak-26.4.1/keycloak-26.4.1" "/opt/keycloak"
+ExecStart=mount --bind -o 'X-mount.idmap=u:997:1000:1 g:1001:1000:1' "/m/src/git/m/cmd/pkg/zzz/pkg/keycloak-26.4.1/keycloak-26.4.1" "/opt/keycloak"
+ExecStop=umount "/opt/keycloak"
+
+[Install]
+WantedBy=multi-user.target
+
