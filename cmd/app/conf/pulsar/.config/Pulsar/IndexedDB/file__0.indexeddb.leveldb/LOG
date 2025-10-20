@@ -1,3 +1,9 @@
-2025/10/20-09:43:20.313 2706 Reusing MANIFEST /m/app/.conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/MANIFEST-000001
-2025/10/20-09:43:20.313 2706 Recovering log #605
-2025/10/20-09:43:20.314 2706 Reusing old log /m/app/.conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/000605.log 
+2025/10/20-09:54:54.499 2bb9 Reusing MANIFEST /m/app/.conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/MANIFEST-000001
+2025/10/20-09:54:54.499 2bb9 Recovering log #605
+2025/10/20-09:54:54.504 2bb9 Reusing old log /m/app/.conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/000605.log 
+2025/10/20-09:57:57.535 2bb9 Compacting 1@0 + 1@1 files
+2025/10/20-09:57:57.549 2bb9 Generated table #608@0: 6417 keys, 71506 bytes
+2025/10/20-09:57:57.549 2bb9 Compacted 1@0 + 1@1 files => 71506 bytes
+2025/10/20-09:57:57.564 2bb9 compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/10/20-09:57:57.564 2bb9 Delete type=2 #606
+2025/10/20-09:57:57.564 2bb9 Delete type=2 #603

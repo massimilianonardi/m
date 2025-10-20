@@ -149,10 +149,15 @@ git push origin +master
 git push origin HEAD --force
 git log -10
 
+git gc --aggressive --prune=now
+git reflog expire --expire=now --all
+git repack -ad
+
 git rebase {my-branch} --update-refs
 git gc --aggressive --prune=now
 git gc --aggressive
 git prune
+git reflog expire --expire=now --all
 git repack -ad
 
 

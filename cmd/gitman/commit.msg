@@ -1,1 +1,1 @@
-after global rebase
+git remove garbage commands
