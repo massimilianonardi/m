@@ -1,0 +1,44 @@
+#!/bin/sh
+
+if [ -L "/m/src/git/m/cmd/pkg/pkg-install" ]
+then
+  THIS_PATH="-rwxrwxr-x 1 admino admino 3878 ott 20 09:05 /m/src/git/m/cmd/pkg/pkg-install"
+  THIS_PATH=""
+else
+  THIS_PATH="/m/src/git/m/cmd/pkg/pkg-install"
+fi
+
+KEYCLOAK_HOME="/m/src/git/m/cmd/pkg/zzz/pkg/keycloak-26.4.1/keycloak-26.4.1"
+
+sudo -s << SUDO
+
+groupadd keycloak
+useradd -r -g keycloak -d "$KEYCLOAK_HOME" -s /sbin/nologin keycloak
+chown -R keycloak:keycloak "$KEYCLOAK_HOME"
+
+
+
+cat > "/etc/systemd/system/keycloak.service" << SERVICE
+[Unit]
+Description=KeyCloak Service
+After=network.service
+
+[Service]
+Type=simple
+User=keycloak
+Group=keycloak
+ExecStart=$KEYCLOAK_HOME/bin/kc.sh start-dev
+
+[Install]
+WantedBy=multi-user.target
+
+SERVICE
+
+
+
+chown root:root "/etc/systemd/system/keycloak.service"
+chmod 644 "/etc/systemd/system/keycloak.service"
+systemctl daemon-reload
+systemctl enable keycloak
+
+SUDO

@@ -28,3 +28,39 @@
 2025/10/20-14:53:38.429 ab8c Level-0 table #622: started
 2025/10/20-14:53:38.484 ab8c Level-0 table #622: 1292688 bytes OK
 2025/10/20-14:53:38.489 ab8c Delete type=0 #619
+2025/10/20-15:25:57.743 b946 Compacting 2@0 + 1@1 files
+2025/10/20-15:25:57.791 b946 Generated table #623@0: 6429 keys, 71834 bytes
+2025/10/20-15:25:57.791 b946 Compacted 2@0 + 1@1 files => 71834 bytes
+2025/10/20-15:25:57.797 b946 compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/10/20-15:25:57.797 b946 Delete type=2 #618
+2025/10/20-15:25:57.797 b946 Delete type=2 #622
+2025/10/20-15:25:57.797 b946 Delete type=2 #620
+2025/10/20-15:29:35.652 c867 Level-0 table #625: started
+2025/10/20-15:29:35.712 c867 Level-0 table #625: 1314404 bytes OK
+2025/10/20-15:29:35.717 c867 Delete type=0 #621
+2025/10/21-10:51:37.549 11e80 Level-0 table #627: started
+2025/10/21-10:51:37.613 11e80 Level-0 table #627: 1304064 bytes OK
+2025/10/21-10:51:37.618 11e80 Delete type=0 #624
+2025/10/21-11:59:22.895 12be3 Compacting 2@0 + 1@1 files
+2025/10/21-11:59:22.942 12be3 Generated table #628@0: 6429 keys, 72374 bytes
+2025/10/21-11:59:22.942 12be3 Compacted 2@0 + 1@1 files => 72374 bytes
+2025/10/21-11:59:22.946 12be3 compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/10/21-11:59:22.946 12be3 Delete type=2 #623
+2025/10/21-11:59:22.946 12be3 Delete type=2 #627
+2025/10/21-11:59:22.946 12be3 Delete type=2 #625
+2025/10/21-12:06:28.469 134fb Level-0 table #630: started
+2025/10/21-12:06:28.528 134fb Level-0 table #630: 1294773 bytes OK
+2025/10/21-12:06:28.533 134fb Delete type=0 #626
+2025/10/21-12:21:02.180 1375b Level-0 table #632: started
+2025/10/21-12:21:02.238 1375b Level-0 table #632: 1306948 bytes OK
+2025/10/21-12:21:02.243 1375b Delete type=0 #629
+2025/10/21-12:46:42.981 14601 Compacting 2@0 + 1@1 files
+2025/10/21-12:46:43.029 14601 Generated table #633@0: 6429 keys, 71980 bytes
+2025/10/21-12:46:43.029 14601 Compacted 2@0 + 1@1 files => 71980 bytes
+2025/10/21-12:46:43.032 14601 compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/10/21-12:46:43.033 14601 Delete type=2 #632
+2025/10/21-12:46:43.033 14601 Delete type=2 #630
+2025/10/21-12:46:43.033 14601 Delete type=2 #628
+2025/10/21-13:36:06.442 15e89 Level-0 table #635: started
+2025/10/21-13:36:06.500 15e89 Level-0 table #635: 1296557 bytes OK
+2025/10/21-13:36:06.506 15e89 Delete type=0 #631
