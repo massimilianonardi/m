@@ -1,1 +1,1 @@
-pkg keycloak production
+pkg oauth2-proxy
