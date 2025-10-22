@@ -1,0 +1,19 @@
+#!/bin/sh
+
+sudo -s << SUDO
+
+if ! which psql
+then
+  apt update
+  apt install -y postgresql
+else
+  systemctl restart postgresql
+  sudo -u postgres dropdb --force --if-exists keycloak
+fi
+
+sudo -u postgres -s << POSTGRES
+createdb keycloak
+psql -d keycloak -c "CREATE USER keycloak WITH PASSWORD 'keycloak'; GRANT ALL PRIVILEGES ON DATABASE keycloak TO keycloak;"
+
+POSTGRES
+SUDO

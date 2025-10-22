@@ -1,1 +1,1 @@
-pkg keycloak fix
+pkg keycloak oauth2-proxy
