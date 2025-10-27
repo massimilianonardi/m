@@ -18,6 +18,7 @@ THIS_DIR="$(cd -P -- "${THIS_PATH%/*}" && pwd -P)"
 ENV_FILE="/etc/environment.d/99-m-paths.conf"
 ENV_PATH="$THIS_DIR"
 PROFILE_FILE="/etc/profile.d/ZZZ99-m-paths.sh"
+SUDOERS_FILE="/etc/sudoers.d/99-m-paths"
 
 for k in "$THIS_DIR"/*
 do
@@ -29,7 +30,11 @@ done
 
 echo "ENV_PATH=$ENV_PATH"
 
-(echo "PATH=\"$ENV_PATH:\$PATH\"" | sudo tee "$ENV_FILE" > /dev/null) && sudo ln -s "$ENV_FILE" "$PROFILE_FILE"
+(echo "PATH=\"$ENV_PATH:\$PATH\"" | sudo tee "$ENV_FILE" > /dev/null) \
+&& (echo "Defaults	secure_path=\"$ENV_PATH:\$PATH\"" | sudo tee "$SUDOERS_FILE" > /dev/null) \
+&& sudo rm -f "$PROFILE_FILE" \
+&& sudo ln -s "$ENV_FILE" "$PROFILE_FILE"
+
 EXIT_CODE="$?"
 
 # detect if launched from gui or active terminal

@@ -1,1 +1,1 @@
-pkg keycloak
+install sudoers path
