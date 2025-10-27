@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# wget -O - "" | sh
-# wget --no-check-certificate -O - "" | sh
+# wget -O - "https://raw.githubusercontent.com/massimilianonardi/m/master/cmd/install-online" | sh
+# wget --no-check-certificate -O - "https://raw.githubusercontent.com/massimilianonardi/m/master/cmd/install-online" | sh
 
 sudo -s << 'SUDO'
 SRC_DIR="/m/src/git/m"
@@ -13,5 +13,7 @@ cd "$SRC_DIR"
 cd ..
 git clone "https://github.com/massimilianonardi/m" "m"
 cd "$SRC_DIR"
+pwd
 ls -la
+"$SRC_DIR/cmd/install"
 SUDO
