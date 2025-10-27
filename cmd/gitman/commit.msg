@@ -1,1 +1,1 @@
-install-online
+pkg

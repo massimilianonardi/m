@@ -25,11 +25,10 @@ PKG_NAME="$1"
 shift
 
 PKG_VER="$1"
-shift
 
 if [ -z "$PKG_COMMAND" ] || [ -z "$PKG_NAME" ]
 then
-  echo "some args are null, required: pkg-command, pkg-name, pkg-ver, pkg-inst-dir, pkg-inst-conf-dir, symlinks-dir"
+  echo "some args are null, required: pkg-command, pkg-name, optional: pkg-ver"
   exit 1
 fi
 
