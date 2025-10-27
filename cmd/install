@@ -31,7 +31,7 @@ done
 echo "ENV_PATH=$ENV_PATH"
 
 (echo "PATH=\"$ENV_PATH:\$PATH\"" | sudo tee "$ENV_FILE" > /dev/null) \
-&& (echo "Defaults	secure_path=\"$ENV_PATH:\$PATH\"" | sudo tee "$SUDOERS_FILE" > /dev/null) \
+&& (echo "Defaults	secure_path=\"$ENV_PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin\"" | sudo tee "$SUDOERS_FILE" > /dev/null) \
 && sudo rm -f "$PROFILE_FILE" \
 && sudo ln -s "$ENV_FILE" "$PROFILE_FILE"
 
