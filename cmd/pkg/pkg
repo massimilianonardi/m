@@ -6,7 +6,7 @@
 
 install()
 {
-  pkg-install "$1" "$2" "/m/src/git/m/cmd/pkg/conf" "/m/pkg" "/m/bin" "/m/lib" "/m/conf" "/m/conf_ver"
+  pkg-install "$PKG_NAME" "$PKG_VER" "/m/src/git/m/cmd/pkg/conf" "/m/pkg" "/m/bin" "/m/lib" "/m/conf" "/m/conf_ver"
 }
 
 #-------------------------------------------------------------------------------
