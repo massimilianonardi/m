@@ -1,1 +1,1 @@
-pkg keycloak oauth2-proxy
+install-online

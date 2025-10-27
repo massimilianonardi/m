@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# wget -O - "" | sh
+# wget --no-check-certificate -O - "" | sh
+
+sudo -s << 'SUDO'
+SRC_DIR="/m/src/git/m"
+
+apt install -y git-all
+apt install -y openjdk-21-jdk
+mkdir -p "$SRC_DIR"
+cd "$SRC_DIR"
+cd ..
+git clone "https://github.com/massimilianonardi/m" "m"
+cd "$SRC_DIR"
+ls -la
+SUDO
