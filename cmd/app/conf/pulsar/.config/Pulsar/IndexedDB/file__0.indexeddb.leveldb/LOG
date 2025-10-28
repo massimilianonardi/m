@@ -49,3 +49,6 @@
 2025/10/28-08:34:43.207 cda1 compacted to: files[ 0 1 1 0 0 0 0 ]
 2025/10/28-08:34:43.207 cda1 Delete type=2 #676
 2025/10/28-08:34:43.207 cda1 Delete type=2 #674
+2025/10/28-08:49:08.612 d4c7 Level-0 table #679: started
+2025/10/28-08:49:08.672 d4c7 Level-0 table #679: 1359608 bytes OK
+2025/10/28-08:49:08.677 d4c7 Delete type=0 #675
