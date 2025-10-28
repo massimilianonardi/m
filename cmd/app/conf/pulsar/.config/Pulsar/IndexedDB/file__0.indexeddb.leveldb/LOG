@@ -43,3 +43,9 @@
 2025/10/28-07:28:54.615 be79 Level-0 table #676: started
 2025/10/28-07:28:54.679 be79 Level-0 table #676: 1349769 bytes OK
 2025/10/28-07:28:54.683 be79 Delete type=0 #672
+2025/10/28-08:34:43.166 cda1 Compacting 1@0 + 1@1 files
+2025/10/28-08:34:43.204 cda1 Generated table #677@0: 6435 keys, 72510 bytes
+2025/10/28-08:34:43.204 cda1 Compacted 1@0 + 1@1 files => 72510 bytes
+2025/10/28-08:34:43.207 cda1 compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/10/28-08:34:43.207 cda1 Delete type=2 #676
+2025/10/28-08:34:43.207 cda1 Delete type=2 #674
