@@ -1,1 +1,1 @@
-apache apisix installer script
+pkg etcd

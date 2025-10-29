@@ -16,6 +16,7 @@ sudo apisix init
 sudo nano /usr/local/apisix/conf/config.yaml
 
 sudo apisix start
+# sudo apisix start --config "/usr/local/apisix/conf/config.yaml"
 #sudo apisix stop
 #sudo apisix help
 #systemctl start apisix
