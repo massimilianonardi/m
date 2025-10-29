@@ -1,1 +1,1 @@
-pkg keycloak
+apache apisix installer script
