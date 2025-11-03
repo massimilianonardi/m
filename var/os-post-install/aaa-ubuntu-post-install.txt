@@ -66,3 +66,10 @@ sudo tcpdump src host 10.1.80.13 and \( port 80 or port 443 \)
 sudo tcpdump -l src host 10.1.80.13 and dst port 443 and \( tcp or udp \)
 sudo tcpdump -l dst port 443 | sed 's/^.*> //g' | sed 's/.https.*//g'
 (sudo tcpdump dst port 443 | sed 's/^.*> //g' | sed 's/.https.*//g' | tee /tmp/tcpdump-https.log); cat /tmp/tcpdump-https.log | sort | uniq; rm -f /tmp/tcpdump-https.log
+
+test http server:
+while true; do
+  resp=$"$(date): hello\n"
+  len="$(printf '%s' "$resp" | wc -c)"
+  printf "HTTP/1.1 200 OK\r\nContent-Length: $len\r\n\r\n${resp}\n" | nc -Nl 8000
+done
