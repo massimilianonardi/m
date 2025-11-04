@@ -1,1 +1,1 @@
-pkg etcd
+apisix conf
