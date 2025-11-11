@@ -1,1 +1,1 @@
-pkg geoserver
+rsudo-ctl path fix

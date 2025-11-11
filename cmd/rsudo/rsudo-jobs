@@ -31,12 +31,10 @@ main()
 
 realpaths
 
-RSUDO_PATH=""
 for k in $(cat "$THIS_DIR/rsudo-paths.conf")
 do
-  RSUDO_PATH="$k:$RSUDO_PATH"
+  export PATH="$k:$PATH"
 done
-export PATH="$RSUDO_PATH:$PATH"
 
 if [ "$#" -gt "0" ]
 then
