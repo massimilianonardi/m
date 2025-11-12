@@ -19,7 +19,7 @@ check_function()
 
 versions()
 {
-  get_versions 1>&2
+  get_versions 1>&2 > /dev/null
   echo "$VERSIONS"
 }
 
@@ -27,7 +27,7 @@ versions()
 
 latest_version()
 {
-  find_latest_version 1>&2
+  find_latest_version 1>&2 > /dev/null
   echo "$VERSION"
 }
 
@@ -40,7 +40,7 @@ download_url()
     VERSION="$(latest_version)"
   fi
 
-  get_download_url 1>&2
+  get_download_url 1>&2 > /dev/null
   echo "$DOWNLOAD_URL"
 }
 

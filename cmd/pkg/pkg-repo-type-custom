@@ -11,44 +11,15 @@ get_versions()
 
 find_latest_version()
 {
-  if [ -z "$GITHUB_REPO" ]
-  then
-    echo "$0 - repo is null"
-    exit 1
-  fi
-
-  LATEST_RELEASE_URL="https://api.github.com/repos/${GITHUB_REPO}/releases/latest"
-  VERSION="$(wget --no-check-certificate -qO- "$LATEST_RELEASE_URL" | grep -oP '"tag_name": "\K(.*)(?=")')"
+  echo "$VERSION"
 }
 
 #-------------------------------------------------------------------------------
 
 get_download_url()
 {
-  if [ -z "$GITHUB_REPO" ]
-  then
-    echo "$0 - repo is null"
-    exit 1
-  fi
-
-  if [ -z "$VERSION" ]
-  then
-    echo "$0 - version is null"
-    exit 1
-  fi
-
-  if [ -z "$DOWNLOAD_URL" ]
-  then
-    RELEASE_URL="https://api.github.com/repos/${GITHUB_REPO}/releases/tags/${PKG_VER}"
-    DOWNLOAD_URL="$(wget --no-check-certificate -qO- "$RELEASE_URL" | grep "browser_download_url" | grep "${GITHUB_ASSET_NAME_PATTERN}" | grep -oP '"browser_download_url": "\K(.*)(?=")' | head -n 1)"
-  else
-    if [ -z "$VERSION" ]
-    then
-      VERSION="$PKG_VER"
-    fi
-    eval DOWNLOAD_URL="$DOWNLOAD_URL"
-    echo "DOWNLOAD_URL=$DOWNLOAD_URL"
-  fi
+  # eval DOWNLOAD_URL="$DOWNLOAD_URL"
+  echo "$DOWNLOAD_URL"
 }
 
 #-------------------------------------------------------------------------------

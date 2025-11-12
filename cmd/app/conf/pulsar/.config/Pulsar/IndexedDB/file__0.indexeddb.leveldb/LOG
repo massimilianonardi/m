@@ -16,3 +16,44 @@
 2025/11/10-09:39:03.026 3cbd Level-0 table #741: started
 2025/11/10-09:39:03.088 3cbd Level-0 table #741: 1286410 bytes OK
 2025/11/10-09:39:03.093 3cbd Delete type=0 #738
+2025/11/11-13:31:03.723 bd74 Level-0 table #743: started
+2025/11/11-13:31:03.770 bd74 Level-0 table #743: 1274844 bytes OK
+2025/11/11-13:31:03.775 bd74 Delete type=0 #740
+2025/11/12-09:15:32.246 11abf Level-0 table #745: started
+2025/11/12-09:15:32.316 11abf Level-0 table #745: 1275254 bytes OK
+2025/11/12-09:15:32.321 11abf Delete type=0 #742
+2025/11/12-09:15:32.323 11abf Compacting 4@0 + 1@1 files
+2025/11/12-09:15:32.403 11abf Generated table #746@0: 6447 keys, 76297 bytes
+2025/11/12-09:15:32.403 11abf Compacted 4@0 + 1@1 files => 76297 bytes
+2025/11/12-09:15:32.406 11abf compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/11/12-09:15:32.407 11abf Delete type=2 #737
+2025/11/12-09:15:32.407 11abf Delete type=2 #743
+2025/11/12-09:15:32.407 11abf Delete type=2 #745
+2025/11/12-09:15:32.407 11abf Delete type=2 #741
+2025/11/12-09:15:32.407 11abf Delete type=2 #739
+2025/11/12-09:31:28.493 11adb Level-0 table #748: started
+2025/11/12-09:31:28.550 11adb Level-0 table #748: 1247892 bytes OK
+2025/11/12-09:31:28.555 11adb Delete type=0 #744
+2025/11/12-09:41:36.331 122e3 Level-0 table #750: started
+2025/11/12-09:41:36.382 122e3 Level-0 table #750: 1250455 bytes OK
+2025/11/12-09:41:36.388 122e3 Delete type=0 #747
+2025/11/12-09:53:20.951 125c7 Compacting 2@0 + 1@1 files
+2025/11/12-09:53:21.003 125c7 Generated table #751@0: 6447 keys, 74547 bytes
+2025/11/12-09:53:21.003 125c7 Compacted 2@0 + 1@1 files => 74547 bytes
+2025/11/12-09:53:21.006 125c7 compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/11/12-09:53:21.006 125c7 Delete type=2 #746
+2025/11/12-09:53:21.007 125c7 Delete type=2 #748
+2025/11/12-09:53:21.007 125c7 Delete type=2 #750
+2025/11/12-09:59:07.948 125c7 Level-0 table #753: started
+2025/11/12-09:59:08.000 125c7 Level-0 table #753: 1227704 bytes OK
+2025/11/12-09:59:08.006 125c7 Delete type=0 #749
+2025/11/12-10:27:43.156 12e3a Level-0 table #755: started
+2025/11/12-10:27:43.205 12e3a Level-0 table #755: 1297115 bytes OK
+2025/11/12-10:27:43.210 12e3a Delete type=0 #752
+2025/11/12-10:31:18.906 13902 Compacting 2@0 + 1@1 files
+2025/11/12-10:31:18.943 13902 Generated table #756@0: 6447 keys, 73457 bytes
+2025/11/12-10:31:18.943 13902 Compacted 2@0 + 1@1 files => 73457 bytes
+2025/11/12-10:31:18.946 13902 compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/11/12-10:31:18.947 13902 Delete type=2 #753
+2025/11/12-10:31:18.947 13902 Delete type=2 #755
+2025/11/12-10:31:18.947 13902 Delete type=2 #751
