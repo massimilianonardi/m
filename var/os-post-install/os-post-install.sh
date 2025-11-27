@@ -11,6 +11,7 @@ sudo update-ca-certificates
 sudo apt install -y git-all
 sudo apt install -y screen
 sudo apt install -y curl
+sudo apt install -y podman
 sudo apt install -y nmap
 sudo apt install -y meld
 sudo apt install -y openjdk-21-jdk
@@ -26,7 +27,7 @@ sudo apt install -y g++
 sudo apt install -y gdb
 sudo apt install -y cmake
 sudo apt install -y cmake-qt-gui
-# sudo apt install -y ninja-build
+sudo apt install -y ninja-build
 
 # sudo apt install -y ccls
 # sudo apt install -y codeblocks
