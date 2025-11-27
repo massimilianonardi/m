@@ -254,6 +254,15 @@ sudo vmhgfs-fuse .host:/shared /mnt/hgfs/shared -o allow_other -o uid=1000
 
 --------------------------------------------------------------------------------
 
+PODMAN EXTRACT DOCKER IMAGE
+
+podman run --tls-verify=false --name postgres-docker -e POSTGRES_USER=base -e POSTGRES_PASSWORD=base -e POSTGRES_HOST_AUTH_METHOD=trust -p 5432:5432 "docker.io/library/postgres:latest"
+podman ps --all
+podman export b44a92010f5d > "./postgres-podman.tar"
+tar xvf "./postgres-podman.tar"
+
+--------------------------------------------------------------------------------
+
 https://192.168.253.136:8443/m/authenticator.id
 https://192.168.253.136:8443/m/authenticator.profiles
 https://192.168.253.136:8443/m/authenticator.authenticate?id=admin&credential=admin

@@ -28,6 +28,7 @@ unpack()
     elif [ "$FILE_TYPE" = "deb" ]
     then
       dpkg-deb -x "$PACKED_FILE" ./
+      # dpkg-deb -R "$PACKED_FILE" ./
     elif [ "$FILE_TYPE" = "jar" ] || [ "$FILE_TYPE" = "war" ]
     then
       mv "$PACKED_FILE" "$UNPACK_DIR"
