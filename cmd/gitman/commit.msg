@@ -1,1 +1,1 @@
-pkg podman (old appimage) podman-desktop
+note gnome settings disable lock screen hotkey

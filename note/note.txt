@@ -254,6 +254,12 @@ sudo vmhgfs-fuse .host:/shared /mnt/hgfs/shared -o allow_other -o uid=1000
 
 --------------------------------------------------------------------------------
 
+GNOME DISABLE LOCK SCREEN HOTKEY
+gsettings get org.gnome.desktop.lockdown disable-lock-screen
+gsettings set org.gnome.desktop.lockdown disable-lock-screen true
+
+--------------------------------------------------------------------------------
+
 PODMAN EXTRACT DOCKER IMAGE
 
 podman run --tls-verify=false --name postgres-docker -e POSTGRES_USER=base -e POSTGRES_PASSWORD=base -e POSTGRES_HOST_AUTH_METHOD=trust -p 5432:5432 "docker.io/library/postgres:latest"
