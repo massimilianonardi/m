@@ -1,1 +1,1 @@
-note gnome settings disable lock screen hotkey
+note podman

@@ -267,6 +267,23 @@ podman ps --all
 podman export b44a92010f5d > "./postgres-podman.tar"
 tar xvf "./postgres-podman.tar"
 
+PODMAN RUN
+
+podman run --tls-verify=false -p 8080:80 docker.io/geodata/mapserver
+http://localhost:8080/?map=/usr/local/share/mapserver/examples/test.map&mode=map
+podman run --tls-verify=false -v $(pwd):/maps:ro -p 8080:80 geodata/mapserver
+http://localhost:8080/?map=/maps/my-app.map&mode=map
+
+podman run --name mypostgis -e POSTGRES_PASSWORD=mysecretpassword -d docker.io/postgis/postgis
+podman exec -ti mypostgis psql -U postgres
+podman generate systemd --new --files --name mypostgis
+nano ./container-mypostgis.service
+groupadd postgis
+useradd -r -g postgis -d "$POSTGIS_HOME" -s /sbin/nologin postgis
+mv ./container-mypostgis.service /etc/systemd/system/
+
+podman run docker.io/qgis/qgis
+
 --------------------------------------------------------------------------------
 
 https://192.168.253.136:8443/m/authenticator.id
