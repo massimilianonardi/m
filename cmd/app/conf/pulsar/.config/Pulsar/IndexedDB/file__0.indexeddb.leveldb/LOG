@@ -1,16 +1,18 @@
-2025/12/01-08:40:57.541 27c0 Reusing MANIFEST /m/app/.conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/MANIFEST-000001
-2025/12/01-08:40:57.542 27c0 Recovering log #762
-2025/12/01-08:40:57.637 27c0 Reusing old log /m/app/.conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/000762.log 
-2025/12/01-08:41:33.621 27c0 Level-0 table #766: started
-2025/12/01-08:41:33.879 27c0 Level-0 table #766: 1427052 bytes OK
-2025/12/01-08:41:33.884 27c0 Delete type=0 #762
-2025/12/02-08:27:02.562 19278 Compacting 2@0 + 1@1 files
-2025/12/02-08:27:02.695 19278 Generated table #767@0: 6456 keys, 71836 bytes
-2025/12/02-08:27:02.695 19278 Compacted 2@0 + 1@1 files => 71836 bytes
-2025/12/02-08:27:02.718 19278 compacted to: files[ 0 1 1 0 0 0 0 ]
-2025/12/02-08:27:02.719 19278 Delete type=2 #766
-2025/12/02-08:27:02.719 19278 Delete type=2 #761
-2025/12/02-08:27:02.719 19278 Delete type=2 #763
-2025/12/03-15:00:25.822 25ce5 Level-0 table #769: started
-2025/12/03-15:00:25.907 25ce5 Level-0 table #769: 1463700 bytes OK
-2025/12/03-15:00:25.955 25ce5 Delete type=0 #765
+2026/02/03-07:20:51.138 82e2 Reusing MANIFEST /m/app/.conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/MANIFEST-000001
+2026/02/03-07:20:51.138 82e2 Recovering log #768
+2026/02/03-07:20:51.180 82e2 Reusing old log /m/app/.conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/000768.log 
+2026/02/03-08:16:23.529 93bf Compacting 1@0 + 1@1 files
+2026/02/03-08:16:23.575 93bf Generated table #771@0: 6456 keys, 72327 bytes
+2026/02/03-08:16:23.575 93bf Compacted 1@0 + 1@1 files => 72327 bytes
+2026/02/03-08:16:23.578 93bf compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/02/03-08:16:23.579 93bf Delete type=2 #767
+2026/02/03-08:16:23.579 93bf Delete type=2 #769
+2026/02/03-10:28:39.574 be69 Level-0 table #773: started
+2026/02/03-10:28:39.626 be69 Level-0 table #773: 1454920 bytes OK
+2026/02/03-10:28:39.669 be69 Delete type=0 #768
+2026/02/03-11:34:47.911 cafd Level-0 table #775: started
+2026/02/03-11:34:47.971 cafd Level-0 table #775: 1432173 bytes OK
+2026/02/03-11:34:47.976 cafd Delete type=0 #772
+2026/02/03-14:50:08.399 ea50 Level-0 table #777: started
+2026/02/03-14:50:08.468 ea50 Level-0 table #777: 1441677 bytes OK
+2026/02/03-14:50:08.511 ea50 Delete type=0 #774
