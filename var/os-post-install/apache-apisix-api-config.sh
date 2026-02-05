@@ -99,10 +99,54 @@ curl -i "http://127.0.0.1:9180/apisix/admin/routes?api_key=$APISIX_KEY" -X PUT -
   "service_id": "httpbin.org-https-service"
 }'
 
+
+
+# route auth authz-keycloak keycloak
+curl -i "http://127.0.0.1:9180/apisix/admin/routes?api_key=$APISIX_KEY" -X PUT -d '
+{
+  "id": "route-auth",
+  "uri":"/'"${KEYCLOAK_PROTECTED_URI}"'/*",
+  "plugins":
+  {
+    "openid-connect":
+    {
+      "bearer_only": false,
+      "session":
+      {
+        "secret": "change_to_whatever_secret_you_want"
+      },
+      "use_pkce": true,
+      "client_id": "'"${KEYCLOAK_CLIENT_ID}"'",
+      "client_secret": "'"${KEYCLOAK_CLIENT_SECRET}"'",
+      "discovery": "https://'"${KEYCLOAK_HOST}"':'"${KEYCLOAK_PORT}"'/realms/'"${KEYCLOAK_REALM}"'/.well-known/openid-configuration",
+      "scope": "openid profile",
+      "redirect_uri": "https://'"${APISIX_HOST}"':'"${APISIX_PORT}"'/'"${KEYCLOAK_PROTECTED_URI}"'/callback"
+    },
+    "authz-keycloak":
+    {
+      "client_id": "'"${KEYCLOAK_CLIENT_ID}"'",
+      "client_secret": "'"${KEYCLOAK_CLIENT_SECRET}"'",
+      "discovery": "https://'"${KEYCLOAK_HOST}"':'"${KEYCLOAK_PORT}"'/realms/'"${KEYCLOAK_REALM}"'/.well-known/uma2-configuration",
+      "policy_enforcement_mode": "ENFORCING",
+      "permissions": ["read", "write"],
+      "lazy_load_paths": false,
+      "http_method_as_scope": false,
+      "ssl_verify": true
+    },
+    "proxy-rewrite":
+    {
+      "regex_uri": ["^/(.*)/(.*)", "/$2"]
+    }
+  },
+  "service_id": "httpbin.org-https-service"
+}'
+
 curl "https://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token" \
   -d "client_id=${KEYCLOAK_CLIENT_ID}" \
   -d "client_secret=${KEYCLOAK_CLIENT_SECRET}" \
   -d "grant_type=client_credentials"
+
+curl http://127.0.0.1:9080/auth/ip -H "Authorization: Bearer ${ACCESS_TOKEN}"
 
 
 

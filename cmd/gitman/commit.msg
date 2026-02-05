@@ -1,1 +1,1 @@
-note apisix
+pkg openfga

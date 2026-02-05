@@ -1,18 +1,20 @@
-2026/02/03-07:20:51.138 82e2 Reusing MANIFEST /m/app/.conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/MANIFEST-000001
-2026/02/03-07:20:51.138 82e2 Recovering log #768
-2026/02/03-07:20:51.180 82e2 Reusing old log /m/app/.conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/000768.log 
-2026/02/03-08:16:23.529 93bf Compacting 1@0 + 1@1 files
-2026/02/03-08:16:23.575 93bf Generated table #771@0: 6456 keys, 72327 bytes
-2026/02/03-08:16:23.575 93bf Compacted 1@0 + 1@1 files => 72327 bytes
-2026/02/03-08:16:23.578 93bf compacted to: files[ 0 1 1 0 0 0 0 ]
-2026/02/03-08:16:23.579 93bf Delete type=2 #767
-2026/02/03-08:16:23.579 93bf Delete type=2 #769
-2026/02/03-10:28:39.574 be69 Level-0 table #773: started
-2026/02/03-10:28:39.626 be69 Level-0 table #773: 1454920 bytes OK
-2026/02/03-10:28:39.669 be69 Delete type=0 #768
-2026/02/03-11:34:47.911 cafd Level-0 table #775: started
-2026/02/03-11:34:47.971 cafd Level-0 table #775: 1432173 bytes OK
-2026/02/03-11:34:47.976 cafd Delete type=0 #772
-2026/02/03-14:50:08.399 ea50 Level-0 table #777: started
-2026/02/03-14:50:08.468 ea50 Level-0 table #777: 1441677 bytes OK
-2026/02/03-14:50:08.511 ea50 Delete type=0 #774
+2026/02/05-07:16:46.046 14b2 Reusing MANIFEST /m/app/.conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/MANIFEST-000001
+2026/02/05-07:16:46.046 14b2 Recovering log #776
+2026/02/05-07:16:46.069 14b2 Reusing old log /m/app/.conf/pulsar/.config/Pulsar/IndexedDB/file__0.indexeddb.leveldb/000776.log 
+2026/02/05-08:05:56.205 149e Compacting 3@0 + 1@1 files
+2026/02/05-08:05:56.275 149e Generated table #779@0: 6459 keys, 72323 bytes
+2026/02/05-08:05:56.275 149e Compacted 3@0 + 1@1 files => 72323 bytes
+2026/02/05-08:05:56.278 149e compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/02/05-08:05:56.279 149e Delete type=2 #777
+2026/02/05-08:05:56.279 149e Delete type=2 #771
+2026/02/05-08:05:56.279 149e Delete type=2 #775
+2026/02/05-08:05:56.279 149e Delete type=2 #773
+2026/02/05-09:51:40.155 47aa Level-0 table #781: started
+2026/02/05-09:51:40.222 47aa Level-0 table #781: 1428488 bytes OK
+2026/02/05-09:51:40.227 47aa Delete type=0 #776
+2026/02/05-10:09:22.159 47ce Level-0 table #783: started
+2026/02/05-10:09:22.222 47ce Level-0 table #783: 1386176 bytes OK
+2026/02/05-10:09:22.226 47ce Delete type=0 #780
+2026/02/05-10:22:07.487 4d26 Level-0 table #785: started
+2026/02/05-10:22:07.554 4d26 Level-0 table #785: 1398046 bytes OK
+2026/02/05-10:22:07.559 4d26 Delete type=0 #782
