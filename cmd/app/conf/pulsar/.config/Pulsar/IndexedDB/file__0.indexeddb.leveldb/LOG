@@ -50,3 +50,10 @@
 2026/02/05-13:35:51.349 8880 Level-0 table #796: started
 2026/02/05-13:35:51.404 8880 Level-0 table #796: 1369113 bytes OK
 2026/02/05-13:35:51.409 8880 Delete type=0 #793
+2026/02/05-14:55:30.210 e93e Compacting 2@0 + 1@1 files
+2026/02/05-14:55:30.246 e93e Generated table #797@0: 6462 keys, 73189 bytes
+2026/02/05-14:55:30.246 e93e Compacted 2@0 + 1@1 files => 73189 bytes
+2026/02/05-14:55:30.249 e93e compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/02/05-14:55:30.250 e93e Delete type=2 #794
+2026/02/05-14:55:30.250 e93e Delete type=2 #792
+2026/02/05-14:55:30.250 e93e Delete type=2 #796

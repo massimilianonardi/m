@@ -213,8 +213,8 @@ curl -i "http://127.0.0.1:9180/apisix/admin/routes?api_key=$APISIX_KEY" -X PUT -
 # route auth authz-keycloak keycloak
 curl -i "http://127.0.0.1:9180/apisix/admin/routes?api_key=$APISIX_KEY" -X PUT -d '
 {
-  "id": "route-auth",
-  "uri": "/'"${KEYCLOAK_AUTHENTICATED_URI}"'/*",
+  "id": "route-authz-keycloak",
+  "uri": "/'"${KEYCLOAK_AUTHORIZATED_URI}"'/*",
   "plugins":
   {
     "openid-connect":
@@ -237,7 +237,7 @@ curl -i "http://127.0.0.1:9180/apisix/admin/routes?api_key=$APISIX_KEY" -X PUT -
       "client_secret": "'"${KEYCLOAK_CLIENT_SECRET}"'",
       "discovery": "https://'"${KEYCLOAK_HOST}"':'"${KEYCLOAK_PORT}"'/realms/'"${KEYCLOAK_REALM}"'/.well-known/uma2-configuration",
       "policy_enforcement_mode": "ENFORCING",
-      "permissions": ["read", "write"],
+      "permissions": ["ip-resource"],
       "lazy_load_paths": false,
       "http_method_as_scope": false,
       "ssl_verify": true
