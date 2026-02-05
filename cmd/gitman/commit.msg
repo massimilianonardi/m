@@ -1,1 +1,1 @@
-pkg openfga
+pkg opa

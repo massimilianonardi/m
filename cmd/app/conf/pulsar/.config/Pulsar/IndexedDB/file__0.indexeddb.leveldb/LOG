@@ -18,3 +18,35 @@
 2026/02/05-10:22:07.487 4d26 Level-0 table #785: started
 2026/02/05-10:22:07.554 4d26 Level-0 table #785: 1398046 bytes OK
 2026/02/05-10:22:07.559 4d26 Delete type=0 #782
+2026/02/05-11:26:38.989 6206 Compacting 3@0 + 1@1 files
+2026/02/05-11:26:39.042 6206 Generated table #786@0: 6462 keys, 73244 bytes
+2026/02/05-11:26:39.042 6206 Compacted 3@0 + 1@1 files => 73244 bytes
+2026/02/05-11:26:39.045 6206 compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/02/05-11:26:39.045 6206 Delete type=2 #779
+2026/02/05-11:26:39.045 6206 Delete type=2 #783
+2026/02/05-11:26:39.045 6206 Delete type=2 #781
+2026/02/05-11:26:39.045 6206 Delete type=2 #785
+2026/02/05-11:28:08.592 599b Level-0 table #788: started
+2026/02/05-11:28:08.653 599b Level-0 table #788: 1372942 bytes OK
+2026/02/05-11:28:08.659 599b Delete type=0 #784
+2026/02/05-11:54:07.898 67fa Compacting 1@0 + 1@1 files
+2026/02/05-11:54:07.942 67fa Generated table #789@0: 6462 keys, 73180 bytes
+2026/02/05-11:54:07.942 67fa Compacted 1@0 + 1@1 files => 73180 bytes
+2026/02/05-11:54:07.946 67fa compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/02/05-11:54:07.946 67fa Delete type=2 #788
+2026/02/05-11:54:07.946 67fa Delete type=2 #786
+2026/02/05-11:55:17.895 67fa Level-0 table #791: started
+2026/02/05-11:55:17.955 67fa Level-0 table #791: 1386284 bytes OK
+2026/02/05-11:55:17.961 67fa Delete type=0 #787
+2026/02/05-12:07:18.855 6ce6 Compacting 1@0 + 1@1 files
+2026/02/05-12:07:18.895 6ce6 Generated table #792@0: 6462 keys, 74838 bytes
+2026/02/05-12:07:18.895 6ce6 Compacted 1@0 + 1@1 files => 74838 bytes
+2026/02/05-12:07:18.898 6ce6 compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/02/05-12:07:18.898 6ce6 Delete type=2 #789
+2026/02/05-12:07:18.898 6ce6 Delete type=2 #791
+2026/02/05-12:09:49.004 6ce6 Level-0 table #794: started
+2026/02/05-12:09:49.070 6ce6 Level-0 table #794: 1391037 bytes OK
+2026/02/05-12:09:49.076 6ce6 Delete type=0 #790
+2026/02/05-13:35:51.349 8880 Level-0 table #796: started
+2026/02/05-13:35:51.404 8880 Level-0 table #796: 1369113 bytes OK
+2026/02/05-13:35:51.409 8880 Delete type=0 #793
