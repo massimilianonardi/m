@@ -1,0 +1,21 @@
+
+MONITOR OUTBOUND HTTPS TRAFFIC
+
+(sudo tcpdump dst port 443 | sed 's/^.*> //g' | sed 's/.https.*//g' | tee /tmp/tcpdump-https.log); cat /tmp/tcpdump-https.log | sort | uniq; rm -f /tmp/tcpdump-https.log
+
+--------------------------------------------------------------------------------
+
+find big files/directories
+
+du -aBM 2>/dev/null | sort -nr | head -n 50 | more
+
+--------------------------------------------------------------------------------
+
+.dektop files
+find the wmclass:
+open the app, from terminal type
+xprop WM_CLASS
+then mouse click inside the app
+get to the terminal to see wmclass
+
+linux tilde: F6 or CTRL+SHIFT+u 7E (SPACE or ENTER)
