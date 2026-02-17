@@ -7,7 +7,7 @@
         "folders": [],
         "emptyWindows": [
             {
-                "backupFolder": "1770794842757"
+                "backupFolder": "1771318589079"
             }
         ]
     },
@@ -16,7 +16,8 @@
         "workspaces": {},
         "emptyWindows": {
             "1770705808387": "__default__profile__",
-            "1770794842757": "__default__profile__"
+            "1770794842757": "__default__profile__",
+            "1771318589079": "__default__profile__"
         }
     },
     "theme": "vs-dark",
@@ -51,7 +52,7 @@
     },
     "windowsState": {
         "lastActiveWindow": {
-            "backupPath": "/m/app/.conf/vs-code/.config/Code/Backups/1770794842757",
+            "backupPath": "/m/app/.conf/vs-code/.config/Code/Backups/1771318589079",
             "uiState": {
                 "mode": 0,
                 "x": 360,

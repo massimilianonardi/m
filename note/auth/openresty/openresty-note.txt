@@ -11,8 +11,8 @@ every postgres instance for each user (keycloak, geoserver, mapserver, java-serv
 
 production servers:
 auth-keycloak -> keycloak (dmz -> intranet domain controller)
-apisix auth-proxy -> apisix (dmz -> intranet microservices)
-auth -> apps multiple servers + microservices (intranet) -> gis (postgres, raster files, mapserver, multiple geoserver), db (postgres, java-db), file (gluster?), war (wildfly), src (gitlab)
+apisix auth-proxy -> apps (dmz -> intranet microservices)
+auth -> multiple servers + microservices (intranet) -> gis (postgres, raster files, mapserver, multiple geoserver), db (postgres, java-db), file (gluster?), war (wildfly), src (gitlab)
 
 apisix on port 443 an remove any http socket, decoupled deployment, protect admin port access, protect dashboard allowing access only from selected intranet ips, coraza plugin
 https://apisix.apache.org/docs/apisix/deployment-modes/
