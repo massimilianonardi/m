@@ -20,3 +20,43 @@ https://apisix.apache.org/docs/apisix/deployment-modes/
 keycloak on port 443, decouple admin rest from login flows, put behind reverse proxy to achieve that?
 
 Roundcube Webmail keycloak
+
+--------------------------------------------------------------------------------
+
+http://apisix.rpr-spa.it:9180/ui/
+https://keycloak.rpr-spa.it:8443
+https://apps.rpr-spa.it/keycloak
+
+https://apps.rpr-spa.it/keycloak/realms/master/hostname-debug
+
+https://apps.rpr-spa.it/apisix/authz/ip
+https://apps.rpr-spa.it/apisix/authz/headers
+
+--------------------------------------------------------------------------------
+
+/usr/local/openresty
+/usr/local/openresty/nginx/
+/usr/local/openresty/nginx/conf/nginx.conf
+
+openresty -t && systemctl restart openresty
+systemctl status openresty
+
+less /usr/local/openresty/nginx/logs/access.log
+less /usr/local/openresty/nginx/logs/error.log
+
+--------------------------------------------------------------------------------
+
+less /usr/local/apisix/logs/access.log
+less /usr/local/apisix/logs/error.log
+
+--------------------------------------------------------------------------------
+
+/m/pkg/keycloak-26.4.2/keycloak-26.4.2/conf/keycloak.conf
+systemctl restart keycloak
+systemctl status keycloak
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------

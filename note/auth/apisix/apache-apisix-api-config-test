@@ -1,5 +1,15 @@
 #!/bin/sh
 
+# serverless function executed after login phase that checks for user in role and if not clear cookies and return 403
+    "serverless-pre-function": {
+      "phase": "access",
+      "functions": [
+        "return function(conf, ctx) \n  local core = require(\"apisix.core\")\n  local userinfo = ngx.var.http_x_userinfo\n  \n  -- 1. Check if we are authenticated\n  if not userinfo then\n    return 403, \"Authentication required\"\n  end\n  \n  -- 2. Decode the user info\n  local cjson = require(\"cjson\")\n  local info = cjson.decode(ngx.decode_base64(userinfo))\n  local roles = info.roles or {}\n  \n  -- 3. Check for the required role\n  for _, role in ipairs(roles) do\n    if role == \"jaeger-users\" then\n      return -- Success! Let the request proceed.\n    end\n  end\n  \n  -- 4. Graceful Error Handling\n  -- Force the browser to treat this as an HTML response\n  ngx.header[\"Content-Type\"] = \"text/html; charset=utf-8\"\n  \n  -- Aggressively clear session cookies to force a fresh login on reload\n  ngx.header[\"Set-Cookie\"] = {\n      \"session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure\",\n      \"session_2=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure\",\n      \"session_3=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure\"\n  }\n  \n  -- 5. Render a friendly error page\n  ngx.status = 403\n  ngx.say([[\n    <!DOCTYPE html>\n    <html>\n    <head>\n        <title>Access Denied</title>\n        <style>\n            body { font-family: -apple-system, sans-serif; text-align: center; padding: 50px; }\n            h1 { color: #d9534f; }\n            button { \n                background-color: #0275d8; color: white; padding: 12px 24px; \n                border: none; border-radius: 4px; cursor: pointer; font-size: 16px;\n            }\n            button:hover { background-color: #025aa5; }\n        </style>\n    </head>\n    <body>\n        <h1>🚫 Access Denied</h1>\n        <p>You need the <strong>'jaeger-users'</strong> role to access this service.</p>\n        <p>Your session has been cleared.</p>\n        <p><button onclick=\"window.location.reload()\">Login with different account</button></p>\n    </body>\n    </html>\n  ]])\n  \n  return ngx.exit(403)\nend"
+      ]
+    }
+
+
+
 # authz opa
 curl -i "${APISIX_ADMIN_URL}/plugin_configs?api_key=${APISIX_KEY}" -X PUT -d '
 {
