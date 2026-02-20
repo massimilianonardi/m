@@ -57,6 +57,14 @@ systemctl status keycloak
 
 --------------------------------------------------------------------------------
 
+NB accesses are managed by global firewall
+
+apps: the only server with public access, proxy to restricted servers apisix and keycloak to hide admin paths and expose public-authorizated services.
+  serves a default page with iframe to hide direct urls. putting everything under this proxy prevents cors errors
+apisix: restricted access to admin users and "apps" proxy server, exposes authenticated/authorizated services
+keycloak: restricted access to admin users and "apps" proxy server, exposes api to authenticate/authorize public users
+services (exposed by apisix): restricted access to apisix and developers
+
 --------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------

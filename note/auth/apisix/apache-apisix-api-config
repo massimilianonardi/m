@@ -21,11 +21,13 @@ export KEYCLOAK_PORT="8443"
 export KEYCLOAK_REALM="rpr"
 
 export KEYCLOAK_REALM_URL="https://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM}"
+#export KEYCLOAK_REALM_URL="https://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/keycloak/realms/${KEYCLOAK_REALM}"
 
 export AUTHN_DISCOVERY_URL="${KEYCLOAK_REALM_URL}/.well-known/openid-configuration"
 export AUTHZ_DISCOVERY_URL="${KEYCLOAK_REALM_URL}/.well-known/uma2-configuration"
 
 export AUTHN_REDIRECT_BASE_URL="https://${APISIX_HOST}:${APISIX_PORT}"
+#export AUTHN_REDIRECT_BASE_URL="https://${PROXY_HOST}/apisix"
 
 
 
@@ -180,3 +182,9 @@ create_authenticated_route "route-authn-java" "java" "java" "service-test-java-h
 create_authorized_route "route-authz-ip" "authz/ip" "authz" "ip-resource" "service-test-https"
 create_authorized_route "route-authz-headers" "authz/headers" "authz" "headers-resource" "service-test-https"
 create_authorized_route "route-authz-response-headers" "authz/response-headers" "authz" "response-headers-resource" "service-test-https"
+
+create_service "service-https-apache2" "https" "127.0.0.1:443"
+create_authorized_route "route-authz-webgis" "authz/webgis" "authz" "webgis-resource" "service-https-apache2"
+
+create_service "service-https-webgis-test" "https" "webgisrpr.rpr-spa.it:443"
+create_authorized_route "route-authz-gis-server" "authz/gis-server" "authz/gis-server" "webgis-resource" "service-https-webgis-test"
