@@ -54,6 +54,7 @@ less /usr/local/apisix/logs/error.log
 /m/pkg/keycloak-26.4.2/keycloak-26.4.2/conf/keycloak.conf
 systemctl restart keycloak
 systemctl status keycloak
+less /m/pkg/keycloak-26.4.2/keycloak-26.4.2/data/log/keycloak.log
 
 --------------------------------------------------------------------------------
 
@@ -63,7 +64,12 @@ apps: the only server with public access, proxy to restricted servers apisix and
   serves a default page with iframe to hide direct urls. putting everything under this proxy prevents cors errors
 apisix: restricted access to admin users and "apps" proxy server, exposes authenticated/authorizated services
 keycloak: restricted access to admin users and "apps" proxy server, exposes api to authenticate/authorize public users
-services (exposed by apisix): restricted access to apisix and developers
+services (exposed by apisix): restricted access to apisix and developers.
+  static + simple content server by same server with apisix, bound to 127.0.0.1, one gis server (mapserver, geoserver, postgres, extra (allegati, schede, metadati, ecc.))
+  apps on apisix, content on separate servers.
+gis server: /mapserver, /geoserver, /allegati, /schede, /metadati, /mini-metadati, ecc.
+
+apps is public, services allows apisix by ip/hostname through nginx, apisix allows only apps, keycloak proxied by apps nginx???
 
 --------------------------------------------------------------------------------
 

@@ -22,6 +22,7 @@ export KEYCLOAK_REALM="rpr"
 
 export KEYCLOAK_REALM_URL="https://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM}"
 #export KEYCLOAK_REALM_URL="https://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/keycloak/realms/${KEYCLOAK_REALM}"
+#export KEYCLOAK_REALM_URL="https://${PROXY_HOST}/keycloak/realms/${KEYCLOAK_REALM}"
 
 export AUTHN_DISCOVERY_URL="${KEYCLOAK_REALM_URL}/.well-known/openid-configuration"
 export AUTHZ_DISCOVERY_URL="${KEYCLOAK_REALM_URL}/.well-known/uma2-configuration"
@@ -134,6 +135,13 @@ create_authorized_route()
     {
       "proxy-rewrite":
       {
+        "headers":
+        {
+          "remove":
+          [
+            "Cookie"
+          ]
+        },
         "regex_uri": ["^/'"${PREFIX_REMOVE}"'/(.*)", "/$1"]
       },
       "openid-connect":
@@ -184,7 +192,8 @@ create_authorized_route "route-authz-headers" "authz/headers" "authz" "headers-r
 create_authorized_route "route-authz-response-headers" "authz/response-headers" "authz" "response-headers-resource" "service-test-https"
 
 create_service "service-https-apache2" "https" "127.0.0.1:443"
-create_authorized_route "route-authz-webgis" "authz/webgis" "authz" "webgis-resource" "service-https-apache2"
-
 create_service "service-https-webgis-test" "https" "webgisrpr.rpr-spa.it:443"
+
+create_authorized_route "route-authz-menu" "authz/menu" "authz" "menu-resource" "service-https-apache2"
+create_authorized_route "route-authz-webgis" "authz/webgis" "authz" "webgis-resource" "service-https-apache2"
 create_authorized_route "route-authz-gis-server" "authz/gis-server" "authz/gis-server" "webgis-resource" "service-https-webgis-test"
