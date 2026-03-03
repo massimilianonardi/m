@@ -1,1 +1,1 @@
-pkg extra features install (postgres db, service files)
+openfga opa new instller confs
