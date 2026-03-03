@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# resolve caller symlink
+if [ -L "$0" ]
+then
+  THIS_PATH="$(ls -ld -- "$0")"
+  THIS_PATH="${THIS_PATH#*" $0 -> "}"
+else
+  # relative path or absolute depending on call that launched this file
+  THIS_PATH="$0"
+fi
+
+# actual called file and absolute dir from resolved path
+THIS_FILE="${THIS_PATH##*/}"
+THIS_DIR="$(cd -P -- "${THIS_PATH%/*}" && pwd -P)"
+
+sudo ln -s "$THIS_DIR/m-shell" "/bin/m-shell"
+
+EXIT_CODE="$?"
+
+# detect if launched from gui or active terminal
+PARENT_PROCESS="$(ps -o 'cmd=' -p $(ps -o 'ppid=' -p $$))"
+#if [ "$PARENT_PROCESS" != "bash" ]
+if [ "${PARENT_PROCESS%sh}" = "$PARENT_PROCESS" ]
+then
+  echo ""
+  echo "--------------------------------------------------------------------------------"
+  echo "press ENTER to exit"
+  read -r EXIT_VAR
+fi

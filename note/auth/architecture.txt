@@ -71,6 +71,16 @@ gis server: /mapserver, /geoserver, /allegati, /schede, /metadati, /mini-metadat
 
 apps is public, services allows apisix by ip/hostname through nginx, apisix allows only apps, keycloak proxied by apps nginx???
 
+---
+
+apps nginx allows only apisix and every app service is bound to 127.0.0.1 (also postgres db) -> if needed this node should be replicated and sychronized for load balancing
+apps should not host data, a dedicated postgres cluster and a dedicated webgis server for all legacy data and new remapped
+apisix is the public point 9443 with apache2/nginx/openresty 443 url-cloak page
+keycloak is public, or proxied by apisix or apps
+webgis-data: metadati, mini-metadati, schede, allegati, db, mapserver, geoserver -> apache2 + php, mnode-standalone -> links to /m/data/webgis/links to autoupdate on src pull
+/m/data/webgis/raster + allegati
+webgis-src+db+files: dev, test, prod
+
 --------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------

@@ -1,4 +1,30 @@
 #!/bin/sh
 
-/m/m
+# resolve caller symlink
+if [ -L "$0" ]
+then
+  THIS_PATH="$(ls -ld -- "$0")"
+  THIS_PATH="${THIS_PATH#*" $0 -> "}"
+else
+  # relative path or absolute depending on call that launched this file
+  THIS_PATH="$0"
+fi
 
+# actual called file and absolute dir from resolved path
+THIS_FILE="${THIS_PATH##*/}"
+THIS_DIR="$(cd -P -- "${THIS_PATH%/*}" && pwd -P)"
+
+# set path
+ENV_PATH="$THIS_DIR"
+
+for k in "$THIS_DIR"/*
+do
+  if [ -d "$k" ]
+  then
+    ENV_PATH="$k:$ENV_PATH"
+  fi
+done
+
+export "PATH=$ENV_PATH:$PATH"
+
+bash
