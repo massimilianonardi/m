@@ -27,4 +27,9 @@ done
 
 export "PATH=$ENV_PATH:$PATH"
 
-bash
+if [ -z "$*" ]
+then
+  bash
+else
+  "$@"
+fi
