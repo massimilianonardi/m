@@ -195,7 +195,7 @@ sudo -s << SUDO
 
 groupadd ${PKG_NAME}
 useradd -r -g ${PKG_NAME} -d "$PKG_HOME" -s /sbin/nologin ${PKG_NAME}
-chown -R ${PKG_NAME}:${PKG_NAME} "$PKG_HOME"
+chown -RL ${PKG_NAME}:${PKG_NAME} "$PKG_HOME"
 
 
 
@@ -243,7 +243,7 @@ groupdel ${PKG_NAME}
 
 GROUP="$(groups)"
 GROUP="${GROUP%% *}"
-chown -R "${USER}:${GROUP}" "${PKG_HOME}"
+chown -RL "${USER}:${GROUP}" "${PKG_HOME}"
 
 SUDO
 EOF

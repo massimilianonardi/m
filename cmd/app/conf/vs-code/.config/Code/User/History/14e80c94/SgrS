@@ -1,0 +1,120 @@
+#!/bin/sh
+
+if [ -L "$0" ]
+then
+  THIS_PATH="$(ls -ld -- "$0")"
+  THIS_PATH="${THIS_PATH#*" $0 -> "}"
+else
+  THIS_PATH="$0"
+fi
+
+export GEOSERVER_HOME="$(cd -P -- "${THIS_PATH%/*}" && pwd -P)"
+
+sudo -K
+sudo -n true 1>/dev/null 2>/dev/null
+SUDO_NO_PASS="$?"
+echo "true: SUDO_NO_PASS=$SUDO_NO_PASS"
+
+sudo -K
+sudo -n test -w 1>/dev/null 2>/dev/null
+SUDO_NO_PASS="$?"
+echo "test: SUDO_NO_PASS=$SUDO_NO_PASS"
+
+
+
+#sudo sh -s << SUDO
+
+DATA_DIR="$1"
+RASTER_DIR="$2"
+
+cd "$GEOSERVER_HOME"
+
+if [ -r "${GEOSERVER_HOME}/data" ] && [ -L "${GEOSERVER_HOME}/data" ]
+then
+  set -- "${GEOSERVER_HOME}/data"
+
+  TARGET="$(ls -ld -- "$1")"
+  TARGET="${TARGET#*" $1 -> "}"
+  if [ "$TARGET" = "${TARGET#/}" ]
+  then
+    # relative link
+    TARGET="$(dirname -- "$1")/$TARGET"
+  fi
+  GEOSERVER_REAL_DATA_DIR="$(cd -P -- "$(dirname -- "$TARGET")" && pwd -P)/$(basename -- "$TARGET")"
+
+  echo "GEOSERVER_HOME=$GEOSERVER_HOME"
+  echo "GEOSERVER_DATA_DIR=$GEOSERVER_REAL_DATA_DIR"
+elif [ -e "${GEOSERVER_HOME}/data" ]
+then
+  echo "ERROR! ${GEOSERVER_HOME}/data ALREADY EXISTS AND IS NOT A DATA DIRECTORY MANAGED BY THIS COMMAND!"
+  exit 1
+fi
+
+if [ -z "$DATA_DIR" ]
+then
+  echo "Enter data dir path: "
+  read DATA_DIR
+fi
+
+if [ -z "$DATA_DIR" ]
+then
+  DATA_DIR="./data-dir"
+fi
+
+if [ ! -e "$DATA_DIR" ]
+then
+  mkdir -p "$DATA_DIR"
+fi
+
+if [ ! -e "$DATA_DIR/geoserver-environment.properties" ]
+then
+  cat << 'GEOSERVER_ENV' > "$DATA_DIR/geoserver-environment.properties"
+POSTGRES_HOST=127.0.0.1
+POSTGRES_PORT=5432
+POSTGRES_DB=postgres
+POSTGRES_USER=postgres
+POSTGRES_PASS=
+GEOSERVER_RASTER=raster
+
+GEOSERVER_ENV
+
+  echo "DO YOU WANT TO EDIT \"geoserver-environment.properties\"? YES, NO (default = NO): "
+  read INSTALL_FLAG
+  if [ "$INSTALL_FLAG" = "YES" ] || [ "$INSTALL_FLAG" = "yes" ] || [ "$INSTALL_FLAG" = "Y" ] || [ "$INSTALL_FLAG" = "y" ] || [ "$INSTALL_FLAG" = "Yes" ]
+  then
+    nano "$DATA_DIR/geoserver-environment.properties"
+  fi
+fi
+
+if [ -z "$RASTER_DIR" ]
+then
+  echo "Enter raster dir path: "
+  read RASTER_DIR
+fi
+
+if [ -z "$RASTER_DIR" ]
+then
+  RASTER_DIR="./data-raster-dir"
+fi
+
+if [ ! -e "$RASTER_DIR" ]
+then
+  mkdir -p "$RASTER_DIR"
+fi
+
+rm -f "${GEOSERVER_HOME}/data"
+ln -s "$DATA_DIR" "${GEOSERVER_HOME}/data"
+
+rm -f "${GEOSERVER_HOME}/data-raster"
+ln -s "$RASTER_DIR" "${GEOSERVER_HOME}/data-raster"
+
+rm -f "${GEOSERVER_HOME}/data/raster"
+ln -s "${GEOSERVER_HOME}/data-raster" "${GEOSERVER_HOME}/data/raster"
+
+for k in aaa workspaces
+do
+  echo "k=$k"
+done
+
+#SUDO
+

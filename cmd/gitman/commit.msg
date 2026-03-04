@@ -1,1 +1,1 @@
-pkg install extra features reworked conf: etcd
+pkg install extra features reworked conf: geoserver
