@@ -119,3 +119,39 @@
 2026/03/04-13:20:54.125 12fee compacted to: files[ 0 1 1 0 0 0 0 ]
 2026/03/04-13:20:54.125 12fee Delete type=2 #122
 2026/03/04-13:20:54.125 12fee Delete type=2 #120
+2026/03/04-13:56:33.976 14b5f Level-0 table #125: started
+2026/03/04-13:56:34.034 14b5f Level-0 table #125: 1401407 bytes OK
+2026/03/04-13:56:34.040 14b5f Delete type=0 #121
+2026/03/04-14:00:53.804 14b92 Compacting 1@0 + 1@1 files
+2026/03/04-14:00:53.820 14b92 Generated table #126@0: 6030 keys, 61589 bytes
+2026/03/04-14:00:53.820 14b92 Compacted 1@0 + 1@1 files => 61589 bytes
+2026/03/04-14:00:53.839 14b92 compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/03/04-14:00:53.839 14b92 Delete type=2 #123
+2026/03/04-14:00:53.839 14b92 Delete type=2 #125
+2026/03/04-14:13:56.446 150ac Level-0 table #128: started
+2026/03/04-14:13:56.486 150ac Level-0 table #128: 1399978 bytes OK
+2026/03/04-14:13:56.491 150ac Delete type=0 #124
+2026/03/04-14:16:26.878 150ac Compacting 1@0 + 1@1 files
+2026/03/04-14:16:26.923 150ac Generated table #129@0: 6478 keys, 65463 bytes
+2026/03/04-14:16:26.923 150ac Compacted 1@0 + 1@1 files => 65463 bytes
+2026/03/04-14:16:26.926 150ac compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/03/04-14:16:26.926 150ac Delete type=2 #128
+2026/03/04-14:16:26.926 150ac Delete type=2 #126
+2026/03/04-14:56:09.269 157af Level-0 table #131: started
+2026/03/04-14:56:09.334 157af Level-0 table #131: 1412040 bytes OK
+2026/03/04-14:56:09.340 157af Delete type=0 #127
+2026/03/04-14:59:52.205 15e43 Compacting 1@0 + 1@1 files
+2026/03/04-14:59:52.241 15e43 Generated table #132@0: 6906 keys, 68982 bytes
+2026/03/04-14:59:52.241 15e43 Compacted 1@0 + 1@1 files => 68982 bytes
+2026/03/04-14:59:52.244 15e43 compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/03/04-14:59:52.245 15e43 Delete type=2 #131
+2026/03/04-14:59:52.245 15e43 Delete type=2 #129
+2026/03/04-15:16:16.161 1650b Level-0 table #134: started
+2026/03/04-15:16:16.233 1650b Level-0 table #134: 1406354 bytes OK
+2026/03/04-15:16:16.237 1650b Delete type=0 #130
+2026/03/04-15:37:32.463 1650b Compacting 1@0 + 1@1 files
+2026/03/04-15:37:32.510 1650b Generated table #135@0: 7338 keys, 72403 bytes
+2026/03/04-15:37:32.510 1650b Compacted 1@0 + 1@1 files => 72403 bytes
+2026/03/04-15:37:32.513 1650b compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/03/04-15:37:32.514 1650b Delete type=2 #132
+2026/03/04-15:37:32.514 1650b Delete type=2 #134
