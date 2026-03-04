@@ -1,1 +1,1 @@
-openfga opa new instller confs
+pkg install extra features reworked conf: etcd

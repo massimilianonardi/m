@@ -1,0 +1,30 @@
+#!/bin/sh
+
+if [ -L "$0" ]
+then
+  THIS_PATH="$(ls -ld -- "$0")"
+  THIS_PATH="${THIS_PATH#*" $0 -> "}"
+else
+  THIS_PATH="$0"
+fi
+
+PKG_HOME="$(cd -P -- "${THIS_PATH%/*}" && pwd -P)"
+
+PKG_NAME="etcd"
+sudo -s << SUDO
+
+systemctl stop ${PKG_NAME}
+systemctl disable ${PKG_NAME}
+rm -f "/etc/systemd/system/${PKG_NAME}.service"
+systemctl daemon-reload
+systemctl reset-failed
+
+# userdel -r ${PKG_NAME}
+userdel ${PKG_NAME}
+groupdel ${PKG_NAME}
+
+GROUP="$(groups)"
+GROUP="${GROUP%% *}"
+chown -R "$USER:$GROUP" "$PKG_HOME"
+
+SUDO

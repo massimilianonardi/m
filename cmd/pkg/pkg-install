@@ -64,6 +64,15 @@ install_extra_features()
     cat << 'EOF' >> "./${POSTGRES_NAME}-postgres"
 #!/bin/sh
 
+echo "DO YOU WANT TO INSTALL POSTGRES DB? YES, NO (default = NO): "
+read INSTALL_FLAG
+if [ "$INSTALL_FLAG" = "YES" ] || [ "$INSTALL_FLAG" = "yes" ] || [ "$INSTALL_FLAG" = "Y" ] || [ "$INSTALL_FLAG" = "y" ] || [ "$INSTALL_FLAG" = "Yes" ]
+then
+  true
+else
+  exit 0
+fi
+
 echo "WARNING!!! Press ENTER to DELETE current ${POSTGRES_NAME} DB and initialize a new DB (install postgres if not present)"
 read x
 
@@ -158,21 +167,28 @@ EOF
 
       chmod +x "./${PKG_NAME}-service-install"
       chmod +x "./${PKG_NAME}-service-uninstall"
-      echo "PKG_NAME=\"$PKG_NAME\"" | tee -a "./${PKG_NAME}-service-install" > "./${PKG_NAME}-service-uninstall"
+      echo "PKG_NAME=\"$PKG_NAME\"" | tee -a "./${PKG_NAME}-service-install" >> "./${PKG_NAME}-service-uninstall"
 
 #-------------------------------------------------------------------------------
       cat << EOF >> "./${PKG_NAME}-service-install"
 
 SERVICE_EXEC_START="$SERVICE_EXEC_START"
 SERVICE_EXEC_STOP="$SERVICE_EXEC_STOP"
+SERVICE_WORKING_DIR="$SERVICE_WORKING_DIR"
 
 EOF
 
       cat << 'EOF' >> "./${PKG_NAME}-service-install"
+if [ -n "$SERVICE_WORKING_DIR" ]
+then
+  SERVICE_WORKING_DIR="WorkingDirectory=$SERVICE_WORKING_DIR"
+fi
+
 SERVICE_EXEC_START="ExecStart=$PKG_HOME/$SERVICE_EXEC_START"
+
 if [ -n "$SERVICE_EXEC_STOP" ]
 then
-  SERVICE_EXEC_STOP="ExecStart=$PKG_HOME/$SERVICE_EXEC_STOP"
+  SERVICE_EXEC_STOP="ExecStop=$PKG_HOME/$SERVICE_EXEC_STOP"
 fi
 
 sudo -s << SUDO
@@ -192,6 +208,7 @@ After=network.service
 Type=simple
 User=${PKG_NAME}
 Group=${PKG_NAME}
+${SERVICE_WORKING_DIR}
 ${SERVICE_EXEC_START}
 ${SERVICE_EXEC_STOP}
 
@@ -226,14 +243,14 @@ groupdel ${PKG_NAME}
 
 GROUP="$(groups)"
 GROUP="${GROUP%% *}"
-chown -R "$USER:$GROUP" "$PKG_HOME"
+chown -R "${USER}:${GROUP}" "${PKG_HOME}"
 
 SUDO
 EOF
 
-      echo "Do you want to install service daemon? ENTER=yes, N (case insensitive)=no"
+      echo "DO YOU WANT TO INSTALL SERVICE DAEMON? YES, NO (default = NO): "
       read INSTALL_FLAG
-      if [ -z "$INSTALL_FLAG" ]
+      if [ "$INSTALL_FLAG" = "YES" ] || [ "$INSTALL_FLAG" = "yes" ] || [ "$INSTALL_FLAG" = "Y" ] || [ "$INSTALL_FLAG" = "y" ] || [ "$INSTALL_FLAG" = "Yes" ]
       then
         "./${PKG_NAME}-service-install"
       fi

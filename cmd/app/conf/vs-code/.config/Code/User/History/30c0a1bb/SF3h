@@ -1,0 +1,64 @@
+#!/bin/sh
+
+if [ -L "$0" ]
+then
+  THIS_PATH="$(ls -ld -- "$0")"
+  THIS_PATH="${THIS_PATH#*" $0 -> "}"
+else
+  THIS_PATH="$0"
+fi
+
+PKG_HOME="$(cd -P -- "${THIS_PATH%/*}" && pwd -P)"
+
+PKG_NAME="etcd"
+
+SERVICE_EXEC_START="etcd --config-file "$PKG_HOME/conf/etcd.conf""
+SERVICE_EXEC_STOP=""
+SERVICE_WORKING_DIR="$PKG_HOME/data"
+
+if [ -n "$SERVICE_WORKING_DIR" ]
+then
+  SERVICE_WORKING_DIR="WorkingDirectory=$SERVICE_WORKING_DIR"
+fi
+
+SERVICE_EXEC_START="ExecStart=$PKG_HOME/$SERVICE_EXEC_START"
+
+if [ -n "$SERVICE_EXEC_STOP" ]
+then
+  SERVICE_EXEC_STOP="ExecStop=$PKG_HOME/$SERVICE_EXEC_STOP"
+fi
+
+sudo -s << SUDO
+
+groupadd ${PKG_NAME}
+useradd -r -g ${PKG_NAME} -d "$PKG_HOME" -s /sbin/nologin ${PKG_NAME}
+chown -R ${PKG_NAME}:${PKG_NAME} "$PKG_HOME"
+
+
+
+cat > "/etc/systemd/system/${PKG_NAME}.service" << SERVICE
+[Unit]
+Description=${PKG_NAME} Service
+After=network.service
+
+[Service]
+Type=simple
+User=${PKG_NAME}
+Group=${PKG_NAME}
+${SERVICE_WORKING_DIR}
+${SERVICE_EXEC_START}
+${SERVICE_EXEC_STOP}
+
+[Install]
+WantedBy=multi-user.target
+
+SERVICE
+
+
+
+chown root:root "/etc/systemd/system/${PKG_NAME}.service"
+chmod 644 "/etc/systemd/system/${PKG_NAME}.service"
+systemctl daemon-reload
+systemctl enable ${PKG_NAME}
+
+SUDO
