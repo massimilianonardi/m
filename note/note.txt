@@ -10,4 +10,5 @@ apisix installer
 snapshot/bak 26
 renew 26
 think about portale
+gitlab install
 --------------------------------------------------------------------------------
