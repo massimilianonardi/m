@@ -10,3 +10,12 @@
 2026/03/05-12:16:12.995 5a64 Level-0 table #139: started
 2026/03/05-12:16:13.063 5a64 Level-0 table #139: 1388901 bytes OK
 2026/03/05-12:16:13.069 5a64 Delete type=0 #133
+2026/03/05-13:49:54.050 7bd1 Compacting 1@1 + 1@2 files
+2026/03/05-13:49:54.086 7bd1 Generated table #140@1: 41 keys, 14233 bytes
+2026/03/05-13:49:54.086 7bd1 Compacted 1@1 + 1@2 files => 14233 bytes
+2026/03/05-13:49:54.089 7bd1 compacted to: files[ 0 0 1 0 0 0 0 ]
+2026/03/05-13:49:54.089 7bd1 Delete type=2 #139
+2026/03/05-13:49:54.089 7bd1 Delete type=2 #137
+2026/03/05-14:23:01.447 84f1 Level-0 table #142: started
+2026/03/05-14:23:01.517 84f1 Level-0 table #142: 1385808 bytes OK
+2026/03/05-14:23:01.522 84f1 Delete type=0 #138
