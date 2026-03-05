@@ -19,3 +19,12 @@
 2026/03/05-14:23:01.447 84f1 Level-0 table #142: started
 2026/03/05-14:23:01.517 84f1 Level-0 table #142: 1385808 bytes OK
 2026/03/05-14:23:01.522 84f1 Delete type=0 #138
+2026/03/05-15:52:46.857 92c6 Compacting 1@1 + 1@2 files
+2026/03/05-15:52:46.866 92c6 Generated table #143@1: 41 keys, 14063 bytes
+2026/03/05-15:52:46.866 92c6 Compacted 1@1 + 1@2 files => 14063 bytes
+2026/03/05-15:52:46.869 92c6 compacted to: files[ 0 0 1 0 0 0 0 ]
+2026/03/05-15:52:46.869 92c6 Delete type=2 #142
+2026/03/05-15:52:46.869 92c6 Delete type=2 #140
+2026/03/05-15:53:29.702 9da8 Level-0 table #145: started
+2026/03/05-15:53:29.771 9da8 Level-0 table #145: 1447448 bytes OK
+2026/03/05-15:53:29.777 9da8 Delete type=0 #141

@@ -1,2 +1,13 @@
 
 --------------------------------------------------------------------------------
+import new webgis db and geoserver data on 19
+sync all servers with new m sources
+keycloak auth page rpr style
+geoserver keycloak auth
+geoserver no auth
+geoserver headers or url basic auth integrated into apisix route
+apisix installer
+snapshot/bak 26
+renew 26
+think about portale
+--------------------------------------------------------------------------------
