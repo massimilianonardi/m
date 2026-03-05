@@ -1,1 +1,1 @@
-msh install
+pkg geoserver
