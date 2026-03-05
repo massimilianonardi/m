@@ -16,9 +16,10 @@ THIS_DIR="$(cd -P -- "${THIS_PATH%/*}" && pwd -P)"
 
 # set path
 ENV_FILE="/etc/environment.d/99-m-paths.conf"
-ENV_PATH="$THIS_DIR"
-PROFILE_FILE="/etc/profile.d/ZZZ99-m-paths.sh"
 SUDOERS_FILE="/etc/sudoers.d/99-m-paths"
+PROFILE_FILE="/etc/profile.d/ZZZ99-m-paths.sh"
+
+ENV_PATH="$THIS_DIR"
 
 for k in "$THIS_DIR"/*
 do

@@ -14,7 +14,7 @@ fi
 THIS_FILE="${THIS_PATH##*/}"
 THIS_DIR="$(cd -P -- "${THIS_PATH%/*}" && pwd -P)"
 
-sudo ln -s "$THIS_DIR/m-shell" "/bin/m-shell"
+sudo ln -s "$THIS_DIR/msh" "/bin/msh"
 
 EXIT_CODE="$?"
 
