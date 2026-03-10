@@ -209,7 +209,18 @@ curl "https://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM}/protoco
   -d "client_secret=${KEYCLOAK_CLIENT_SECRET}" \
   -d "grant_type=client_credentials"
 
+# get access token + scope openid
+curl "https://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token" \
+  -d "client_id=${KEYCLOAK_CLIENT_ID_AUTHN_AUTHZ}" \
+  -d "client_secret=${KEYCLOAK_CLIENT_SECRET}" \
+  -d "grant_type=client_credentials" \
+  -d "scope=openid"
+
 export ACCESS_TOKEN="REPLACE_WITH_ACTUAL_ACCESS_TOKEN"
+
+# get user info
+curl "https://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/userinfo" \
+  -H "Authorization: Bearer ${ACCESS_TOKEN}"
 
 # test access token
 curl http://127.0.0.1:9080/auth/ip -H "Authorization: Bearer ${ACCESS_TOKEN}"

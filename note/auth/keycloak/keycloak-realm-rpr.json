@@ -1,6 +1,8 @@
 {
   "id": "2190ff4b-e810-439b-82a3-13a1dd392e26",
   "realm": "rpr",
+  "displayName": "",
+  "displayNameHtml": "",
   "notBefore": 1761733988,
   "defaultSignatureAlgorithm": "RS256",
   "revokeRefreshToken": false,
@@ -803,15 +805,19 @@
     "organization"
   ],
   "browserSecurityHeaders": {
-    "contentSecurityPolicyReportOnly": "",
+    "contentSecurityPolicyReportOnly": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';",
     "xContentTypeOptions": "nosniff",
     "referrerPolicy": "no-referrer",
     "xRobotsTag": "none",
     "xFrameOptions": "SAMEORIGIN",
-    "contentSecurityPolicy": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';",
+    "contentSecurityPolicy": "frame-src 'self'; frame-ancestors 'self' https://apps.rpr-spa.it  https://apisix.rpr-spa.it; object-src 'none';",
     "strictTransportSecurity": "max-age=31536000; includeSubDomains"
   },
   "smtpServer": {},
+  "loginTheme": "rpr",
+  "accountTheme": "",
+  "adminTheme": "",
+  "emailTheme": "",
   "eventsEnabled": false,
   "eventsListeners": [
     "jboss-logging"
@@ -1125,20 +1131,20 @@
           "enabled": [
             "true"
           ],
+          "usernameLDAPAttribute": [
+            "CN"
+          ],
           "bindDn": [
             "CN=Binding LDAP,OU=Servizi Informatici altri utenti,OU=SERVIZI INFORMATICI,DC=rpr,DC=local"
           ],
           "bindCredential": [
             "**********"
           ],
-          "usernameLDAPAttribute": [
-            "CN"
-          ],
           "changedSyncPeriod": [
             "600"
           ],
           "lastSync": [
-            "1770712465"
+            "1773152548"
           ],
           "vendor": [
             "ad"
@@ -1146,11 +1152,11 @@
           "uuidLDAPAttribute": [
             "objectGUID"
           ],
-          "connectionUrl": [
-            "ldap://10.100.0.11:389"
-          ],
           "allowKerberosAuthentication": [
             "false"
+          ],
+          "connectionUrl": [
+            "ldap://10.100.0.11:389"
           ],
           "syncRegistrations": [
             "true"
@@ -2076,17 +2082,21 @@
   "firstBrokerLoginFlow": "first broker login",
   "attributes": {
     "cibaBackchannelTokenDeliveryMode": "poll",
-    "cibaExpiresIn": "120",
     "cibaAuthRequestedUserHint": "login_hint",
-    "oauth2DeviceCodeLifespan": "600",
     "oauth2DevicePollingInterval": "5",
     "clientOfflineSessionMaxLifespan": "0",
     "clientSessionIdleTimeout": "0",
-    "parRequestUriLifespan": "60",
-    "clientSessionMaxLifespan": "0",
     "clientOfflineSessionIdleTimeout": "0",
     "cibaInterval": "5",
-    "realmReusableOtpCode": "false"
+    "realmReusableOtpCode": "false",
+    "cibaExpiresIn": "120",
+    "oauth2DeviceCodeLifespan": "600",
+    "saml.signature.algorithm": "",
+    "parRequestUriLifespan": "60",
+    "clientSessionMaxLifespan": "0",
+    "frontendUrl": "",
+    "acr.loa.map": "{}",
+    "darkMode": "true"
   },
   "keycloakVersion": "26.4.2",
   "userManagedAccessAllowed": false,

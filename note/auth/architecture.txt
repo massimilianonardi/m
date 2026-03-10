@@ -55,6 +55,8 @@ less /usr/local/apisix/logs/error.log
 systemctl restart keycloak
 systemctl status keycloak
 less /m/pkg/keycloak-26.4.2/keycloak-26.4.2/data/log/keycloak.log
+bin/kc.sh --spi-theme-static-max-age=-1 --spi-theme-cache-themes=false --spi-theme-cache-templates=false
+rm-f keycloak/data/tmp
 
 --------------------------------------------------------------------------------
 

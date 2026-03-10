@@ -1,6 +1,8 @@
 {
   "id": "2190ff4b-e810-439b-82a3-13a1dd392e26",
   "realm": "rpr",
+  "displayName": "",
+  "displayNameHtml": "",
   "notBefore": 1761733988,
   "defaultSignatureAlgorithm": "RS256",
   "revokeRefreshToken": false,
@@ -534,11 +536,11 @@
   "webAuthnPolicyPasswordlessExtraOrigins": [],
   "users": [
     {
-      "id": "78a68297-b7c9-44ca-8749-07004734c573",
+      "id": "63a43581-afae-4f15-a290-4585e23325c4",
       "username": "service-account-apisix-authn-authz",
       "emailVerified": false,
       "enabled": true,
-      "createdTimestamp": 1770127928045,
+      "createdTimestamp": 1773149211121,
       "totp": false,
       "serviceAccountClientId": "apisix-authn-authz",
       "disableableCredentialTypes": [],
@@ -749,9 +751,9 @@
       "clientId": "apisix-authn",
       "name": "Apache APISIX Authentication",
       "description": "",
-      "rootUrl": "",
+      "rootUrl": "https://apisix.rpr-spa.it:9443",
       "adminUrl": "",
-      "baseUrl": "",
+      "baseUrl": "https://apisix.rpr-spa.it:9443",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
@@ -856,9 +858,28 @@
       "authenticationFlowBindingOverrides": {},
       "fullScopeAllowed": true,
       "nodeReRegistrationTimeout": -1,
+      "protocolMappers": [
+        {
+          "id": "26992f3f-f25a-4948-9057-0d61b3d010df",
+          "name": "user-realm-role-mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "introspection.token.claim": "true",
+            "multivalued": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "lightweight.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "user-realm-role-token-claim",
+            "jsonType.label": "String"
+          }
+        }
+      ],
       "defaultClientScopes": [
-        "web-origins",
         "service_account",
+        "web-origins",
         "acr",
         "roles",
         "profile",
@@ -878,7 +899,7 @@
         "resources": [
           {
             "name": "Default Resource",
-            "type": "urn:apache-apisix-authz:resources:default",
+            "type": "urn:apisix-authn-authz:resources:default",
             "ownerManagedAccess": false,
             "attributes": {},
             "uris": [
@@ -886,35 +907,32 @@
             ]
           },
           {
-            "name": "ip-resource",
+            "name": "menu-resource",
             "ownerManagedAccess": false,
-            "displayName": "ip-resource",
+            "displayName": "menu-resource",
             "attributes": {},
             "uris": [
-              "ip/*",
-              "/ip",
-              "/ip/*",
-              "ip"
+              "menu"
             ],
             "icon_uri": ""
           },
           {
-            "name": "headers-resource",
+            "name": "gis-resource",
             "ownerManagedAccess": false,
-            "displayName": "headers-resource",
+            "displayName": "gis-resource",
             "attributes": {},
             "uris": [
-              "/headers"
+              "gis"
             ],
             "icon_uri": ""
           },
           {
-            "name": "response-headers-resource",
+            "name": "webgis-resource",
             "ownerManagedAccess": false,
-            "displayName": "response-headers-resource",
+            "displayName": "webgis-resource",
             "attributes": {},
             "uris": [
-              "/response-headers"
+              "webgis"
             ],
             "icon_uri": ""
           }
@@ -931,56 +949,47 @@
             }
           },
           {
-            "name": "user-policy",
-            "description": "",
-            "type": "user",
+            "name": "Default Permission",
+            "description": "A permission that applies to the default resource type",
+            "type": "resource",
             "logic": "POSITIVE",
             "decisionStrategy": "UNANIMOUS",
             "config": {
-              "users": "[\"massimiliano nardi\"]"
+              "defaultResourceType": "urn:apisix-authn-authz:resources:default",
+              "applyPolicies": "[\"Default Policy\"]"
             }
           },
           {
-            "name": "user-negative-policy",
-            "description": "",
-            "type": "user",
-            "logic": "NEGATIVE",
-            "decisionStrategy": "UNANIMOUS",
-            "config": {
-              "users": "[\"massimiliano nardi\"]"
-            }
-          },
-          {
-            "name": "response-headers-resource-permission",
+            "name": "menu-permission",
             "description": "",
             "type": "resource",
             "logic": "POSITIVE",
             "decisionStrategy": "UNANIMOUS",
             "config": {
-              "resources": "[\"response-headers-resource\"]",
-              "applyPolicies": "[\"user-policy\"]"
+              "resources": "[\"menu-resource\"]",
+              "applyPolicies": "[\"Default Policy\"]"
             }
           },
           {
-            "name": "ip-permission",
+            "name": "gis-permission",
             "description": "",
             "type": "resource",
             "logic": "POSITIVE",
             "decisionStrategy": "UNANIMOUS",
             "config": {
-              "resources": "[\"ip-resource\"]",
-              "applyPolicies": "[\"user-policy\"]"
+              "resources": "[\"gis-resource\"]",
+              "applyPolicies": "[\"Default Policy\"]"
             }
           },
           {
-            "name": "headers-permission",
+            "name": "webgis-permission",
             "description": "",
             "type": "resource",
             "logic": "POSITIVE",
             "decisionStrategy": "UNANIMOUS",
             "config": {
-              "resources": "[\"headers-resource\"]",
-              "applyPolicies": "[\"user-negative-policy\"]"
+              "resources": "[\"webgis-resource\"]",
+              "applyPolicies": "[\"Default Policy\"]"
             }
           }
         ],
@@ -2053,15 +2062,19 @@
     "organization"
   ],
   "browserSecurityHeaders": {
-    "contentSecurityPolicyReportOnly": "",
+    "contentSecurityPolicyReportOnly": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';",
     "xContentTypeOptions": "nosniff",
     "referrerPolicy": "no-referrer",
     "xRobotsTag": "none",
     "xFrameOptions": "SAMEORIGIN",
-    "contentSecurityPolicy": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';",
+    "contentSecurityPolicy": "frame-src 'self'; frame-ancestors 'self' https://apps.rpr-spa.it  https://apisix.rpr-spa.it; object-src 'none';",
     "strictTransportSecurity": "max-age=31536000; includeSubDomains"
   },
   "smtpServer": {},
+  "loginTheme": "rpr",
+  "accountTheme": "",
+  "adminTheme": "",
+  "emailTheme": "",
   "eventsEnabled": false,
   "eventsListeners": [
     "jboss-logging"
@@ -2345,11 +2358,11 @@
           ]
         },
         "config": {
-          "pagination": [
-            "false"
-          ],
           "fullSyncPeriod": [
             "6000"
+          ],
+          "pagination": [
+            "false"
           ],
           "connectionTrace": [
             "false"
@@ -2357,11 +2370,11 @@
           "startTls": [
             "false"
           ],
-          "usersDn": [
-            "DC=rpr,DC=local"
-          ],
           "connectionPooling": [
             "false"
+          ],
+          "usersDn": [
+            "DC=rpr,DC=local"
           ],
           "cachePolicy": [
             "NO_CACHE"
@@ -2378,17 +2391,17 @@
           "usernameLDAPAttribute": [
             "CN"
           ],
-          "bindCredential": [
-            "**********"
-          ],
           "bindDn": [
             "CN=Binding LDAP,OU=Servizi Informatici altri utenti,OU=SERVIZI INFORMATICI,DC=rpr,DC=local"
+          ],
+          "bindCredential": [
+            "**********"
           ],
           "changedSyncPeriod": [
             "600"
           ],
           "lastSync": [
-            "1771415120"
+            "1773152548"
           ],
           "vendor": [
             "ad"
@@ -2396,11 +2409,11 @@
           "uuidLDAPAttribute": [
             "objectGUID"
           ],
-          "connectionUrl": [
-            "ldap://10.100.0.11:389"
-          ],
           "allowKerberosAuthentication": [
             "false"
+          ],
+          "connectionUrl": [
+            "ldap://10.100.0.11:389"
           ],
           "syncRegistrations": [
             "true"
@@ -3326,17 +3339,21 @@
   "firstBrokerLoginFlow": "first broker login",
   "attributes": {
     "cibaBackchannelTokenDeliveryMode": "poll",
-    "cibaExpiresIn": "120",
     "cibaAuthRequestedUserHint": "login_hint",
-    "oauth2DeviceCodeLifespan": "600",
     "oauth2DevicePollingInterval": "5",
     "clientOfflineSessionMaxLifespan": "0",
     "clientSessionIdleTimeout": "0",
-    "parRequestUriLifespan": "60",
-    "clientSessionMaxLifespan": "0",
     "clientOfflineSessionIdleTimeout": "0",
     "cibaInterval": "5",
-    "realmReusableOtpCode": "false"
+    "realmReusableOtpCode": "false",
+    "cibaExpiresIn": "120",
+    "oauth2DeviceCodeLifespan": "600",
+    "saml.signature.algorithm": "",
+    "parRequestUriLifespan": "60",
+    "clientSessionMaxLifespan": "0",
+    "frontendUrl": "",
+    "acr.loa.map": "{}",
+    "darkMode": "true"
   },
   "keycloakVersion": "26.4.2",
   "userManagedAccessAllowed": false,

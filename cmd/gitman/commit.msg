@@ -1,1 +1,1 @@
-pkg geoserver
+note auth

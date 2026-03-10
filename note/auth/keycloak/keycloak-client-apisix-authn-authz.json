@@ -11,9 +11,9 @@
   "clientAuthenticatorType": "client-secret",
   "secret": "WiLDWAtS9FMMjSzAP7fElIzvHn9ftrTU",
   "redirectUris": [
+    "https://dev.rpr-spa.it:9443/*",
     "https://apps.rpr-spa.it/*",
-    "https://apisix.rpr-spa.it:9443/*",
-    "https://dev.rpr-spa.it:9443/*"
+    "https://apisix.rpr-spa.it:9443/*"
   ],
   "webOrigins": [
     "+"
@@ -30,26 +30,40 @@
   "frontchannelLogout": true,
   "protocol": "openid-connect",
   "attributes": {
-    "client.secret.creation.time": "1761721443",
-    "standard.token.exchange.enabled": "false",
-    "frontchannel.logout.session.required": "true",
-    "post.logout.redirect.uris": "",
-    "oauth2.device.authorization.grant.enabled": "false",
-    "use.jwks.url": "false",
-    "backchannel.logout.revoke.offline.tokens": "false",
     "realm_client": "false",
     "oidc.ciba.grant.enabled": "false",
+    "client.secret.creation.time": "1761721443",
     "backchannel.logout.session.required": "true",
+    "standard.token.exchange.enabled": "false",
+    "frontchannel.logout.session.required": "true",
+    "oauth2.device.authorization.grant.enabled": "false",
     "display.on.consent.screen": "false",
     "pkce.code.challenge.method": "S256",
-    "dpop.bound.access.tokens": "false",
-    "login_theme": "",
-    "consent.screen.text": "",
-    "frontchannel.logout.url": ""
+    "use.jwks.url": "false",
+    "backchannel.logout.revoke.offline.tokens": "false",
+    "dpop.bound.access.tokens": "false"
   },
   "authenticationFlowBindingOverrides": {},
   "fullScopeAllowed": true,
   "nodeReRegistrationTimeout": -1,
+  "protocolMappers": [
+    {
+      "name": "user-realm-role-mapper",
+      "protocol": "openid-connect",
+      "protocolMapper": "oidc-usermodel-realm-role-mapper",
+      "consentRequired": false,
+      "config": {
+        "introspection.token.claim": "true",
+        "multivalued": "true",
+        "userinfo.token.claim": "true",
+        "id.token.claim": "true",
+        "lightweight.claim": "true",
+        "access.token.claim": "true",
+        "claim.name": "user-realm-role-token-claim",
+        "jsonType.label": "String"
+      }
+    }
+  ],
   "defaultClientScopes": [
     "service_account",
     "web-origins",
