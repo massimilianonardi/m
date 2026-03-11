@@ -1,1 +1,1 @@
-note auth
+pkg geoserver.conf

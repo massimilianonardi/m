@@ -194,7 +194,7 @@ create_authorized_route "route-authz-response-headers" "authz/response-headers" 
 #create_service "service-https-apache2" "https" "127.0.0.1:443"
 #create_service "service-https-webgis-test" "https" "webgisrpr.rpr-spa.it:443"
 create_service "service-https-apps-html" "https" "apps.rpr-spa.it:443"
-create_service "service-https-gis" "https" "100.200.0.19:443"
+create_service "service-https-gis" "https" "gis.rpr-spa.it:443"
 
 create_authorized_route "route-authz-menu" "authz/menu" "authz" "menu-resource" "service-https-apps-html"
 create_authorized_route "route-authz-webgis" "authz/webgis" "authz" "webgis-resource" "service-https-apps-html"
