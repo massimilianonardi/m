@@ -6,12 +6,26 @@ sync all servers with new m sources
 -> keycloak userinfo + roles ...TO REFINE
 keycloak change totp provider key
 geoserver keycloak auth
-geoserver no auth
-geoserver headers or url basic auth integrated into apisix route
+geoserver no auth -> web admin > Authentication > Filter Chains > disable security for "web" filter (and any other)
+geoserver paths/routes into apisix for admin authorization and specific workspace/layer authorization
 apisix installer
 snapshot/bak 26
 renew 26
 think about portale
+git bare repositories rework
 gitlab install
 improve rsudo-jobs
+rsudo file manager
+gis edit:
+- QGIS/ArcGIS direct access to db or filesystem
+- QGIS/ArcGIS access by geoserver wfs-t direct access to filesystem
+- db versioning + filesystem versioning
+gis improve:
+- geOrchestra: https://www.georchestra.org/software.html
+- GeoNetwork: https://geonetwork-opensource.org/
+- GeoFence: https://github.com/geoserver/geofence
+- GeoWebCache: https://geowebcache.osgeo.org/
+- MapStore: https://docs.mapstore.geosolutionsgroup.com/en/latest/
+- GeoNode: https://geonode.org/
+- GeoPrisma: https://geoprisma.mapgears.com/site/index.php
 --------------------------------------------------------------------------------
