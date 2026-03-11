@@ -3,9 +3,13 @@
 -> keycloak auth page rpr style
 -> keycloak userinfo + roles ...TO REFINE
 keycloak change totp provider key
+keycloak backup restore + disaster recovery
 geoserver keycloak auth
 -> geoserver no auth -> web admin > Authentication > Filter Chains > disable security for "web" filter (and any other)
+-> geoserver behind proxy -> PROXY_BASE_URL + GEOSERVER_CSRF_DISABLED
+geoserver behind apisix custom path
 geoserver paths/routes into apisix for admin authorization and specific workspace/layer authorization
+gis: allow apisix, deny all
 apisix installer
 snapshot/bak 26
 renew 26
@@ -13,6 +17,8 @@ think about portale
 git bare repositories rework
 gitlab install
 improve fs-enc-dec: pure command line + separated menu + chmod +x???
+encdec: file enc / dec
+encdec-edit: on the fly decode + nano edit + encode and delete temp (NB keep original file permissions and execution flag)
 improve rsudo-jobs eg. rsm: do same command on multiple rsn (eg. rsm "apisix keycloak" execute ls)
 rsudo file manager
 gis edit:
