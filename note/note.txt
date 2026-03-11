@@ -1,12 +1,10 @@
 
 --------------------------------------------------------------------------------
-import new webgis db and geoserver data on 19
-sync all servers with new m sources
 -> keycloak auth page rpr style
 -> keycloak userinfo + roles ...TO REFINE
 keycloak change totp provider key
 geoserver keycloak auth
-geoserver no auth -> web admin > Authentication > Filter Chains > disable security for "web" filter (and any other)
+-> geoserver no auth -> web admin > Authentication > Filter Chains > disable security for "web" filter (and any other)
 geoserver paths/routes into apisix for admin authorization and specific workspace/layer authorization
 apisix installer
 snapshot/bak 26
@@ -14,7 +12,8 @@ renew 26
 think about portale
 git bare repositories rework
 gitlab install
-improve rsudo-jobs
+improve fs-enc-dec: pure command line + separated menu + chmod +x???
+improve rsudo-jobs eg. rsm: do same command on multiple rsn (eg. rsm "apisix keycloak" execute ls)
 rsudo file manager
 gis edit:
 - QGIS/ArcGIS direct access to db or filesystem
