@@ -12,8 +12,9 @@ geoserver paths/routes into apisix for admin authorization and specific workspac
 gis: allow apisix, deny all
 apisix installer
 snapshot/bak 26
-renew 26
-think about portale
+renew 26 with new data structure, but old app and auth (try to develop a final rpr-mnode-full?)
+think about portale, upgrade: condono, ai infante, giubileo, municipio7, tevere, webgis, cpq_2025, osp, vas, vvss (servizi) -> layers conf + layout, searches
+app.rpr-spa.it upgrade: patrimonio 4785, patrimonio scan, simu scan
 git bare repositories rework
 gitlab install
 improve fs-enc-dec: pure command line + separated menu + chmod +x???
