@@ -216,14 +216,33 @@ curl "https://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM}/protoco
   -d "grant_type=client_credentials" \
   -d "scope=openid"
 
+export KEYCLOAK_USER_NAME="admin"
+export KEYCLOAK_USER_PASS="admin"
+curl "https://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token" \
+  -d "client_id=${KEYCLOAK_CLIENT_ID_AUTHN_AUTHZ}" \
+  -d "client_secret=${KEYCLOAK_CLIENT_SECRET}" \
+  -d "username=${KEYCLOAK_USER_NAME}" \
+  -d "password=${KEYCLOAK_USER_PASS}" \
+  -d "grant_type=password" \
+  -d "scope=openid email profile"
+
 export ACCESS_TOKEN="REPLACE_WITH_ACTUAL_ACCESS_TOKEN"
 
 # get user info
 curl "https://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/userinfo" \
-  -H "Authorization: Bearer ${ACCESS_TOKEN}"
+  -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+  -d "scope=openid email profile"
 
 # test access token
 curl http://127.0.0.1:9080/auth/ip -H "Authorization: Bearer ${ACCESS_TOKEN}"
+
+
+export ACCESS_TOKEN=$(curl -X POST 'http://localhost:10001/auth/realms/master/protocol/openid-connect/token' \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=admin" \
+  -d 'password=secret' \
+  -d 'grant_type=password' \
+  -d 'client_id=admin-cli' | jq -r '.access_token')
 
 
 

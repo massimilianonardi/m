@@ -150,7 +150,7 @@ create_authorized_route()
         "client_secret": "'"${KEYCLOAK_CLIENT_SECRET}"'",
         "discovery": "'"${AUTHN_DISCOVERY_URL}"'",
         "redirect_uri": "'"${AUTHN_REDIRECT_BASE_URL}"'/'"${URI}"'/callback",
-        "scope": "openid profile",
+        "scope": "openid email profile",
         "use_pkce": true,
         "bearer_only": false,
         "access_token_in_authorization_header": true,

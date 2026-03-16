@@ -1,19 +1,20 @@
 
 --------------------------------------------------------------------------------
 -> keycloak auth page rpr style
--> keycloak userinfo + roles ...TO REFINE
+!!! keycloak userinfo + roles ...TO REFINE
 keycloak change totp provider key
 keycloak backup restore + disaster recovery
-geoserver keycloak auth
+-> (NOT NEEDED ANYMORE) geoserver keycloak auth
 -> geoserver no auth -> web admin > Authentication > Filter Chains > disable security for "web" filter (and any other)
 -> geoserver behind proxy -> PROXY_BASE_URL + GEOSERVER_CSRF_DISABLED
 geoserver behind apisix custom path
 geoserver paths/routes into apisix for admin authorization and specific workspace/layer authorization
 gis: allow apisix, deny all
 apisix installer
-snapshot/bak 26
-renew 26 with new data structure, but old app and auth (try to develop a final rpr-mnode-full?)
+-> snapshot/bak 26
+-> renew 26 with new data structure, but old app and auth (try to develop a final rpr-mnode-full?)
 think about portale, upgrade: condono, ai infante, giubileo, municipio7, tevere, webgis, cpq_2025, osp, vas, vvss (servizi) -> layers conf + layout, searches
+portale: webgis/bestgis, cpq/cpq, webgiscpq/???, webgisvas/vas@2024, regionelazio/webgis, municipio7/municipio7, condono/abuso, osp/osp, tevere/tevere
 app.rpr-spa.it upgrade: patrimonio 4785, patrimonio scan, simu scan
 git bare repositories rework
 gitlab install
