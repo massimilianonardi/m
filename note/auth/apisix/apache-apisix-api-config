@@ -208,3 +208,4 @@ create_authorized_route "route-authz-webgis-giubileo" "authz/webgis-giubileo" "a
 create_authorized_route "route-authz-webgis-condono" "authz/webgis-condono" "authz" "webgis-resource" "service-https-apps-html"
 create_authorized_route "route-authz-webgis-infante" "authz/webgis-infante" "authz" "webgis-resource" "service-https-apps-html"
 create_authorized_route "route-authz-gis" "authz/gis" "authz/gis" "gis-resource" "service-https-gis"
+create_authorized_route "route-authz-gis-admin" "authz/gis/geoserver/web" "authz/gis" "geoserver-admin-resource" "service-https-gis"
