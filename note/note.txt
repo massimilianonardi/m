@@ -28,6 +28,8 @@ gis edit:
 - QGIS/ArcGIS access by geoserver wfs-t direct access to filesystem
 - db versioning + filesystem versioning
 gis improve:
+- production env: https://docs.geoserver.org/stable/en/user/production/index.html
+- geoserver cloud: https://geoserver.org/geoserver-cloud/
 - geOrchestra: https://www.georchestra.org/software.html
 - GeoNetwork: https://geonetwork-opensource.org/
 - GeoFence: https://github.com/geoserver/geofence
