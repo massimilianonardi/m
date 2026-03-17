@@ -1,1 +1,1 @@
-pkg geoserver-conf
+pkg geoserver-conf custom deploy path
