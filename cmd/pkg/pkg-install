@@ -279,8 +279,20 @@ install_symlinks()
     do
       symlink="${k%%=*}"
       target="${k#*=}"
-      rm -f "$LINKS_ROOT_DIR/$symlink"
-      ln -s "$PKG_INST_DEEPEST_DIR/$target" "$LINKS_ROOT_DIR/$symlink"
+      if [ "$APP" = "true" ]
+      then
+        rm -f "$APPS_ROOT_DIR/$symlink"
+        # ln -s "$PKG_INST_DEEPEST_DIR/$target" "$APPS_ROOT_DIR/$symlink"
+        cat << EOF > "$APPS_ROOT_DIR/$symlink"
+#!/bin/sh
+export APP_NAME="$PKG_NAME"
+pkg run "$PKG_INST_DEEPEST_DIR/$target" "\$@"
+EOF
+        sudo chmod +x "$APPS_ROOT_DIR/$symlink"
+      else
+        rm -f "$LINKS_ROOT_DIR/$symlink"
+        ln -s "$PKG_INST_DEEPEST_DIR/$target" "$LINKS_ROOT_DIR/$symlink"
+      fi
 
       if [ -e "$PKG_INST_DEEPEST_DIR/$target" ] && [ ! -x "$PKG_INST_DEEPEST_DIR/$target" ]
       then
@@ -341,11 +353,11 @@ install()
 
 #-------------------------------------------------------------------------------
 
-if [ "$#" -lt "8" ]
-then
-  echo "some args are null, required: pkg-name, pkg-ver, pkg-inst-conf-dir, pkg-inst-dir, symlinks-dir, libs-symlink-dir, conf-dir, separated-conf-dir"
-  exit 1
-fi
+# if [ "$#" -lt "8" ]
+# then
+#   echo "some args are null, required: pkg-name, pkg-ver, pkg-inst-conf-dir, pkg-inst-dir, symlinks-dir, libs-symlink-dir, conf-dir, separated-conf-dir"
+#   exit 1
+# fi
 
 PKG_NAME="$1"
 shift
@@ -353,23 +365,23 @@ shift
 PKG_VER="$1"
 shift
 
-PKG_INST_CONF_ROOT_DIR="$1"
-shift
-
-PKG_INST_ROOT_DIR="$1"
-shift
-
-LINKS_ROOT_DIR="$1"
-shift
-
-LIBS_ROOT_DIR="$1"
-shift
-
-CONF_ROOT_DIR="$1"
-shift
-
-MOVED_CONF_ROOT_DIR="$1"
-shift
+# PKG_INST_CONF_ROOT_DIR="$1"
+# shift
+#
+# PKG_INST_ROOT_DIR="$1"
+# shift
+#
+# LINKS_ROOT_DIR="$1"
+# shift
+#
+# LIBS_ROOT_DIR="$1"
+# shift
+#
+# CONF_ROOT_DIR="$1"
+# shift
+#
+# MOVED_CONF_ROOT_DIR="$1"
+# shift
 
 
 
@@ -400,6 +412,16 @@ then
 fi
 mkdir -p "$LINKS_ROOT_DIR"
 LINKS_ROOT_DIR="$(cd -- "$LINKS_ROOT_DIR" && pwd)"
+
+
+
+if [ -z "$APPS_ROOT_DIR" ]
+then
+  echo "$0 - APPS_ROOT_DIR cannot be null"
+  exit 1
+fi
+mkdir -p "$APPS_ROOT_DIR"
+APPS_ROOT_DIR="$(cd -- "$APPS_ROOT_DIR" && pwd)"
 
 
 
