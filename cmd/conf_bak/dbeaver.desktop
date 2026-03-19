@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=DBeaver
+Exec=app dbeaver run %F
+Terminal=false
+Type=Application
+Icon=/m/app/dbeaver/latest/dbeaver.png
+StartupNotify=true
+StartupWMClass=dbeaver

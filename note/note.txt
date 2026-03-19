@@ -4,7 +4,8 @@ BACKUP PULSAR CONF and DBEAVER CONF!!!
 pkg install implement move and link conf from home (with support of files not yet created!)
 pkg install manage desktop files icon path
 pkg uninstall pkg, bin links, app scripts, desktop files, eventually conf, home
-review m dirs and test m install from scratch online
+review m dirs and test m install from scratch online (with certs support)
+make madedit replace simple text editor, firefox and chromium pkg installers, find best file manager alternative
 
 -> keycloak auth page rpr style
 !!! keycloak userinfo + roles

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=Lite XL
+Exec=app litexl run %F
+Terminal=false
+Type=Application
+StartupNotify=true
+StartupWMClass=lite-xl

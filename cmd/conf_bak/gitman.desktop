@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=gitman
+Exec=gitman
+Terminal=true
+Type=Application
+StartupNotify=true
+StartupWMClass=gitman

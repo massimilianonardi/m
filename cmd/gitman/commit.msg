@@ -1,1 +1,1 @@
-note + conf bak (pulsar, dbeaver)
+note
