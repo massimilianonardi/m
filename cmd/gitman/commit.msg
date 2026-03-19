@@ -1,1 +1,1 @@
-note
+pkg dbeaver update conf
