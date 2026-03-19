@@ -1,0 +1,1 @@
+{"resources":{"Scripts/Script-1.sql":{"default-datasource":"postgres-jdbc-193011b0099-149d87679ff412c3","default-catalog":"WEBGIS","default-schema":"public"},"Scripts/Script.sql":{"default-schema":"public","default-datasource":"postgres-jdbc-193012052fd-7892e1a1ebc343c","default-catalog":"system"}}}

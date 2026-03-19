@@ -1,0 +1,177 @@
+2026-03-19 12:54:20.094 - DBeaver 26.0.0.202603011816 is starting
+2026-03-19 12:54:20.095 - OS: Linux 6.17.0-19-generic (amd64)
+2026-03-19 12:54:20.095 - Java version: 21.0.8 by Eclipse Adoptium (64bit)
+2026-03-19 12:54:20.096 - Install path: '/m/pkg/dbeaver-26.0.0/dbeaver'
+2026-03-19 12:54:20.096 - Instance path: 'file:/home/mnardi/.local/share/DBeaverData/workspace6/'
+2026-03-19 12:54:20.097 - Memory available 64Mb/1024Mb
+2026-03-19 12:54:20.101 - Initialize desktop platform...
+2026-03-19 12:54:20.227 - BounceCastle bundle found. Use JCE provider BC
+> Start Core File Systems [org.eclipse.core.filesystem 1.11.400.v20251107-0507]
+> Start Core Resource Management [org.eclipse.core.resources 3.23.100.v20251106-1705]
+> Start DBeaver UI Navigator [org.jkiss.dbeaver.ui.navigator 1.0.174.202603011816]
+> Start Supporto principale per i team [org.eclipse.team.core 3.10.900.v20251104-0924]
+> Start Equinox Java Authentication and Authorization Service (JAAS) [org.eclipse.equinox.security 1.4.700.v20250622-1644]
+> Start Interfaccia Gestione Connessione Internet [org.eclipse.ui.net 1.5.500.v20250611-0855]
+> Start Internet Connection Management [org.eclipse.core.net 1.5.800.v20250613-1119]
+2026-03-19 12:54:20.392 - Proxy service 'org.eclipse.core.net.proxy.IProxyService' loaded
+2026-03-19 12:54:20.403 - Initialize base platform...
+2026-03-19 12:54:20.421 - Schedule collected statistics send
+2026-03-19 12:54:20.422 - Platform initialized (320ms)
+2026-03-19 12:54:20.433 - Create display
+2026-03-19 12:54:20.672 - Starting instance server at http://localhost:45179
+2026-03-19 12:54:20.678 - Run workbench
+> Start Eclipse e4 Workbench SWT [org.eclipse.e4.ui.workbench.swt 0.17.1000.v20251023-0611]
+> Start Eclipse Application Services [org.eclipse.e4.core.services 2.5.300.v20251112-1253]
+> Start Eclipse UI Application Services [org.eclipse.e4.ui.services 1.6.600.v20251023-1358]
+> Start Eclipse e4 Progress View [org.eclipse.e4.ui.progress 0.4.900.v20251023-1511]
+> Start Eclipse Bindings Support [org.eclipse.e4.ui.bindings 0.14.800.v20250916-0937]
+> Start Eclipse e4 core commands [org.eclipse.e4.core.commands 1.1.700.v20250916-0927]
+> Start EMF XML/XMI Persistence [org.eclipse.emf.ecore.xmi 2.39.0.v20250910-1205]
+> Start Eclipse CSS SWT Theme Support [org.eclipse.e4.ui.css.swt.theme 0.14.600.v20251023-0615]
+> Start Eclipse e4 Workbench Add-ons [org.eclipse.e4.ui.workbench.addons.swt 1.5.900.v20251007-0832]
+> Start Eclipse e4 Workbench SWT Renderer [org.eclipse.e4.ui.workbench.renderers.swt 0.16.1000.v20251114-0005]
+> Start Eclipse Dependency Injection Extensions [org.eclipse.e4.core.di.extensions 0.18.300.v20240413-1529]
+> Start DBeaver AI Model [org.jkiss.dbeaver.model.ai 2.0.17.202603011816]
+> Start DBeaver AI UI [org.jkiss.dbeaver.ui.ai 1.0.76.202603011816]
+> Start Eclipse CSS SWT Support [org.eclipse.e4.ui.css.swt 0.15.700.v20251023-1511]
+> Start JFace [org.eclipse.jface.text 3.29.0.v20251112-0859]
+2026-03-19 12:54:21.868 - Configure workbench window
+> Start DBeaver SQL Model [org.jkiss.dbeaver.model.sql 1.0.164.202603011816]
+2026-03-19 12:54:21.993 - Total database drivers: 127 (127)
+> Start Parte centrale del sistema della Guida [org.eclipse.help 3.10.600.v20250613-0437]
+2026-03-19 12:54:22.061 - Create actions
+2026-03-19 12:54:22.385 - Initialize workbench window
+2026-03-19 12:54:22.401 - Finish initialization
+> Start Editor di testo predefinito [org.eclipse.ui.editors 3.20.200.v20251125-0939]
+> Start Workbench [org.eclipse.ui.workbench.texteditor 3.19.400.v20251105-0815]
+> Start DBeaver UI Editors - Data [org.jkiss.dbeaver.ui.editors.data 1.0.174.202603011816]
+> Start DBeaver UI Editors - SQL [org.jkiss.dbeaver.ui.editors.sql 1.0.174.202603011816]
+Warning: NLS unused message: FindReplace_RegExCheckbox_label in: org.eclipse.ui.texteditor.EditorMessages
+Warning: NLS unused message: FindReplace_WrapCheckBox_label in: org.eclipse.ui.texteditor.EditorMessages
+Warning: NLS unused message: FindReplace_IncrementalCheckBox_label in: org.eclipse.ui.texteditor.EditorMessages
+Warning: NLS unused message: FindReplace_Options in: org.eclipse.ui.texteditor.EditorMessages
+Warning: NLS unused message: FindReplace_ReplaceSelectionButton_label in: org.eclipse.ui.texteditor.EditorMessages
+Warning: NLS unused message: FindReplace_SelectedRangeRadioButton_label in: org.eclipse.ui.texteditor.EditorMessages
+Warning: NLS unused message: FindReplace_SelectAllButton_label in: org.eclipse.ui.texteditor.EditorMessages
+Warning: NLS unused message: FindReplace_GlobalRadioButton_label in: org.eclipse.ui.texteditor.EditorMessages
+Warning: NLS unused message: FindReplace_WholeWordCheckBox_label in: org.eclipse.ui.texteditor.EditorMessages
+Warning: NLS unused message: FindReplace_ReplaceFindButton_label in: org.eclipse.ui.texteditor.EditorMessages
+Warning: NLS unused message: FindReplace_BackwardRadioButton_label in: org.eclipse.ui.texteditor.EditorMessages
+Warning: NLS unused message: FindReplace_CloseButton_label in: org.eclipse.ui.texteditor.EditorMessages
+Warning: NLS unused message: FindReplace_Replace_label in: org.eclipse.ui.texteditor.EditorMessages
+Warning: NLS unused message: FindReplace_CaseCheckBox_label in: org.eclipse.ui.texteditor.EditorMessages
+Warning: NLS unused message: FindReplace_Status_replacements_label in: org.eclipse.ui.texteditor.EditorMessages
+Warning: NLS unused message: FindReplace_title in: org.eclipse.ui.texteditor.EditorMessages
+Warning: NLS unused message: FindReplace_Direction in: org.eclipse.ui.texteditor.EditorMessages
+Warning: NLS unused message: FindReplace_ReplaceAllButton_label in: org.eclipse.ui.texteditor.EditorMessages
+Warning: NLS unused message: FindReplace_Scope in: org.eclipse.ui.texteditor.EditorMessages
+Warning: NLS unused message: FindReplace_Find_label in: org.eclipse.ui.texteditor.EditorMessages
+Warning: NLS unused message: FindReplace_ForwardRadioButton_label in: org.eclipse.ui.texteditor.EditorMessages
+Warning: NLS unused message: FindReplace_FindNextButton_label in: org.eclipse.ui.texteditor.EditorMessages
+> Start DBeaver SQL Terminal [org.jkiss.dbeaver.ui.editors.sql.terminal 1.0.150.202603011816]
+> Start Core Compare Support [org.eclipse.compare.core 3.8.800.v20250718-1505]
+> Start DBeaver Sample Database [org.jkiss.dbeaver.ui.config.sample 1.0.211.202603011816]
+> Start DBeaver Dashboard UI [org.jkiss.dbeaver.ui.dashboard 1.0.171.202603011816]
+> Start GEF Classic Draw2d [org.eclipse.draw2d 3.21.0.202512020742]
+> Start GEF Classic GEF (MVC) [org.eclipse.gef 3.24.0.202511201732]
+> Start DBeaver ERD UI [org.jkiss.dbeaver.ui.editors.erd 3.1.15.202603011816]
+> Start DBeaver ERD Model [org.jkiss.dbeaver.model.erd 1.1.15.202603011816]
+> Start DBeaver JDBC Model [org.jkiss.dbeaver.model.jdbc 1.0.67.202603011816]
+> Start DBeaver PostgreSQL Model [org.jkiss.dbeaver.ext.postgresql 2.1.247.202603011816]
+> Start Console [org.eclipse.ui.console 3.15.0.v20251113-1013]
+> Start Debug principale [org.eclipse.debug.core 3.23.200.v20251107-0507]
+2026-03-19 12:54:48.331 - Connect with 'portale_test_PSN' (postgres-jdbc-193011b0099-149d87679ff412c3)
+> Start DBeaver Tasks - Native Tools UI [org.jkiss.dbeaver.tasks.native.ui 1.0.152.202603011816]
+> Start DBeaver PostgreSQL UI [org.jkiss.dbeaver.ext.postgresql.ui 1.0.150.202603011816]
+> Start DBeaver Tasks - General UI [org.jkiss.dbeaver.tasks.ui 1.0.152.202603011816]
+> Start DBeaver GIS Support [org.jkiss.dbeaver.data.gis 1.0.198.202603011816]
+2026-03-19 12:54:48.703 - Execution context opened (portale_test_PSN; Main <postgres>; 0)
+2026-03-19 12:54:48.708 - Initiate connection to PostgreSQL database [postgres@10.200.0.26] for Main <postgres>
+2026-03-19 12:54:48.848 - Execution context opened (portale_test_PSN; Metadata <postgres>; 1)
+2026-03-19 12:54:48.848 - Initiate connection to PostgreSQL database [postgres@10.200.0.26] for Metadata <postgres>
+2026-03-19 12:54:49.042 - Connected (postgres-jdbc-193011b0099-149d87679ff412c3, PostgreSQL JDBC Driver [42.7.2])
+2026-03-19 12:54:49.110 - No execution context within database instance
+2026-03-19 12:54:49.111 - Execution context opened (portale_test_PSN; SQLEditor <Untitled.sql>; 2)
+2026-03-19 12:54:49.112 - Initiate connection to PostgreSQL database [WEBGIS@10.200.0.26] for SQLEditor <Untitled.sql>
+2026-03-19 12:54:49.192 - Execution context opened (portale_test_PSN; Main <WEBGIS>; 3)
+2026-03-19 12:54:49.194 - Initiate connection to PostgreSQL database [WEBGIS@10.200.0.26] for Main <WEBGIS>
+2026-03-19 12:54:49.299 - Execution context opened (portale_test_PSN; Metadata <WEBGIS>; 4)
+2026-03-19 12:54:49.299 - Initiate connection to PostgreSQL database [WEBGIS@10.200.0.26] for Metadata <WEBGIS>
+> Start org.jkiss.bundle.gis [org.jkiss.bundle.gis 2.0.8]
+2026-03-19 12:58:36.547 - Unsupported PG constraint type: n
+2026-03-19 12:58:55.610 - Execution context closed (portale_test_PSN, 2)
+2026-03-19 12:58:55.800 - Dispose navigator model
+2026-03-19 12:58:55.891 - DBeaver is stopping
+2026-03-19 12:58:55.896 - Stop instance server
+2026-03-19 12:58:56.899 - Instance server has been stopped
+2026-03-19 12:58:56.899 - DBeaver shutdown completed
+2026-03-19 12:58:56.932 - Shutdown desktop platform...
+2026-03-19 12:58:56.933 - Send collected statistics
+2026-03-19 12:58:56.935 - Open [https://stats.dbeaver.com/send-statistics?session=bcc0591b-498c-4bf8-a909-e921e9309f99&time=1773921265]
+2026-03-19 12:58:57.228 - Error sending statistics file '/home/mnardi/.local/share/DBeaverData/workspace6/.metadata/.activity-logs/1773921265_bcc0591b-498c-4bf8-a909-e921e9309f99.log'.
+javax.net.ssl.SSLHandshakeException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+	at java.base/sun.security.ssl.Alert.createSSLException(Unknown Source)
+	at java.base/sun.security.ssl.TransportContext.fatal(Unknown Source)
+	at java.base/sun.security.ssl.TransportContext.fatal(Unknown Source)
+	at java.base/sun.security.ssl.TransportContext.fatal(Unknown Source)
+	at java.base/sun.security.ssl.CertificateMessage$T13CertificateConsumer.checkServerCerts(Unknown Source)
+	at java.base/sun.security.ssl.CertificateMessage$T13CertificateConsumer.onConsumeCertificate(Unknown Source)
+	at java.base/sun.security.ssl.CertificateMessage$T13CertificateConsumer.consume(Unknown Source)
+	at java.base/sun.security.ssl.SSLHandshake.consume(Unknown Source)
+	at java.base/sun.security.ssl.HandshakeContext.dispatch(Unknown Source)
+	at java.base/sun.security.ssl.HandshakeContext.dispatch(Unknown Source)
+	at java.base/sun.security.ssl.TransportContext.dispatch(Unknown Source)
+	at java.base/sun.security.ssl.SSLTransport.decode(Unknown Source)
+	at java.base/sun.security.ssl.SSLSocketImpl.decode(Unknown Source)
+	at java.base/sun.security.ssl.SSLSocketImpl.readHandshakeRecord(Unknown Source)
+	at java.base/sun.security.ssl.SSLSocketImpl.startHandshake(Unknown Source)
+	at java.base/sun.security.ssl.SSLSocketImpl.startHandshake(Unknown Source)
+	at java.base/sun.net.www.protocol.https.HttpsClient.afterConnect(Unknown Source)
+	at java.base/sun.net.www.protocol.https.AbstractDelegateHttpsURLConnection.connect(Unknown Source)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getOutputStream0(Unknown Source)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getOutputStream(Unknown Source)
+	at java.base/sun.net.www.protocol.https.HttpsURLConnectionImpl.getOutputStream(Unknown Source)
+	at org.jkiss.dbeaver.ui.statistics.StatisticsTransmitter.sendLogFile(StatisticsTransmitter.java:153)
+	at org.jkiss.dbeaver.ui.statistics.StatisticsTransmitter.sendStatistics(StatisticsTransmitter.java:106)
+	at org.jkiss.dbeaver.ui.statistics.StatisticsTransmitter.send(StatisticsTransmitter.java:79)
+	at org.jkiss.dbeaver.ui.statistics.FeatureStatisticsCollector.sendCollectedStatistics(FeatureStatisticsCollector.java:216)
+	at org.jkiss.dbeaver.ui.statistics.FeatureStatisticsCollector.dispose(FeatureStatisticsCollector.java:210)
+	at org.jkiss.dbeaver.model.runtime.features.DBRFeatureRegistry.endTracking(DBRFeatureRegistry.java:61)
+	at org.jkiss.dbeaver.core.DesktopPlatform.dispose(DesktopPlatform.java:141)
+	at org.jkiss.dbeaver.core.DBeaverActivator.shutdownCore(DBeaverActivator.java:137)
+	at org.jkiss.dbeaver.core.DBeaverActivator.stop(DBeaverActivator.java:99)
+	at org.eclipse.osgi.internal.framework.BundleContextImpl$3.run(BundleContextImpl.java:908)
+	at org.eclipse.osgi.internal.framework.BundleContextImpl$3.run(BundleContextImpl.java:1)
+	at java.base/java.security.AccessController.doPrivileged(Unknown Source)
+	at org.eclipse.osgi.internal.framework.BundleContextImpl.stop(BundleContextImpl.java:900)
+	at org.eclipse.osgi.internal.framework.EquinoxBundle.stopWorker0(EquinoxBundle.java:1096)
+	at org.eclipse.osgi.internal.framework.EquinoxBundle$EquinoxModule.stopWorker(EquinoxBundle.java:399)
+	at org.eclipse.osgi.container.Module.doStop(Module.java:699)
+	at org.eclipse.osgi.container.Module.stop(Module.java:557)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel.decStartLevel(ModuleContainer.java:2153)
+	at org.eclipse.osgi.container.ModuleContainer$ContainerStartLevel.doContainerStartLevel(ModuleContainer.java:2022)
+	at org.eclipse.osgi.container.SystemModule.stopWorker(SystemModule.java:281)
+	at org.eclipse.osgi.internal.framework.EquinoxBundle$SystemBundle$EquinoxSystemModule.stopWorker(EquinoxBundle.java:225)
+	at org.eclipse.osgi.container.Module.doStop(Module.java:699)
+	at org.eclipse.osgi.container.Module.stop(Module.java:557)
+	at org.eclipse.osgi.container.SystemModule.stop(SystemModule.java:212)
+	at org.eclipse.osgi.internal.framework.EquinoxBundle$SystemBundle$EquinoxSystemModule$1.run(EquinoxBundle.java:244)
+	at java.base/java.lang.Thread.run(Unknown Source)
+Caused by: sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+	at java.base/sun.security.validator.PKIXValidator.doBuild(Unknown Source)
+	at java.base/sun.security.validator.PKIXValidator.engineValidate(Unknown Source)
+	at java.base/sun.security.validator.Validator.validate(Unknown Source)
+	at java.base/sun.security.ssl.X509TrustManagerImpl.checkTrusted(Unknown Source)
+	at java.base/sun.security.ssl.X509TrustManagerImpl.checkServerTrusted(Unknown Source)
+	... 43 more
+Caused by: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+	at java.base/sun.security.provider.certpath.SunCertPathBuilder.build(Unknown Source)
+	at java.base/sun.security.provider.certpath.SunCertPathBuilder.engineBuild(Unknown Source)
+	at java.base/java.security.cert.CertPathBuilder.build(Unknown Source)
+	... 48 more
+2026-03-19 12:58:57.242 - Execution context closed (portale_test_PSN, 3)
+2026-03-19 12:58:57.252 - Execution context closed (portale_test_PSN, 4)
+2026-03-19 12:58:57.263 - Execution context closed (portale_test_PSN, 0)
+2026-03-19 12:58:57.273 - Execution context closed (portale_test_PSN, 1)
+2026-03-19 12:58:57.274 - Disconnected (postgres-jdbc-193011b0099-149d87679ff412c3)
+2026-03-19 12:58:57.327 - Platform shutdown completed (395ms)
