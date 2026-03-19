@@ -21,6 +21,8 @@ keycloak on port 443, decouple admin rest from login flows, put behind reverse p
 
 Roundcube Webmail keycloak
 
+production: [ web | webapps | intranet ].rpr-spa.it only url-cloaker or proxy
+
 --------------------------------------------------------------------------------
 
 http://apisix.rpr-spa.it:9180/ui/
