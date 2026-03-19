@@ -281,17 +281,17 @@ install_symlinks()
       target="${k#*=}"
       if [ "$APP" = "true" ]
       then
-        rm -f "$APPS_ROOT_DIR/$symlink"
-        # ln -s "$PKG_INST_DEEPEST_DIR/$target" "$APPS_ROOT_DIR/$symlink"
-        cat << EOF > "$APPS_ROOT_DIR/$symlink"
+        rm -f "$APP_SCRIPTS_ROOT_DIR/$symlink"
+        # ln -s "$PKG_INST_DEEPEST_DIR/$target" "$APP_SCRIPTS_ROOT_DIR/$symlink"
+        cat << EOF > "$APP_SCRIPTS_ROOT_DIR/$symlink"
 #!/bin/sh
 export APP_NAME="$PKG_NAME"
 pkg run "$PKG_INST_DEEPEST_DIR/$target" "\$@"
 EOF
-        sudo chmod +x "$APPS_ROOT_DIR/$symlink"
+        sudo chmod +x "$APP_SCRIPTS_ROOT_DIR/$symlink"
       else
-        rm -f "$LINKS_ROOT_DIR/$symlink"
-        ln -s "$PKG_INST_DEEPEST_DIR/$target" "$LINKS_ROOT_DIR/$symlink"
+        rm -f "$BIN_LINKS_ROOT_DIR/$symlink"
+        ln -s "$PKG_INST_DEEPEST_DIR/$target" "$BIN_LINKS_ROOT_DIR/$symlink"
       fi
 
       if [ -e "$PKG_INST_DEEPEST_DIR/$target" ] && [ ! -x "$PKG_INST_DEEPEST_DIR/$target" ]
@@ -353,35 +353,11 @@ install()
 
 #-------------------------------------------------------------------------------
 
-# if [ "$#" -lt "8" ]
-# then
-#   echo "some args are null, required: pkg-name, pkg-ver, pkg-inst-conf-dir, pkg-inst-dir, symlinks-dir, libs-symlink-dir, conf-dir, separated-conf-dir"
-#   exit 1
-# fi
-
 PKG_NAME="$1"
 shift
 
 PKG_VER="$1"
 shift
-
-# PKG_INST_CONF_ROOT_DIR="$1"
-# shift
-#
-# PKG_INST_ROOT_DIR="$1"
-# shift
-#
-# LINKS_ROOT_DIR="$1"
-# shift
-#
-# LIBS_ROOT_DIR="$1"
-# shift
-#
-# CONF_ROOT_DIR="$1"
-# shift
-#
-# MOVED_CONF_ROOT_DIR="$1"
-# shift
 
 
 
@@ -405,53 +381,53 @@ PKG_INST_ROOT_DIR="$(cd -- "$PKG_INST_ROOT_DIR" && pwd)"
 
 
 
-if [ -z "$LINKS_ROOT_DIR" ]
+if [ -z "$BIN_LINKS_ROOT_DIR" ]
 then
-  echo "$0 - LINKS_ROOT_DIR cannot be null"
+  echo "$0 - BIN_LINKS_ROOT_DIR cannot be null"
   exit 1
 fi
-mkdir -p "$LINKS_ROOT_DIR"
-LINKS_ROOT_DIR="$(cd -- "$LINKS_ROOT_DIR" && pwd)"
+mkdir -p "$BIN_LINKS_ROOT_DIR"
+BIN_LINKS_ROOT_DIR="$(cd -- "$BIN_LINKS_ROOT_DIR" && pwd)"
 
 
 
-if [ -z "$APPS_ROOT_DIR" ]
+if [ -z "$APP_SCRIPTS_ROOT_DIR" ]
 then
-  echo "$0 - APPS_ROOT_DIR cannot be null"
+  echo "$0 - APP_SCRIPTS_ROOT_DIR cannot be null"
   exit 1
 fi
-mkdir -p "$APPS_ROOT_DIR"
-APPS_ROOT_DIR="$(cd -- "$APPS_ROOT_DIR" && pwd)"
+mkdir -p "$APP_SCRIPTS_ROOT_DIR"
+APP_SCRIPTS_ROOT_DIR="$(cd -- "$APP_SCRIPTS_ROOT_DIR" && pwd)"
 
 
 
-if [ -z "$LIBS_ROOT_DIR" ]
+if [ -z "$LIB_LINKS_ROOT_DIR" ]
 then
-  echo "$0 - LIBS_ROOT_DIR cannot be null"
+  echo "$0 - LIB_LINKS_ROOT_DIR cannot be null"
   exit 1
 fi
-mkdir -p "$LIBS_ROOT_DIR"
-LIBS_ROOT_DIR="$(cd -- "$LIBS_ROOT_DIR" && pwd)"
+mkdir -p "$LIB_LINKS_ROOT_DIR"
+LIB_LINKS_ROOT_DIR="$(cd -- "$LIB_LINKS_ROOT_DIR" && pwd)"
 
 
 
-if [ -z "$CONF_ROOT_DIR" ]
+if [ -z "$HOME_ROOT_DIR" ]
 then
-  echo "$0 - CONF_ROOT_DIR cannot be null"
+  echo "$0 - HOME_ROOT_DIR cannot be null"
   exit 1
 fi
-mkdir -p "$CONF_ROOT_DIR"
-CONF_ROOT_DIR="$(cd -- "$CONF_ROOT_DIR" && pwd)"
+mkdir -p "$HOME_ROOT_DIR"
+HOME_ROOT_DIR="$(cd -- "$HOME_ROOT_DIR" && pwd)"
 
 
 
-if [ -z "$MOVED_CONF_ROOT_DIR" ]
+if [ -z "$CONF_LINKS_ROOT_DIR" ]
 then
-  echo "$0 - MOVED_CONF_ROOT_DIR cannot be null"
+  echo "$0 - CONF_LINKS_ROOT_DIR cannot be null"
   exit 1
 fi
-mkdir -p "$MOVED_CONF_ROOT_DIR"
-MOVED_CONF_ROOT_DIR="$(cd -- "$MOVED_CONF_ROOT_DIR" && pwd)"
+mkdir -p "$CONF_LINKS_ROOT_DIR"
+CONF_LINKS_ROOT_DIR="$(cd -- "$CONF_LINKS_ROOT_DIR" && pwd)"
 
 
 

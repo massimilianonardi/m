@@ -4,11 +4,11 @@
 
 export PKG_INST_CONF_ROOT_DIR="/m/src/git/m/cmd/pkg/conf"
 export PKG_INST_ROOT_DIR="/m/pkg"
-export LINKS_ROOT_DIR="/m/bin"
-export APPS_ROOT_DIR="/m/app"
-export LIBS_ROOT_DIR="/m/lib"
-export CONF_ROOT_DIR="/m/conf/.cache"
-export MOVED_CONF_ROOT_DIR="/m/conf"
+export BIN_LINKS_ROOT_DIR="/m/bin"
+export APP_SCRIPTS_ROOT_DIR="/m/app"
+export LIB_LINKS_ROOT_DIR="/m/lib"
+export HOME_ROOT_DIR="/m/home"
+export CONF_LINKS_ROOT_DIR="/m/conf"
 
 #-------------------------------------------------------------------------------
 
@@ -34,7 +34,7 @@ run()
   echo "APP_NAME=$APP_NAME"
   echo "APP_ARGS=$@"
 
-  export HOME="$CONF_ROOT_DIR/$APP_NAME"
+  export HOME="$HOME_ROOT_DIR/$APP_NAME"
   export USERHOME="$HOME"
 
   if [ ! -d "$HOME" ]
