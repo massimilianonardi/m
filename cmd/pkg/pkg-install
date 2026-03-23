@@ -303,7 +303,16 @@ EOF
 
   if [ -f "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}.desktop" ]
   then
+    sudo rm -f "/usr/share/applications/${PKG_NAME}.desktop"
     sudo ln -s "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}.desktop" "/usr/share/applications/${PKG_NAME}.desktop"
+    APP_ICON="$(grep "Icon" "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}.desktop" | sed 's/Icon=//g')"
+    APP_ICON="${APP_ICON##*/}"
+    echo "APP_ICON=$APP_ICON"
+    if [ -f "${PKG_INST_CONF_ROOT_DIR}/${APP_ICON}" ]
+    then
+      sudo rm -f "/usr/share/pixmaps/${APP_ICON}"
+      sudo ln -s "${PKG_INST_CONF_ROOT_DIR}/${APP_ICON}" "/usr/share/pixmaps/${APP_ICON}"
+    fi
   fi
 }
 
