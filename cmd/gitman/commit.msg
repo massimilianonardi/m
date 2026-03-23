@@ -1,1 +1,1 @@
-pkg madedit
+pkg firefox
