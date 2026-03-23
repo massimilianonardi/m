@@ -1,1 +1,1 @@
-note
+pkg madedit
