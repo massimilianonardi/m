@@ -20,7 +20,7 @@ run()
   echo "APP_ARGS=$@"
 
   export HOME="$HOME_ROOT_DIR/$APP_NAME"
-  export USERHOME="$HOME"
+  export XDG_DATA_HOME="$HOME"
 
   if [ ! -d "$HOME" ]
   then
