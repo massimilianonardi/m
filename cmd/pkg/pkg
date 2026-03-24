@@ -14,7 +14,6 @@ export CONF_LINKS_ROOT_DIR="/m/conf"
 
 install()
 {
-  # pkg-install "$PKG_NAME" "$PKG_VER" "/m/src/git/m/cmd/pkg/conf" "/m/pkg" "/m/bin" "/m/lib" "/m/conf/.cache" "/m/conf"
   pkg-install "$PKG_NAME" "$PKG_VER"
 }
 
@@ -22,31 +21,7 @@ install()
 
 run()
 {
-  APP_DIR="${PKG_NAME%/*}"
-
-  if [ -z "$APP_NAME" ]
-  then
-    APP_NAME="${APP_DIR##*/}"
-  fi
-
-  echo "detected:"
-  echo "APP_DIR=$APP_DIR"
-  echo "APP_NAME=$APP_NAME"
-  echo "APP_ARGS=$@"
-
-  export HOME="$HOME_ROOT_DIR/$APP_NAME"
-  export USERHOME="$HOME"
-
-  if [ ! -d "$HOME" ]
-  then
-    mkdir -p "$HOME"
-  fi
-
-  cd "$APP_DIR"
-
-  # "$PKG_NAME" "$@"
-  screen -S app-session -d -m "$PKG_NAME" "$@"
-  sleep 1
+  pkg-run "$PKG_NAME" "$@"
 }
 
 #-------------------------------------------------------------------------------

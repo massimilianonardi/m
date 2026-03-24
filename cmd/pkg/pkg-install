@@ -269,30 +269,15 @@ install_symlinks()
 {
   PKG_INST_DEEPEST_DIR="$DEEPEST_DIR"
 
-  if [ -z "$SYMLINKS" ]
+  # bin symlinks
+  if [ -n "$SYMLINKS" ]
   then
-    # todo link all binaries found
-    echo "SYMLINKS is empty! cannot create links"
-    exit 1
-  else
     for k in $SYMLINKS
     do
       symlink="${k%%=*}"
       target="${k#*=}"
-      if [ "$APP" = "true" ]
-      then
-        rm -f "$APP_SCRIPTS_ROOT_DIR/$symlink"
-        # ln -s "$PKG_INST_DEEPEST_DIR/$target" "$APP_SCRIPTS_ROOT_DIR/$symlink"
-        cat << EOF > "$APP_SCRIPTS_ROOT_DIR/$symlink"
-#!/bin/sh
-export APP_NAME="$PKG_NAME"
-pkg run "$PKG_INST_DEEPEST_DIR/$target" "\$@"
-EOF
-        sudo chmod +x "$APP_SCRIPTS_ROOT_DIR/$symlink"
-      else
-        rm -f "$BIN_LINKS_ROOT_DIR/$symlink"
-        ln -s "$PKG_INST_DEEPEST_DIR/$target" "$BIN_LINKS_ROOT_DIR/$symlink"
-      fi
+      rm -f "$BIN_LINKS_ROOT_DIR/$symlink"
+      ln -s "$PKG_INST_DEEPEST_DIR/$target" "$BIN_LINKS_ROOT_DIR/$symlink"
 
       if [ -e "$PKG_INST_DEEPEST_DIR/$target" ] && [ ! -x "$PKG_INST_DEEPEST_DIR/$target" ]
       then
@@ -301,6 +286,31 @@ EOF
     done
   fi
 
+  # app launcher scripts
+  if [ -n "$APP_LAUNCHERS" ]
+  then
+    for k in $APP_LAUNCHERS
+    do
+      launcher="${k%%=*}"
+      target="${k#*=}"
+      rm -f "$APP_SCRIPTS_ROOT_DIR/$launcher"
+      # ln -s "$PKG_INST_DEEPEST_DIR/$target" "$APP_SCRIPTS_ROOT_DIR/$launcher"
+      cat << EOF > "$APP_SCRIPTS_ROOT_DIR/$launcher"
+#!/bin/sh
+export APP_NAME="$PKG_NAME"
+export APP_FORK="$APP_FORK"
+pkg run "$PKG_INST_DEEPEST_DIR/$target" "\$@"
+EOF
+      sudo chmod +x "$APP_SCRIPTS_ROOT_DIR/$launcher"
+
+      if [ -e "$PKG_INST_DEEPEST_DIR/$target" ] && [ ! -x "$PKG_INST_DEEPEST_DIR/$target" ]
+      then
+        sudo chmod +x "$PKG_INST_DEEPEST_DIR/$target"
+      fi
+    done
+  fi
+
+  # desktop, icon, menu
   if [ -f "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}.desktop" ]
   then
     sudo rm -f "/usr/share/applications/${PKG_NAME}.desktop"

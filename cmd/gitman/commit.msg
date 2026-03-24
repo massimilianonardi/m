@@ -1,1 +1,1 @@
-pkg firefox
+pkg-run APP_FORK
