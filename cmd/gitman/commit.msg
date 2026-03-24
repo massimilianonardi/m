@@ -1,1 +1,1 @@
-pkg-run APP_FORK
+pkg conf all apps

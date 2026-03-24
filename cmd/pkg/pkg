@@ -19,6 +19,13 @@ install()
 
 #-------------------------------------------------------------------------------
 
+uninstall()
+{
+  pkg-uninstall "$PKG_NAME" "$PKG_VER"
+}
+
+#-------------------------------------------------------------------------------
+
 run()
 {
   pkg-run "$PKG_NAME" "$@"
@@ -42,6 +49,7 @@ fi
 
 case "$PKG_COMMAND" in
   "install") true;;
+  "uninstall") true;;
   "run") true;;
   *) exit 1;;
 esac
