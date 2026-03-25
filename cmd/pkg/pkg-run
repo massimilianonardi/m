@@ -21,6 +21,8 @@ run()
 
   export HOME="$HOME_ROOT_DIR/$APP_NAME"
   export XDG_DATA_HOME="$HOME"
+  # export XDG_DATA_DIRS="$HOME:/usr/share/"
+  export JAVA_OPTS="-Duser.home=$HOME"
 
   if [ ! -d "$HOME" ]
   then

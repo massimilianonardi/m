@@ -1,1 +1,1 @@
-pkg conf all apps
+pkg run JAVA_OPTS user.home
