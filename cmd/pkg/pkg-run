@@ -23,6 +23,8 @@ run()
   export XDG_DATA_HOME="$HOME"
   # export XDG_DATA_DIRS="$HOME:/usr/share/"
   export JAVA_OPTS="-Duser.home=$HOME"
+  export _JAVA_OPTIONS="-Duser.home=$HOME"
+  export JAVA_TOOL_OPTIONS="-Duser.home=$HOME"
 
   if [ ! -d "$HOME" ]
   then
