@@ -1,1 +1,1 @@
-pkg run JAVA_OPTS _JAVA_OPTIONS JAVA_TOOL_OPTIONS user.home
+pkg conf fixes
