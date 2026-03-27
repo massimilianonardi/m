@@ -1,1 +1,1 @@
-pkg mpv, vlc appimages
+cmd cleanup
