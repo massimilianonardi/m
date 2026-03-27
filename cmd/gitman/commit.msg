@@ -1,1 +1,1 @@
-pkg opera
+pkg mpv, vlc appimages

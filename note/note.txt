@@ -6,7 +6,8 @@ review m dirs and test m install from scratch online (with certs support)
 pkg uninstall eventually data home + postgres
 m install and pkg have /m/app and /m/bin hardcoded, pkg has also pkg/conf/home -> parametrize all m paths
 find best file manager alternative, make madedit work copy/paste
-review pkg conf: chromium sandbox, firefox, gson, madedit-mod, mpv
+review pkg conf: chromium sandbox, firefox, gson, madedit-mod
+review rsudo-jobs and rsudo
 
 -> keycloak auth page rpr style
 !!! keycloak userinfo + roles
