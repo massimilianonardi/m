@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# resolves every symlink of a path (either intermediate or trailing)
+
 if [ -d "$1" ]
 then
   cd -P -- "$1" && pwd -P

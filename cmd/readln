@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# if argument is a link, returns its target, otherwise returns argument as a path (adds ./ to relative paths if omitted)
+
 if [ -L "$1" ]
 then
   TARGET=$(ls -ld -- "$1" 2>/dev/null) || exit 1

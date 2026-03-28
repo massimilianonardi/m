@@ -1,1 +1,1 @@
-cmd cleanup
+cmd commands comments
