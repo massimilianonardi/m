@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=LapCE
+Exec=lapce %F
+Terminal=false
+Type=Application
+StartupNotify=true
+StartupWMClass=lapce
