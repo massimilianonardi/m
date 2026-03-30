@@ -1,12 +1,12 @@
 
 --------------------------------------------------------------------------------
-pkg install implement move and link conf from home (with support of files not yet created!)
-pkg install support app launchers env vars (one for all alunchers) specific command line options for each launcher
-review m dirs and test m install from scratch online (with certs support)
-pkg uninstall eventually data home + postgres
+m install review m dirs and test m install from scratch online (with certs support)
 m install and pkg have /m/app and /m/bin hardcoded, pkg has also pkg/conf/home -> parametrize all m paths
-find best file manager alternative, make madedit work copy/paste
-review pkg conf: chromium sandbox, firefox, gson, madedit-mod
+pkg install support app launchers env vars (one for all alunchers) specific command line options for each launcher
+pkg install implement move and link conf from home (with support of files not yet created!)
+pkg uninstall eventually data home + postgres
+pkg conf review: chromium sandbox, firefox, gson, madedit-mod
+find best file manager PCManFM-Qt, make madedit work copy/paste
 review rsudo-jobs and rsudo
 
 -> keycloak auth page rpr style

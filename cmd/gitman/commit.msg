@@ -1,1 +1,1 @@
-pkg cmd menu
+pkg zed
