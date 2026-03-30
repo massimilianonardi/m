@@ -1,1 +1,1 @@
-pkg zed
+pkg textadept

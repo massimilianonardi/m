@@ -17,5 +17,7 @@ open the app, from terminal type
 xprop WM_CLASS
 then mouse click inside the app
 get to the terminal to see wmclass
+wayland: on a terminal ALT+F2, type lg (looking glass), select "Windows" tab
+
 
 linux tilde: F6 or CTRL+SHIFT+u 7E (SPACE or ENTER)
