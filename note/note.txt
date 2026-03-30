@@ -8,7 +8,6 @@ m install and pkg have /m/app and /m/bin hardcoded, pkg has also pkg/conf/home -
 find best file manager alternative, make madedit work copy/paste
 review pkg conf: chromium sandbox, firefox, gson, madedit-mod
 review rsudo-jobs and rsudo
-think about how to un/install cmd.desktop + icon
 
 -> keycloak auth page rpr style
 !!! keycloak userinfo + roles

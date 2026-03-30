@@ -1,1 +1,1 @@
-pkg cmd
+pkg cmd menu
