@@ -54,6 +54,57 @@ import_enc()
 
 #------------------------------------------------------------------------------
 
+# encodes stdin to stdout (password can be provided through environmental variable OPENSSL_PASS)
+
+encode()
+{
+  if [ -z "$OPENSSL_PASS" ]
+  then
+    openssl enc -e -aes-256-cbc -pbkdf2
+  else
+    openssl enc -e -aes-256-cbc -pbkdf2 -pass "env:OPENSSL_PASS"
+  fi
+}
+
+#------------------------------------------------------------------------------
+
+# decodes stdin to stdout (password can be provided through environmental variable OPENSSL_PASS)
+
+decode()
+{
+  if [ -z "$OPENSSL_PASS" ]
+  then
+    openssl enc -d -aes-256-cbc -pbkdf2
+  else
+    openssl enc -d -aes-256-cbc -pbkdf2 -pass "env:OPENSSL_PASS"
+  fi
+}
+
+#------------------------------------------------------------------------------
+
+# import encoded file into current shell script and executes it (password can be provided through environmental variable OPENSSL_PASS)
+
+encoded_file_import()
+{
+  if [ ! -f "$1" ]
+  then
+    echo "step 1 $1"
+    set -- "$(command -v "$1")"
+    echo "step 2 $1"
+
+    if [ "$?" != "0" ] || [ ! -f "$1" ]
+    then
+      return 1
+    fi
+  fi
+
+  eval "$(decode < "$1")"
+}
+
+#------------------------------------------------------------------------------
+
+# convert string from ascii to octal
+
 a2o()
 {
   if [ -z "$*" ]
@@ -67,6 +118,8 @@ a2o()
     done
   fi
 }
+
+# convert string from octal to ascii
 
 o2a()
 {

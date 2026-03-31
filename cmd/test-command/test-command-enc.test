@@ -6,7 +6,7 @@ test_enc()
 {
   . enc.lib.sh
 
-  test_string="Test Encoding/Decoding - # @ $ _ ? ' §"
+  test_string="Test string for Encoding/Decoding - # @ $ _ ? ' §"
 
   # printf "$test_string" | od -A n -t x1
   # printf "$test_string" | od -A n -b
@@ -43,9 +43,32 @@ test_enc()
   # printf "141 141 141" | o2a
   # o2a "$(a2o "$test_string")"
   # a2o "$test_string" | o2a
-  printf "$test_string" | a2o
+  # printf "$test_string" | a2o
+  # echo ""
+  # printf "$test_string" | a2o | o2a
+
+  export OPENSSL_PASS="test_password"
+  # printf "$test_string" | encode
+  # echo ""
+  # printf "$test_string" | encode | decode
+  # echo ""
+  printf "echo \"this is the content echoed the encoded file: $test_string\"" | encode > "/tmp/test_encoded_file.enc"
   echo ""
-  printf "$test_string" | a2o | o2a
+  decode < "/tmp/test_encoded_file.enc"
+  echo ""
+  echo ""
+  echo ""
+  encoded_file_import "/tmp/test_encoded_file.enc"
+  export PATH="/tmp:$PATH"
+  chmod +x "/tmp/test_encoded_file.enc"
+  encoded_file_import "test_encoded_file.enc"
+  echo "EXIT_CODE=$?"
+  echo ""
+  rm -f "/tmp/test_encoded_file.enc"
+
+  # grep -e "file_enc" -e "file_dec" -e "import_enc" -e "a2o" -e "o2a" -rl "/m/src/git"
+  # grep -e "file_enc" -e "file_dec" -e "import_enc" -rl "/m/src/git"
+  # grep -e "a2o " -e "o2a " -rl "/m/src/git"
 
   echo ""
 }
