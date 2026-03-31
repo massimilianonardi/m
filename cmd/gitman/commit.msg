@@ -1,1 +1,1 @@
-pkg textadept
+pkg mapstore basic

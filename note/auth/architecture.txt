@@ -1,10 +1,11 @@
 
-- auth-keycloak: kc + postgres
-- auth-proxy: apisix + etcd
-- auth: microservices -> html, js, resources + java-db + java-file-manager + geoserver
+- auth / keycloak: kc + postgres
+- apigw / apisix: apisix + etcd
+- micro / srv / srvs / apps / apps-dev: microservices -> html, js, resources + java-db + java-file-manager + geoserver
 apache, php, postgres, java, geoserver, wildfly
 
-microservices + postgres bound on 127.0.0.1 on auth-proxy guarrantees secure access and do not require additional https connection and firewall rules for bidirectional communication
+microservices + postgres bound on 127.0.0.1 (also gis micro dedicated server), openresty/nginx expose https and allows only apisix
+
 integrate keycloak: geoserver, gitlab, headless cms
 rest api to create resources and permissions on keycloak, thus it is possible to use sh functions to create dynamically apisix routes and keycloak resources/permissions
 every postgres instance for each user (keycloak, geoserver, mapserver, java-service, etc.)

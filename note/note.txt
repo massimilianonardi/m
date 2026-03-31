@@ -9,32 +9,39 @@ pkg conf review: chromium sandbox, firefox, gson, madedit-mod
 find best file manager PCManFM-Qt, make madedit work copy/paste
 review rsudo-jobs and rsudo
 
--> keycloak auth page rpr style
 !!! keycloak userinfo + roles
 keycloak change totp provider key
 keycloak backup restore + disaster recovery + recreate by rest api calls by means of helper functions
+
+gis: allow apisix, deny all
+apisix installer
+apisix rsudo scripts for admin automation (also keycloak???!!! maybe keycloak can run remotely api rest calls)
+
+-> keycloak auth page rpr style
 -> (NOT NEEDED ANYMORE) geoserver keycloak auth
 -> geoserver no auth -> web admin > Authentication > Filter Chains > disable security for "web" filter (and any other)
 -> geoserver behind proxy and apisix custom path -> PROXY_BASE_URL + GEOSERVER_CSRF_WHITELIST + jetty-web.xml contextPath + apache2 + apisix coherent mappings (all absolute)
 -> geoserver paths/routes into apisix for admin authorization and specific workspace/layer authorization
-gis: allow apisix, deny all
-apisix installer
 -> snapshot/bak 26
 -> renew 26 with new data structure, but old app and auth (try to develop a final rpr-mnode-full?)
 -> think about portale, upgrade: condono, ai infante, giubileo, municipio7, tevere, webgis, cpq_2025, osp, vas, vvss (servizi) -> layers conf + layout, searches
 -> portale: webgis/bestgis, cpq/cpq, webgiscpq/???, webgisvas/vas@2024, regionelazio/webgis, municipio7/municipio7, condono/abuso, osp/osp, servizi/servizi, tevere/tevere
+
 app.rpr-spa.it upgrade: patrimonio 4785, patrimonio scan, simu scan
 git bare repositories rework
 gitlab install
+
 improve fs-enc-dec: pure command line + separated menu + chmod +x???
 encdec: file enc / dec
 encdec-edit: on the fly decode + nano edit + encode and delete temp (NB keep original file permissions and execution flag)
 improve rsudo-jobs eg. rsm: do same command on multiple rsn (eg. rsm "apisix keycloak" execute ls)
 rsudo file manager
+
 gis edit:
 - QGIS/ArcGIS direct access to db or filesystem
 - QGIS/ArcGIS access by geoserver wfs-t direct access to filesystem
 - db versioning + filesystem versioning
+
 gis improve:
 - production env: https://docs.geoserver.org/stable/en/user/production/index.html
 - geoserver cloud: https://geoserver.org/geoserver-cloud/
