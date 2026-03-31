@@ -1,0 +1,6 @@
+#!/bin/sh
+
+echo "$RSUDO_PASSWORD"
+echo "askpass called -> RSUDO_PASSWORD=$RSUDO_PASSWORD" 1>&2
+echo ARGS="$@" 1>&2
+echo NARGS="$#" 1>&2

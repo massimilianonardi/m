@@ -2,12 +2,13 @@
 --------------------------------------------------------------------------------
 m install review m dirs and test m install from scratch online (with certs support)
 m install and pkg have /m/app and /m/bin hardcoded, pkg has also pkg/conf/home -> parametrize all m paths
+rsudo-jobs improve eg. rsm: do same command on multiple rsn (eg. rsm "apisix keycloak" execute ls)
+rsudo file manager
 pkg install support app launchers env vars (one for all alunchers) specific command line options for each launcher
 pkg install implement move and link conf from home (with support of files not yet created!)
 pkg uninstall eventually data home + postgres
 pkg conf review: chromium sandbox, firefox, gson, madedit-mod
 find best file manager PCManFM-Qt, make madedit work copy/paste
-review rsudo-jobs and rsudo
 
 !!! keycloak userinfo + roles
 keycloak change totp provider key
@@ -30,12 +31,6 @@ apisix rsudo scripts for admin automation (also keycloak???!!! maybe keycloak ca
 app.rpr-spa.it upgrade: patrimonio 4785, patrimonio scan, simu scan
 git bare repositories rework
 gitlab install
-
-improve fs-enc-dec: pure command line + separated menu + chmod +x???
-encdec: file enc / dec
-encdec-edit: on the fly decode + nano edit + encode and delete temp (NB keep original file permissions and execution flag)
-improve rsudo-jobs eg. rsm: do same command on multiple rsn (eg. rsm "apisix keycloak" execute ls)
-rsudo file manager
 
 gis edit:
 - QGIS/ArcGIS direct access to db or filesystem

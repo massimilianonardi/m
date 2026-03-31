@@ -1,0 +1,95 @@
+#!/bin/sh
+
+# RSUDO_HOST
+# RSUDO_USER
+# RSUDO_PASSWORD
+# SUDO_AS_USER
+
+#------------------------------------------------------------------------------
+
+log()
+{
+  echo "$(date +"[%Y-%m-%d %H:%M:%S]")" "$@" 1>&2
+}
+
+#------------------------------------------------------------------------------
+
+if [ -z "$RSUDO_HOST" ]
+then
+  exit 1
+fi
+
+if [ -z "$RSUDO_USER" ]
+then
+  exit 1
+fi
+
+if [ -z "$RSUDO_PASSWORD" ]
+then
+  exit 1
+fi
+
+export DISPLAY=":0.0"
+export SSH_ASKPASS="${0}.ap"
+
+log RSUDO_COMMAND="$@"
+
+if [ "$#" -eq "0" ] || [ -z "$*" ]
+then
+  log "rsudo no args"
+  if [ -t 0 ]
+  then
+    log "rsudo no args + in/out attached to terminal and not pipes"
+    exit 1
+  fi
+
+  log "rsudo no args -> set command as /bin/sh -s (execute stream commands)"
+  set -- /bin/sh -s
+fi
+
+# for k in "$@"
+# do
+#   shift
+#   set -- "$@" \""$k"\"
+# done
+
+setsid ssh -n -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" sudo -K\; sudo -n true 1>/dev/null 2>/dev/null
+SUDO_NO_PASS="$?"
+
+log SUDO_NO_PASS="$SUDO_NO_PASS"
+
+
+
+if [ -z "$SUDO_AS_USER" ]
+then
+  if [ "$RSUDO_USER" = "root" ]
+  then
+    RSUDO_SSH_COMMAND=""
+  elif [ "$SUDO_NO_PASS" = "0" ]
+  then
+    RSUDO_SSH_COMMAND="sudo --"
+  else
+    RSUDO_SSH_COMMAND="sudo -S --prompt='' --"
+  fi
+else
+  if [ "$RSUDO_USER" = "root" ] || [ "$SUDO_NO_PASS" = "0" ]
+  then
+    RSUDO_SSH_COMMAND="sudo --user=\"$SUDO_AS_USER\" --"
+  else
+    RSUDO_SSH_COMMAND="sudo -S --prompt='' --user=\"$SUDO_AS_USER\" --"
+  fi
+fi
+# RSUDO_SSH_COMMAND="pwd 1>&2; cd /; $RSUDO_SSH_COMMAND"
+RSUDO_SSH_COMMAND="pwd 1>&2; $RSUDO_SSH_COMMAND"
+log "RSUDO_SSH_COMMAND=$RSUDO_SSH_COMMAND"
+
+if [ "$SUDO_NO_PASS" = "0" ]
+then
+  log "no password provided to sudo"
+  setsid ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" "$RSUDO_SSH_COMMAND" "$@"
+else
+  log "password provided to sudo"
+  (echo "$RSUDO_PASSWORD"; [ ! -t 0 ] && cat) | setsid ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" "$RSUDO_SSH_COMMAND" "$@"
+fi
+
+#------------------------------------------------------------------------------

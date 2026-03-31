@@ -43,5 +43,6 @@ echo ""
 echo ""
 
 test_"$@"
+echo "EXIT_CODE=$?"
 
 waituser

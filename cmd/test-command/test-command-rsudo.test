@@ -1,24 +1,34 @@
 #!/bin/sh
 
+# rsudo-command: high level commands on filesystem, db, network, apisix (autoget apikey), keycloak, etc. -> think about pluggable modules
+# rsudo-execute: base low level command execution needs evn vars set, it sets ssh_askpass to $0.ap
+# rsudo-execute.ap: ssh_askpass command, echoes exported env var pass
+# rsudo-ctl: asks for pass if not set (simple), manages credentials import and mapping (rse, rsn, resolve_name, etc.), jobs and scheduling
+
 test_rsudo()
 {
   REMOTE_HOST="localhost"
   REMOTE_USER="$USER"
 
-  export RSUDO_PASSWORD="qwe123"
-  # if [ -z "$RSUDO_PASSWORD" ]
-  # then
-  #   if [ -t 0 ]
-  #   then
-  #     echo "[test_command rsudo] Enter password for ${REMOTE_HOST}@${REMOTE_USER}:" 1>&2
-  #     stty -echo
-  #     read -r RSUDO_PASSWORD
-  #     stty echo
-  #   else
-  #     read -r RSUDO_PASSWORD
-  #   fi
-  #   export RSUDO_PASSWORD
-  # fi
+  # export RSUDO_PASSWORD="qwe123"
+  if [ -z "$RSUDO_PASSWORD" ]
+  then
+    if [ -t 0 ]
+    then
+      echo "[test_command rsudo] Enter password for ${REMOTE_HOST}@${REMOTE_USER}:" 1>&2
+      stty -echo
+      read -r RSUDO_PASSWORD
+      stty echo
+    else
+      read -r RSUDO_PASSWORD
+    fi
+    export RSUDO_PASSWORD
+  fi
+
+  export RSUDO_HOST="localhost"
+  export RSUDO_USER="$USER"
+  rsudo-execute ls -la
+  rsudo-execute cd "/root"
 
   # # ask for password if not available in env
   # rsudo execute "$REMOTE_HOST" "$REMOTE_USER" ls -ld
