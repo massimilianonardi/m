@@ -1,9 +1,10 @@
 #!/bin/sh
 
+# needs the following env vars to be defined outside and exported
 # RSUDO_HOST
 # RSUDO_USER
 # RSUDO_PASSWORD
-# SUDO_AS_USER
+# RSUDO_AS_USER
 
 #------------------------------------------------------------------------------
 
@@ -37,56 +38,39 @@ then
   set -- /bin/sh -s
 fi
 
-# for k in "$@"
-# do
-#   shift
-#   set -- "$@" \""$k"\"
-# done
-
 setsid ssh -n -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" sudo -K\; sudo -n true 1>/dev/null 2>/dev/null
-SUDO_NO_PASS="$?"
+RSUDO_NO_PASS_NEED="$?"
 
-log SUDO_NO_PASS="$SUDO_NO_PASS"
+log RSUDO_NO_PASS_NEED="$RSUDO_NO_PASS_NEED"
 
-# root: <none>
-# noroot: sudo
-#   nopass: <none>
-#   askpass: pipe pass
+RSUDO_COMMAND=""
 
-# nopass: <none>
-# askpass: pipe pass + add -S --prompt='' to sudo args
-# as user: sudo also to root + --user arg
-
-if [ -z "$SUDO_AS_USER" ]
+if [ "$RSUDO_NO_PASS_NEED" != "0" ] || [ -n "$RSUDO_AS_USER" ]
 then
-  if [ "$RSUDO_USER" = "root" ]
-  then
-    RSUDO_SSH_COMMAND=""
-  elif [ "$SUDO_NO_PASS" = "0" ]
-  then
-    RSUDO_SSH_COMMAND="sudo --"
-  else
-    RSUDO_SSH_COMMAND="sudo -S --prompt='' --"
-  fi
-else
-  if [ "$RSUDO_USER" = "root" ] || [ "$SUDO_NO_PASS" = "0" ]
-  then
-    RSUDO_SSH_COMMAND="sudo --user=\"$SUDO_AS_USER\" --"
-  else
-    RSUDO_SSH_COMMAND="sudo -S --prompt='' --user=\"$SUDO_AS_USER\" --"
-  fi
-fi
-# RSUDO_SSH_COMMAND="pwd 1>&2; cd /; $RSUDO_SSH_COMMAND"
-RSUDO_SSH_COMMAND="pwd 1>&2; $RSUDO_SSH_COMMAND"
-log "RSUDO_SSH_COMMAND=$RSUDO_SSH_COMMAND"
+  RSUDO_COMMAND="sudo"
 
-if [ "$SUDO_NO_PASS" = "0" ]
+  if [ "$RSUDO_NO_PASS_NEED" != "0" ]
+  then
+    RSUDO_COMMAND="$RSUDO_COMMAND -S --prompt=''"
+  fi
+
+  if [ -n "$RSUDO_AS_USER" ]
+  then
+    RSUDO_COMMAND="$RSUDO_COMMAND --user=\"$RSUDO_AS_USER\""
+  fi
+
+  RSUDO_COMMAND="$RSUDO_COMMAND --"
+fi
+
+log "RSUDO_COMMAND=$RSUDO_COMMAND"
+
+if [ "$RSUDO_NO_PASS_NEED" = "0" ]
 then
   log "no password provided to sudo"
-  setsid ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" "$RSUDO_SSH_COMMAND" "$@"
+  setsid ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" "$RSUDO_COMMAND" "$@"
 else
   log "password provided to sudo"
-  (echo "$RSUDO_PASSWORD"; [ ! -t 0 ] && cat) | setsid ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" "$RSUDO_SSH_COMMAND" "$@"
+  (echo "$RSUDO_PASSWORD"; [ ! -t 0 ] && cat) | setsid ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" "$RSUDO_COMMAND" "$@"
 fi
 
 #------------------------------------------------------------------------------
