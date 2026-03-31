@@ -1,1 +1,1 @@
-enc lib encode decode import edit-inplace, ascii octal conversions - final
+fmenc file manager menu to encode, decode, edit-inplace encoded files

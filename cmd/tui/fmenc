@@ -10,9 +10,9 @@
 #-------------------------------------------------------------------------------
 
 menuset nomulti
-menuset keys "e:d"
+menuset keys "e:d:m"
 
-MENU_HEADER="FILE ENCODING / DECODING: e=encode, d=decode"
+MENU_HEADER="FILE ENCODING / DECODING: e=encode, d=decode, m=modify/edit"
 MENU_FOOTER=""
 
 env_read "key file selection" tui head "$MENU_HEADER" "$MENU_FOOTER" tui-menu-file .
@@ -30,6 +30,9 @@ else
   elif [ "$key" = "d" ]
   then
     decode < "$file" > "${file}.dec"
+  elif [ "$key" = "m" ]
+  then
+    encoded_file_edit "$file"
   fi
 fi
 
