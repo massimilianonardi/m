@@ -131,12 +131,14 @@ uninstall()
         break
       fi
     done
-  fi
-
-  if [ -z "$PKG_VER" ]
-  then
-    PKG_INST_DIR="$1"
-    PKG_VER="${PKG_INST_DIR#$PKG_INST_ROOT_DIR/${PKG_NAME}-}"
+    
+    if [ -z "$PKG_VER" ]
+    then
+      PKG_INST_DIR="$1"
+      PKG_VER="${PKG_INST_DIR#$PKG_INST_ROOT_DIR/${PKG_NAME}-}"
+    fi
+  else
+    PKG_INST_DIR="$PKG_INST_ROOT_DIR/${PKG_NAME}-${PKG_VER}"
   fi
 
   echo "uninstalling PKG_NAME=\"$PKG_NAME\" PKG_VER=\"$PKG_VER\" $PKG_INST_DIR"

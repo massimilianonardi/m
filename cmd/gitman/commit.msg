@@ -1,1 +1,1 @@
-pkg mapstore basic
+pkg uninstall fix
