@@ -26,10 +26,10 @@ then
 else
   if [ "$key" = "e" ]
   then
-    file_enc "$file"
+    encode < "$file" > "${file}.enc"
   elif [ "$key" = "d" ]
   then
-    file_dec "$file"
+    decode < "$file" > "${file}.dec"
   fi
 fi
 

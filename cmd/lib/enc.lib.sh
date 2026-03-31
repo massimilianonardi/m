@@ -2,58 +2,6 @@
 
 #------------------------------------------------------------------------------
 
-file_enc()
-{
-  if [ ! -f "$1" ]
-  then
-    return 1
-  fi
-
-  if [ -z "$OPENSSL_PASS" ]
-  then
-    eval "$(openssl enc -e -aes-256-cbc -pbkdf2 -in "$1" -out "$1".enc)"
-  else
-    eval "$(openssl enc -e -aes-256-cbc -pbkdf2 -in "$1" -out "$1".enc -pass "env:OPENSSL_PASS")"
-  fi
-}
-
-#------------------------------------------------------------------------------
-
-file_dec()
-{
-  if [ ! -f "$1" ]
-  then
-    return 1
-  fi
-
-  if [ -z "$OPENSSL_PASS" ]
-  then
-    eval "$(openssl enc -d -aes-256-cbc -pbkdf2 -in "$1" -out "$1".dec)"
-  else
-    eval "$(openssl enc -d -aes-256-cbc -pbkdf2 -in "$1" -out "$1".dec -pass "env:OPENSSL_PASS")"
-  fi
-}
-
-#------------------------------------------------------------------------------
-
-import_enc()
-{
-  if [ ! -f "$1" ]
-  then
-    set -- "$(command -v "$1")"
-  fi
-
-  echo "importing encoded file: $1"
-  if [ -z "$OPENSSL_PASS" ]
-  then
-    eval "$(openssl enc -d -aes-256-cbc -pbkdf2 -in "$1")"
-  else
-    eval "$(openssl enc -d -aes-256-cbc -pbkdf2 -in "$1" -pass "env:OPENSSL_PASS")"
-  fi
-}
-
-#------------------------------------------------------------------------------
-
 # encodes stdin to stdout (password can be provided through environmental variable OPENSSL_PASS)
 
 encode()
@@ -82,15 +30,13 @@ decode()
 
 #------------------------------------------------------------------------------
 
-# import encoded file into current shell script and executes it (password can be provided through environmental variable OPENSSL_PASS)
+# decodes file sourcing (executing) it into current shell script
 
 encoded_file_import()
 {
   if [ ! -f "$1" ]
   then
-    echo "step 1 $1"
     set -- "$(command -v "$1")"
-    echo "step 2 $1"
 
     if [ "$?" != "0" ] || [ ! -f "$1" ]
     then
@@ -99,6 +45,31 @@ encoded_file_import()
   fi
 
   eval "$(decode < "$1")"
+}
+
+#------------------------------------------------------------------------------
+
+# decodes file, opens it in editor, re-encodes it streaming into original
+
+encoded_file_edit()
+{
+  if [ ! -f "$1" ]
+  then
+    set -- "$(command -v "$1")"
+
+    if [ "$?" != "0" ] || [ ! -f "$1" ]
+    then
+      return 1
+    fi
+  fi
+
+  (
+    DECODED_FILE="${1}.$(date +"[%Y-%m-%d %H:%M:%S]").dec" && \
+    decode < "$1" > "$DECODED_FILE" && \
+    nano "$DECODED_FILE" && \
+    encode < "$DECODED_FILE" > "$1" && \
+    rm -f "$DECODED_FILE"
+  )
 }
 
 #------------------------------------------------------------------------------

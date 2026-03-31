@@ -48,22 +48,24 @@ test_enc()
   # printf "$test_string" | a2o | o2a
 
   export OPENSSL_PASS="test_password"
-  # printf "$test_string" | encode
-  # echo ""
-  # printf "$test_string" | encode | decode
-  # echo ""
+
+  printf "$test_string" | encode
+  echo ""
+  printf "$test_string" | encode | decode
+  echo ""
+
   printf "echo \"this is the content echoed the encoded file: $test_string\"" | encode > "/tmp/test_encoded_file.enc"
   echo ""
   decode < "/tmp/test_encoded_file.enc"
   echo ""
-  echo ""
-  echo ""
   encoded_file_import "/tmp/test_encoded_file.enc"
   export PATH="/tmp:$PATH"
   chmod +x "/tmp/test_encoded_file.enc"
+  encoded_file_edit "/tmp/test_encoded_file.enc"
   encoded_file_import "test_encoded_file.enc"
   echo "EXIT_CODE=$?"
   echo ""
+  ls -la "/tmp/test_encoded_file.enc"
   rm -f "/tmp/test_encoded_file.enc"
 
   # grep -e "file_enc" -e "file_dec" -e "import_enc" -e "a2o" -e "o2a" -rl "/m/src/git"
