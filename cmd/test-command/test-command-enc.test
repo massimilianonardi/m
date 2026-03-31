@@ -43,7 +43,8 @@ test_enc()
   # printf "141 141 141" | o2a
   # o2a "$(a2o "$test_string")"
   # a2o "$test_string" | o2a
-  # printf "$test_string" | a2o
+  printf "$test_string" | a2o
+  echo ""
   printf "$test_string" | a2o | o2a
 
   echo ""

@@ -37,6 +37,11 @@ then
 fi
 
 echo "launching TEST=test_$@"
+echo "--------------------------------------------------------------------------------"
+echo ""
+echo ""
+echo ""
+
 test_"$@"
 
 waituser
