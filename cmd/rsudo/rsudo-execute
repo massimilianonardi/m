@@ -14,17 +14,7 @@ log()
 
 #------------------------------------------------------------------------------
 
-if [ -z "$RSUDO_HOST" ]
-then
-  exit 1
-fi
-
-if [ -z "$RSUDO_USER" ]
-then
-  exit 1
-fi
-
-if [ -z "$RSUDO_PASSWORD" ]
+if [ -z "$RSUDO_HOST" ] || [ -z "$RSUDO_USER" ] || [ -z "$RSUDO_PASSWORD" ]
 then
   exit 1
 fi
@@ -58,7 +48,14 @@ SUDO_NO_PASS="$?"
 
 log SUDO_NO_PASS="$SUDO_NO_PASS"
 
+# root: <none>
+# noroot: sudo
+#   nopass: <none>
+#   askpass: pipe pass
 
+# nopass: <none>
+# askpass: pipe pass + add -S --prompt='' to sudo args
+# as user: sudo also to root + --user arg
 
 if [ -z "$SUDO_AS_USER" ]
 then
