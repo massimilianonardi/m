@@ -6,14 +6,7 @@
 # RSUDO_PASSWORD
 # RSUDO_AS_USER
 
-#------------------------------------------------------------------------------
-
-log()
-{
-  echo "$(date +"[%Y-%m-%d %H:%M:%S]")" "$@" 1>&2
-}
-
-#------------------------------------------------------------------------------
+. log.lib.sh
 
 # the following lines are executed when ssh uses SSH_ASKPASS command
 # maximum security is guaranteed because explicit check that caller process is ssh and
@@ -21,7 +14,7 @@ log()
 if [ "$(ps -o "comm=" -p "$PPID")" = "ssh" ]
 then
   echo "$RSUDO_PASSWORD"
-  log "rsudo askpass called by ssh! RSUDO_PASSWORD availability=$([ -n "$RSUDO_PASSWORD" ] && echo "yes" || echo "no")"
+  log_debug "rsudo askpass called by ssh! RSUDO_PASSWORD availability=$([ -n "$RSUDO_PASSWORD" ] && echo "yes" || echo "no")"
   exit 0
 fi
 
@@ -49,24 +42,31 @@ ssh_detached()
 
 if [ -z "$RSUDO_HOST" ] || [ -z "$RSUDO_USER" ] || [ -z "$RSUDO_PASSWORD" ]
 then
+  log_fatal "HOST=$RSUDO_HOST - USER=$RSUDO_USER - RSUDO_PASSWORD(availability)=$([ -n "$RSUDO_PASSWORD" ] && echo "yes" || echo "no")"
   exit 1
 fi
 
-log "RSUDO STARTED: PID=$$ - HOST=$RSUDO_HOST - USER=$RSUDO_USER - RSUDO_PASSWORD(availability)=$([ -n "$RSUDO_PASSWORD" ] && echo "yes" || echo "no") - AS_USER=$RSUDO_AS_USER - COMMAND=$@"
+log_info "RSUDO STARTED: HOST=$RSUDO_HOST - USER=$RSUDO_USER - RSUDO_PASSWORD(availability)=$([ -n "$RSUDO_PASSWORD" ] && echo "yes" || echo "no") - AS_USER=$RSUDO_AS_USER - COMMAND=$@"
 
 if [ "$#" -eq "0" ] || [ -z "$*" ]
 then
-  log "rsudo no args"
+  log_trace "rsudo no args"
   if [ -t 0 ]
   then
-    log "rsudo no args + in/out attached to terminal and not pipes"
+    log_fatal "rsudo no args + in/out attached to terminal and not pipes"
     exit 1
   fi
 
-  log "rsudo no args -> set command as /bin/sh -s (execute stream commands)"
+  log_trace "rsudo no args -> set command as /bin/sh -s (execute stream commands)"
   set -- /bin/sh -s
-  log "RSUDO: no args + non interactive term => attached to pipe or file -> get commands through stdin COMMAND=$@"
+  log_debug "RSUDO: no args + non interactive term => attached to pipe or file -> get commands through stdin COMMAND=$@"
 fi
+
+# for k in "$@"
+# do
+#   shift
+#   set -- "$@" \""$k"\"
+# done
 
 ssh_detached sudo -K\; sudo -n true 1>/dev/null 2>/dev/null
 RSUDO_NO_PASS_NEED="$?"
@@ -86,7 +86,7 @@ then
   RSUDO_SSH_COMMAND_PREFIX="$RSUDO_SSH_COMMAND_PREFIX --"
 fi
 
-log "RSUDO: SSH_COMMAND_PREFIX=$RSUDO_SSH_COMMAND_PREFIX"
+log_debug "RSUDO: SSH_COMMAND_PREFIX=$RSUDO_SSH_COMMAND_PREFIX"
 
 if [ "$RSUDO_NO_PASS_NEED" = "0" ]
 then
@@ -96,6 +96,6 @@ else
   (echo "$RSUDO_PASSWORD"; [ ! -t 0 ] && cat) | ssh_detached "$RSUDO_SSH_COMMAND_PREFIX" "$@"
 fi
 
-log "RSUDO ENDED: PID=$$ - HOST=$RSUDO_HOST - USER=$RSUDO_USER"
+log_info "RSUDO ENDED: HOST=$RSUDO_HOST - USER=$RSUDO_USER"
 
 #------------------------------------------------------------------------------

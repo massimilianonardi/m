@@ -1,23 +1,20 @@
 #!/bin/sh
 
-#------------------------------------------------------------------------------
+# dispatches high level commands to specific modules
 
-log()
-{
-  echo "RSCMD $(date +"[%Y-%m-%d %H:%M:%S]")" "$@" 1>&2
-}
+. log.lib.sh
 
-#------------------------------------------------------------------------------
-
-log COMMAND_LINE="$@"
+log_debug COMMAND_LINE="$@"
 
 MODULE="${0}-${1}"
 shift
-log MODULE="$MODULE"
+
+log_debug MODULE="$MODULE"
 
 if [ ! -f "$MODULE" ]
 then
-  log "module not found MODULE=$MODULE"
+  log_fatal "module not found MODULE=$MODULE"
+  exit 1
 fi
 
 "$MODULE" "$@"

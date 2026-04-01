@@ -28,7 +28,7 @@ test_rsudo()
   export RSUDO_USER="$USER"
   # rsudo ls -la
   # rsudo cd "/root"
-  rscmd fs test
+  LOG_LEVEL=all rscmd fs test
 
   # # ask for password if not available in env
   # rsudo execute "$REMOTE_HOST" "$REMOTE_USER" ls -ld
