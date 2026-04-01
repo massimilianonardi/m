@@ -11,13 +11,13 @@ log()
 
 log COMMAND_LINE="$@"
 
-REMOTE_HOST="$1"
+export RSUDO_HOST="$1"
 shift
-log REMOTE_HOST="$REMOTE_HOST"
+log RSUDO_HOST="$RSUDO_HOST"
 
-REMOTE_USER="$1"
+export RSUDO_USER="$1"
 shift
-log REMOTE_USER="$REMOTE_USER"
+log RSUDO_USER="$RSUDO_USER"
 
 log COMMAND_PARAMETERS="$@"
 
@@ -25,7 +25,7 @@ if [ -z "$RSUDO_PASSWORD" ]
 then
   if [ -t 0 ]
   then
-    echo "[rsudo] Enter password for ${REMOTE_HOST}@${REMOTE_USER}:" 1>&2
+    echo "[rsudo] Enter password for ${RSUDO_USER}@${RSUDO_HOST}:" 1>&2
     stty -echo
     read -r RSUDO_PASSWORD
     stty echo
@@ -35,4 +35,4 @@ then
   export RSUDO_PASSWORD
 fi
 
-"$@"
+rsudo "$@"

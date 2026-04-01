@@ -5,6 +5,26 @@
 # rsctl rsudo-ctl: asks for pass if not set (simple), manages credentials import and mapping (rse, rsn, resolve_name, etc.), jobs and scheduling
 # rsudo should implement interactive ssh+sudo without asking password twice (because password to ssh canot be intercepted easily)
 # maybe using non interactive to save ssh keys and then connect passwordless (if allowed by sshd)
+#
+# rsudo-env provided by lib import to manage environment, otherwise similar command that chains commands
+# rsudo-env-cmd $host $user $@
+#
+# rsudo-env load credentials-file.enc
+# rsudo-env set my_server
+# rsudo ls -la
+# rsudo-cmd fs get /my/server/path /my/local/path
+#
+# rsudo.lib.sh: rsudopass (ask securely for pass to user), rsudochenv name (sets env vars from name), rsudoload (alias of encoded_file_import)
+# commands: rsudo (base non interactive command), rsudo-cmd (high level commands), rsudo-env (same functionalities of lib)
+# rsudoi (interactive using ssh keys) -> separate base command or provided by rsudo-cmd, or inside rsudo and activated by env var?
+# rsudox (integrate everything)
+# rsudox -- or exec $@ === rsudo $@
+# rsudox env $@ === rsudo-env $@ -> -u user, -h host, -l file, -n vars_name_suffix -- rsudox_args
+# rsudox fs $@ === rsudo-cmd fs $@
+# NO: rsudox env host [user:=$USER] -- rsudox_args -> if password is null, prompts for it -> rsudox rsudox_args
+# rsudox env host user rsudox_args (allows -- instead of exec to call base rsudo -> cleaner)
+#
+# rsudox [--] | --env | --fs | --db-pg -> if $1 don't match any switch or -- then pass all to base rsudo
 
 test_rsudo()
 {
@@ -26,13 +46,11 @@ test_rsudo()
   #   export RSUDO_PASSWORD
   # fi
 
-  export RSUDO_HOST="localhost"
-  export RSUDO_USER="$USER"
   # rsudo ls -la
   # rsudo cd "/root"
-  # LOG_LEVEL=all rscmd fs test
   export LOG_LEVEL=all
-  rsudo-env "10.100.0.180" "mnardi" rsudo ls -la
+  # rsudo --env "10.100.0.180" "mnardi" ls -la
+  # rsudo --env "10.100.0.180" "mnardi" -- ls -la
 
   # # ask for password if not available in env
   # rsudo ls -ld
@@ -49,13 +67,13 @@ test_rsudo()
   # # command from arg wich receives input from pipe
   # echo "ls -lA" | rsudo cat
 
-#   # command from heredoc are streamed through pipe to ssh, thus input from pipe is discarded (by posix sh design)
+  # command from heredoc are streamed through pipe to ssh, thus input from pipe is discarded (by posix sh design)
 #   echo "ls -lA" | rsudo << EOF
 # # for above reasons eventual password could only be streamed inside heredoc (not proper way to do)
 # pwd; cat
 # EOF
 
-#   # correct way to combine stdin commands with commands from heredoc (heredoc and stdin commands cannot access stdin)
+  # correct way to combine stdin commands with commands from heredoc (heredoc and stdin commands cannot access stdin)
 #   (echo 'echo "ls -lA"'; echo "cat"; echo 'var="test value"'; cat << EOF; echo "echo after heredoc") | rsudo
 # pwd; cat
 # echo "var=\$var"
@@ -68,8 +86,8 @@ test_rsudo()
 # echo "end of cat"
 # EOF
 
-#   # correct way to provide password (RSUDO_PASSWORD must already be defined or echoed directly without variable)
-#   # and combine stdin commands with commands from heredoc
+  # correct way to provide password (RSUDO_PASSWORD must already be defined or echoed directly without variable)
+  # and combine stdin commands with commands from heredoc
 #   (echo "$RSUDO_PASSWORD"; echo 'echo "ls -lA"'; cat << EOF) | rsudo
 # pwd; cat
 # echo "end of cat"
@@ -82,10 +100,12 @@ test_rsudo()
   # rsudo sh -c "ls -ld"
 
   # SQL_QUERY="select * from pg_catalog.pg_tables where tablespace = 'pg_global';"
-  SQL_QUERY="select * from pg_catalog.pg_tables limit 5;"
-  # rscmd db sql postgres "$SQL_QUERY"
-  # echo "$SQL_QUERY" | rscmd db sql postgres
-  # rscmd db sql postgres select \* from pg_catalog.pg_tables limit 5\;
+  # SQL_QUERY="select * from pg_catalog.pg_tables limit 5;"
+  # rsudo --db-pg sql postgres "$SQL_QUERY"
+  # echo "$SQL_QUERY" | rsudo --db-pg sql postgres
+  # rsudo --db-pg sql postgres select \* from pg_catalog.pg_tables limit 5\;
+
+
 
   # rsudo getdb "$REMOTE_HOST" "$REMOTE_USER" system | less
   # echo "sql prefix" | rsudo getdb "$REMOTE_HOST" "$REMOTE_USER" system | less
