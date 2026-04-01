@@ -1,0 +1,23 @@
+#!/bin/sh
+
+#------------------------------------------------------------------------------
+
+log()
+{
+  echo "RSCMD $(date +"[%Y-%m-%d %H:%M:%S]")" "$@" 1>&2
+}
+
+#------------------------------------------------------------------------------
+
+log COMMAND_LINE="$@"
+
+MODULE="${0}-${1}"
+shift
+log MODULE="$MODULE"
+
+if [ ! -f "$MODULE" ]
+then
+  log "module not found MODULE=$MODULE"
+fi
+
+"$MODULE" "$@"

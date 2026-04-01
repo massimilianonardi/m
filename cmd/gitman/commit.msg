@@ -1,1 +1,1 @@
-rsudo reworking
+rsudo rscmd

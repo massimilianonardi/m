@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # rscmd (rscmd db get, rscmd fs put, rscmd apisix route_create) rsudo-command: high level commands on filesystem, db, network, apisix (autoget apikey), keycloak, etc. -> think about pluggable modules
-# rse rsudo rsudo-execute: base low level command execution needs evn vars set, it sets ssh_askpass to $0
+# rsudo rse rsudo-execute: base low level command execution needs evn vars set, it sets ssh_askpass to $0
 # rsctl rsudo-ctl: asks for pass if not set (simple), manages credentials import and mapping (rse, rsn, resolve_name, etc.), jobs and scheduling
 
 test_rsudo()
@@ -26,8 +26,9 @@ test_rsudo()
 
   export RSUDO_HOST="localhost"
   export RSUDO_USER="$USER"
-  rsudo-execute ls -la
-  rsudo-execute cd "/root"
+  # rsudo ls -la
+  # rsudo cd "/root"
+  rscmd fs test
 
   # # ask for password if not available in env
   # rsudo execute "$REMOTE_HOST" "$REMOTE_USER" ls -ld

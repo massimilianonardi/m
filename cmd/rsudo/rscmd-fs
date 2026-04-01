@@ -1,0 +1,117 @@
+#!/bin/sh
+
+#------------------------------------------------------------------------------
+
+log()
+{
+  echo "RSCMD-fs $(date +"[%Y-%m-%d %H:%M:%S]")" "$@" 1>&2
+}
+
+#------------------------------------------------------------------------------
+
+delete()
+{
+# (
+  if [ -z "$1" ]
+  then
+    exit 1
+  fi
+
+  REMOTE_PATH="$1"
+
+  execute rm -rf -- "$REMOTE_PATH"
+# )
+}
+
+#------------------------------------------------------------------------------
+
+get()
+{
+# (
+  if [ -z "$1" ] || [ -z "$2" ]
+  then
+    exit 1
+  fi
+
+  REMOTE_PATH="$1"
+  LOCAL_PATH="$2"
+
+  REMOTE_PATH_TYPE="$(execute ls -ld "$REMOTE_PATH" | cut -c 1 | tr '-' 'f' | tr 'l' 'L')"
+
+  if [ ! "$?" -eq "0" ]
+  then
+    exit 1
+  fi
+
+  log REMOTE_PATH_TYPE="$REMOTE_PATH_TYPE"
+
+  if [ "$REMOTE_PATH_TYPE" = "L" ]
+  then
+    TARGET="$(execute ls -ld -- "$REMOTE_PATH")"
+    TARGET=${TARGET#*" $REMOTE_PATH -> "}
+    rm -rf -- "$LOCAL_PATH" && mkdir -p "${LOCAL_PATH%/*}" && ln -s "$TARGET" "$LOCAL_PATH"
+  elif [ "$REMOTE_PATH_TYPE" = "f" ]
+  then
+    rm -rf -- "$LOCAL_PATH" && mkdir -p "${LOCAL_PATH%/*}" && execute cat "$REMOTE_PATH" > "$LOCAL_PATH"
+  elif [ "$REMOTE_PATH_TYPE" = "d" ]
+  then
+    rm -rf -- "$LOCAL_PATH" && mkdir -p "$LOCAL_PATH" && cd "$LOCAL_PATH" && shell "cd '$REMOTE_PATH' && tar -c -f - ." | tar -x -f -
+  else
+    log "get: $REMOTE_PATH doesn't exists"
+    exit 1
+  fi
+# )
+}
+
+#------------------------------------------------------------------------------
+
+put()
+{
+# (
+  if [ -z "$1" ] || [ -z "$2" ]
+  then
+    exit 1
+  fi
+
+  LOCAL_PATH="$1"
+  REMOTE_PATH="$2"
+  REMOTE_OWNER_GROUP="$3"
+  REMOTE_PERMISSIONS="$4"
+
+  if [ -L "$LOCAL_PATH" ]
+  then
+    TARGET=$(ls -ld -- "$LOCAL_PATH")
+    TARGET=${TARGET#*" $LOCAL_PATH -> "}
+    shell "rm -rf -- '$REMOTE_PATH' && mkdir -p '${REMOTE_PATH%/*}' && ln -s '$TARGET' '$REMOTE_PATH'"
+  elif [ -f "$LOCAL_PATH" ]
+  then
+    cat "$LOCAL_PATH" | shell "rm -rf -- '$REMOTE_PATH' && mkdir -p '${REMOTE_PATH%/*}' && cat > '$REMOTE_PATH'"
+  elif [ -d "$LOCAL_PATH" ]
+  then
+    cd "$LOCAL_PATH" && tar -c -f - . | shell "rm -rf -- '$REMOTE_PATH' && mkdir -p '$REMOTE_PATH' && cd '$REMOTE_PATH' && tar -x -f -"
+    # cd "$LOCAL_PATH" && tar -c -f - . | execute tar -t -f -
+  else
+    log "put: $LOCAL_PATH doesn't exists"
+    exit 1
+  fi
+
+  if [ ! "$?" -eq "0" ]
+  then
+    exit 1
+  fi
+
+  if [ -n "$REMOTE_OWNER_GROUP" ]; then execute chown -R "$REMOTE_OWNER_GROUP" "$REMOTE_PATH"; fi && \
+  if [ -n "$REMOTE_PERMISSIONS" ]; then execute chmod -R "$REMOTE_PERMISSIONS" "$REMOTE_PATH"; fi
+# )
+}
+
+#------------------------------------------------------------------------------
+
+test()
+{
+  rsudo ls -la
+}
+
+#------------------------------------------------------------------------------
+
+"$@"
