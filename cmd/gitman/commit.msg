@@ -1,1 +1,1 @@
-lib log basic functionality, log command todo
+pkg run setsid fork launch option

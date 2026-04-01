@@ -20,26 +20,6 @@ fi
 
 #------------------------------------------------------------------------------
 
-ssh_interactive()
-{
-  ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" "$@"
-  return "$?"
-}
-
-#------------------------------------------------------------------------------
-
-ssh_detached()
-{
-  export DISPLAY=":0.0"
-  export SSH_ASKPASS="${0}"
-
-  setsid ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" "$@"
-
-  return "$?"
-}
-
-#------------------------------------------------------------------------------
-
 if [ -z "$RSUDO_HOST" ] || [ -z "$RSUDO_USER" ] || [ -z "$RSUDO_PASSWORD" ]
 then
   log_fatal "HOST=$RSUDO_HOST - USER=$RSUDO_USER - RSUDO_PASSWORD(availability)=$([ -n "$RSUDO_PASSWORD" ] && echo "yes" || echo "no")"
@@ -62,13 +42,16 @@ then
   log_debug "RSUDO: no args + non interactive term => attached to pipe or file -> get commands through stdin COMMAND=$@"
 fi
 
-# for k in "$@"
-# do
-#   shift
-#   set -- "$@" \""$k"\"
-# done
+for k in "$@"
+do
+  shift
+  set -- "$@" \""$k"\"
+done
 
-ssh_detached sudo -K\; sudo -n true 1>/dev/null 2>/dev/null
+export DISPLAY=":0.0"
+export SSH_ASKPASS="${0}"
+
+setsid ssh -n -o 'StrictHostKeyChecking no' -l "$REMOTE_USER" "$REMOTE_HOST" sudo -K\; sudo -n true 1>/dev/null 2>/dev/null
 RSUDO_NO_PASS_NEED="$?"
 
 RSUDO_SSH_COMMAND_PREFIX=""
@@ -90,10 +73,12 @@ log_debug "RSUDO: SSH_COMMAND_PREFIX=$RSUDO_SSH_COMMAND_PREFIX"
 
 if [ "$RSUDO_NO_PASS_NEED" = "0" ]
 then
-  ssh_detached "$RSUDO_SSH_COMMAND_PREFIX" "$@"
+  log_trace "RSUDO_NO_PASS_NEED = 0"
+  setsid ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" "$RSUDO_SSH_COMMAND_PREFIX" "$@"
 else
+  log_trace "RSUDO_NO_PASS_NEED = 1"
   # echo password to sudo and if terminal is not interactive, reattach stdin
-  (echo "$RSUDO_PASSWORD"; [ ! -t 0 ] && cat) | ssh_detached "$RSUDO_SSH_COMMAND_PREFIX" "$@"
+  (echo "$RSUDO_PASSWORD"; [ ! -t 0 ] && cat) | setsid ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" "$RSUDO_SSH_COMMAND_PREFIX" "$@"
 fi
 
 log_info "RSUDO ENDED: HOST=$RSUDO_HOST - USER=$RSUDO_USER"

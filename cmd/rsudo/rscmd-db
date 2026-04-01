@@ -1,11 +1,6 @@
 #!/bin/sh
 
-#------------------------------------------------------------------------------
-
-log()
-{
-  echo "RSCMD-db $(date +"[%Y-%m-%d %H:%M:%S]")" "$@" 1>&2
-}
+. log.lib.sh
 
 #------------------------------------------------------------------------------
 
@@ -22,11 +17,12 @@ sql()
 
   SQL_COMMAND="$@"
 
+  export RSUDO_AS_USER="postgres"
   if [ -z "$SQL_COMMAND" ]
   then
-    execute_as postgres psql "$REMOTE_DB"
+    rsudo psql "$REMOTE_DB"
   else
-    execute_as postgres psql "$REMOTE_DB" -c "$SQL_COMMAND"
+    rsudo psql "$REMOTE_DB" -c "$SQL_COMMAND"
   fi
 # )
 }

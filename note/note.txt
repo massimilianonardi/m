@@ -2,8 +2,10 @@
 --------------------------------------------------------------------------------
 m install review m dirs and test m install from scratch online (with certs support)
 m install and pkg have /m/app and /m/bin hardcoded, pkg has also pkg/conf/home -> parametrize all m paths
+rsudo interactive (using non interactive to generate and push ssh keys)
 rsudo-jobs improve eg. rsm: do same command on multiple rsn (eg. rsm "apisix keycloak" execute ls)
 rsudo file manager
+log lib + command
 pkg install support app launchers env vars (one for all alunchers) specific command line options for each launcher
 pkg install implement move and link conf from home (with support of files not yet created!)
 pkg uninstall eventually data home + postgres

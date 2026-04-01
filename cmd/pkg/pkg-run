@@ -44,6 +44,10 @@ run()
   then
     screen -S app-session -d -m "$PKG_NAME" "$@"
     sleep 1
+  elif [ "$APP_FORK" = "setsid" ]
+  then
+    setsid "$PKG_NAME" "$@" &
+    sleep 1
   else
     echo "unknownk option APP_FORK=\"$APP_FORK\""
     exit 1
