@@ -44,7 +44,8 @@ getdb()
     cat
   fi
 
-  execute_as postgres pg_dump "$REMOTE_DB"
+  export RSUDO_AS_USER="postgres"
+  rsudo pg_dump "$REMOTE_DB"
 # )
 }
 
@@ -68,16 +69,18 @@ putdb()
 
   # sql "" "SELECT pg_terminate_backend(pg_stat_activity.procid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$REMOTE_DB' AND procid <> pg_backend_pid();" 1>/dev/null 2>/dev/null
   # sql "" "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$REMOTE_DB' AND pid <> pg_backend_pid();" 1>/dev/null 2>/dev/null
-  execute service postgresql restart
-  execute_as postgres dropdb "$REMOTE_DB"
+  rsudo systemctl restart postgresql
+  export RSUDO_AS_USER="postgres"
+  rsudo dropdb "$REMOTE_DB"
   # execute_as postgres dropdb "$REMOTE_DB" 1>/dev/null 2>/dev/null
   # execute_as postgres dropdb --if-exists "$REMOTE_DB" 1>/dev/null 2>/dev/null
 
+
   if [ -z "$LOCAL_PATH" ]
   then
-    shell_as postgres "createdb '$REMOTE_DB' && psql '$REMOTE_DB'"
+    sh -c "createdb '$REMOTE_DB' && psql '$REMOTE_DB'"
   else
-    cat "$LOCAL_PATH" | shell_as postgres "createdb '$REMOTE_DB' && psql '$REMOTE_DB'"
+    cat "$LOCAL_PATH" | sh -c "createdb '$REMOTE_DB' && psql '$REMOTE_DB'"
   fi
 # )
 }

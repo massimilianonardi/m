@@ -1,1 +1,1 @@
-pkg run setsid fork launch option
+rscmd db
