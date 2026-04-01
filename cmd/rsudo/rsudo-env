@@ -1,0 +1,38 @@
+#!/bin/sh
+
+#------------------------------------------------------------------------------
+
+log()
+{
+  echo "$(date +"[%Y-%m-%d %H:%M:%S]")" "$@" 1>&2
+}
+
+#------------------------------------------------------------------------------
+
+log COMMAND_LINE="$@"
+
+REMOTE_HOST="$1"
+shift
+log REMOTE_HOST="$REMOTE_HOST"
+
+REMOTE_USER="$1"
+shift
+log REMOTE_USER="$REMOTE_USER"
+
+log COMMAND_PARAMETERS="$@"
+
+if [ -z "$RSUDO_PASSWORD" ]
+then
+  if [ -t 0 ]
+  then
+    echo "[rsudo] Enter password for ${REMOTE_HOST}@${REMOTE_USER}:" 1>&2
+    stty -echo
+    read -r RSUDO_PASSWORD
+    stty echo
+  else
+    read -r RSUDO_PASSWORD
+  fi
+  export RSUDO_PASSWORD
+fi
+
+"$@"

@@ -1,1 +1,1 @@
-rscmd fs
+rsudo-env

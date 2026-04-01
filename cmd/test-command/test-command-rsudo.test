@@ -11,7 +11,6 @@ test_rsudo()
   REMOTE_HOST="localhost"
   REMOTE_USER="$USER"
 
-  export RSUDO_PASSWORD="colob.01"
   # export RSUDO_PASSWORD="qwe123"
   # if [ -z "$RSUDO_PASSWORD" ]
   # then
@@ -33,6 +32,7 @@ test_rsudo()
   # rsudo cd "/root"
   # LOG_LEVEL=all rscmd fs test
   export LOG_LEVEL=all
+  rsudo-env "10.100.0.180" "mnardi" rsudo ls -la
 
   # # ask for password if not available in env
   # rsudo ls -ld
