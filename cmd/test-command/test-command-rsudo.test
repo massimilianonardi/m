@@ -1,9 +1,8 @@
 #!/bin/sh
 
-# rsudo-command: high level commands on filesystem, db, network, apisix (autoget apikey), keycloak, etc. -> think about pluggable modules
-# rsudo-execute: base low level command execution needs evn vars set, it sets ssh_askpass to $0.ap
-# rsudo-execute.ap: ssh_askpass command, echoes exported env var pass
-# rsudo-ctl: asks for pass if not set (simple), manages credentials import and mapping (rse, rsn, resolve_name, etc.), jobs and scheduling
+# rscmd (rscmd db get, rscmd fs put, rscmd apisix route_create) rsudo-command: high level commands on filesystem, db, network, apisix (autoget apikey), keycloak, etc. -> think about pluggable modules
+# rse rsudo rsudo-execute: base low level command execution needs evn vars set, it sets ssh_askpass to $0
+# rsctl rsudo-ctl: asks for pass if not set (simple), manages credentials import and mapping (rse, rsn, resolve_name, etc.), jobs and scheduling
 
 test_rsudo()
 {

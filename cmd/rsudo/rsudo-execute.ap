@@ -1,6 +1,8 @@
 #!/bin/sh
 
 echo "$RSUDO_PASSWORD"
+PARENT_PROCESS="$(ps -o 'cmd=' -p $(ps -o 'ppid=' -p $$))"
 echo "askpass called -> RSUDO_PASSWORD=$RSUDO_PASSWORD" 1>&2
+echo PARENT_PROCESS="$PARENT_PROCESS" 1>&2
 echo ARGS="$@" 1>&2
 echo NARGS="$#" 1>&2
