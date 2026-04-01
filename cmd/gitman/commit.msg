@@ -1,1 +1,1 @@
-rscmd db
+rscmd fs

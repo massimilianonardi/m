@@ -35,41 +35,33 @@ test_rsudo()
   export LOG_LEVEL=all
 
   # # ask for password if not available in env
-  # rsudo execute "$REMOTE_HOST" "$REMOTE_USER" ls -ld
   # rsudo ls -ld
 
   # # password from cmdline
-  # echo "$RSUDO_PASSWORD" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" ls -ld
   # echo "$RSUDO_PASSWORD" | rsudo ls -ld
 
   # # commands from pipe
-  # echo "ls -lA" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER"
   # echo "ls -lA" | rsudo
 
   # # error no command from arg or pipe
-  # rsudo execute "$REMOTE_HOST" "$REMOTE_USER" ""
   # rsudo ""
 
   # # command from arg wich receives input from pipe
-  # echo "ls -lA" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" cat
   # echo "ls -lA" | rsudo cat
 
 #   # command from heredoc are streamed through pipe to ssh, thus input from pipe is discarded (by posix sh design)
-#   echo "ls -lA" | rsudo execute "$REMOTE_HOST" "$REMOTE_USER" << EOF
 #   echo "ls -lA" | rsudo << EOF
 # # for above reasons eventual password could only be streamed inside heredoc (not proper way to do)
 # pwd; cat
 # EOF
 
 #   # correct way to combine stdin commands with commands from heredoc (heredoc and stdin commands cannot access stdin)
-#   (echo 'echo "ls -lA"'; echo "cat"; echo 'var="test value"'; cat << EOF; echo "echo after heredoc") | rsudo execute "$REMOTE_HOST" "$REMOTE_USER"
 #   (echo 'echo "ls -lA"'; echo "cat"; echo 'var="test value"'; cat << EOF; echo "echo after heredoc") | rsudo
 # pwd; cat
 # echo "var=\$var"
 # echo "end of cat"
 # EOF
 
-#   (echo 'echo "ls -lA"'; echo "cat"; echo 'var="test value"'; cat << 'EOF'; echo "echo after heredoc") | rsudo execute "$REMOTE_HOST" "$REMOTE_USER"
 #   (echo 'echo "ls -lA"'; echo "cat"; echo 'var="test value"'; cat << 'EOF'; echo "echo after heredoc") | rsudo
 # pwd; cat
 # echo "var=$var"
@@ -78,7 +70,6 @@ test_rsudo()
 
 #   # correct way to provide password (RSUDO_PASSWORD must already be defined or echoed directly without variable)
 #   # and combine stdin commands with commands from heredoc
-#   (echo "$RSUDO_PASSWORD"; echo 'echo "ls -lA"'; cat << EOF) | rsudo execute "$REMOTE_HOST" "$REMOTE_USER"
 #   (echo "$RSUDO_PASSWORD"; echo 'echo "ls -lA"'; cat << EOF) | rsudo
 # pwd; cat
 # echo "end of cat"
@@ -88,15 +79,14 @@ test_rsudo()
 #   test
 # EOF
 
-  # rsudo execute "$REMOTE_HOST" "$REMOTE_USER" sh -c "ls -ld"
   # rsudo sh -c "ls -ld"
 
-  # rscmd db sql system "select * from auth.roles;"
-  rscmd db sql postgres "select * from pg_catalog.pg_tables;"
-  # rsudo execute_as "$REMOTE_HOST" "$REMOTE_USER" postgres psql
-  # echo "select * from auth.roles;" | rsudo sql "$REMOTE_HOST" "$REMOTE_USER" system
-  # rsudo sql "$REMOTE_HOST" "$REMOTE_USER" system "select * from auth.roles;"
-  # rsudo sql "$REMOTE_HOST" "$REMOTE_USER" system select \* from auth.roles\;
+  # SQL_QUERY="select * from pg_catalog.pg_tables where tablespace = 'pg_global';"
+  SQL_QUERY="select * from pg_catalog.pg_tables limit 5;"
+  # rscmd db sql postgres "$SQL_QUERY"
+  # echo "$SQL_QUERY" | rscmd db sql postgres
+  # rscmd db sql postgres select \* from pg_catalog.pg_tables limit 5\;
+
   # rsudo getdb "$REMOTE_HOST" "$REMOTE_USER" system | less
   # echo "sql prefix" | rsudo getdb "$REMOTE_HOST" "$REMOTE_USER" system | less
   # echo "sql prefix" | rsudo getdb "$REMOTE_HOST" "$REMOTE_USER" system > /tmp/!db.sql
