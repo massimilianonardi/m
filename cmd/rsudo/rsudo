@@ -4,14 +4,14 @@
 
 if [ "$1" = "--" ]
 then
-  MODULE="exec"
+  MODULE="core"
   shift
 elif [ "${1#--}" != "$1" ]
 then
   MODULE="${1#--}"
   shift
 else
-  MODULE="exec"
+  MODULE="core"
 fi
 
 MODULE="${0}-${MODULE}"

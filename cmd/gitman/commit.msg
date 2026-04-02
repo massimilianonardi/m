@@ -1,1 +1,1 @@
-rsudo as main dispatcher to other modules
+rsudo lib + infrastructure defined + notes

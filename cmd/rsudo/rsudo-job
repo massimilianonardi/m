@@ -1,0 +1,8 @@
+#!/bin/sh
+
+#-------------------------------------------------------------------------------
+
+# one daemon stores environment variables or simple passwords for file-env decoding and jobs to be executed at scheuled rules
+# scheduling is managed by system cron that calls rsudo-jobs daemon to start named jobs
+
+true

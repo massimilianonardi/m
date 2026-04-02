@@ -1,0 +1,7 @@
+#!/bin/sh
+
+#-------------------------------------------------------------------------------
+
+# interactive using temp ssh keys, removed at session end
+
+true
