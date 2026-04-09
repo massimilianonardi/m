@@ -73,6 +73,17 @@ test_rsudo()
   # rsudoenv exec "myhost" ls -la
   # rsudoenv exec "myhost" -- ls -la /
 
+  rsudoenv set "myhost" "10.100.0.180" "mnardi" "mypass"
+  rsudoenv save "/tmp/rsudoenv_vars.enc"
+  rsudoenv unset "myhost"
+  rsudoenv set "myhost_2" "10.100.0.182" "mnardi_2" "mypass_2"
+  rsudoenv save "/tmp/rsudoenv_vars2.enc"
+  rsudoenv edit "/tmp/rsudoenv_vars2.enc"
+  rsudo --shell "/tmp/rsudoenv_vars.enc" "/tmp/rsudoenv_vars2.enc"
+
+  rm -f "/tmp/rsudoenv_vars.enc"
+  rm -f "/tmp/rsudoenv_vars2.enc"
+
   # # ask for password if not available in env
   # rsudo ls -ld
 

@@ -1,1 +1,1 @@
-rsudoenv rsudo lib
+rsudo --shell
