@@ -1,5 +1,9 @@
 #!/bin/sh
 
+. log.lib.sh
+
+#------------------------------------------------------------------------------
+
 #-------------------------------------------------------------------------------
 
 # loads rsudo lib and optionally $file argument is decoded and loaded, then start a new shell with the constructed environment

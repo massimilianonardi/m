@@ -3,42 +3,29 @@
 # args: host user rsudo_args
 # always asks for password, sets environment vars and the executes rsudo with rsudo_args
 
-#------------------------------------------------------------------------------
-
-log()
-{
-  echo "$(date +"[%Y-%m-%d %H:%M:%S]")" "$@" 1>&2
-}
+. log.lib.sh
 
 #------------------------------------------------------------------------------
 
-log COMMAND_LINE="$@"
+log_info COMMAND_LINE="$@"
 
 export RSUDO_HOST="$1"
 shift
 
-log RSUDO_HOST="$RSUDO_HOST"
+log_info RSUDO_HOST="$RSUDO_HOST"
 
 export RSUDO_USER="$1"
 shift
 
-log RSUDO_USER="$RSUDO_USER"
+log_info RSUDO_USER="$RSUDO_USER"
 
-log COMMAND_PARAMETERS="$@"
+log_info COMMAND_PARAMETERS="$@"
 
-if [ -t 0 ]
-then
-  echo "[rsudo] Enter password for ${RSUDO_USER}@${RSUDO_HOST}:" 1>&2
-  stty -echo
-  read -r RSUDO_PASSWORD
-  stty echo
-else
-  read -r RSUDO_PASSWORD
-fi
+RSUDO_PASSWORD="$(readpass "[rsudo] Enter password for ${RSUDO_USER}@${RSUDO_HOST}:")"
 
 if [ -z "$RSUDO_PASSWORD" ]
 then
-  log "password cannot be empty"
+  log_fatal "password cannot be empty"
   exit 1
 fi
 

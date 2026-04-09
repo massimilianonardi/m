@@ -28,6 +28,8 @@
 
 test_rsudo()
 {
+  . rsudo.lib.sh
+
   REMOTE_HOST="localhost"
   REMOTE_USER="$USER"
 
@@ -48,9 +50,28 @@ test_rsudo()
 
   # rsudo ls -la
   # rsudo cd "/root"
-  export LOG_LEVEL=all
-  # rsudo --env "10.100.0.180" "mnardi" ls -la
-  # rsudo --env "10.100.0.180" "mnardi" -- ls -la
+
+  # export LOG_LEVEL=all
+  log_level all
+
+  # rsudo --exec "10.100.0.180" "mnardi" ls -la
+  # rsudo --exec "10.100.0.180" "mnardi" -- ls -la
+
+  # rsudoenv set "myhost" "10.100.0.180" "mnardi" "mypass"
+  # rsudoenv get "myhost"
+  # rsudoenv set "myhost_2" "10.100.0.182" "mnardi_2" "mypass_2"
+  # rsudoenv get "myhost_2"
+  # rsudoenv set "myhost" "10.100.0.180" "mnardi" "$(readpassv "enter-pass" "enter-pass-verify" "pass-verify-error")"
+  # rsudoenv get "myhost"
+
+  # rsudoenv save "/tmp/rsudoenv_vars.enc"
+  # rsudoenv edit "/tmp/rsudoenv_vars.enc"
+  # rsudoenv editor "gnome-text-editor"
+  # rsudoenv edit "/tmp/rsudoenv_vars.enc"
+
+  # rsudoenv set "myhost" "10.100.0.180" "mnardi" "$(readpassv "enter-pass" "enter-pass-verify" "pass-verify-error")"
+  # rsudoenv exec "myhost" ls -la
+  # rsudoenv exec "myhost" -- ls -la /
 
   # # ask for password if not available in env
   # rsudo ls -ld
@@ -109,11 +130,11 @@ test_rsudo()
 
   # rsudo getdb "$REMOTE_HOST" "$REMOTE_USER" system | less
   # echo "sql prefix" | rsudo getdb "$REMOTE_HOST" "$REMOTE_USER" system | less
-  # echo "sql prefix" | rsudo getdb "$REMOTE_HOST" "$REMOTE_USER" system > /tmp/!db.sql
+  # echo "sql prefix" | rsudo getdb "$REMOTE_HOST" "$REMOTE_USER" system > /tmp/db.sql
   # rsudo getdb "$REMOTE_HOST" "$REMOTE_USER" system | rsudo putdb "$REMOTE_HOST" "$REMOTE_USER" system_duplicate
-  # rsudo getdb "$REMOTE_HOST" "$REMOTE_USER" system > /tmp/!db.sql
-  # rsudo putdb "$REMOTE_HOST" "$REMOTE_USER" system_duplicate /tmp/!db.sql
-  # rm /tmp/!db.sql
+  # rsudo getdb "$REMOTE_HOST" "$REMOTE_USER" system > /tmp/db.sql
+  # rsudo putdb "$REMOTE_HOST" "$REMOTE_USER" system_duplicate /tmp/db.sql
+  # rm -f /tmp/db.sql
 
   # test_files_start
 

@@ -49,6 +49,20 @@ encoded_file_import()
 
 #------------------------------------------------------------------------------
 
+# sets the editor command
+
+encoded_file_editor()
+{
+  if ! command -v "$1"
+  then
+    return 1
+  fi
+
+  export ENCODED_FILE_EDITOR="$1"
+}
+
+#------------------------------------------------------------------------------
+
 # decodes file, opens it in editor, re-encodes it streaming into original
 
 encoded_file_edit()
@@ -64,9 +78,14 @@ encoded_file_edit()
   fi
 
   (
+    if [ -z "$ENCODED_FILE_EDITOR" ]
+    then
+      ENCODED_FILE_EDITOR="nano"
+    fi
+
     DECODED_FILE="${1}.$(date +"[%Y-%m-%d %H:%M:%S]").dec" && \
     decode < "$1" > "$DECODED_FILE" && \
-    nano "$DECODED_FILE" && \
+    "$ENCODED_FILE_EDITOR" "$DECODED_FILE" && \
     encode < "$DECODED_FILE" > "$1" && \
     rm -f "$DECODED_FILE"
   )

@@ -1,5 +1,9 @@
 #!/bin/sh
 
+. log.lib.sh
+
+#------------------------------------------------------------------------------
+
 #-------------------------------------------------------------------------------
 
 # one daemon stores environment variables or simple passwords for file-env decoding and jobs to be executed at scheuled rules

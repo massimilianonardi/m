@@ -1,11 +1,6 @@
 #!/bin/sh
 
-#------------------------------------------------------------------------------
-
-log()
-{
-  echo "RSCMD-fs $(date +"[%Y-%m-%d %H:%M:%S]")" "$@" 1>&2
-}
+. log.lib.sh
 
 #------------------------------------------------------------------------------
 
@@ -43,7 +38,7 @@ get()
     exit 1
   fi
 
-  log REMOTE_PATH_TYPE="$REMOTE_PATH_TYPE"
+  log_info REMOTE_PATH_TYPE="$REMOTE_PATH_TYPE"
 
   if [ "$REMOTE_PATH_TYPE" = "L" ]
   then
@@ -57,7 +52,7 @@ get()
   then
     rm -rf -- "$LOCAL_PATH" && mkdir -p "$LOCAL_PATH" && cd "$LOCAL_PATH" && rsudo sh -c "cd '$REMOTE_PATH' && tar -c -f - ." | tar -x -f -
   else
-    log "get: $REMOTE_PATH doesn't exists"
+    log_error "get: $REMOTE_PATH doesn't exists"
     exit 1
   fi
 # )
@@ -91,7 +86,7 @@ put()
     cd "$LOCAL_PATH" && tar -c -f - . | rsudo sh -c "rm -rf -- '$REMOTE_PATH' && mkdir -p '$REMOTE_PATH' && cd '$REMOTE_PATH' && tar -x -f -"
     # cd "$LOCAL_PATH" && tar -c -f - . | rsudo tar -t -f -
   else
-    log "put: $LOCAL_PATH doesn't exists"
+    log_error "put: $LOCAL_PATH doesn't exists"
     exit 1
   fi
 
