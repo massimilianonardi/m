@@ -50,6 +50,7 @@ done
 
 export DISPLAY=":0.0"
 export SSH_ASKPASS="${0}"
+# export SSH_ASKPASS_REQUIRE="force"
 
 setsid ssh -n -o 'StrictHostKeyChecking no' -l "$REMOTE_USER" "$REMOTE_HOST" sudo -K\; sudo -n true 1>/dev/null 2>/dev/null
 RSUDO_NO_PASS_NEED="$?"
@@ -81,6 +82,10 @@ else
   (echo "$RSUDO_PASSWORD"; [ ! -t 0 ] && cat) | setsid ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" "$RSUDO_SSH_COMMAND_PREFIX" "$@"
 fi
 
+EXIT_CODE="$?"
+
 log_info "RSUDO ENDED: HOST=$RSUDO_HOST - USER=$RSUDO_USER"
+
+exit "$EXIT_CODE"
 
 #------------------------------------------------------------------------------

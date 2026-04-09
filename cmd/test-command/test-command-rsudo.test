@@ -28,62 +28,16 @@
 
 test_rsudo()
 {
-  . rsudo.lib.sh
+  export LOG_LEVEL=all
+  # log_level all
 
-  REMOTE_HOST="localhost"
-  REMOTE_USER="$USER"
+  export RSUDO_HOST="localhost"
+  export RSUDO_USER="$USER"
 
   # export RSUDO_PASSWORD="qwe123"
-  # if [ -z "$RSUDO_PASSWORD" ]
-  # then
-  #   if [ -t 0 ]
-  #   then
-  #     echo "[test_command rsudo] Enter password for ${REMOTE_HOST}@${REMOTE_USER}:" 1>&2
-  #     stty -echo
-  #     read -r RSUDO_PASSWORD
-  #     stty echo
-  #   else
-  #     read -r RSUDO_PASSWORD
-  #   fi
-  #   export RSUDO_PASSWORD
-  # fi
+  export RSUDO_PASSWORD="$(readpass "enter rsudo test password:")"
 
-  # rsudo ls -la
-  # rsudo cd "/root"
-
-  # export LOG_LEVEL=all
-  log_level all
-
-  # rsudo --exec "10.100.0.180" "mnardi" ls -la
-  # rsudo --exec "10.100.0.180" "mnardi" -- ls -la
-
-  # rsudoenv set "myhost" "10.100.0.180" "mnardi" "mypass"
-  # rsudoenv get "myhost"
-  # rsudoenv set "myhost_2" "10.100.0.182" "mnardi_2" "mypass_2"
-  # rsudoenv get "myhost_2"
-  # rsudoenv set "myhost" "10.100.0.180" "mnardi" "$(readpassv "enter-pass" "enter-pass-verify" "pass-verify-error")"
-  # rsudoenv get "myhost"
-
-  # rsudoenv save "/tmp/rsudoenv_vars.enc"
-  # rsudoenv edit "/tmp/rsudoenv_vars.enc"
-  # rsudoenv editor "gnome-text-editor"
-  # rsudoenv edit "/tmp/rsudoenv_vars.enc"
-
-  # rsudoenv set "myhost" "10.100.0.180" "mnardi" "$(readpassv "enter-pass" "enter-pass-verify" "pass-verify-error")"
-  # rsudoenv exec "myhost" ls -la
-  # rsudoenv exec "myhost" -- ls -la /
-
-  rsudoenv set "myhost" "10.100.0.180" "mnardi" "mypass"
-  rsudoenv save "/tmp/rsudoenv_vars.enc"
-  rsudoenv unset "myhost"
-  rsudoenv set "myhost_2" "10.100.0.182" "mnardi_2" "mypass_2"
-  rsudoenv save "/tmp/rsudoenv_vars2.enc"
-  rsudoenv edit "/tmp/rsudoenv_vars2.enc"
-  rsudo --shell "/tmp/rsudoenv_vars.enc" "/tmp/rsudoenv_vars2.enc"
-
-  rm -f "/tmp/rsudoenv_vars.enc"
-  rm -f "/tmp/rsudoenv_vars2.enc"
-
+  # rsudo ######################################################################
   # # ask for password if not available in env
   # rsudo ls -ld
 
@@ -131,11 +85,53 @@ test_rsudo()
 
   # rsudo sh -c "ls -ld"
 
+  # rsudo --exec ###############################################################
+  # rsudo --exec "10.100.0.180" "mnardi" ls -la
+  # rsudo --exec "10.100.0.180" "mnardi" -- ls -la
+
+  # rsudo --int ################################################################
+  rsudo --int genkey "my_key_name" "/tmp/rsudo_ssh_key"
+  rsudo --int putkey "/tmp/rsudo_ssh_key.pub"
+  ssh -i "/tmp/rsudo_ssh_key" "$RSUDO_USER@$RSUDO_HOST"
+  # ssh -vvv -p 22222 -i "/tmp/rsudo_ssh_key" "$RSUDO_USER@$RSUDO_HOST"
+  # ssh -p 22222 -i "/tmp/rsudo_ssh_key" "$RSUDO_USER@$RSUDO_HOST"
+  rm -f "/tmp/rsudo_ssh_key"
+  rm -f "/tmp/rsudo_ssh_key.pub"
+
+  # rsudo --db-pg ##############################################################
   # SQL_QUERY="select * from pg_catalog.pg_tables where tablespace = 'pg_global';"
   # SQL_QUERY="select * from pg_catalog.pg_tables limit 5;"
   # rsudo --db-pg sql postgres "$SQL_QUERY"
   # echo "$SQL_QUERY" | rsudo --db-pg sql postgres
   # rsudo --db-pg sql postgres select \* from pg_catalog.pg_tables limit 5\;
+
+  # rsudoenv ###################################################################
+  # . rsudo.lib.sh
+  # rsudoenv set "myhost" "10.100.0.180" "mnardi" "mypass"
+  # rsudoenv get "myhost"
+  # rsudoenv set "myhost_2" "10.100.0.182" "mnardi_2" "mypass_2"
+  # rsudoenv get "myhost_2"
+  # rsudoenv set "myhost" "10.100.0.180" "mnardi" "$(readpassv "enter-pass" "enter-pass-verify" "pass-verify-error")"
+  # rsudoenv get "myhost"
+
+  # rsudoenv save "/tmp/rsudoenv_vars.enc"
+  # rsudoenv edit "/tmp/rsudoenv_vars.enc"
+  # rsudoenv editor "gnome-text-editor"
+  # rsudoenv edit "/tmp/rsudoenv_vars.enc"
+
+  # rsudoenv set "myhost" "10.100.0.180" "mnardi" "$(readpassv "enter-pass" "enter-pass-verify" "pass-verify-error")"
+  # rsudoenv exec "myhost" ls -la
+  # rsudoenv exec "myhost" -- ls -la /
+
+  # rsudoenv set "myhost" "10.100.0.180" "mnardi" "mypass"
+  # rsudoenv save "/tmp/rsudoenv_vars.enc"
+  # rsudoenv unset "myhost"
+  # rsudoenv set "myhost_2" "10.100.0.182" "mnardi_2" "mypass_2"
+  # rsudoenv save "/tmp/rsudoenv_vars2.enc"
+  # rsudoenv edit "/tmp/rsudoenv_vars2.enc"
+  # rsudo --shell "/tmp/rsudoenv_vars.enc" "/tmp/rsudoenv_vars2.enc"
+  # rm -f "/tmp/rsudoenv_vars.enc"
+  # rm -f "/tmp/rsudoenv_vars2.enc"
 
 
 

@@ -1,11 +1,50 @@
 #!/bin/sh
 
+# interactive using temp ssh keys, removed at session end
+
 . log.lib.sh
 
 #------------------------------------------------------------------------------
 
+genkey()
+{
+  # if [ -z "$1" ]
+  # then
+  #   exit 1
+  # fi
+
+  SSH_KEY_COMMENT="$1"
+  shift
+
+  SSH_KEY_FILE="$1"
+  shift
+
+  log_debug "genkey: SSH_KEY_COMMENT=$SSH_KEY_COMMENT | SSH_KEY_FILE=$SSH_KEY_FILE"
+  log_trace "genkey: SSH_KEY_COMMENT=$SSH_KEY_COMMENT | SSH_KEY_FILE=$SSH_KEY_FILE | RSUDO_PASSWORD=$RSUDO_PASSWORD"
+
+  # ssh-keygen -q -t ed25519 -C "$SSH_KEY_COMMENT" -N "$RSUDO_PASSWORD" -f "$SSH_KEY_FILE"
+  ssh-keygen -q -t ed25519 -C "$SSH_KEY_COMMENT" -N "" -f "$SSH_KEY_FILE"
+}
+
 #-------------------------------------------------------------------------------
 
-# interactive using temp ssh keys, removed at session end
+putkey()
+{
+  SSH_KEY_FILE="$1"
+  shift
 
-true
+  cat << 'EOF' | rsudo sh -c "cat > /etc/ssh/sshd_config.d/rsudo_sshd.conf"
+PubkeyAuthentication yes
+AuthorizedKeysFile .ssh/authorized_keys /etc/ssh/sshd_config.d/rsudo_sshd_authorized_keys
+EOF
+
+  rsudo sshd -t && rsudo systemctl reload sshd
+  # rsudo sshd -t && rsudo systemctl restart sshd
+
+  cat "$SSH_KEY_FILE" | rsudo sh -c "cat >> ~/.ssh/authorized_keys"
+  cat "$SSH_KEY_FILE" | rsudo sh -c "cat >> /home/$RSUDO_USER/.ssh/authorized_keys"
+}
+
+#------------------------------------------------------------------------------
+
+"$@"

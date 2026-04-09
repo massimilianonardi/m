@@ -2,8 +2,8 @@
 --------------------------------------------------------------------------------
 m install review m dirs and test m install from scratch online (with certs support)
 m install and pkg have /m/app and /m/bin hardcoded, pkg has also pkg/conf/home -> parametrize all m paths
-rsudo interactive (using non interactive to generate and push ssh keys)
-rsudo modules fs, int, job, apisix, keycloak
+rsudo --int (find better name): if not user rsudo key then generate, if remote user not have rsudo key upload it, if remote server does not allo keys, upload conf extension
+rsudo modules job, apisix, keycloak
 rsudo file manager
 log lib + command
 pkg install support app launchers env vars (one for all alunchers) specific command line options for each launcher
