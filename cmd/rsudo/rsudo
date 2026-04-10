@@ -1,25 +1,106 @@
 #!/bin/sh
 
+# needs the following env vars to be defined outside and exported
+# RSUDO_HOST
+# RSUDO_USER
+# RSUDO_PASSWORD
+# RSUDO_AS_USER
+
 . log.lib.sh
 
-if [ "$1" = "--" ]
+# the following lines are executed when ssh uses SSH_ASKPASS command
+# maximum security is guaranteed because explicit check that caller process is ssh and
+# more importantly RSUDO_PASSWORD environment variable is available only in the rsudo process tree
+if [ "$(ps -o "comm=" -p "$PPID")" = "ssh" ]
 then
-  MODULE="core"
-  shift
-elif [ "${1#--}" != "$1" ]
-then
-  MODULE="${1#--}"
-  shift
-else
-  MODULE="core"
+  echo "$RSUDO_PASSWORD"
+  log_debug "rsudo askpass called by ssh! RSUDO_PASSWORD availability=$([ -n "$RSUDO_PASSWORD" ] && echo "yes" || echo "no")"
+  exit 0
 fi
 
-MODULE="${0}-${MODULE}"
+#------------------------------------------------------------------------------
 
-if [ ! -f "$MODULE" ]
+if [ -z "$RSUDO_HOST" ] || [ -z "$RSUDO_USER" ] || [ -z "$RSUDO_PASSWORD" ]
 then
-  log_fatal "module not found MODULE=$MODULE"
+  log_fatal "HOST=$RSUDO_HOST - USER=$RSUDO_USER - RSUDO_PASSWORD(availability)=$([ -n "$RSUDO_PASSWORD" ] && echo "yes" || echo "no")"
   exit 1
 fi
 
-"$MODULE" "$@"
+log_info "RSUDO STARTED: HOST=$RSUDO_HOST - USER=$RSUDO_USER - RSUDO_PASSWORD(availability)=$([ -n "$RSUDO_PASSWORD" ] && echo "yes" || echo "no") - AS_USER=$RSUDO_AS_USER - COMMAND=$@"
+
+if [ "$#" -eq "0" ] || [ -z "$*" ]
+then
+  log_trace "rsudo no args"
+  if [ -t 0 ]
+  then
+    log_info "rsudo starting interactive session"
+
+    export SSH_ASKPASS="${0}"
+    export SSH_ASKPASS_REQUIRE="force"
+
+    # ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST"
+    # ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" "RSUDO_PASSWORD=\"$RSUDO_PASSWORD\"" bash
+    # ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" "RSUDO_PASSWORD=\"$RSUDO_PASSWORD\" bash"
+    # ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" "R=\"echo '$RSUDO_PASSWORD' | sudo -S --prompt='' -- true; sudo su; exit\" bash"
+    # ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" "R=\"echo '$RSUDO_PASSWORD' | sudo -S --prompt='' -- true; sudo su; exit\" bash -ic 'eval \$R'"
+    # ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" "bash -ic 'echo '$RSUDO_PASSWORD' | sudo -S --prompt='' -- true; sudo su; exit'"
+    ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" bash -ic "\"echo '$RSUDO_PASSWORD' | sudo -S --prompt='' -- true; sudo su; exit\""
+    EXIT_CODE="$?"
+
+    log_info "RSUDO ENDED: HOST=$RSUDO_HOST - USER=$RSUDO_USER"
+
+    exit "$EXIT_CODE"
+  fi
+
+  log_trace "rsudo no args -> set command as /bin/sh -s (execute stream commands)"
+  set -- /bin/sh -s
+  log_debug "RSUDO: no args + non interactive term => attached to pipe or file -> get commands through stdin COMMAND=$@"
+fi
+
+for k in "$@"
+do
+  shift
+  set -- "$@" \""$k"\"
+done
+
+export DISPLAY=":0.0"
+export SSH_ASKPASS="${0}"
+# export SSH_ASKPASS_REQUIRE="force"
+
+setsid ssh -n -o 'StrictHostKeyChecking no' -l "$REMOTE_USER" "$REMOTE_HOST" sudo -K\; sudo -n true 1>/dev/null 2>/dev/null
+RSUDO_NO_PASS_NEED="$?"
+
+RSUDO_SSH_COMMAND_PREFIX=""
+if [ "$RSUDO_NO_PASS_NEED" != "0" ] || [ -n "$RSUDO_AS_USER" ]
+then
+  RSUDO_SSH_COMMAND_PREFIX="sudo"
+  if [ "$RSUDO_NO_PASS_NEED" != "0" ]
+  then
+    RSUDO_SSH_COMMAND_PREFIX="$RSUDO_SSH_COMMAND_PREFIX -S --prompt=''"
+  fi
+  if [ -n "$RSUDO_AS_USER" ]
+  then
+    RSUDO_SSH_COMMAND_PREFIX="$RSUDO_SSH_COMMAND_PREFIX --user=\"$RSUDO_AS_USER\""
+  fi
+  RSUDO_SSH_COMMAND_PREFIX="$RSUDO_SSH_COMMAND_PREFIX --"
+fi
+
+log_debug "RSUDO: SSH_COMMAND_PREFIX=$RSUDO_SSH_COMMAND_PREFIX"
+
+if [ "$RSUDO_NO_PASS_NEED" = "0" ]
+then
+  log_trace "RSUDO_NO_PASS_NEED = 0"
+  setsid ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" "$RSUDO_SSH_COMMAND_PREFIX" "$@"
+else
+  log_trace "RSUDO_NO_PASS_NEED = 1"
+  # echo password to sudo and if terminal is not interactive, reattach stdin
+  (echo "$RSUDO_PASSWORD"; [ ! -t 0 ] && cat) | setsid ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" "$RSUDO_SSH_COMMAND_PREFIX" "$@"
+fi
+
+EXIT_CODE="$?"
+
+log_info "RSUDO ENDED: HOST=$RSUDO_HOST - USER=$RSUDO_USER"
+
+exit "$EXIT_CODE"
+
+#------------------------------------------------------------------------------

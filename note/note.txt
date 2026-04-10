@@ -2,15 +2,30 @@
 --------------------------------------------------------------------------------
 m install review m dirs and test m install from scratch online (with certs support)
 m install and pkg have /m/app and /m/bin hardcoded, pkg has also pkg/conf/home -> parametrize all m paths
-rsudo: re-project for optimal architecture and modularization (env: rsudo $@, env: rsudo-n $name $@, cmd+tty: rsudo-c $host $user $@)
-rsudo modules job, apisix, keycloak
-rsudo file manager
 log lib + command
 pkg install support app launchers env vars (one for all alunchers) specific command line options for each launcher
 pkg install implement move and link conf from home (with support of files not yet created!)
 pkg uninstall eventually data home + postgres
 pkg conf review: chromium sandbox, firefox, gson, madedit-mod
 find best file manager PCManFM-Qt, make madedit work copy/paste
+
+rsudo: re-project for optimal architecture and modularization (env: rsudo $@, env: rsudo-n $name $@, cmd+tty: rsudo-c $host $user $@)
+rsudo modules job, apisix, keycloak
+rsudo file manager
+rsudoenv can only be sourced and used by some modules, not a common lib, must be within rsudo commands (used only by exec, shell, script/job)
+rsudo-core is the only one that does the connections
+rsudo-mods are higher level scripts/commands that use rsudo-core and are called directly (no more rsudo hub command and more clean to extend mods)
+rsudo-shell is the interactive shell with sourced libs and imported credentials
+rsudo-script/job is the not interactive shell with sourced libs and imported credentials and a not interactive script
+use env lib tricks like for term export and make a trick to provide env by cat heredoc envs + cat heredoc script that allows all
+vars to ssh connection and try to use it also for interactive connection
+rsudo $@, rsudoenv_exec $name $@ (lib), rsudoex $host $user $@ (pass by tty), rsudosh $@ (env files), rsudojob $@ (script files)
+without hub rsudoenv_exec and rsudoex should not call directly rsudo? what about modules? should hub be implemented into those commands???
+with hub rsudoenv_exec and rsudoex can easily chain into any command, but all commands are too interdependent!
+another option: rsudo no hub, rsudoenv_exec and rsudoex chain into rsudo-hub that does the proper dispatching
+another option rsudo pure nohub, rsudomod / rsudox is a hub for submodules and pure rsudo
+problem arises only for rsudoex / rsudo-exec because is a standalone command (and own env), rsudoenv_exec can be eliminated?
+-> rsudox as hub to core and mods and any command that need to chain, will use this
 
 !!! keycloak userinfo + roles
 keycloak change totp provider key

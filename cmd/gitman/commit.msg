@@ -1,1 +1,1 @@
-rsudo no args = interactive session as sudo su
+rsudo commands renaming

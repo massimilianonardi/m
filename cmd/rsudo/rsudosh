@@ -2,9 +2,12 @@
 
 # loads rsudo lib and optionally file arguments are decoded and loaded, then start a new shell with the constructed environment
 
-. rsudo.lib.sh
+. log.lib.sh
+. rsudoenv.lib.sh
 
 #------------------------------------------------------------------------------
+
+log_info "RSUDO SHELL - START"
 
 while [ "$#" -gt "0" ]
 do
@@ -13,3 +16,5 @@ do
 done
 
 bash
+
+log_info "RSUDO SHELL - END"

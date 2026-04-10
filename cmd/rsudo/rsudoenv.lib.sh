@@ -88,6 +88,28 @@ rsudoenv_unset()
   eval "log_trace \"rsudoenv_set: RSUDO_ENV_${1}_HOST=\$RSUDO_ENV_${1}_HOST | RSUDO_ENV_${1}_USER=\$RSUDO_ENV_${1}_USER | RSUDO_ENV_${1}_PASS=\$RSUDO_ENV_${1}_PASS\""
 }
 
+rsudoenv_reset()
+{
+  export RSUDO_HOST="$1"
+  shift
+
+  export RSUDO_USER="$1"
+  shift
+
+  RSUDO_PASSWORD="$(readpass "[rsudo] Enter password for ${RSUDO_USER}@${RSUDO_HOST}:")"
+
+  if [ -z "$RSUDO_PASSWORD" ]
+  then
+    log_fatal "password cannot be empty"
+    exit 1
+  fi
+
+  export RSUDO_PASSWORD
+
+  log_debug "RSUDO STARTED: RSUDO_HOST=$RSUDO_HOST - RSUDO_USER=$RSUDO_USER - RSUDO_PASSWORD(availability)=$([ -n "$RSUDO_PASSWORD" ] && echo "yes" || echo "no")"
+  log_trace "RSUDO STARTED: RSUDO_HOST=$RSUDO_HOST - RSUDO_USER=$RSUDO_USER - RSUDO_PASSWORD=$RSUDO_PASSWORD"
+}
+
 rsudoenv_exec()
 {
   (

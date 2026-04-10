@@ -4,6 +4,7 @@
 # always asks for password, sets environment vars and the executes rsudo with rsudo_args
 
 . log.lib.sh
+. rsudoenv.lib.sh
 
 #------------------------------------------------------------------------------
 
