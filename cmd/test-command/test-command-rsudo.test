@@ -35,7 +35,7 @@ test_rsudo()
   export RSUDO_USER="$USER"
 
   # export RSUDO_PASSWORD="qwe123"
-  export RSUDO_PASSWORD="$(readpass "enter rsudo test password:")"
+  # export RSUDO_PASSWORD="$(readpass "enter rsudo test password:")"
 
   # rsudo ######################################################################
   # # ask for password if not available in env
@@ -47,7 +47,8 @@ test_rsudo()
   # # commands from pipe
   # echo "ls -lA" | rsudo
 
-  # # error no command from arg or pipe
+  # # no command from arg or pipe => start an interactive ssh session
+  rsudo
   # rsudo ""
 
   # # command from arg wich receives input from pipe
@@ -56,7 +57,8 @@ test_rsudo()
   # command from heredoc are streamed through pipe to ssh, thus input from pipe is discarded (by posix sh design)
 #   echo "ls -lA" | rsudo << EOF
 # # for above reasons eventual password could only be streamed inside heredoc (not proper way to do)
-# pwd; cat
+# pwd
+# cat # not printing anything for the reasons above
 # EOF
 
   # correct way to combine stdin commands with commands from heredoc (heredoc and stdin commands cannot access stdin)
@@ -66,41 +68,50 @@ test_rsudo()
 # echo "end of cat"
 # EOF
 
+  # this version uses strict heredoc (no vars interpreted) and set vars from cmd line then available inside heredoc
 #   (echo 'echo "ls -lA"'; echo "cat"; echo 'var="test value"'; cat << 'EOF'; echo "echo after heredoc") | rsudo
 # pwd; cat
 # echo "var=$var"
 # echo "end of cat"
 # EOF
 
-  # correct way to provide password (RSUDO_PASSWORD must already be defined or echoed directly without variable)
-  # and combine stdin commands with commands from heredoc
+  # wrong way to provide password because RSUDO_PASSWORD or is already be defined, or is null
+#   and combine stdin commands with commands from heredoc
 #   (echo "$RSUDO_PASSWORD"; echo 'echo "ls -lA"'; cat << EOF) | rsudo
 # pwd; cat
 # echo "end of cat"
 # EOF
 
-#   (echo "ls -lA"; cat /dev/stdin << EOF) | cat
-#   test
-# EOF
-
+  # shell interpretation tricks
   # rsudo sh -c "ls -ld"
+  # rsudo whoami && whoami
+  # rsudo 'whoami && whoami'
+  # rsudo whoami && rsudo whoami
+  # rsudo sh -c 'whoami && whoami'
+#   rsudo << 'EOF'
+# pwd
+# whoami && whoami
+# echo "multiple commands and shell reserverd characters"
+# EOF
+#   rsudo << 'EOF_1' << 'EOF_2'
+# echo "multiple heredocs: 1" # ignored
+# EOF_1
+# echo "multiple heredocs: 2"
+# EOF_2
+#   (cat << EOF_vars; cat << 'EOF_script') | rsudo
+# var_1="multiple heredocs: 1"
+# var_2="multiple heredocs: 2"
+# EOF_vars
+# echo "var_1=$var_1"
+# echo "var_2=$var_2"
+# EOF_script
 
   # rsudo --exec ###############################################################
   # rsudo --exec "10.100.0.180" "mnardi" ls -la
   # rsudo --exec "10.100.0.180" "mnardi" -- ls -la
 
-  # rsudo --int ################################################################
-  # rsudo --int oneshot
-  rsudo
-  # rsudo --int genkey "my_key_name" "/tmp/rsudo_ssh_key"
-  # rsudo --int putkey "/tmp/rsudo_ssh_key.pub"
-  # ssh -i "/tmp/rsudo_ssh_key" "$RSUDO_USER@$RSUDO_HOST"
-  # # ssh -vvv -p 22222 -i "/tmp/rsudo_ssh_key" "$RSUDO_USER@$RSUDO_HOST"
-  # # ssh -p 22222 -i "/tmp/rsudo_ssh_key" "$RSUDO_USER@$RSUDO_HOST"
-  # # sudo /usr/sbin/sshd -ddd -D -p 22222
-  # rm -f "/tmp/rsudo_ssh_key"
-  # rm -f "/tmp/rsudo_ssh_key.pub"
-  # rsudo --core2 bash
+  # rsudo --fs ################################################################
+  # rsudo --fs
 
   # rsudo --db-pg ##############################################################
   # SQL_QUERY="select * from pg_catalog.pg_tables where tablespace = 'pg_global';"

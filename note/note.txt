@@ -2,7 +2,7 @@
 --------------------------------------------------------------------------------
 m install review m dirs and test m install from scratch online (with certs support)
 m install and pkg have /m/app and /m/bin hardcoded, pkg has also pkg/conf/home -> parametrize all m paths
-rsudo --int (find better name): if not user rsudo key then generate, if remote user not have rsudo key upload it, if remote server does not allo keys, upload conf extension
+rsudo: re-project for optimal architecture and modularization (env: rsudo $@, env: rsudo-n $name $@, cmd+tty: rsudo-c $host $user $@)
 rsudo modules job, apisix, keycloak
 rsudo file manager
 log lib + command

@@ -34,11 +34,17 @@ then
   if [ -t 0 ]
   then
     log_info "rsudo starting interactive session"
-    
+
     export SSH_ASKPASS="${0}"
     export SSH_ASKPASS_REQUIRE="force"
 
-    ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST"
+    # ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST"
+    # ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" "RSUDO_PASSWORD=\"$RSUDO_PASSWORD\"" bash
+    # ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" "RSUDO_PASSWORD=\"$RSUDO_PASSWORD\" bash"
+    # ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" "R=\"echo '$RSUDO_PASSWORD' | sudo -S --prompt='' -- true; sudo su; exit\" bash"
+    # ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" "R=\"echo '$RSUDO_PASSWORD' | sudo -S --prompt='' -- true; sudo su; exit\" bash -ic 'eval \$R'"
+    # ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" "bash -ic 'echo '$RSUDO_PASSWORD' | sudo -S --prompt='' -- true; sudo su; exit'"
+    ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" bash -ic "\"echo '$RSUDO_PASSWORD' | sudo -S --prompt='' -- true; sudo su; exit\""
     EXIT_CODE="$?"
 
     log_info "RSUDO ENDED: HOST=$RSUDO_HOST - USER=$RSUDO_USER"

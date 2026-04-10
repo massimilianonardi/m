@@ -1,5 +1,16 @@
 #!/bin/sh
 
+  # rsudo --int genkey "my_key_name" "/tmp/rsudo_ssh_key"
+  # rsudo --int putkey "/tmp/rsudo_ssh_key.pub"
+  # ssh -i "/tmp/rsudo_ssh_key" "$RSUDO_USER@$RSUDO_HOST"
+  # # ssh -vvv -p 22222 -i "/tmp/rsudo_ssh_key" "$RSUDO_USER@$RSUDO_HOST"
+  # # ssh -p 22222 -i "/tmp/rsudo_ssh_key" "$RSUDO_USER@$RSUDO_HOST"
+  # # sudo /usr/sbin/sshd -ddd -D -p 22222
+  # rm -f "/tmp/rsudo_ssh_key"
+  # rm -f "/tmp/rsudo_ssh_key.pub"
+  # rsudo --core2 bash
+
+
 # interactive using temp ssh keys, removed at session end
 # one shot: gen keys with rsudo pass, mod sshd conf, put pub key, connect, remove pub key, restore sshd conf, remove keys
 
