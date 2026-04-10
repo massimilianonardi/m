@@ -47,8 +47,8 @@ test_rsudo()
   # # commands from pipe
   # echo "ls -lA" | rsudo
 
-  # # no command from arg or pipe => start an interactive ssh session
-  rsudo
+  # # no command from arg or pipe => start an interactive ssh session into sudo su bash
+  # rsudo
   # rsudo ""
 
   # # command from arg wich receives input from pipe
