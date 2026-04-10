@@ -1,10 +1,61 @@
 #!/bin/sh
 
 # interactive using temp ssh keys, removed at session end
+# one shot: gen keys with rsudo pass, mod sshd conf, put pub key, connect, remove pub key, restore sshd conf, remove keys
 
 . log.lib.sh
 
 #------------------------------------------------------------------------------
+
+if [ "$(ps -o "comm=" -p "$PPID")" = "ssh" ]
+then
+  echo "$RSUDO_PASSWORD"
+  log_debug "rsudo askpass called by ssh! RSUDO_PASSWORD availability=$([ -n "$RSUDO_PASSWORD" ] && echo "yes" || echo "no")"
+  exit 0
+fi
+
+#------------------------------------------------------------------------------
+
+oneshot()
+{
+  RSUDO_UID="rsudo_uid_$(date +"%Y%m%d_%H%M%S")_$$"
+  log_trace "oneshot: RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER | RSUDO_PASSWORD=$RSUDO_PASSWORD | RSUDO_UID=$RSUDO_UID"
+
+  if [ -z "$RSUDO_HOST" ] || [ -z "$RSUDO_USER" ] || [ -z "$RSUDO_PASSWORD" ]
+  then
+    log_fatal "HOST=$RSUDO_HOST - USER=$RSUDO_USER - RSUDO_PASSWORD(availability)=$([ -n "$RSUDO_PASSWORD" ] && echo "yes" || echo "no")"
+    exit 1
+  fi
+
+  # SSH_KEY_FILE="$(pwd)/${RSUDO_UID}_key"
+  SSH_KEY_FILE="/tmp/${RSUDO_UID}_key"
+  SSHD_CONF_FILE="/etc/ssh/sshd_config.d/${RSUDO_UID}_sshd.conf"
+  SSHD_AUTHORIZED_KEY_FILE="/etc/ssh/sshd_config.d/${RSUDO_UID}_sshd_authorized_key"
+
+# export SSH_ASKPASS="${0}"
+# export SSH_ASKPASS_REQUIRE="force"
+
+  # ssh-keygen -q -t ed25519 -C "$RSUDO_UID" -N "$RSUDO_PASSWORD" -f "$SSH_KEY_FILE" && \
+  # ssh-keygen -q -t ed25519 -C "$RSUDO_UID" -N "" -f "$SSH_KEY_FILE" && \
+  ssh-keygen -q -t ed25519 -C "$RSUDO_UID" -N "$RSUDO_PASSWORD" -f "$SSH_KEY_FILE" && \
+  chmod 600 "$SSH_KEY_FILE" && \
+  cat "${SSH_KEY_FILE}.pub" | rsudo sh -c "cat > $SSHD_AUTHORIZED_KEY_FILE" && \
+  (
+  cat << EOF | rsudo sh -c "cat > $SSHD_CONF_FILE"
+PubkeyAuthentication yes
+AuthorizedKeysFile $SSHD_AUTHORIZED_KEY_FILE
+EOF
+  ) && \
+  rsudo sshd -t && rsudo systemctl reload ssh && \
+  ssh -o 'StrictHostKeyChecking no' -i "$SSH_KEY_FILE" -l "$RSUDO_USER" "$RSUDO_HOST"
+  rsudo rm -f "$SSHD_CONF_FILE" && \
+  rsudo rm -f "$SSHD_AUTHORIZED_KEY_FILE" && \
+  rsudo sshd -t && rsudo systemctl reload ssh && \
+  rm -f "$SSH_KEY_FILE" && \
+  rm -f "${SSH_KEY_FILE}.pub"
+}
+
+#-------------------------------------------------------------------------------
 
 genkey()
 {

@@ -90,13 +90,17 @@ test_rsudo()
   # rsudo --exec "10.100.0.180" "mnardi" -- ls -la
 
   # rsudo --int ################################################################
-  rsudo --int genkey "my_key_name" "/tmp/rsudo_ssh_key"
-  rsudo --int putkey "/tmp/rsudo_ssh_key.pub"
-  ssh -i "/tmp/rsudo_ssh_key" "$RSUDO_USER@$RSUDO_HOST"
-  # ssh -vvv -p 22222 -i "/tmp/rsudo_ssh_key" "$RSUDO_USER@$RSUDO_HOST"
-  # ssh -p 22222 -i "/tmp/rsudo_ssh_key" "$RSUDO_USER@$RSUDO_HOST"
-  rm -f "/tmp/rsudo_ssh_key"
-  rm -f "/tmp/rsudo_ssh_key.pub"
+  # rsudo --int oneshot
+  rsudo
+  # rsudo --int genkey "my_key_name" "/tmp/rsudo_ssh_key"
+  # rsudo --int putkey "/tmp/rsudo_ssh_key.pub"
+  # ssh -i "/tmp/rsudo_ssh_key" "$RSUDO_USER@$RSUDO_HOST"
+  # # ssh -vvv -p 22222 -i "/tmp/rsudo_ssh_key" "$RSUDO_USER@$RSUDO_HOST"
+  # # ssh -p 22222 -i "/tmp/rsudo_ssh_key" "$RSUDO_USER@$RSUDO_HOST"
+  # # sudo /usr/sbin/sshd -ddd -D -p 22222
+  # rm -f "/tmp/rsudo_ssh_key"
+  # rm -f "/tmp/rsudo_ssh_key.pub"
+  # rsudo --core2 bash
 
   # rsudo --db-pg ##############################################################
   # SQL_QUERY="select * from pg_catalog.pg_tables where tablespace = 'pg_global';"

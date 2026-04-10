@@ -33,17 +33,8 @@ then
   log_trace "rsudo no args"
   if [ -t 0 ]
   then
-    log_info "rsudo starting interactive session"
-    
-    export SSH_ASKPASS="${0}"
-    export SSH_ASKPASS_REQUIRE="force"
-
-    ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST"
-    EXIT_CODE="$?"
-
-    log_info "RSUDO ENDED: HOST=$RSUDO_HOST - USER=$RSUDO_USER"
-
-    exit "$EXIT_CODE"
+    log_fatal "rsudo no args + in/out attached to terminal and not pipes"
+    exit 1
   fi
 
   log_trace "rsudo no args -> set command as /bin/sh -s (execute stream commands)"
