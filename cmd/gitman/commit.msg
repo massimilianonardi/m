@@ -1,1 +1,1 @@
-rsudo commands renaming
+rsudo commands architecture almost final

@@ -19,13 +19,9 @@ rsudo-shell is the interactive shell with sourced libs and imported credentials
 rsudo-script/job is the not interactive shell with sourced libs and imported credentials and a not interactive script
 use env lib tricks like for term export and make a trick to provide env by cat heredoc envs + cat heredoc script that allows all
 vars to ssh connection and try to use it also for interactive connection
-rsudo $@, rsudoenv_exec $name $@ (lib), rsudoex $host $user $@ (pass by tty), rsudosh $@ (env files), rsudojob $@ (script files)
-without hub rsudoenv_exec and rsudoex should not call directly rsudo? what about modules? should hub be implemented into those commands???
-with hub rsudoenv_exec and rsudoex can easily chain into any command, but all commands are too interdependent!
-another option: rsudo no hub, rsudoenv_exec and rsudoex chain into rsudo-hub that does the proper dispatching
-another option rsudo pure nohub, rsudomod / rsudox is a hub for submodules and pure rsudo
-problem arises only for rsudoex / rsudo-exec because is a standalone command (and own env), rsudoenv_exec can be eliminated?
--> rsudox as hub to core and mods and any command that need to chain, will use this
+rsudo $@, rsudosubmod $@, rsudox $connection_args $@, rsudosh $env files, rsudojob $script files
+submodules are high level commands that combine rsudo commands and do not need rsudoenv.lib.sh
+commands provide complex operations involving lib (this is the discrimination), submodules, rsudo and other commands
 
 !!! keycloak userinfo + roles
 keycloak change totp provider key
