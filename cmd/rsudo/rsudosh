@@ -9,11 +9,7 @@
 
 log_info "RSUDO SHELL - START"
 
-while [ "$#" -gt "0" ]
-do
-  rsudoenv load "$1"
-  shift
-done
+rsudoenv load "$@"
 
 bash
 
