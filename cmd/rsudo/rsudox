@@ -7,7 +7,8 @@
 rsudoenv_get "$1"
 shift
 
-if [ -f "rsudo-${1}" ]
+# if command -v "rsudo-${1}" > /dev/null
+if command -v "rsudo-${1}"
 then
   rsudo-"$@"
 else

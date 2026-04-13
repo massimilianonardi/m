@@ -20,11 +20,17 @@ rsudoenv_pass()
 # load $files - load each encoded $files (password from env)
 rsudoenv_load()
 {
+  log_debug "rsudoenv_load: $@"
   while [ "$#" -gt "0" ]
   do
-    log_echo "rsudoenv_load '$1'"
+    log_echo "rsudoenv_load: '$1'"
     if ! ENC_PASS="$RSUDO_ENC_PASS" encoded_file_import "$1"
     then
+      log_error "rsudoenv_load: cannot load '$1'"
+      shift
+      log_trace "rsudoenv_load: keep trying loading: $@"
+      # this recursion allows to keep loading files, while returning error at the end without polluting environment variables
+      rsudoenv_load "$@"
       return 1
     fi
     shift
@@ -88,7 +94,7 @@ rsudoenv_get()
     log_debug "rsudoenv_get: ARG=$1 - ENV_ENCODED_FILE=$([ "$1" = "${1%:*}" ] && echo "" || echo "${1%:*}") - ENV_GROUP_NAME=${1#*:}"
     if [ "${1%:*}" != "$1" ] && ! rsudoenv_load "${1%:*}" || [ -z "${1%:*}" ]
     then
-      log_warn "env file not provided, searching into current env."
+      log_warn "env file not provided, or not found, searching into current env."
     fi
 
     set -- "${1#*:}"

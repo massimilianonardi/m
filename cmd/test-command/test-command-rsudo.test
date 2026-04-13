@@ -81,23 +81,6 @@ test_rsudo()
 # EOF_script
 
   # rsudo.lib.sh ###############################################################
-
-  # rsudox #####################################################################
-  # rsudox "mnardi@10.100.0.180" ls -la
-  # rsudox "myhost" ls -la
-  # rsudox "/tmp/rsudoenv_vars.enc:myhost" ls -la
-
-  # rsudo-fs ###################################################################
-  # rsudo-fs
-
-  # rsudo-db-pg ################################################################
-  # SQL_QUERY="select * from pg_catalog.pg_tables where tablespace = 'pg_global';"
-  # SQL_QUERY="select * from pg_catalog.pg_tables limit 5;"
-  # rsudo-db-pg sql postgres "$SQL_QUERY"
-  # echo "$SQL_QUERY" | rsudo-db-pg sql postgres
-  # rsudo-db-pg sql postgres select \* from pg_catalog.pg_tables limit 5\;
-
-  # rsudo.lib.sh ###############################################################
   . rsudo.lib.sh
 
   # # set myhost from current
@@ -139,6 +122,32 @@ test_rsudo()
   # echo "step_10"; env | grep "RSUDO" | sort
   # rsudoenv get "@myhost_2"
   # echo "step_11"; env | grep "RSUDO" | sort
+
+  # rsudo-fs ###################################################################
+  # rsudo-fs
+
+  # rsudo-db-pg ################################################################
+  # SQL_QUERY="select * from pg_catalog.pg_tables where tablespace = 'pg_global';"
+  # SQL_QUERY="select * from pg_catalog.pg_tables limit 5;"
+  # rsudo-db-pg sql postgres "$SQL_QUERY"
+  # echo "$SQL_QUERY" | rsudo-db-pg sql postgres
+  # rsudo-db-pg sql postgres select \* from pg_catalog.pg_tables limit 5\;
+
+  # rsudosh ####################################################################
+  # rsudosh file_1 file_2 file_3 file_4 file_5
+  # rsudoenv set "myhost"
+  # rsudoenv pass "store pass for enc/dec next files"
+  # rsudoenv save "/tmp/rsudoenv_vars.enc"
+  # rsudosh file_1 file_2 "/tmp/rsudoenv_vars.enc" file_4 file_5
+  # rm -f "/tmp/rsudoenv_vars.enc"
+
+  # rsudox #####################################################################
+  # rsudox "mnardi@10.100.0.180" ls -la
+  # rsudox "myhost" ls -la
+  # rsudox "/tmp/rsudoenv_vars.enc:myhost" ls -la
+  rsudoenv set "myhost"
+  echo "step_12"; env | grep "RSUDO" | sort
+  rsudox "myhost" db-pg sql postgres "select * from pg_catalog.pg_tables limit 5;"
 
 
 

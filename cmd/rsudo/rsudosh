@@ -11,6 +11,11 @@ log_info "RSUDO SHELL - START"
 
 rsudoenv load "$@"
 
+if [ "$?" != "0" ]
+then
+  log_error "RSUDO SHELL - some files could not be loaded"
+fi
+
 bash
 
 log_info "RSUDO SHELL - END"
