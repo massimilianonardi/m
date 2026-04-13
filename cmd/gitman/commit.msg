@@ -1,1 +1,1 @@
-rsudo commands architecture almost final
+rsudox, rusudo.lib.sh complete working

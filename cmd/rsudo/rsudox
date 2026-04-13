@@ -1,5 +1,15 @@
 #!/bin/sh
 
-. rsudoenv.lib.sh
+# rsudox $connection_args $rsudo_args - resolves $connection_args and executes proper rsudo or rsudo-* command without changing current env
 
-rsudoenv_connect "$@"
+. rsudo.lib.sh
+
+rsudoenv_get "$1"
+shift
+
+if [ -f "rsudo-${1}" ]
+then
+  rsudo-"$@"
+else
+  rsudo "$@"
+fi

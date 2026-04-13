@@ -2,29 +2,29 @@
 
 #------------------------------------------------------------------------------
 
-# encodes stdin to stdout (password can be provided through environmental variable OPENSSL_PASS)
+# encodes stdin to stdout (password can be provided through environmental variable ENC_PASS)
 
 encode()
 {
-  if [ -z "$OPENSSL_PASS" ]
+  if [ -z "$ENC_PASS" ]
   then
     openssl enc -e -aes-256-cbc -pbkdf2
   else
-    openssl enc -e -aes-256-cbc -pbkdf2 -pass "env:OPENSSL_PASS"
+    openssl enc -e -aes-256-cbc -pbkdf2 -pass "env:ENC_PASS"
   fi
 }
 
 #------------------------------------------------------------------------------
 
-# decodes stdin to stdout (password can be provided through environmental variable OPENSSL_PASS)
+# decodes stdin to stdout (password can be provided through environmental variable ENC_PASS)
 
 decode()
 {
-  if [ -z "$OPENSSL_PASS" ]
+  if [ -z "$ENC_PASS" ]
   then
     openssl enc -d -aes-256-cbc -pbkdf2
   else
-    openssl enc -d -aes-256-cbc -pbkdf2 -pass "env:OPENSSL_PASS"
+    openssl enc -d -aes-256-cbc -pbkdf2 -pass "env:ENC_PASS"
   fi
 }
 

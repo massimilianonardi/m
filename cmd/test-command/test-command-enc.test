@@ -47,7 +47,7 @@ test_enc()
   # echo ""
   # printf "$test_string" | a2o | o2a
 
-  export OPENSSL_PASS="test_password"
+  export ENC_PASS="test_password"
 
   printf "$test_string" | encode
   echo ""

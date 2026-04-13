@@ -80,9 +80,12 @@ test_rsudo()
 # echo "var_2=$var_2"
 # EOF_script
 
-  # rsudo-exec #################################################################
-  # rsudo-exec "10.100.0.180" "mnardi" ls -la
-  # rsudo-exec "10.100.0.180" "mnardi" -- ls -la
+  # rsudo.lib.sh ###############################################################
+
+  # rsudox #####################################################################
+  # rsudox "mnardi@10.100.0.180" ls -la
+  # rsudox "myhost" ls -la
+  # rsudox "/tmp/rsudoenv_vars.enc:myhost" ls -la
 
   # rsudo-fs ###################################################################
   # rsudo-fs
@@ -94,19 +97,55 @@ test_rsudo()
   # echo "$SQL_QUERY" | rsudo-db-pg sql postgres
   # rsudo-db-pg sql postgres select \* from pg_catalog.pg_tables limit 5\;
 
-  # rsudoenv ###################################################################
-  # . rsudo-env.lib.sh
-  # rsudoenv set "myhost" "10.100.0.180" "mnardi" "mypass"
-  # rsudoenv get "myhost"
-  # rsudoenv set "myhost_2" "10.100.0.182" "mnardi_2" "mypass_2"
-  # rsudoenv get "myhost_2"
-  # rsudoenv set "myhost" "10.100.0.180" "mnardi" "$(readpassv "enter-pass" "enter-pass-verify" "pass-verify-error")"
-  # rsudoenv get "myhost"
+  # rsudo.lib.sh ###############################################################
+  . rsudo.lib.sh
 
+  # # set myhost from current
+  # rsudoenv set "myhost"
+  # echo "step_1"; env | grep "RSUDO" | sort
+  # # copy myhost into myhost_2
+  # RSUDO_HOST="fake_host" RSUDO_USER="fake_user" RSUDO_PASSWORD="fake_pass" rsudoenv set "myhost_2" "myhost"
+  # echo "step_2"; env | grep "RSUDO" | sort
+  # # delete myhost_2
+  # rsudoenv unset "myhost_2"
+  # echo "step_3"; env | grep "RSUDO" | sort
+  # # delete current
+  # rsudoenv unset
+  # echo "step_4"; env | grep "RSUDO" | sort
+  # # set current from myhost
+  # rsudoenv get "myhost"
+  # echo "step_5"; env | grep "RSUDO" | sort
+  # # save and edit test
+  # rsudoenv pass "store pass for enc/dec next files"
+  # rsudoenv set "myhost_2" "myhost"
   # rsudoenv save "/tmp/rsudoenv_vars.enc"
   # rsudoenv edit "/tmp/rsudoenv_vars.enc"
   # rsudoenv editor "gnome-text-editor"
   # rsudoenv edit "/tmp/rsudoenv_vars.enc"
+  # rsudoenv unset
+  # rsudoenv unset "myhost"
+  # echo "step_6"; env | grep "RSUDO" | sort
+  # rsudoenv get "/tmp/rsudoenv_vars.enc:myhost"
+  # echo "step_7"; env | grep "RSUDO" | sort
+  # rsudoenv unset
+  # rsudoenv unset "myhost"
+  # rsudoenv get "/tmp/rsudoenv_vars.enc:myhost"
+  # echo "step_8"; env | grep "RSUDO" | sort
+  # rsudoenv unset
+  # rsudoenv get ":myhost"
+  # echo "step_9"; env | grep "RSUDO" | sort
+  # rm -f "/tmp/rsudoenv_vars.enc"
+  # rsudoenv get "myuser@myhost"
+  # echo "step_10"; env | grep "RSUDO" | sort
+  # rsudoenv get "@myhost_2"
+  # echo "step_11"; env | grep "RSUDO" | sort
+
+
+
+  # echo "step_3"; env | grep "RSUDO" | sort
+  # echo "step_4"; env | grep "RSUDO" | sort
+  # echo "step_5"; env | grep "RSUDO" | sort
+  # echo "step_6"; env | grep "RSUDO" | sort
 
   # rsudoenv set "myhost" "10.100.0.180" "mnardi" "$(readpassv "enter-pass" "enter-pass-verify" "pass-verify-error")"
   # rsudoenv exec "myhost" ls -la

@@ -3,7 +3,7 @@
 # loads rsudo lib and optionally file arguments are decoded and loaded, then start a new shell with the constructed environment
 
 . log.lib.sh
-. rsudoenv.lib.sh
+. rsudo.lib.sh
 
 #------------------------------------------------------------------------------
 
