@@ -1,1 +1,1 @@
-rsudosh, rsudox complete working
+note linux processes command line and environment tracking

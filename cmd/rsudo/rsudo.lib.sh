@@ -12,6 +12,7 @@ rsudoenv()
   rsudoenv_"$@"
 }
 
+# pass - asks user on tty for encoding/decoding password to keep in env for silent operations
 rsudoenv_pass()
 {
   export RSUDO_ENC_PASS="$(readpass "[rsudoenv] enter $([ -z "$1" ] && echo "DEFAULT" || echo "'$1'") encoding/decoding password")"
@@ -53,11 +54,13 @@ rsudoenv_save()
   env_return export $(env_list "RSUDO_ENV") | ENC_PASS="$RSUDO_ENC_PASS" encode > "$1"
 }
 
+# sets the editor to use when calling edit
 rsudoenv_editor()
 {
   export RSUDO_ENV_EDITOR="$1"
 }
 
+# edit $file - calls the current editor (default is nano) to decode, edit and reencode $file
 rsudoenv_edit()
 {
   (
