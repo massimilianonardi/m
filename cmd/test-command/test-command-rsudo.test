@@ -123,6 +123,9 @@ test_rsudo()
   # rsudoenv get "@myhost_2"
   # echo "step_11"; env | grep "RSUDO" | sort
 
+  # rsudo-export ###############################################################
+  rsudo-export LOG_LEVEL -- echo "inside rsudo session: LOG_LEVEL=$LOG_LEVEL"
+
   # rsudo-fs ###################################################################
   # rsudo-fs
 
@@ -145,20 +148,11 @@ test_rsudo()
   # rsudox "mnardi@10.100.0.180" ls -la
   # rsudox "myhost" ls -la
   # rsudox "/tmp/rsudoenv_vars.enc:myhost" ls -la
-  rsudoenv set "myhost"
-  echo "step_12"; env | grep "RSUDO" | sort
-  rsudox "myhost" db-pg sql postgres "select * from pg_catalog.pg_tables limit 5;"
+  # rsudoenv set "myhost"
+  # echo "step_12"; env | grep "RSUDO" | sort
+  # rsudox "myhost" db-pg sql postgres "select * from pg_catalog.pg_tables limit 5;"
 
-
-
-  # echo "step_3"; env | grep "RSUDO" | sort
-  # echo "step_4"; env | grep "RSUDO" | sort
-  # echo "step_5"; env | grep "RSUDO" | sort
-  # echo "step_6"; env | grep "RSUDO" | sort
-
-  # rsudoenv set "myhost" "10.100.0.180" "mnardi" "$(readpassv "enter-pass" "enter-pass-verify" "pass-verify-error")"
-  # rsudoenv exec "myhost" ls -la
-  # rsudoenv exec "myhost" -- ls -la /
+#-------------------------------------------------------------------------------
 
   # rsudoenv set "myhost" "10.100.0.180" "mnardi" "mypass"
   # rsudoenv save "/tmp/rsudoenv_vars.enc"

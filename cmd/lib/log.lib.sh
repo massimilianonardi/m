@@ -70,6 +70,12 @@ log_trace()
 
 log_level()
 {
+  if [ -z "$1" ]
+  then
+    log_fatal "log_level: empty arg"
+    return 1
+  fi
+
   LOG_LEVEL="$1"
   log_level_parse
 }
