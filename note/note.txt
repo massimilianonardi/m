@@ -11,8 +11,11 @@ find best file manager PCManFM-Qt, make madedit work copy/paste
 
 rsudo file manager
 use env lib tricks like for term export and make a trick to provide env by cat heredoc envs + cat heredoc script that allows all
-log, log lib, log messages abstraction formatting with vars suitable for lang, rsudojobs
-rsudo-env/rsudo-vars/rsudo-export command extension that exports a list of env vars to an rsudo ssh session (against sshd env limitation)
+rsudo-export command extension that exports a list of env vars to an rsudo ssh session (against sshd env limitation)
+rsudojobs one encoded file import many scripts + menu to internal functions that call external scripts + interactive ssh to each host + edit script on the fly
+rsudojobs $enc_file $script_files (eventually: $script_dir/*): menu of all scripts, enter=execute e=edit
+
+log, log lib, log messages abstraction formatting with vars suitable for lang
 
 !!! keycloak userinfo + roles
 keycloak change totp provider key

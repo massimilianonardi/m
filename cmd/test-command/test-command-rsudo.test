@@ -124,7 +124,9 @@ test_rsudo()
   # echo "step_11"; env | grep "RSUDO" | sort
 
   # rsudo-export ###############################################################
-  rsudo-export LOG_LEVEL -- echo "inside rsudo session: LOG_LEVEL=$LOG_LEVEL"
+  # rsudo-export LOG_LEVEL -- echo "inside rsudo session: LOG_LEVEL=$LOG_LEVEL"
+  TEST_EXPORT_VAR_1="test_val_1"; TEST_EXPORT_VAR_2="test_val_2"; TEST_EXPORT_VAR_3="test_val_3";
+  rsudo-export TEST_EXPORT_VAR_1 TEST_EXPORT_VAR_2 TEST_EXPORT_VAR_3 -- echo "inside rsudo session: TEST_EXPORT_VAR_1=$TEST_EXPORT_VAR_1 TEST_EXPORT_VAR_2=$TEST_EXPORT_VAR_2 TEST_EXPORT_VAR_3=$TEST_EXPORT_VAR_3"
 
   # rsudo-fs ###################################################################
   # rsudo-fs

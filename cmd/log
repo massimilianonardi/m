@@ -149,6 +149,9 @@ log_cleanup()
 
 log_exec()
 {
+  log_exec_all_to_stdout_and_stdout_stderr_stdall_to_files "$@"
+  exit "$?"
+
   if [ -n "$LOG_STDOUT" ]
   then
 # log_exec_all_to_stdout
