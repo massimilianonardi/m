@@ -297,6 +297,7 @@ install_symlinks()
       # ln -s "$PKG_INST_DEEPEST_DIR/$target" "$APP_SCRIPTS_ROOT_DIR/$launcher"
       cat << EOF > "$APP_SCRIPTS_ROOT_DIR/$launcher"
 #!/bin/sh
+$APP_ENV
 export APP_NAME="$PKG_NAME"
 export APP_FORK="$APP_FORK"
 pkg run "$PKG_INST_DEEPEST_DIR/$target" "\$@"

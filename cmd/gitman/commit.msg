@@ -1,1 +1,1 @@
-log, still to finish
+pkg run exec &, chromium conf sandbox fixed

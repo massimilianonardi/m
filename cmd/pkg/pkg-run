@@ -40,6 +40,10 @@ run()
   then
     "$PKG_NAME" "$@" &
     sleep 1
+  elif [ "$APP_FORK" = "exec" ]
+  then
+    exec "$PKG_NAME" "$@" &
+    sleep 1
   elif [ "$APP_FORK" = "screen" ]
   then
     screen -S app-session -d -m "$PKG_NAME" "$@"
