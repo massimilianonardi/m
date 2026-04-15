@@ -24,9 +24,9 @@ test_log()
 {
   . log.lib.sh
 
-  LOG_LEVEL="all"
-  log_warn "test command warn"
-  echo ""
+  export LOG_LEVEL="all"
+  # log_warn "test command warn"
+  # echo ""
   # test_log_echo
   # test_log_echo 1>/tmp/log_stdout.log 2>/tmp/log_stderr.log
   # test_log_echo | tee /tmp/log_stdout.log
@@ -50,32 +50,46 @@ test_log()
   echo "err: error 5"  1>&2
   echo "out: message 6"
   echo "err: error 6"  1>&2
+  exit 32
 EOF
 
   # cat /tmp/log_test
   chmod +x /tmp/log_test
   # /tmp/log_test
+
   # log -l all -- /tmp/log_test
   # log -l all -d /tmp -- /tmp/log_test
   # log -l all -d /tmp -n myname -- /tmp/log_test
   # log -l all -n myname -- /tmp/log_test
-  # log -l all -u -- /tmp/log_test
-  # log -l all -n myname -u -- /tmp/log_test
-  log -l all -d /tmp -n myname -u -- /tmp/log_test
+
+  # log -l all -d /tmp --quiet -- /tmp/log_test
+  # log -l all -d /tmp --files -- /tmp/log_test
+  # log -l all -d /tmp --unique -- /tmp/log_test
+  # log -l all -d /tmp --sync -- /tmp/log_test
+  # log -l all -d /tmp --bad-option -- /tmp/log_test
+  log
+
+  echo "EXIT_CODE=$?"
 
   echo "OUTPUT FILES:"
-  echo "log_stdout:"
-  cat /tmp/log_stdout.log
-  echo "log_stderr:"
-  cat /tmp/log_stderr.log
-  echo "log_stdall:"
-  cat /tmp/log_stdall.log
+  cat /tmp/*.log
 
-  rm -f /tmp/log_stdout.log
-  rm -f /tmp/log_stderr.log
-  rm -f /tmp/log_stdall.log
   rm -f /tmp/*.log
   rm -f /tmp/log_test
+
+  # echo "OUTPUT FILES:"
+  # echo "log_stdout:"
+  # cat /tmp/log_stdout.log
+  # echo "log_stderr:"
+  # cat /tmp/log_stderr.log
+  # echo "log_stdall:"
+  # cat /tmp/log_stdall.log
+  #
+  # rm -f /tmp/log_stdout.log
+  # rm -f /tmp/log_stderr.log
+  # rm -f /tmp/log_stdall.log
+  # rm -f /tmp/*.log
+  # rm -f /tmp/log_test
 }
 
 #-------------------------------------------------------------------------------
