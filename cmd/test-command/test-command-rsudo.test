@@ -14,6 +14,7 @@ test_rsudo()
   # rsudo ######################################################################
   # # ask for password if not available in env
   # rsudo ls -ld
+  # RSUDO_INTERACTIVE="true" rsudo ls -ld
 
   # # password from cmdline
   # echo "$RSUDO_PASSWORD" | rsudo ls -ld
@@ -131,7 +132,7 @@ test_rsudo()
   # rsudo2 bash
   # rsudo2 whoami \&\& ls -ld
   # echo "message from pipe" | rsudo2 cat
-  RSUDO_INTERACTIVE="true" rsudo3 top
+  # RSUDO_INTERACTIVE="true" rsudo3 top
   # RSUDO_INTERACTIVE="true" rsudo3 bash -ic 'read -p "x-var" x; echo "x=$x"'
   # rsudo3
 
