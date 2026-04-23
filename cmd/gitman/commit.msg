@@ -1,1 +1,1 @@
-log command complete
+rsudo interactive complete

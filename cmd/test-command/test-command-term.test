@@ -127,8 +127,8 @@ ZZZZZZZZZZZZZZZZZZZZZ
   # res="$(tui menu-file-rsudo "10.1.0.25" "mnardi" .)"
   # echo "res=$res"
 
-  res="$(tui text "$TEXT")"
-  echo "res=$res"
+  # res="$(tui text "$TEXT")"
+  # echo "res=$res"
 
   # file-enc-dec
 

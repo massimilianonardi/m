@@ -2,19 +2,20 @@
 --------------------------------------------------------------------------------
 m install review m dirs and test m install from scratch online (with certs support)
 m install and pkg have /m/app and /m/bin hardcoded, pkg has also pkg/conf/home -> parametrize all m paths
-pkg install support app launchers env vars (one for all alunchers) specific command line options for each launcher
 pkg install implement move and link conf from home (with support of files not yet created!)
 pkg uninstall eventually data home + postgres
-pkg conf review: chromium sandbox, firefox, gson, madedit-mod
+pkg conf review: firefox, gson, madedit-mod
 find best file manager PCManFM-Qt, make madedit work copy/paste
 
 rsudo file manager
+rsudo interactive add case when no pass is needed, currently works only if sudo requires password
 use env lib tricks like for term export and make a trick to provide env by cat heredoc envs + cat heredoc script that allows all
 rsudo-export command extension that exports a list of env vars to an rsudo ssh session (against sshd env limitation)
+rsudo-export check if attached to pipe or args passed
 rsudojobs one encoded file import many scripts + menu to internal functions that call external scripts + interactive ssh to each host + edit script on the fly
 rsudojobs $enc_file $script_files (eventually: $script_dir/*): menu of all scripts, enter=execute e=edit
 
-log, log lib, log messages abstraction formatting with vars suitable for lang
+log lib, log messages abstraction formatting with vars suitable for lang
 
 !!! keycloak userinfo + roles
 keycloak change totp provider key
