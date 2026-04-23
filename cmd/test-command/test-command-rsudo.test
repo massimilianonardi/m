@@ -20,7 +20,7 @@ test_rsudo()
   # echo "$RSUDO_PASSWORD" | rsudo ls -ld
 
   # # commands from pipe
-  # echo "ls -lA" | rsudo
+  echo "ls -lA" | rsudo
 
   # # no command from arg or pipe => start an interactive ssh session into sudo su bash
   # rsudo

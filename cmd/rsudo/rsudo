@@ -71,15 +71,26 @@ then
   SUDO_AS_USER="--user=\"$RSUDO_AS_USER\""
 fi
 
+if [ -t 0 ]
+then
+  RSUDO_PIPE="echo \"$RSUDO_PASSWORD\""
+else
+  RSUDO_PIPE="(echo \"$RSUDO_PASSWORD\"; cat)"
+fi
+
 RSUDO_SSH_COMMANDS="$(cat << VAR; cat << 'EOF'
   true
   RSUDO_PASSWORD="$RSUDO_PASSWORD"
   SUDO_AS_USER="$SUDO_AS_USER"
+  RSUDO_PIPE="$RSUDO_PIPE"
   set -- $@
 VAR
+echo "RSUDO_PASSWORD=$RSUDO_PASSWORD - SUDO_AS_USER=$SUDO_AS_USER - RSUDO_PIPE=$RSUDO_PIPE - args=$@"
   # echo "$RSUDO_PASSWORD" | sudo -S --prompt='' -- true
   # sudo $SUDO_AS_USER -- "$@"
-  echo "$RSUDO_PASSWORD" | sudo -S --prompt='' $SUDO_AS_USER -- "$@"
+  # echo "$RSUDO_PASSWORD" | sudo -S --prompt='' $SUDO_AS_USER -- "$@"
+  # build pipe command externally!!!
+  $RSUDO_PIPE | sudo -S --prompt='' $SUDO_AS_USER -- "$@"
 EOF
 )"
 
