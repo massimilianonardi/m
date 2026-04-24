@@ -12,7 +12,6 @@
 # RSUDO_INTERACTIVE
 
 . log.lib.sh
-. arg.lib.sh
 
 # the following lines are executed when ssh uses SSH_ASKPASS command
 # maximum security is guaranteed because explicit check that caller process is ssh and
@@ -79,23 +78,47 @@ then
   SUDO_AS_USER="--user=\"$RSUDO_AS_USER\""
 fi
 
-if [ "$RSUDO_INTERACTIVE" = "true" ]
+if [ -t 0 ]
 then
-  [ ! -t 0 ] && set -- "$(cat);" "$@"
-  echo "args=$@"
-  ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
-  echo "$RSUDO_PASSWORD" \| sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- sh -ic "whoami; echo test $@" </dev/tty
+  RSUDO_PIPE="echo \"$RSUDO_PASSWORD\""
 else
-  echo "args=$(saveargs "$@")"
-  (echo "$RSUDO_PASSWORD"; [ ! -t 0 ] && cat) | \
-  ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
-  sudo -S --prompt='' $SUDO_AS_USER -- "sh -c '$@'"
-  # sudo -S --prompt='' $SUDO_AS_USER -- "sh -c 'echo 0=\$0; $(saveargs "$@")'"
-  # sudo -S --prompt='' $SUDO_AS_USER -- sh -c 'echo "0=\$0 - args=\$@"; echo "second: 0=$0 - args=$@"'
-  # sudo -S --prompt='' $SUDO_AS_USER -- sh -c "$@"
-  # sudo -S --prompt='' $SUDO_AS_USER -- "$@"
+  RSUDO_PIPE="(echo \"$RSUDO_PASSWORD\"; cat)"
 fi
 
+# not interactive: echo pass; cat if pipe | ssh sudo -S sh -c args
+#     interactive: echo pass; cat if pipe | ssh sh -c 'sudo -S true; sudo args'
+# SUDO_COMMAND="'$RSUDO_PIPE | sudo -S --prompt='' $SUDO_AS_USER -- \"$@\"'"
+# SUDO_COMMAND="'$RSUDO_PIPE | sudo -S --prompt='' $SUDO_AS_USER -- $@'"
+SUDO_COMMAND="'$RSUDO_PIPE | sudo -S --prompt='' $SUDO_AS_USER -- sh -c ''$@'' '"
+if [ "$RSUDO_INTERACTIVE" = "true" ]
+then
+  # SSH_INTERACTIVE_SWITCH="-tt"
+  SSH_INTERACTIVE_SWITCH="-t"
+  SH_INTERACTIVE_SWITCH="-i"
+  # SUDO_COMMAND="'echo \"$RSUDO_PASSWORD\" | sudo -S --prompt='' -- true; sudo $SUDO_AS_USER -- \"$@\"'"
+  SUDO_COMMAND="'echo \"$RSUDO_PASSWORD\" | sudo -S --prompt='' -- true; sudo $SUDO_AS_USER -- $@'"
+fi
+
+# RSUDO_SSH_COMMANDS="$(cat << VAR; cat << 'EOF'
+#   true
+#   RSUDO_PASSWORD="$RSUDO_PASSWORD"
+#   SUDO_AS_USER="$SUDO_AS_USER"
+#   RSUDO_PIPE="$RSUDO_PIPE"
+#   set -- $@
+# VAR
+# echo "RSUDO_PASSWORD=$RSUDO_PASSWORD - SUDO_AS_USER=$SUDO_AS_USER - RSUDO_PIPE=$RSUDO_PIPE - args=$@"
+#   # echo "$RSUDO_PASSWORD" | sudo -S --prompt='' -- true
+#   # sudo $SUDO_AS_USER -- "$@"
+#   # echo "$RSUDO_PASSWORD" | sudo -S --prompt='' $SUDO_AS_USER -- "$@"
+#   # build pipe command externally!!!
+#   eval "$RSUDO_PIPE" | sudo -S --prompt='' $SUDO_AS_USER -- "$@"
+# EOF
+# )"
+
+RSUDO_SSH_COMMANDS="$SUDO_COMMAND"
+log_info "RSUDO_SSH_COMMANDS=$RSUDO_SSH_COMMANDS"
+
+ssh $SSH_INTERACTIVE_SWITCH -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" sh $SH_INTERACTIVE_SWITCH -c "$RSUDO_SSH_COMMANDS"
 EXIT_CODE="$?"
 
 log_info "RSUDO ENDED: HOST=$RSUDO_HOST - USER=$RSUDO_USER"

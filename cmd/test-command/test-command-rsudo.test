@@ -10,24 +10,29 @@ test_rsudo()
 
   # export RSUDO_PASSWORD="qwe123"
   # export RSUDO_PASSWORD="$(readpass "enter rsudo test password:")"
+  # unset RSUDO_PASSWORD
+  # export  RSUDO_INTERACTIVE="true"
 
   # rsudo ######################################################################
   # # ask for password if not available in env
   # rsudo ls -ld
-  # RSUDO_INTERACTIVE="true" rsudo ls -ld
 
   # # password from cmdline
   # echo "$RSUDO_PASSWORD" | rsudo ls -ld
 
   # # commands from pipe
-  echo "ls -lA" | rsudo
+  # echo "ls -lA" | rsudo
 
   # # no command from arg or pipe => start an interactive ssh session into sudo su bash
   # rsudo
   # rsudo ""
 
-  # # command from arg wich receives input from pipe
+  # commands from args
+  rsudo whoami\; whoami\; pwd
+
+  # command from arg wich receives input from pipe when not interactive and when interactive execute pipe commands, then args
   # echo "message from pipe" | rsudo cat
+  # echo "ls -la; x='test_val'" | rsudo echo 'x=$x'\; whoami
 
   # command from heredoc are streamed through pipe to ssh, thus input from pipe is discarded (by posix sh design)
 #   echo "message from pipe" | rsudo << EOF
@@ -60,6 +65,9 @@ test_rsudo()
   # shell interpretation tricks
   # rsudo sh -c "ls -ld"
   # rsudo whoami && whoami
+  # rsudo \(whoami\) \&\& whoami
+  # rsudo whoami\; whoami
+  # rsudo pwd \&\& pwd
   # rsudo 'whoami && whoami'
   # rsudo whoami && rsudo whoami
   # rsudo sh -c 'whoami && whoami'

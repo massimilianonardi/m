@@ -1,1 +1,1 @@
-rsudo interactive need to fix echo pass from pipe, commands from pipe and others
+rsudo pass from pipe secure + env not secure + interactive all fixed
