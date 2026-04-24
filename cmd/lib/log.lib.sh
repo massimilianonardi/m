@@ -76,7 +76,7 @@ log_level()
     return 1
   fi
 
-  LOG_LEVEL="$1"
+  export LOG_LEVEL="$1"
   log_level_parse
 }
 
@@ -109,6 +109,8 @@ log_level_parse()
     log_fatal "LOG_LEVEL=$LOG_LEVEL"
     exit 1
   fi
+
+  export LOG_LEVEL_PRI
 }
 
 #-------------------------------------------------------------------------------

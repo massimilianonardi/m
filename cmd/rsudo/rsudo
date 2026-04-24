@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# needs the following env vars to be defined outside and exported
+# needs the following env vars to be defined outside and exported (password piped)
 
 # required:
 # RSUDO_HOST
@@ -62,16 +62,9 @@ then
     set -- su
   else
     log_trace "rsudo no args -> set command as /bin/sh -s (execute stream commands)"
-    set -- /bin/sh -s
+    set -- sh -s
     log_debug "RSUDO: no args + non interactive term => attached to pipe or file -> get commands through stdin COMMAND=$@"
   fi
-else
-  true
-  # for k in "$@"
-  # do
-  #   shift
-  #   set -- "$@" \""$k"\"
-  # done
 fi
 
 if [ -n "$RSUDO_AS_USER" ]
@@ -79,20 +72,31 @@ then
   SUDO_AS_USER="--user=\"$RSUDO_AS_USER\""
 fi
 
+# rsudo args if one arg then treat as string with multiple commands, otherwise treat all args as single complex command
+
 if [ "$RSUDO_INTERACTIVE" = "true" ]
 then
-  [ ! -t 0 ] && set -- "$(cat);" "$@"
-  echo "args=$@"
+  if [ ! -t 0 ]
+  then
+    RSUDO_PIPE_COMMANDS="$(cat)"
+    if [ -n "$RSUDO_PIPE_COMMANDS" ]
+    then
+      set -- ${RSUDO_PIPE_COMMANDS}\; "$@"
+    fi
+  fi
+echo "args=$(saveargs "$@")"
   ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
-  echo "$RSUDO_PASSWORD" \| sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- sh -ic "whoami; echo test $@" </dev/tty
+  echo "$RSUDO_PASSWORD" \| sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "sh -ic \"$(saveargs "$@")\"" </dev/tty
+  # echo "$RSUDO_PASSWORD" \| sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "$(saveargs "$@")" </dev/tty
+  # echo "$RSUDO_PASSWORD" \| sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "sh -ic '$@'" </dev/tty
 else
-  echo "args=$(saveargs "$@")"
   (echo "$RSUDO_PASSWORD"; [ ! -t 0 ] && cat) | \
   ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
-  sudo -S --prompt='' $SUDO_AS_USER -- "sh -c '$@'"
-  # sudo -S --prompt='' $SUDO_AS_USER -- "sh -c 'echo 0=\$0; $(saveargs "$@")'"
-  # sudo -S --prompt='' $SUDO_AS_USER -- sh -c 'echo "0=\$0 - args=\$@"; echo "second: 0=$0 - args=$@"'
-  # sudo -S --prompt='' $SUDO_AS_USER -- sh -c "$@"
+  sudo -S --prompt='' $SUDO_AS_USER -- "$(saveargs "$@")"
+  # sudo -S --prompt='' $SUDO_AS_USER -- "sh -c \"$(saveargs "$@")\""
+  # sudo -S --prompt='' $SUDO_AS_USER -- "sh -c \"$(saveargs "$(saveargs "$@")")\""
+  # sudo -S --prompt='' $SUDO_AS_USER -- "sh -c \"echo $(saveargs "$@"); echo $@\""
+  # sudo -S --prompt='' $SUDO_AS_USER -- "sh -c '$@'"
   # sudo -S --prompt='' $SUDO_AS_USER -- "$@"
 fi
 

@@ -27,12 +27,13 @@ test_rsudo()
   # rsudo
   # rsudo ""
 
-  # commands from args
-  rsudo whoami\; whoami\; pwd
+  # commands from args interactive session
+  # RSUDO_INTERACTIVE="true" rsudo sh -c "read -p 'type something: ' x; echo 'you typed: '\$x "
+  # RSUDO_INTERACTIVE="true" rsudo top
 
   # command from arg wich receives input from pipe when not interactive and when interactive execute pipe commands, then args
   # echo "message from pipe" | rsudo cat
-  # echo "ls -la; x='test_val'" | rsudo echo 'x=$x'\; whoami
+  echo "ls -la; x='test_val'" | RSUDO_INTERACTIVE="true" rsudo echo 'x=$x'
 
   # command from heredoc are streamed through pipe to ssh, thus input from pipe is discarded (by posix sh design)
 #   echo "message from pipe" | rsudo << EOF
@@ -62,9 +63,23 @@ test_rsudo()
 # echo "end of cat"
 # EOF
 
+  # must work
+  # export LOG_LEVEL="none"
+  # rsudo sh -c "ls -ld"
+  # rsudo sh -c 'ls -ld'
+  # rsudo sh -c "ls -ld; whoami; whoami && pwd"
+  # rsudo \(whoami\) \&\& whoami
+  # rsudo whoami\; whoami
+  # rsudo whoami\; sh -c "ls -ld"
+  # rsudo whoami \&\& sh -c "ls -ld"
+  # rsudo pwd \&\& pwd
+
   # shell interpretation tricks
   # rsudo sh -c "ls -ld"
+  # rsudo sh -c 'ls -ld'
+  # rsudo sh -c \"ls -ld\"
   # rsudo whoami && whoami
+  # rsudo "whoami && whoami"
   # rsudo \(whoami\) \&\& whoami
   # rsudo whoami\; whoami
   # rsudo pwd \&\& pwd
