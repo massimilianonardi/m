@@ -18,7 +18,7 @@ test_rsudo()
   # rsudo ls -ld
 
   # # password from cmdline
-  # echo "$RSUDO_PASSWORD" | rsudo ls -ld ### error because deose not read pass from pipe (RSUDO_ASKPASS not set)
+  # echo "$RSUDO_PASSWORD" | rsudo ls -ld ### error because does not read pass from pipe (RSUDO_ASKPASS not set)
   # echo "$RSUDO_PASSWORD" | RSUDO_ASKPASS="true" rsudo ls -ld
 
   # # commands from pipe
@@ -29,13 +29,14 @@ test_rsudo()
   # rsudo ""
 
   # commands from args interactive session
-  # RSUDO_INTERACTIVE="true" rsudo sh -c "read -p 'type something: ' x; echo 'you typed: '\$x "
-  # echo "pwd" | RSUDO_INTERACTIVE="true" rsudo sh -c "read -p 'type something: ' x; echo 'you typed: '\$x "
+  # RSUDO_INTERACTIVE="true" rsudo sh -c "read -p 'type something: ' x; echo 'you typed: '\$x"
+  # echo "pwd" | RSUDO_INTERACTIVE="true" rsudo sh -c "read -p 'type something: ' x; echo 'you typed: '\$x"
   # RSUDO_INTERACTIVE="true" rsudo top
+  # rsudo top # error because executed not interactively
 
   # command from arg wich receives input from pipe when not interactive and when interactive execute pipe commands, then args
   # echo "message from pipe" | rsudo cat
-  # echo "ls -la; x='test_val'" | RSUDO_INTERACTIVE="true" rsudo echo 'x=$x'
+  # echo "ls -la; x='test_val'; echo \"x evaluated from pipe=\$x\"" | RSUDO_INTERACTIVE="true" rsudo echo "x=\$x"
 
   # command from heredoc are streamed through pipe to ssh, thus input from pipe is discarded (by posix sh design)
 #   echo "message from pipe" | rsudo << EOF
@@ -71,16 +72,22 @@ test_rsudo()
   # rsudo sh -c "ls -ld"
   # rsudo sh -c 'ls -ld'
   # rsudo sh -c "ls -ld; whoami; whoami && pwd"
+  # rsudo "ls -ld; whoami; whoami && pwd"
+  # rsudo 'ls -ld; whoami; whoami && pwd'
   # rsudo \(whoami\) \&\& whoami
   # rsudo whoami\; whoami
   # rsudo whoami\; sh -c "ls -ld"
   # rsudo 'whoami; sh -c "ls -ld"'
   # rsudo whoami \&\& sh -c "ls -ld"
   # rsudo pwd \&\& pwd
-  # rsudo "sh -c \"read -p 'type something: ' x; echo 'you typed: '\$x \""
+  # RSUDO_INTERACTIVE="true" rsudo "sh -c \"read -p 'type something: ' x; echo 'you typed: '\$x; whoami\""
   # rsudo sh -c "x='my x value'; echo 'your x='\$x; whoami"
   # rsudo sh -c 'x="my x value"; echo "your x=$x"; whoami'
+  # rsudo 'x="my x value"; echo "your x=$x"; whoami'
   # echo "pwd" | RSUDO_INTERACTIVE="true" rsudo sh -c "read -p 'type something: ' x; echo 'you typed: '\$x; whoami"
+  # echo "pwd" | RSUDO_INTERACTIVE="true" rsudo "sh -c \"read -p 'type something: ' x; echo 'you typed: '\$x; whoami\""
+  # echo "message from pipe" | rsudo cat
+  # echo "ls -la; x='test_val'; echo \"x evaluated from pipe=\$x\"" | RSUDO_INTERACTIVE="true" rsudo echo "x=\$x"
 
   # shell interpretation tricks
   # rsudo sh -c "ls -ld"
@@ -173,9 +180,10 @@ test_rsudo()
   # rsudo-db-pg ################################################################
   # SQL_QUERY="select * from pg_catalog.pg_tables where tablespace = 'pg_global';"
   # SQL_QUERY="select * from pg_catalog.pg_tables limit 5;"
-  # rsudo-db-pg sql postgres "$SQL_QUERY"
-  # echo "$SQL_QUERY" | rsudo-db-pg sql postgres
-  # rsudo-db-pg sql postgres select \* from pg_catalog.pg_tables limit 5\;
+  # rsudo db-pg sql postgres "$SQL_QUERY"
+  # # rsudo-db-pg sql postgres "$SQL_QUERY"
+  # # echo "$SQL_QUERY" | rsudo-db-pg sql postgres
+  # # rsudo-db-pg sql postgres select \* from pg_catalog.pg_tables limit 5\;
 
   # rsudosh ####################################################################
   # rsudosh file_1 file_2 file_3 file_4 file_5

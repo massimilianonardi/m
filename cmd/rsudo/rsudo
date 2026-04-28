@@ -1,135 +1,123 @@
 #!/bin/sh
 
-# rsudo - use env and start interactive session
-# rsudo $file:$name - if file not null load file then get env by name and start interactive session
-# rsudo user@host - get pass from pipe if connected, ask tty otherwise, then start interactive session
+# rsudo [args]
+# rsudo -c user@host [args]
+# rsudo -l file:name [args]
+# rsudo [connection args] submodule [args]
+#
+# if not provided on command line if env vars are defined outside, then they will be used
+# in any case if password is empty in interactive sessions is asked to user, if RSUDO_ASKPASS=true it is read from pipe
+# if args are empty and not attached to pipe or RSUDO_INTERACTIVE=true, an interactive session is started, otherwise non interactive
+# a single arg is treated as multiple command and passed to sh -c, otherwise args are treated to preserve quotes and be correctly executed without extreme escaping
+# submodule is sourced allowing recursive calls to rsudo reuse env vars (not exported) of the same process
 
-# rsudo $args - use env and execute args as a remote command
-# rsudo $file:$name $args  - if file not null load file then get env by name and execute args as a remote command
-# rsudo user@host $args  - get pass from pipe if connected, ask tty otherwise, then execute args as a remote command
+# TODO whole ps tree pid check as ssh_askpass
+# TODO ssh_askpass alternative to env var (pipe, or...?)
 
-# if nargs=1, the args = sh -c "$args", else args = saveargs
+#------------------------------------------------------------------------------
 
 . log.lib.sh
 . arg.lib.sh
 . rsudo.lib.sh
 
-# the following lines are executed when ssh uses SSH_ASKPASS command
+#------------------------------------------------------------------------------
+
+# SSH_ASKPASS command
+# the following lines are executed when ssh uses "rsudo" as SSH_ASKPASS command
 # maximum security is guaranteed because explicit check that caller process is ssh and
 # more importantly RSUDO_PASSWORD environment variable is available only in the rsudo process tree
 if [ "$(ps -o "comm=" -p "$PPID")" = "ssh" ]
 then
   # RSUDO_PASSWORD="$(cat)"
   echo "$RSUDO_PASSWORD"
-  log_debug "rsudo askpass called by ssh! RSUDO_PASSWORD availability=$([ -n "$RSUDO_PASSWORD" ] && echo "yes" || echo "no")"
-  log_trace "RSUDO_PASSWORD=$RSUDO_PASSWORD"
+  log_debug "rsudo askpass called by ssh! RSUDO_PASSWORD $([ -n "$RSUDO_PASSWORD" ] && echo "is not null" || echo "is null")"
+  # log_trace "RSUDO_PASSWORD=$RSUDO_PASSWORD"
 # cat 1>&2
   exit 0
 fi
 
 #------------------------------------------------------------------------------
 
-# replaces command to allow safe use of env
-rsudo()
-{
-  log_trace "bypassed rsudo command by rsudo function"
-
+# replaces rsudo command to allow safe use of env in recursive calls
 # needs the following env vars to be defined outside
-
 # required:
 # RSUDO_HOST
 # RSUDO_USER
 # RSUDO_PASSWORD
-
 # optional:
 # RSUDO_AS_USER
 # RSUDO_INTERACTIVE
+rsudo()
+{
+  log_info "RSUDO STARTED: RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER | RSUDO_PASSWORD $([ -n "$RSUDO_PASSWORD" ] && echo "is not null" || echo "is null")"
 
-if [ -z "$RSUDO_HOST" ] || [ -z "$RSUDO_USER" ] || [ -z "$RSUDO_PASSWORD" ]
-then
-  log_fatal "HOST=$RSUDO_HOST - USER=$RSUDO_USER - RSUDO_PASSWORD(availability)=$([ -n "$RSUDO_PASSWORD" ] && echo "yes" || echo "no")"
-  exit 1
-fi
-
-log_info "RSUDO STARTED: HOST=$RSUDO_HOST - USER=$RSUDO_USER - RSUDO_PASSWORD(availability)=$([ -n "$RSUDO_PASSWORD" ] && echo "yes" || echo "no") - AS_USER=$RSUDO_AS_USER - COMMAND=$@"
-
-# export DISPLAY=":0.0"
-export SSH_ASKPASS="${0}"
-export SSH_ASKPASS_REQUIRE="force"
-
-# needed by SSH_ASKPASS command, try to see if it can read pipe
-export RSUDO_PASSWORD
-
-# DEBUG
-for k in "$@"
-do
-  echo "arg before:'$k'"
-done
-
-if [ "$#" -eq "0" ] || [ -z "$*" ]
-then
-  log_trace "rsudo no args"
-  if [ -t 0 ]
+  if [ -z "$RSUDO_HOST" ] || [ -z "$RSUDO_USER" ] || [ -z "$RSUDO_PASSWORD" ]
   then
-    log_info "rsudo starting interactive session"
-
-    RSUDO_INTERACTIVE="true"
-    set -- su
-  else
-    log_trace "rsudo no args -> set command as /bin/sh -s (execute stream commands)"
-    set -- sh -s
-    log_debug "RSUDO: no args + non interactive term => attached to pipe or file -> get commands through stdin COMMAND=$@"
+    exit 1
   fi
-elif [ "$#" -eq "1" ]
-then
-  log_trace "one arg, treating as multicommand string"
-  set -- sh -c "$1"
-elif [ "$#" -gt "1" ]
-then
-  log_trace "many args, treating as single complex command (preserve quotes)"
-  set -- "$(saveargs "$@")"
-fi
 
-# DEBUG
-for k in "$@"
-do
-  echo "arg after:'$k'"
-done
+  # export DISPLAY=":0.0"
+  export SSH_ASKPASS="${0}"
+  export SSH_ASKPASS_REQUIRE="force"
 
+  # needed by SSH_ASKPASS command, try to see if it can read pipe
+  export RSUDO_PASSWORD
 
-if [ -n "$RSUDO_AS_USER" ]
-then
-  SUDO_AS_USER="--user=\"$RSUDO_AS_USER\""
-fi
-
-if [ "$RSUDO_INTERACTIVE" = "true" ]
-then
-  if [ ! -t 0 ]
+  # check args
+  if [ "$#" -eq "0" ] || [ -z "$*" ]
   then
-    RSUDO_PIPE_COMMANDS="$(cat)"
-    if [ -n "$RSUDO_PIPE_COMMANDS" ]
+    log_debug "rsudo no args"
+    if [ -t 0 ]
     then
-      set -- ${RSUDO_PIPE_COMMANDS}\; "$@"
+      log_debug "tty present, setting interactive session = true and su command"
+      RSUDO_INTERACTIVE="true"
+      set -- su
+    else
+      log_debug "pipe present, set command as /bin/sh -s (execute stream commands)"
+      set -- sh -s
     fi
+  elif [ "$#" -eq "1" ]
+  then
+    log_trace "one arg, treating as multicommand string"
+    # set -- sh -c "$1"
+    set -- sh -c "$(saveargs "$1")"
+  elif [ "$#" -gt "1" ]
+  then
+    log_trace "many args, treating as single complex command (preserve quotes)"
+    set -- "$(saveargs "$@")"
+    # set -- eval "$(saveargs "$@")"
   fi
-echo "interactive command"
-# DEBUG
-for k in "$@"
-do
-  echo "arg interactive:'$k'"
-done
-  rsudo_interactive "$@"
-else
-echo "not interactive command"
-  rsudo_not_interactive "$@"
-fi
 
-EXIT_CODE="$?"
+  # check if impersonating another user
+  if [ -n "$RSUDO_AS_USER" ]
+  then
+    SUDO_AS_USER="--user=\"$RSUDO_AS_USER\""
+  fi
 
-log_info "RSUDO ENDED: HOST=$RSUDO_HOST - USER=$RSUDO_USER"
+  # execute
+  if [ "$RSUDO_INTERACTIVE" = "true" ]
+  then
+    if [ ! -t 0 ]
+    then
+      RSUDO_PIPE_COMMANDS="$(cat)"
+      if [ -n "$RSUDO_PIPE_COMMANDS" ]
+      then
+        set -- ${RSUDO_PIPE_COMMANDS}\; "$@"
+      fi
+    fi
 
-exit "$EXIT_CODE"
+    log_debug "interactive command"
+    rsudo_interactive "$@"
+  else
+    log_debug "not interactive command"
+    rsudo_not_interactive "$@"
+  fi
 
+  EXIT_CODE="$?"
+
+  log_info "RSUDO ENDED: HOST=$RSUDO_HOST - USER=$RSUDO_USER"
+
+  return "$EXIT_CODE"
 }
 
 #------------------------------------------------------------------------------
@@ -151,35 +139,40 @@ rsudo_not_interactive()
 
 #------------------------------------------------------------------------------
 
+# if connection args are provided, then host user and password are set accordingly,
+# otherwise values are eventually inherited from env vars exported from caller process
+# if host is null, exits with error
+# if user is null, current user is used
+# if password is null: if tty, then it asked to user, else if RSUDO_ASKPASS=true, then it is read from attached pipe (stdin)
 rsudo_main_retrieve_connection_args_and_call_rsudo_module_execute()
 {
-  # if host/user/pass vars are already exported from caller and no connection param is passed from command line then exported vars are used
-
-  # check first arg for connection params
-  # if [ "$1" != "${1#*@}" ]
-  if [ "$1" = "-c" ]
+  if [ "$1" = "--" ]
   then
     shift
+  elif [ "$1" = "-c" ]
+  then
+    shift
+
     if [ "$1" = "${1#*@}" ]
     then
       log_fatal "wrong connection string: $1"
       exit 1
     fi
-    # user@host | @host
+
     RSUDO_HOST="${1#*@}"
     RSUDO_USER="${1%@*}"
 
     shift
-  # elif [ "$1" != "${1%:*}" ]
   elif [ "$1" = "-l" ]
   then
     shift
+
     if [ "$1" = "${1%:*}" ]
     then
       log_fatal "wrong load string: $1"
       exit 1
     fi
-    # file:name | :name
+
     ENV_ENCODED_FILE="${1%:*}"
     ENV_GROUP_NAME="${1#*:}"
 
@@ -200,14 +193,13 @@ rsudo_main_retrieve_connection_args_and_call_rsudo_module_execute()
 
   if [ -z "$RSUDO_HOST" ]
   then
-    log_debug "rsudo: empty RSUDO_HOST"
+    log_fatal "empty RSUDO_HOST"
     exit 1
   fi
 
   if [ -z "$RSUDO_USER" ]
   then
-    # if user is not stored, it is intentionally wanted set it to current user
-    log_info "rsudo: empty RSUDO_USER, setting it to '$USER'"
+    log_info "empty RSUDO_USER, setting it to '$USER'"
     RSUDO_USER="$USER"
   fi
 
@@ -217,18 +209,8 @@ rsudo_main_retrieve_connection_args_and_call_rsudo_module_execute()
     if [ "$RSUDO_ASKPASS" = "true" ] && [ ! -t 0 ]
     then
       log_debug "read pass from pipe"
-      # read not interactively from stdin (pipe attached)
       read -r RSUDO_PASSWORD
-      # TODO DEBUG check verify that pipe is closed if no other input
-      if [ -t 0 ]
-      then
-        log_debug "pipe closed after readin password (no more input)"
-      else
-        log_debug "pipe still open after reading password - showing cat"
-        cat
-      fi
     else
-      # read from tty interactively (user input)
       log_debug "read pass from tty"
       RSUDO_PASSWORD="$(readpass "[rsudo] Enter password for ${RSUDO_USER}@${RSUDO_HOST}:" < /dev/tty)"
     fi
@@ -236,30 +218,27 @@ rsudo_main_retrieve_connection_args_and_call_rsudo_module_execute()
 
   if [ -z "$RSUDO_PASSWORD" ]
   then
-    log_debug "rsudo: empty RSUDO_PASSWORD"
+    log_fatal "empty RSUDO_PASSWORD"
     exit 1
   fi
 
-  log_debug "rsudo: RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER"
-  log_trace "rsudo: RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER | RSUDO_PASSWORD=$RSUDO_PASSWORD"
-  log_trace "rsudo: args=$@"
+  log_debug "RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER | RSUDO_PASSWORD $([ -n "$RSUDO_PASSWORD" ] && echo "is not null" || echo "is null")"
+  log_debug "args=$@"
 
   rsudo_module_execute "$@"
 }
 
 #------------------------------------------------------------------------------
 
+# if first arg is the name of a module, the module is loaded and the rest of the command line is executed,
+# otherwise the "rsudo" function is executed directly with the given args
 rsudo_module_execute()
 {
-  # check first arg to execute rsudo or submodule
-
-  # if command -v "rsudo-${1}" > /dev/null
-  if command -v "rsudo-${1}"
+  if command -v "rsudo-${1}" > /dev/null
   then
-  log_trace "rsudo-${1} ### rsudo-$@"
-  exit 55
     . "rsudo-${1}"
-    rsudo-"$@"
+    shift
+    "$@"
   else
     rsudo "$@"
   fi
