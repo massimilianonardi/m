@@ -86,7 +86,8 @@ encoded_file_edit()
     DECODED_FILE="${1}.$(date +"[%Y-%m-%d %H:%M:%S]").dec" && \
     decode < "$1" > "$DECODED_FILE" && \
     "$ENCODED_FILE_EDITOR" "$DECODED_FILE" && \
-    encode < "$DECODED_FILE" > "$1" && \
+    encode < "$DECODED_FILE" > "$1"
+
     rm -f "$DECODED_FILE"
   )
 }

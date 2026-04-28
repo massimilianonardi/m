@@ -21,16 +21,16 @@ tty_reset()
 
 #-------------------------------------------------------------------------------
 
+if [ ! -t 0 ]
+then
+  exit 1
+fi
+
 trap "tty_reset; exit 2" INT QUIT TERM HUP PIPE ABRT TSTP
 tty_init
 
-if [ -t 0 ]
-then
-  echo "$@" 1>&2
-  read -r PASSWORD
-else
-  read -r PASSWORD
-fi
+echo "$@" 1>&2
+read -r PASSWORD
 
 echo "$PASSWORD"
 

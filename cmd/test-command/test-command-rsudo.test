@@ -18,7 +18,8 @@ test_rsudo()
   # rsudo ls -ld
 
   # # password from cmdline
-  # echo "$RSUDO_PASSWORD" | rsudo ls -ld
+  # echo "$RSUDO_PASSWORD" | rsudo ls -ld ### error because deose not read pass from pipe (RSUDO_ASKPASS not set)
+  # echo "$RSUDO_PASSWORD" | RSUDO_ASKPASS="true" rsudo ls -ld
 
   # # commands from pipe
   # echo "ls -lA" | rsudo
@@ -29,11 +30,12 @@ test_rsudo()
 
   # commands from args interactive session
   # RSUDO_INTERACTIVE="true" rsudo sh -c "read -p 'type something: ' x; echo 'you typed: '\$x "
+  # echo "pwd" | RSUDO_INTERACTIVE="true" rsudo sh -c "read -p 'type something: ' x; echo 'you typed: '\$x "
   # RSUDO_INTERACTIVE="true" rsudo top
 
   # command from arg wich receives input from pipe when not interactive and when interactive execute pipe commands, then args
   # echo "message from pipe" | rsudo cat
-  echo "ls -la; x='test_val'" | RSUDO_INTERACTIVE="true" rsudo echo 'x=$x'
+  # echo "ls -la; x='test_val'" | RSUDO_INTERACTIVE="true" rsudo echo 'x=$x'
 
   # command from heredoc are streamed through pipe to ssh, thus input from pipe is discarded (by posix sh design)
 #   echo "message from pipe" | rsudo << EOF
@@ -64,6 +66,7 @@ test_rsudo()
 # EOF
 
   # must work
+  # rsudo
   # export LOG_LEVEL="none"
   # rsudo sh -c "ls -ld"
   # rsudo sh -c 'ls -ld'
@@ -71,8 +74,13 @@ test_rsudo()
   # rsudo \(whoami\) \&\& whoami
   # rsudo whoami\; whoami
   # rsudo whoami\; sh -c "ls -ld"
+  # rsudo 'whoami; sh -c "ls -ld"'
   # rsudo whoami \&\& sh -c "ls -ld"
   # rsudo pwd \&\& pwd
+  # rsudo "sh -c \"read -p 'type something: ' x; echo 'you typed: '\$x \""
+  # rsudo sh -c "x='my x value'; echo 'your x='\$x; whoami"
+  # rsudo sh -c 'x="my x value"; echo "your x=$x"; whoami'
+  # echo "pwd" | RSUDO_INTERACTIVE="true" rsudo sh -c "read -p 'type something: ' x; echo 'you typed: '\$x; whoami"
 
   # shell interpretation tricks
   # rsudo sh -c "ls -ld"

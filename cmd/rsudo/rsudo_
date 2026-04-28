@@ -1,0 +1,109 @@
+#!/bin/sh
+
+# needs the following env vars to be defined outside and exported (password piped)
+
+# required:
+# RSUDO_HOST
+# RSUDO_USER
+# RSUDO_PASSWORD
+
+# optional:
+# RSUDO_AS_USER
+# RSUDO_INTERACTIVE
+
+. log.lib.sh
+. arg.lib.sh
+
+# the following lines are executed when ssh uses SSH_ASKPASS command
+# maximum security is guaranteed because explicit check that caller process is ssh and
+# more importantly RSUDO_PASSWORD environment variable is available only in the rsudo process tree
+if [ "$(ps -o "comm=" -p "$PPID")" = "ssh" ]
+then
+  echo "$RSUDO_PASSWORD"
+  log_debug "rsudo askpass called by ssh! RSUDO_PASSWORD availability=$([ -n "$RSUDO_PASSWORD" ] && echo "yes" || echo "no")"
+  exit 0
+fi
+
+#------------------------------------------------------------------------------
+
+# RSUDO_PASSWORD can be provided by exporting env var (insecure) or by echoing to pipe (secure, like sudo)
+if [ -z "$RSUDO_PASSWORD" ]
+then
+  if [ -t 0 ]
+  then
+    log_fatal "RSUDO_PASSWORD is empty and not provided by stdin"
+    exit 1
+  else
+    read -r RSUDO_PASSWORD
+    export RSUDO_PASSWORD
+  fi
+fi
+
+if [ -z "$RSUDO_HOST" ] || [ -z "$RSUDO_USER" ] || [ -z "$RSUDO_PASSWORD" ]
+then
+  log_fatal "HOST=$RSUDO_HOST - USER=$RSUDO_USER - RSUDO_PASSWORD(availability)=$([ -n "$RSUDO_PASSWORD" ] && echo "yes" || echo "no")"
+  exit 1
+fi
+
+log_info "RSUDO STARTED: HOST=$RSUDO_HOST - USER=$RSUDO_USER - RSUDO_PASSWORD(availability)=$([ -n "$RSUDO_PASSWORD" ] && echo "yes" || echo "no") - AS_USER=$RSUDO_AS_USER - COMMAND=$@"
+
+# export DISPLAY=":0.0"
+export SSH_ASKPASS="${0}"
+export SSH_ASKPASS_REQUIRE="force"
+
+if [ "$#" -eq "0" ] || [ -z "$*" ]
+then
+  log_trace "rsudo no args"
+  if [ -t 0 ]
+  then
+    log_info "rsudo starting interactive session"
+
+    RSUDO_INTERACTIVE="true"
+    set -- su
+  else
+    log_trace "rsudo no args -> set command as /bin/sh -s (execute stream commands)"
+    set -- sh -s
+    log_debug "RSUDO: no args + non interactive term => attached to pipe or file -> get commands through stdin COMMAND=$@"
+  fi
+fi
+
+if [ -n "$RSUDO_AS_USER" ]
+then
+  SUDO_AS_USER="--user=\"$RSUDO_AS_USER\""
+fi
+
+# rsudo args if one arg then treat as string with multiple commands, otherwise treat all args as single complex command
+
+if [ "$RSUDO_INTERACTIVE" = "true" ]
+then
+  if [ ! -t 0 ]
+  then
+    RSUDO_PIPE_COMMANDS="$(cat)"
+    if [ -n "$RSUDO_PIPE_COMMANDS" ]
+    then
+      set -- ${RSUDO_PIPE_COMMANDS}\; "$@"
+    fi
+  fi
+echo "args=$(saveargs "$@")"
+  ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
+  echo "$RSUDO_PASSWORD" \| sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "sh -ic \"$(saveargs "$@")\"" </dev/tty
+  # echo "$RSUDO_PASSWORD" \| sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "$(saveargs "$@")" </dev/tty
+  # echo "$RSUDO_PASSWORD" \| sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "sh -ic '$@'" </dev/tty
+else
+  (echo "$RSUDO_PASSWORD"; [ ! -t 0 ] && cat) | \
+  ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
+  sudo -S --prompt='' $SUDO_AS_USER -- "$(saveargs "$@")"
+  # sudo -S --prompt='' $SUDO_AS_USER -- "sh -c \"$(saveargs "$@")\""
+  # sudo -S --prompt='' $SUDO_AS_USER -- "sh -c \"$(saveargs "$(saveargs "$@")")\""
+  # sudo -S --prompt='' $SUDO_AS_USER -- "sh -c \"echo $(saveargs "$@"); echo $@\""
+  # sudo -S --prompt='' $SUDO_AS_USER -- "sh -c '$@'"
+  # sudo -S --prompt='' $SUDO_AS_USER -- "$@"
+fi
+
+EXIT_CODE="$?"
+
+log_info "RSUDO ENDED: HOST=$RSUDO_HOST - USER=$RSUDO_USER"
+
+exit "$EXIT_CODE"
+
+#------------------------------------------------------------------------------
