@@ -80,12 +80,20 @@ rsudo()
   then
     log_trace "one arg, treating as multicommand string"
     # set -- sh -c "$1"
-    set -- sh -c "$(saveargs "$1")"
+    set -- sh -c "$(quote "$1")"
   elif [ "$#" -gt "1" ]
   then
     log_trace "many args, treating as single complex command (preserve quotes)"
-    set -- "$(saveargs "$@")"
+    # set -- "$(saveargs "$@")"
+    # set -- $(saveargs "$@")
+    # eval "set -- $(saveargs "$@")"
+    # set -- sh -c "'$@'"
     # set -- eval "$(saveargs "$@")"
+    for k in "$@"
+    do
+      shift
+      set -- "$@" "$(quote "$k")"
+    done
   fi
 
   # check if impersonating another user
@@ -94,6 +102,11 @@ rsudo()
     SUDO_AS_USER="--user=\"$RSUDO_AS_USER\""
   fi
 
+echo "ARGS=$@"
+for k in "$@"
+do
+  echo "$k"
+done
   # execute
   if [ "$RSUDO_INTERACTIVE" = "true" ]
   then
@@ -102,8 +115,11 @@ rsudo()
       RSUDO_PIPE_COMMANDS="$(cat)"
       if [ -n "$RSUDO_PIPE_COMMANDS" ]
       then
-        set -- ${RSUDO_PIPE_COMMANDS}\; "$@"
+        # set -- ${RSUDO_PIPE_COMMANDS}\; "$@"
+        set -- sh -c "\"${RSUDO_PIPE_COMMANDS}; $@\""
+        # set -- "${RSUDO_PIPE_COMMANDS};" "$@"
       fi
+echo "PIPED+ARGS=$@"
     fi
 
     log_debug "interactive command"

@@ -74,20 +74,17 @@ test_rsudo()
   # rsudo sh -c "ls -ld; whoami; whoami && pwd"
   # rsudo "ls -ld; whoami; whoami && pwd"
   # rsudo 'ls -ld; whoami; whoami && pwd'
-  # rsudo \(whoami\) \&\& whoami
-  # rsudo whoami\; whoami
-  # rsudo whoami\; sh -c "ls -ld"
   # rsudo 'whoami; sh -c "ls -ld"'
-  # rsudo whoami \&\& sh -c "ls -ld"
-  # rsudo pwd \&\& pwd
   # RSUDO_INTERACTIVE="true" rsudo "sh -c \"read -p 'type something: ' x; echo 'you typed: '\$x; whoami\""
+  # RSUDO_INTERACTIVE="true" rsudo "read -p 'type something: ' x; echo 'you typed: '\$x; whoami"
   # rsudo sh -c "x='my x value'; echo 'your x='\$x; whoami"
   # rsudo sh -c 'x="my x value"; echo "your x=$x"; whoami'
   # rsudo 'x="my x value"; echo "your x=$x"; whoami'
-  # echo "pwd" | RSUDO_INTERACTIVE="true" rsudo sh -c "read -p 'type something: ' x; echo 'you typed: '\$x; whoami"
+  echo "pwd" | RSUDO_INTERACTIVE="true" rsudo sh -c "read -p 'type something: ' x; echo 'you typed: '\$x; whoami"
   # echo "pwd" | RSUDO_INTERACTIVE="true" rsudo "sh -c \"read -p 'type something: ' x; echo 'you typed: '\$x; whoami\""
   # echo "message from pipe" | rsudo cat
   # echo "ls -la; x='test_val'; echo \"x evaluated from pipe=\$x\"" | RSUDO_INTERACTIVE="true" rsudo echo "x=\$x"
+  # (echo "whoami;"; echo "x='test_val'; echo \"x evaluated from pipe=\$x\"") | RSUDO_INTERACTIVE="true" rsudo echo "x=\$x"
 
   # shell interpretation tricks
   # rsudo sh -c "ls -ld"
