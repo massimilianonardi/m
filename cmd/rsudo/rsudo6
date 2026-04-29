@@ -75,10 +75,11 @@ rsudo()
       RSUDO_PIPE_COMMANDS="$(cat)"
       if [ -n "$RSUDO_PIPE_COMMANDS" ]
       then
-        set -- "${RSUDO_PIPE_COMMANDS}" "$@"
-        # set -- "${RSUDO_PIPE_COMMANDS}; $@"
+        # set -- sh -c "\"${RSUDO_PIPE_COMMANDS}; $@\""
+        # set -- sh -c "$(quote "${RSUDO_PIPE_COMMANDS}"); $@"
+        # set -- ${RSUDO_PIPE_COMMANDS}\; "$@"
         # set -- "${RSUDO_PIPE_COMMANDS}" ";" "$@"
-        # set -- "$(saveargs "${RSUDO_PIPE_COMMANDS}" ";" "$@")"
+        set -- "${RSUDO_PIPE_COMMANDS}; $@"
         echo "PIPED ARGS=$@"
         for k in "$@"
         do
@@ -87,13 +88,26 @@ rsudo()
       fi
     fi
 
-    if [ "$#" -gt "1" ]
+    if [ "$#" -eq "1" ]
     then
-      set -- "$(saveargs "$@")"
-    fi
+      log_trace "one arg, treating as multicommand string"
+      set -- sh -c "$(quote "$1")"
+    elif [ "$#" -gt "1" ]
+    then
+      log_trace "many args, treating as single complex command (preserve quotes)"
 
-    set -- sh -c "$(quote "$@")"
-    # set -- sh -c "$(quote "$1")"
+      # set -- "$(saveargs "$@")"
+
+      set -- "$(saveargs "$@")"
+      set -- sh -c "$(quote "$@")"
+      # set -- sh -c "$(quote "$1")"
+
+      # for k in "$@"
+      # do
+      #   shift
+      #   set -- "$@" "$(quote "$k")"
+      # done
+    fi
   fi
 
   rsudo_execute "$@"

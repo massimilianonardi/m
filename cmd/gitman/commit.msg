@@ -1,1 +1,1 @@
-rsudo universal: options for connection args, RSUDO_ASKPASS to ead pass from pipe, submodule call, perfect args parsing
+rsudo perfect agrs parsing except when mixing commands from pipe and command line
