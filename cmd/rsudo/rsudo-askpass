@@ -1,0 +1,25 @@
+#!/bin/sh
+
+. log.lib.sh
+
+if [ "$(ps -o "comm=" -p "$PPID")" = "ssh" ]
+then
+  # RSUDO_PASSWORD="$(cat)"
+  echo "$RSUDO_PASSWORD"
+  log_debug "rsudo askpass called by ssh! RSUDO_PASSWORD $([ -n "$RSUDO_PASSWORD" ] && echo "is not null" || echo "is null")"
+  # echo "test=$test args=$@" 1>&2
+  # ls -la /proc/$RSUDO_PID/fd/ 1>&2
+  # cat "/proc/$RSUDO_PID/fd/0" 1>&2
+  # cat "/proc/$RSUDO_PID/fd/3" 1>&2
+  # cat "/proc/$RSUDO_PID/fd/5" 1>&2
+  # for k in $(ls /proc/$RSUDO_PID/fd/)
+  # do
+  #   cat "/proc/$RSUDO_PID/fd/$k" 1>&2
+  # done
+  # log_trace "RSUDO_PASSWORD=$RSUDO_PASSWORD"
+# cat 1>&2
+  exit 0
+else
+  log_fatal "security checkfailed!"
+  exit 1
+fi

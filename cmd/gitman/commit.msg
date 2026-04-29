@@ -1,1 +1,1 @@
-rsudo perfect agrs parsing except when mixing commands from pipe and command line
+rsudo-askpass, rsudo as lib and command is just a wrapper for execution allowing easy implementation of rsudo shell

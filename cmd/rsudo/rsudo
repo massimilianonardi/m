@@ -18,6 +18,8 @@
 
 . log.lib.sh
 . arg.lib.sh
+. rsudo-env.lib.sh
+
 . rsudo.lib.sh
 
 #------------------------------------------------------------------------------
@@ -31,10 +33,25 @@ then
   # RSUDO_PASSWORD="$(cat)"
   echo "$RSUDO_PASSWORD"
   log_debug "rsudo askpass called by ssh! RSUDO_PASSWORD $([ -n "$RSUDO_PASSWORD" ] && echo "is not null" || echo "is null")"
+  echo "test=$test args=$@" 1>&2
+  # ls -la /proc/$RSUDO_PID/fd/ 1>&2
+  # cat "/proc/$RSUDO_PID/fd/0" 1>&2
+  # cat "/proc/$RSUDO_PID/fd/3" 1>&2
+  # cat "/proc/$RSUDO_PID/fd/5" 1>&2
+  # for k in $(ls /proc/$RSUDO_PID/fd/)
+  # do
+  #   cat "/proc/$RSUDO_PID/fd/$k" 1>&2
+  # done
   # log_trace "RSUDO_PASSWORD=$RSUDO_PASSWORD"
 # cat 1>&2
   exit 0
 fi
+
+export RSUDO_PID="$$"
+# exec 3>/tmp/rsudo_ap_${RSUDO_PID}
+# rm -f /tmp/rsudo_ap_${RSUDO_PID}
+# echo "test message 3" 1>&3
+# echo "test message 5" 1>&5
 
 #------------------------------------------------------------------------------
 
@@ -47,7 +64,7 @@ fi
 # optional:
 # RSUDO_AS_USER
 # RSUDO_INTERACTIVE
-rsudo()
+___rsudo()
 {
   log_info "RSUDO STARTED: RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER | RSUDO_PASSWORD $([ -n "$RSUDO_PASSWORD" ] && echo "is not null" || echo "is null")"
 
@@ -106,7 +123,7 @@ rsudo()
 
 #------------------------------------------------------------------------------
 
-rsudo_execute()
+___rsudo_execute()
 {
   echo "ARGS=$@"
   for k in "$@"
@@ -115,7 +132,8 @@ rsudo_execute()
   done
 
   # export DISPLAY=":0.0"
-  export SSH_ASKPASS="${0}"
+  export SSH_ASKPASS="rsudo"
+  # export SSH_ASKPASS="${0}"
   export SSH_ASKPASS_REQUIRE="force"
 
   # needed by SSH_ASKPASS command, try to see if it can read pipe
@@ -139,7 +157,7 @@ rsudo_execute()
 
 #------------------------------------------------------------------------------
 
-rsudo_interactive()
+___rsudo_interactive()
 {
   ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
   echo "$RSUDO_PASSWORD" \| sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "$@" </dev/tty
@@ -147,7 +165,7 @@ rsudo_interactive()
 
 #------------------------------------------------------------------------------
 
-rsudo_not_interactive()
+___rsudo_not_interactive()
 {
   (echo "$RSUDO_PASSWORD"; [ ! -t 0 ] && cat) | \
   ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
@@ -161,7 +179,7 @@ rsudo_not_interactive()
 # if host is null, exits with error
 # if user is null, current user is used
 # if password is null: if tty, then it asked to user, else if RSUDO_ASKPASS=true, then it is read from attached pipe (stdin)
-rsudo_main_retrieve_connection_args_and_call_rsudo_module_execute()
+___rsudo_main_retrieve_connection_args_and_call_rsudo_module_execute()
 {
   if [ "$1" = "--" ]
   then
@@ -249,11 +267,12 @@ rsudo_main_retrieve_connection_args_and_call_rsudo_module_execute()
 
 # if first arg is the name of a module, the module is loaded and the rest of the command line is executed,
 # otherwise the "rsudo" function is executed directly with the given args
-rsudo_module_execute()
+___rsudo_module_execute()
 {
-  if command -v "rsudo-${1}" > /dev/null
+  RSUDO_MODULE="rsudo-mod-${1}.lib.sh"
+  if command -v "$RSUDO_MODULE" > /dev/null
   then
-    . "rsudo-${1}"
+    . "$RSUDO_MODULE"
     shift
     "$@"
   else
@@ -263,4 +282,4 @@ rsudo_module_execute()
 
 #------------------------------------------------------------------------------
 
-rsudo_main_retrieve_connection_args_and_call_rsudo_module_execute "$@"
+# rsudo_main_retrieve_connection_args_and_call_rsudo_module_execute "$@"

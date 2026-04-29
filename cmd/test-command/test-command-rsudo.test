@@ -67,7 +67,12 @@ test_rsudo()
 # EOF
 
   # must work
+  rsudo cat
   # rsudo
+  # rsudo top # error because executed not interactively
+  # RSUDO_INTERACTIVE="true" rsudo top
+  # rsudo shell
+  # rsudo shell "/m/src/git/rpr/cmd/rpr-jobs/rpr-env.enc"
   # export LOG_LEVEL="none"
   # rsudo sh -c "ls -ld"
   # rsudo sh -c 'ls -ld'

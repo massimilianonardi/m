@@ -1,188 +1,283 @@
 #!/bin/sh
 
+# rsudo [args]
+# rsudo -c user@host [args]
+# rsudo -l file:name [args]
+# rsudo [connection args] submodule [args]
+#
+# if not provided on command line if env vars are defined outside, then they will be used
+# in any case if password is empty in interactive sessions is asked to user, if RSUDO_ASKPASS=true it is read from pipe
+# if args are empty and not attached to pipe or RSUDO_INTERACTIVE=true, an interactive session is started, otherwise non interactive
+# a single arg is treated as multiple command and passed to sh -c, otherwise args are treated to preserve quotes and be correctly executed without extreme escaping
+# submodule is sourced allowing recursive calls to rsudo reuse env vars (not exported) of the same process
+
+# TODO whole ps tree pid check as ssh_askpass
+# TODO ssh_askpass alternative to env var (pipe, or...?)
+
+#------------------------------------------------------------------------------
+
 . log.lib.sh
-. env.lib.sh
-. enc.lib.sh
+. arg.lib.sh
+. rsudo-env.lib.sh
 
 #------------------------------------------------------------------------------
 
-rsudoenv()
-{
-  # "rsudoenv_${1}" "$@"
-  rsudoenv_"$@"
-}
+# SSH_ASKPASS command
+# the following lines are executed when ssh uses "rsudo" as SSH_ASKPASS command
+# maximum security is guaranteed because explicit check that caller process is ssh and
+# more importantly RSUDO_PASSWORD environment variable is available only in the rsudo process tree
+if [ "$(ps -o "comm=" -p "$PPID")" = "ssh" ]
+then
+  # RSUDO_PASSWORD="$(cat)"
+  echo "$RSUDO_PASSWORD"
+  log_debug "rsudo askpass called by ssh! RSUDO_PASSWORD $([ -n "$RSUDO_PASSWORD" ] && echo "is not null" || echo "is null")"
+  echo "test=$test args=$@" 1>&2
+  # ls -la /proc/$RSUDO_PID/fd/ 1>&2
+  # cat "/proc/$RSUDO_PID/fd/0" 1>&2
+  # cat "/proc/$RSUDO_PID/fd/3" 1>&2
+  # cat "/proc/$RSUDO_PID/fd/5" 1>&2
+  # for k in $(ls /proc/$RSUDO_PID/fd/)
+  # do
+  #   cat "/proc/$RSUDO_PID/fd/$k" 1>&2
+  # done
+  # log_trace "RSUDO_PASSWORD=$RSUDO_PASSWORD"
+# cat 1>&2
+  exit 0
+fi
 
-# pass - asks user on tty for encoding/decoding password to keep in env for silent operations
-rsudoenv_pass()
-{
-  export RSUDO_ENC_PASS="$(readpass "[rsudoenv] enter $([ -z "$1" ] && echo "DEFAULT" || echo "'$1'") encoding/decoding password")"
-}
-
-# load $files - load each encoded $files (password from env)
-rsudoenv_load()
-{
-  log_debug "rsudoenv_load: $@"
-  while [ "$#" -gt "0" ]
-  do
-    log_echo "rsudoenv_load: '$1'"
-    if ! ENC_PASS="$RSUDO_ENC_PASS" encoded_file_import "$1"
-    then
-      log_error "rsudoenv_load: cannot load '$1'"
-      shift
-      log_trace "rsudoenv_load: keep trying loading: $@"
-      # this recursion allows to keep loading files, while returning error at the end without polluting environment variables
-      rsudoenv_load "$@"
-      return 1
-    fi
-    shift
-  done
-}
-
-# save $file - save each named group of connection variables in the form RSUDO_ENV_${name}_HOST, RSUDO_ENV_${name}_USER and RSUDO_ENV_${name}_PASS into encoded file $file (password from env)
-rsudoenv_save()
-{
-  # (
-  #   log_debug "$(echo "rsudoenv_save RSUDO_ENV:"; env_return export $(env_list "RSUDO_ENV"))"
-  #
-  #   log_echo "rsudoenv_save rsudo env connection vars to file:'$1'"
-  #   export ENC_PASS="$RSUDO_ENC_PASS"
-  #   env_return export $(env_list "RSUDO_ENV") | encode > "$1"
-  # )
-  log_debug "$(echo "rsudoenv_save RSUDO_ENV:"; env_return export $(env_list "RSUDO_ENV"))"
-
-  log_echo "rsudoenv_save rsudo env connection vars to file:'$1'"
-  env_return export $(env_list "RSUDO_ENV") | ENC_PASS="$RSUDO_ENC_PASS" encode > "$1"
-}
-
-# sets the editor to use when calling edit
-rsudoenv_editor()
-{
-  export RSUDO_ENV_EDITOR="$1"
-}
-
-# edit $file - calls the current editor (default is nano) to decode, edit and reencode $file
-rsudoenv_edit()
-{
-  (
-    # silently reusing env pass for decoding/re-encoding
-    export ENC_PASS="$RSUDO_ENC_PASS"
-    encoded_file_editor "$RSUDO_ENV_EDITOR"
-    encoded_file_edit "$1"
-  )
-}
+export RSUDO_PID="$$"
+# exec 3>/tmp/rsudo_ap_${RSUDO_PID}
+# rm -f /tmp/rsudo_ap_${RSUDO_PID}
+# echo "test message 3" 1>&3
+# echo "test message 5" 1>&5
 
 #------------------------------------------------------------------------------
 
-# get - sets connection environment variables RSUDO_HOST, RSUDO_USER and RSUDO_PASSWORD form various sources
-# get $name - gets variables from a named group of variables of the form RSUDO_ENV_${name}_HOST, RSUDO_ENV_${name}_USER and RSUDO_ENV_${name}_PASS
-# get $env_file:$name - loads file $env_file, then gets variables from a named group $name
-# get user@host - gets user and host from command line and asks user for password from tty
-# get @host - gets user from current user and host from command line and asks user for password from tty
-rsudoenv_get()
+# replaces rsudo command to allow safe use of env in recursive calls
+# needs the following env vars to be defined outside
+# required:
+# RSUDO_HOST
+# RSUDO_USER
+# RSUDO_PASSWORD
+# optional:
+# RSUDO_AS_USER
+# RSUDO_INTERACTIVE
+rsudo()
 {
-  if [ -z "$1" ]
+  log_info "RSUDO STARTED: RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER | RSUDO_PASSWORD $([ -n "$RSUDO_PASSWORD" ] && echo "is not null" || echo "is null")"
+
+  if [ -z "$RSUDO_HOST" ] || [ -z "$RSUDO_USER" ] || [ -z "$RSUDO_PASSWORD" ]
   then
-    log_debug "rsudoenv_get: empty arg"
-    return 1
+    exit 1
   fi
 
-  if [ "$1" != "${1#*@}" ]
+  # check args
+  if [ "$#" -eq "0" ] || [ -z "$*" ]
   then
-    # user@host | @host -> always asks for password from tty user input
-    log_debug "rsudoenv_get: ARG=$1 - RSUDO_HOST=${1#*@} - RSUDO_USER=${1%@*}"
-    export RSUDO_HOST="${1#*@}"
-    export RSUDO_USER="${1%@*}"
+    log_debug "rsudo no args"
+    if [ -t 0 ]
+    then
+      log_debug "tty present, setting interactive session = true and su command"
+      RSUDO_INTERACTIVE="true"
+      set -- su
+    else
+      log_debug "pipe present, set command as /bin/sh -s (execute stream commands)"
+      set -- sh -s
+    fi
   else
-    # env_name, :env_name, env_encoded_file:env_name
-    log_debug "rsudoenv_get: ARG=$1 - ENV_ENCODED_FILE=$([ "$1" = "${1%:*}" ] && echo "" || echo "${1%:*}") - ENV_GROUP_NAME=${1#*:}"
-    if [ "${1%:*}" != "$1" ] && ! rsudoenv_load "${1%:*}" || [ -z "${1%:*}" ]
+    if [ "$RSUDO_INTERACTIVE" = "true" ] && [ ! -t 0 ]
     then
-      log_warn "env file not provided, or not found, searching into current env."
+      RSUDO_PIPE_COMMANDS="$(cat)"
+      if [ -n "$RSUDO_PIPE_COMMANDS" ]
+      then
+        set -- "${RSUDO_PIPE_COMMANDS}" "$@"
+        # set -- "${RSUDO_PIPE_COMMANDS}; $@"
+        # set -- "${RSUDO_PIPE_COMMANDS}" ";" "$@"
+        # set -- "$(saveargs "${RSUDO_PIPE_COMMANDS}" ";" "$@")"
+        echo "PIPED ARGS=$@"
+        for k in "$@"
+        do
+          echo "$k"
+        done
+      fi
     fi
 
-    set -- "${1#*:}"
-
-    eval "export RSUDO_HOST=\"\$RSUDO_ENV_${1}_HOST\""
-    eval "export RSUDO_USER=\"\$RSUDO_ENV_${1}_USER\""
-    eval "export RSUDO_PASSWORD=\"\$RSUDO_ENV_${1}_PASS\""
-
-    if [ -z "$RSUDO_HOST" ]
+    if [ "$#" -gt "1" ]
     then
-      log_debug "rsudoenv_get: empty RSUDO_HOST from env group '$1'"
-      return 1
+      set -- "$(saveargs "$@")"
     fi
+
+    set -- sh -c "$(quote "$@")"
+    # set -- sh -c "$(quote "$1")"
+  fi
+
+  rsudo_execute "$@"
+  EXIT_CODE="$?"
+
+  log_info "RSUDO ENDED: HOST=$RSUDO_HOST - USER=$RSUDO_USER"
+
+  return "$EXIT_CODE"
+}
+
+#------------------------------------------------------------------------------
+
+rsudo_execute()
+{
+  echo "ARGS=$@"
+  for k in "$@"
+  do
+    echo "$k"
+  done
+
+  # export DISPLAY=":0.0"
+  export SSH_ASKPASS="rsudo-askpass"
+  # export SSH_ASKPASS="${0}"
+  export SSH_ASKPASS_REQUIRE="force"
+
+  # needed by SSH_ASKPASS command, try to see if it can read pipe
+  export RSUDO_PASSWORD
+
+  # check if impersonating another user
+  if [ -n "$RSUDO_AS_USER" ]
+  then
+    SUDO_AS_USER="--user=\"$RSUDO_AS_USER\""
+  fi
+
+  if [ "$RSUDO_INTERACTIVE" = "true" ]
+  then
+    log_debug "interactive command"
+    rsudo_interactive "$@"
+  else
+    log_debug "not interactive command"
+    rsudo_not_interactive "$@"
+  fi
+}
+
+#------------------------------------------------------------------------------
+
+rsudo_interactive()
+{
+  ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
+  echo "$RSUDO_PASSWORD" \| sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "$@" </dev/tty
+}
+
+#------------------------------------------------------------------------------
+
+rsudo_not_interactive()
+{
+  (echo "$RSUDO_PASSWORD"; [ ! -t 0 ] && cat) | \
+  ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
+  sudo -S --prompt='' $SUDO_AS_USER -- "$@"
+}
+
+#------------------------------------------------------------------------------
+
+# if connection args are provided, then host user and password are set accordingly,
+# otherwise values are eventually inherited from env vars exported from caller process
+# if host is null, exits with error
+# if user is null, current user is used
+# if password is null: if tty, then it asked to user, else if RSUDO_ASKPASS=true, then it is read from attached pipe (stdin)
+rsudo_main_retrieve_connection_args_and_call_rsudo_module_execute()
+{
+  if [ "$1" = "--" ]
+  then
+    shift
+  elif [ "$1" = "-c" ]
+  then
+    shift
+
+    if [ "$1" = "${1#*@}" ]
+    then
+      log_fatal "wrong connection string: $1"
+      exit 1
+    fi
+
+    RSUDO_HOST="${1#*@}"
+    RSUDO_USER="${1%@*}"
+
+    shift
+  elif [ "$1" = "-l" ]
+  then
+    shift
+
+    if [ "$1" = "${1%:*}" ]
+    then
+      log_fatal "wrong load string: $1"
+      exit 1
+    fi
+
+    ENV_ENCODED_FILE="${1%:*}"
+    ENV_GROUP_NAME="${1#*:}"
+
+    if [ -z "$ENV_ENCODED_FILE" ]
+    then
+      log_warn "env file not provided, searching into current env."
+    elif ! rsudoenv_load "$ENV_ENCODED_FILE"
+    then
+      log_warn "env file error! not loaded, searching into current env."
+    fi
+
+    eval "RSUDO_HOST=\"\$RSUDO_ENV_${ENV_GROUP_NAME}_HOST\""
+    eval "RSUDO_USER=\"\$RSUDO_ENV_${ENV_GROUP_NAME}_USER\""
+    eval "RSUDO_PASSWORD=\"\$RSUDO_ENV_${ENV_GROUP_NAME}_PASS\""
+
+    shift
+  fi
+
+  if [ -z "$RSUDO_HOST" ]
+  then
+    log_fatal "empty RSUDO_HOST"
+    exit 1
   fi
 
   if [ -z "$RSUDO_USER" ]
   then
-    # if user is not stored, it is intentionally wanted set it to current user
-    log_info "rsudoenv_get: empty RSUDO_USER, setting it to '$USER'"
-    export RSUDO_USER="$USER"
+    log_info "empty RSUDO_USER, setting it to '$USER'"
+    RSUDO_USER="$USER"
   fi
 
-  if [ "$1" != "${1#*@}" ] || [ -z "$RSUDO_PASSWORD" ]
+  # unset RSUDO_PASSWORD ### DEBUG prevents reusing exported env
+  if [ -z "$RSUDO_PASSWORD" ]
   then
-    # user@host | @host -> always asks for password from tty user input
-    # if password is not stored, it is intentionally wanted set it to ask for it at runtime
-    export RSUDO_PASSWORD="$(readpass "[rsudo] Enter password for ${RSUDO_USER}@${RSUDO_HOST}:")"
+    if [ "$RSUDO_ASKPASS" = "true" ] && [ ! -t 0 ]
+    then
+      log_debug "read pass from pipe"
+      read -r RSUDO_PASSWORD
+    else
+      log_debug "read pass from tty"
+      RSUDO_PASSWORD="$(readpass "[rsudo] Enter password for ${RSUDO_USER}@${RSUDO_HOST}:" < /dev/tty)"
+    fi
   fi
 
-  log_debug "rsudoenv_get: RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER"
-  log_trace "rsudoenv_get: RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER | RSUDO_PASSWORD=$RSUDO_PASSWORD"
+  if [ -z "$RSUDO_PASSWORD" ]
+  then
+    log_fatal "empty RSUDO_PASSWORD"
+    exit 1
+  fi
+
+  log_debug "RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER | RSUDO_PASSWORD $([ -n "$RSUDO_PASSWORD" ] && echo "is not null" || echo "is null")"
+  log_debug "args=$@"
+
+  rsudo_module_execute "$@"
 }
 
-# set $name - sets a named group $name of connection variables from current RSUDO_HOST, RSUDO_USER and RSUDO_PASSWORD environment variables
-# set $name $get_args - sets/copy a named group $name of connection variables from source defined by $get_args without changing current connection variables
-rsudoenv_set()
+#------------------------------------------------------------------------------
+
+# if first arg is the name of a module, the module is loaded and the rest of the command line is executed,
+# otherwise the "rsudo" function is executed directly with the given args
+rsudo_module_execute()
 {
-  if [ -z "$1" ]
+  RSUDO_MODULE="rsudo-mod-${1}.lib.sh"
+  if command -v "$RSUDO_MODULE" > /dev/null
   then
-    log_debug "rsudoenv_set: empty args"
-    return 1
-  fi
-
-  if [ -z "$2" ]
-  then
-    eval "export RSUDO_ENV_${1}_HOST=\"\${RSUDO_HOST}\""
-    eval "export RSUDO_ENV_${1}_USER=\"\${RSUDO_USER}\""
-    eval "export RSUDO_ENV_${1}_PASS=\"\${RSUDO_PASSWORD}\""
+    . "$RSUDO_MODULE"
+    shift
+    "$@"
   else
-    eval "$(
-      rsudoenv_get "$2"
-      echo "export RSUDO_ENV_${1}_HOST=\"${RSUDO_HOST}\""
-      echo "export RSUDO_ENV_${1}_USER=\"${RSUDO_USER}\""
-      echo "export RSUDO_ENV_${1}_PASS=\"${RSUDO_PASSWORD}\""
-    )"
+    rsudo "$@"
   fi
-
-  eval "log_debug \"rsudoenv_set: RSUDO_ENV_${1}_HOST=\$RSUDO_ENV_${1}_HOST | RSUDO_ENV_${1}_USER=\$RSUDO_ENV_${1}_USER\""
-  eval "log_trace \"rsudoenv_set: RSUDO_ENV_${1}_HOST=\$RSUDO_ENV_${1}_HOST | RSUDO_ENV_${1}_USER=\$RSUDO_ENV_${1}_USER | RSUDO_ENV_${1}_PASS=\$RSUDO_ENV_${1}_PASS\""
-  log_trace "rsudoenv_set: RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER | RSUDO_PASSWORD=$RSUDO_PASSWORD"
 }
 
-# unset - unsets current connection variables RSUDO_HOST, RSUDO_USER and RSUDO_PASSWORD
-# unset $name - unsets variables of a named group of variables of the form RSUDO_ENV_${name}_HOST, RSUDO_ENV_${name}_USER and RSUDO_ENV_${name}_PASS
-rsudoenv_unset()
-{
-  if [ -z "$1" ]
-  then
-    log_debug "rsudoenv_unset: empty name, resetting RSUDO_HOST, RSUDO_USER, RSUDO_PASSWORD"
-    eval "export RSUDO_HOST=\"\""
-    eval "export RSUDO_USER=\"\""
-    eval "export RSUDO_PASSWORD=\"\""
-    eval "unset RSUDO_HOST"
-    eval "unset RSUDO_USER"
-    eval "unset RSUDO_PASSWORD"
+#------------------------------------------------------------------------------
 
-    log_debug "rsudoenv_get: RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER"
-    log_trace "rsudoenv_get: RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER | RSUDO_PASSWORD=$RSUDO_PASSWORD"
-  else
-    log_debug "rsudoenv_unset: unsetting group name \"$1\""
-    eval "unset RSUDO_ENV_${1}_HOST"
-    eval "unset RSUDO_ENV_${1}_USER"
-    eval "unset RSUDO_ENV_${1}_PASS"
-
-    eval "log_debug \"rsudoenv_unset: RSUDO_ENV_${1}_HOST=\$RSUDO_ENV_${1}_HOST | RSUDO_ENV_${1}_USER=\$RSUDO_ENV_${1}_USER\""
-    eval "log_trace \"rsudoenv_unset: RSUDO_ENV_${1}_HOST=\$RSUDO_ENV_${1}_HOST | RSUDO_ENV_${1}_USER=\$RSUDO_ENV_${1}_USER | RSUDO_ENV_${1}_PASS=\$RSUDO_ENV_${1}_PASS\""
-  fi
-}
+rsudo_main_retrieve_connection_args_and_call_rsudo_module_execute "$@"
