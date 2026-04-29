@@ -67,7 +67,6 @@ test_rsudo()
 # EOF
 
   # must work
-  rsudo cat
   # rsudo
   # rsudo top # error because executed not interactively
   # RSUDO_INTERACTIVE="true" rsudo top
@@ -76,7 +75,7 @@ test_rsudo()
   # export LOG_LEVEL="none"
   # rsudo sh -c "ls -ld"
   # rsudo sh -c 'ls -ld'
-  # rsudo sh -c "ls -ld; whoami; whoami && pwd"
+  rsudo sh -c "ls -ld; whoami; whoami && pwd"
   # rsudo "ls -ld; whoami; whoami && pwd"
   # rsudo 'ls -ld; whoami; whoami && pwd'
   # rsudo 'whoami; sh -c "ls -ld"'

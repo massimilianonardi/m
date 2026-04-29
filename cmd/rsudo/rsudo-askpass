@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# TODO whole ps tree pid check as ssh_askpass
+# TODO ssh_askpass alternative to env var (pipe, or...?)
+
 . log.lib.sh
 
 if [ "$(ps -o "comm=" -p "$PPID")" = "ssh" ]

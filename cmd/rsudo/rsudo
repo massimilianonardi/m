@@ -16,9 +16,9 @@
 
 #------------------------------------------------------------------------------
 
-. log.lib.sh
-. arg.lib.sh
-. rsudo-env.lib.sh
+# . log.lib.sh
+# . arg.lib.sh
+# . rsudo-env.lib.sh
 
 . rsudo.lib.sh
 
@@ -283,3 +283,5 @@ ___rsudo_module_execute()
 #------------------------------------------------------------------------------
 
 # rsudo_main_retrieve_connection_args_and_call_rsudo_module_execute "$@"
+
+rsudo "$@"

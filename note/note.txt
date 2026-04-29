@@ -9,9 +9,6 @@ find best file manager PCManFM-Qt, make madedit work copy/paste
 
 rsudo file manager
 rsudo ensure secrets are not exposed via command line and initial env -> only passed by pipe and askpass
-rsudo refine args parsing especially for multi command args and combined with pipe commands
-rsudo args (problem) are interpreted before passed as args, while piped commands and heredocs are not -> solve arg problem
-rsudo args if one arg then treat as string with multiple commands, otherwise treat all args as single complex command
 rsudo-export command extension that exports a list of env vars to an rsudo ssh session (against sshd env limitation)
 rsudo-export check if attached to pipe or args passed
 rsudojobs one encoded file import many scripts + menu to internal functions that call external scripts + interactive ssh to each host + edit script on the fly

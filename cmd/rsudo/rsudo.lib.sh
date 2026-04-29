@@ -11,45 +11,11 @@
 # a single arg is treated as multiple command and passed to sh -c, otherwise args are treated to preserve quotes and be correctly executed without extreme escaping
 # submodule is sourced allowing recursive calls to rsudo reuse env vars (not exported) of the same process
 
-# TODO whole ps tree pid check as ssh_askpass
-# TODO ssh_askpass alternative to env var (pipe, or...?)
-
 #------------------------------------------------------------------------------
 
 . log.lib.sh
 . arg.lib.sh
 . rsudo-env.lib.sh
-
-#------------------------------------------------------------------------------
-
-# SSH_ASKPASS command
-# the following lines are executed when ssh uses "rsudo" as SSH_ASKPASS command
-# maximum security is guaranteed because explicit check that caller process is ssh and
-# more importantly RSUDO_PASSWORD environment variable is available only in the rsudo process tree
-if [ "$(ps -o "comm=" -p "$PPID")" = "ssh" ]
-then
-  # RSUDO_PASSWORD="$(cat)"
-  echo "$RSUDO_PASSWORD"
-  log_debug "rsudo askpass called by ssh! RSUDO_PASSWORD $([ -n "$RSUDO_PASSWORD" ] && echo "is not null" || echo "is null")"
-  echo "test=$test args=$@" 1>&2
-  # ls -la /proc/$RSUDO_PID/fd/ 1>&2
-  # cat "/proc/$RSUDO_PID/fd/0" 1>&2
-  # cat "/proc/$RSUDO_PID/fd/3" 1>&2
-  # cat "/proc/$RSUDO_PID/fd/5" 1>&2
-  # for k in $(ls /proc/$RSUDO_PID/fd/)
-  # do
-  #   cat "/proc/$RSUDO_PID/fd/$k" 1>&2
-  # done
-  # log_trace "RSUDO_PASSWORD=$RSUDO_PASSWORD"
-# cat 1>&2
-  exit 0
-fi
-
-export RSUDO_PID="$$"
-# exec 3>/tmp/rsudo_ap_${RSUDO_PID}
-# rm -f /tmp/rsudo_ap_${RSUDO_PID}
-# echo "test message 3" 1>&3
-# echo "test message 5" 1>&5
 
 #------------------------------------------------------------------------------
 
@@ -62,7 +28,7 @@ export RSUDO_PID="$$"
 # optional:
 # RSUDO_AS_USER
 # RSUDO_INTERACTIVE
-rsudo()
+rsudo_core()
 {
   log_info "RSUDO STARTED: RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER | RSUDO_PASSWORD $([ -n "$RSUDO_PASSWORD" ] && echo "is not null" || echo "is null")"
 
@@ -91,9 +57,6 @@ rsudo()
       if [ -n "$RSUDO_PIPE_COMMANDS" ]
       then
         set -- "${RSUDO_PIPE_COMMANDS}" "$@"
-        # set -- "${RSUDO_PIPE_COMMANDS}; $@"
-        # set -- "${RSUDO_PIPE_COMMANDS}" ";" "$@"
-        # set -- "$(saveargs "${RSUDO_PIPE_COMMANDS}" ";" "$@")"
         echo "PIPED ARGS=$@"
         for k in "$@"
         do
@@ -172,12 +135,29 @@ rsudo_not_interactive()
 
 #------------------------------------------------------------------------------
 
+# if first arg is the name of a module, the module is loaded and the rest of the command line is executed,
+# otherwise the "rsudo" function is executed directly with the given args
+rsudo_module_execute()
+{
+  RSUDO_MODULE="rsudo-mod-${1}.lib.sh"
+  if command -v "$RSUDO_MODULE" > /dev/null
+  then
+    . "$RSUDO_MODULE"
+    shift
+    "$@"
+  else
+    rsudo_core "$@"
+  fi
+}
+
+#------------------------------------------------------------------------------
+
 # if connection args are provided, then host user and password are set accordingly,
 # otherwise values are eventually inherited from env vars exported from caller process
 # if host is null, exits with error
 # if user is null, current user is used
 # if password is null: if tty, then it asked to user, else if RSUDO_ASKPASS=true, then it is read from attached pipe (stdin)
-rsudo_main_retrieve_connection_args_and_call_rsudo_module_execute()
+rsudo_detect_connection_args_and_call_rsudo_module_execute()
 {
   if [ "$1" = "--" ]
   then
@@ -263,21 +243,9 @@ rsudo_main_retrieve_connection_args_and_call_rsudo_module_execute()
 
 #------------------------------------------------------------------------------
 
-# if first arg is the name of a module, the module is loaded and the rest of the command line is executed,
-# otherwise the "rsudo" function is executed directly with the given args
-rsudo_module_execute()
+rsudo()
 {
-  RSUDO_MODULE="rsudo-mod-${1}.lib.sh"
-  if command -v "$RSUDO_MODULE" > /dev/null
-  then
-    . "$RSUDO_MODULE"
-    shift
-    "$@"
-  else
-    rsudo "$@"
-  fi
+  rsudo_detect_connection_args_and_call_rsudo_module_execute "$@"
 }
 
 #------------------------------------------------------------------------------
-
-rsudo_main_retrieve_connection_args_and_call_rsudo_module_execute "$@"
