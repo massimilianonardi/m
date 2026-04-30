@@ -12,7 +12,8 @@ fi
 
 # actual called file and absolute dir from resolved path
 THIS_FILE="${THIS_PATH##*/}"
-THIS_DIR="$(cd -P -- "${THIS_PATH%/*}" && pwd -P)"
+#THIS_DIR="$(cd -P -- "${THIS_PATH%/*}" && pwd -P)"
+THIS_DIR="$(cd -P -- "${THIS_PATH%/*}" && cd .. && pwd -P)"
 
 # set path
 ENV_FILE="/etc/environment.d/99-m-paths.conf"
