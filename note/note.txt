@@ -2,6 +2,8 @@
 --------------------------------------------------------------------------------
 m install review m dirs and test m install from scratch online (with certs support)
 m install and pkg have /m/app and /m/bin hardcoded, pkg has also pkg/conf/home -> parametrize all m paths
+
+pkg install implement os/architecture unified conf (think how to combine os/arch + generic in the install flow for non trivial installers)
 pkg install implement move and link conf from home (with support of files not yet created!)
 pkg uninstall eventually data home + postgres
 pkg conf review: firefox, gson, madedit-mod

@@ -2,6 +2,112 @@
 
 #------------------------------------------------------------------------------
 
+# generates a POSIX compliant random number between 0 and 1 by the use of awk
+rand()
+{
+  echo "" | awk -v rseed=$RANDOM 'BEGIN{srand(rseed);}{print rand(); exit}'
+}
+
+#------------------------------------------------------------------------------
+
+# generates a POSIX compliant random number between $1 and $2 by the use of awk
+# maximum allowed value for max range is 999999999999999999 (awk limitation)
+# randint $min $max
+# randint $max - (min=0)
+# randint - (min=0, max=255)
+randint()
+{
+  if [ "$#" = "0" ]
+  then
+    set -- "0" "255"
+  elif [ "$#" = "1" ]
+  then
+    set -- "0" "$1"
+  fi
+
+  if [ "$1" -ne "$1" ] || [ "$2" -ne "$2" ]
+  then
+    exit 1
+  fi
+
+  awk -v rseed=$RANDOM "BEGIN{srand(rseed); print int(rand()*($2-$1+1))+$1}"
+}
+
+#------------------------------------------------------------------------------
+
+# randh $n
+# generates a POSIX compliant random hex string of $n characters
+randh()
+{
+  if [ -z "$1" ] || [ "$1" -ne "$1" ]
+  then
+    set -- "32"
+  fi
+
+  openssl rand -hex "$1"
+}
+
+#------------------------------------------------------------------------------
+
+# randstr $n
+# generates a POSIX compliant random base64 string of $n characters
+rand64()
+{
+  if [ -z "$1" ] || [ "$1" -ne "$1" ]
+  then
+    set -- "32"
+  fi
+
+  # openssl rand -base64 "$1"
+  openssl rand -base64 "$1" | tr -d '\n'
+}
+
+#------------------------------------------------------------------------------
+
+# randstr $n
+# generates a POSIX compliant random string of $n characters
+randstr()
+{
+  if [ -z "$1" ] || [ "$1" -ne "$1" ]
+  then
+    set -- "32"
+  fi
+
+  openssl rand -hex "$1" | openssl enc -A -base64
+}
+
+#------------------------------------------------------------------------------
+
+# generate random number of specified number of digits.
+# NB is not POSIX compliant because uses /dev/urandom and may not guarrantee enough entropy for security uses
+randu()
+{
+  if [ -z "$1" ] || [ "$1" -ne "$1" ]
+  then
+    set -- "4"
+  fi
+
+  tr -dc '[:digit:]' < /dev/urandom | fold -w "$1" | head -n1
+  # od -An -N4 -tu4 /dev/urandom | tr -d ' '
+  # od -An -N2 -d /dev/urandom
+}
+
+#------------------------------------------------------------------------------
+
+# generate random number of specified number of digits.
+# NB is not POSIX compliant because uses /dev/random. should guarrantee enough entropy for security uses, but may block
+rands()
+{
+  if [ -z "$1" ] || [ "$1" -ne "$1" ]
+  then
+    set -- "4"
+  fi
+
+  tr -dc '[:digit:]' < /dev/random | fold -w "$1" | head -n1
+}
+
+#------------------------------------------------------------------------------
+
 # encodes stdin to stdout (password can be provided through environmental variable ENC_PASS)
 
 encode()

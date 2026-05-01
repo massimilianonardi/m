@@ -7,6 +7,11 @@
 
 if [ "$(ps -o "comm=" -p "$PPID")" = "ssh" ]
 then
+  # RSUDO_PASSWORD_TEST="$(cat)"
+  # [ ! -t 0 ] && RSUDO_PASSWORD_TEST="$(cat)"
+  # log_debug "RSUDO_PASSWORD_TEST=$RSUDO_PASSWORD_TEST"
+  [ ! -t 0 ] && read -r RSUDO_PASSWORD
+  log_trace "RSUDO_PASSWORD=$RSUDO_PASSWORD"
   # RSUDO_PASSWORD="$(cat)"
   echo "$RSUDO_PASSWORD"
   log_debug "rsudo askpass called by ssh! RSUDO_PASSWORD $([ -n "$RSUDO_PASSWORD" ] && echo "is not null" || echo "is null")"

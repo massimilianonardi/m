@@ -75,14 +75,14 @@ test_rsudo()
   # export LOG_LEVEL="none"
   # rsudo sh -c "ls -ld"
   # rsudo sh -c 'ls -ld'
-  rsudo sh -c "ls -ld; whoami; whoami && pwd"
+  # rsudo sh -c "ls -ld; whoami; whoami && pwd"
   # rsudo "ls -ld; whoami; whoami && pwd"
   # rsudo 'ls -ld; whoami; whoami && pwd'
   # rsudo 'whoami; sh -c "ls -ld"'
   # rsudo "whoami; sh -c 'ls -ld'"
   # RSUDO_INTERACTIVE="true" rsudo "sh -c \"read -p 'type something: ' x; echo 'you typed: '\\\$x; whoami\"" # double quotes implies nested escaping
   # RSUDO_INTERACTIVE="true" rsudo 'sh -c "read -p \"type something: \" x; echo \"you typed: \"\$x; whoami"' # single quotes simplify escaping madness
-  # RSUDO_INTERACTIVE="true" rsudo sh -c "read -p \"type something: \" x; echo \"you typed: \$x\"; whoami" # complex command instead of one string cmd
+  RSUDO_INTERACTIVE="true" rsudo sh -c "read -p \"type something: \" x; echo \"you typed: \$x\"; whoami" # complex command instead of one string cmd
   # RSUDO_INTERACTIVE="true" rsudo "read -p 'type something: ' x; echo 'you typed: '\$x; whoami"
   # RSUDO_INTERACTIVE="true" rsudo 'read -p "type something: " x; echo "you typed: $x"; whoami'
   # rsudo sh -c "x='my x value'; echo 'your x='\$x; whoami"
