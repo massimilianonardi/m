@@ -97,9 +97,6 @@ rsudo_execute()
   # export SSH_ASKPASS="${0}"
   export SSH_ASKPASS_REQUIRE="force"
 
-  # needed by SSH_ASKPASS command, try to see if it can read pipe
-  export RSUDO_PASSWORD
-
   # check if impersonating another user
   if [ -n "$RSUDO_AS_USER" ]
   then
@@ -118,35 +115,15 @@ rsudo_execute()
 
 #------------------------------------------------------------------------------
 
-_rsudo_interactive()
-{
-  ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
-  echo "$RSUDO_PASSWORD" \| sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "$@" </dev/tty
-}
-
-__rsudo_interactive()
-{
-  (echo "$RSUDO_PASSWORD"; echo "$RSUDO_PASSWORD";) | \
-  ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
-  echo "$RSUDO_PASSWORD" \| sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "$@" </dev/tty
-}
-
 rsudo_interactive()
 {
-  # (echo "$RSUDO_PASSWORD"; echo "$RSUDO_PASSWORD" 1>/dev/tty;) | \
-  # ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
-  # sudo -S --prompt='' -- true \</dev/tty\; sudo $SUDO_AS_USER -- "$@" </dev/tty
-
-  { (cat | tr ' ' '#') <&3 3<&- &} 3<&0 &
-  echo "test MESSAGE" 1>/proc/$$/fd/0
-
-  echo "$RSUDO_PASSWORD" | \
   ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
   echo "$RSUDO_PASSWORD" \| sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "$@" </dev/tty
 }
 
 #------------------------------------------------------------------------------
 
+# first pass is piped to rsudo-askpass, second is piped to sudo -S
 rsudo_not_interactive()
 {
   (echo "$RSUDO_PASSWORD"; echo "$RSUDO_PASSWORD"; [ ! -t 0 ] && cat) | \
