@@ -72,6 +72,23 @@ esac
 
 . "$CONF_FILE"
 
+PKG_OS="$(uname -s)"
+if [ -f "${CONF_FILE%".conf"}-${PKG_OS}.conf" ]
+then
+  . "${CONF_FILE%".conf"}-${PKG_OS}.conf"
+fi
+
+PKG_ARCH="$(uname -m)"
+if [ -f "${CONF_FILE%".conf"}-${PKG_ARCH}.conf" ]
+then
+  . "${CONF_FILE%".conf"}-${PKG_ARCH}.conf"
+fi
+
+if [ -f "${CONF_FILE%".conf"}-${PKG_OS}-${PKG_ARCH}.conf" ]
+then
+  . "${CONF_FILE%".conf"}-${PKG_OS}-${PKG_ARCH}.conf"
+fi
+
 if [ -z "$TYPE" ]
 then
   TYPE="custom"

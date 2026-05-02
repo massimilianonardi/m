@@ -1,1 +1,1 @@
-rsudo-askpass perfect, rsudo non interactive perfect, BUT rsudo interactive need to find a secure method to exchange pass with sudo -S
+pkg install detect current os/arch and incrementally loads confs from generic to specific allowing non redundant conf. pkg conf aarch64 pulsar

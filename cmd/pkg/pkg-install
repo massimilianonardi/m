@@ -464,4 +464,21 @@ CONF_LINKS_ROOT_DIR="$(cd -- "$CONF_LINKS_ROOT_DIR" && pwd)"
 
 . "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}.conf"
 
+PKG_OS="$(uname -s)"
+if [ -f "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}-${PKG_OS}.conf" ]
+then
+  . "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}-${PKG_OS}.conf"
+fi
+
+PKG_ARCH="$(uname -m)"
+if [ -f "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}-${PKG_ARCH}.conf" ]
+then
+  . "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}-${PKG_ARCH}.conf"
+fi
+
+if [ -f "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}-${PKG_OS}-${PKG_ARCH}.conf" ]
+then
+  . "${PKG_INST_CONF_ROOT_DIR}/${PKG_NAME}-${PKG_OS}-${PKG_ARCH}.conf"
+fi
+
 install

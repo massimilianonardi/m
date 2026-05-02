@@ -121,6 +121,15 @@ rsudo_interactive()
   echo "$RSUDO_PASSWORD" \| sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "$@" </dev/tty
 }
 
+rsudo_interactive()
+{
+  # echo pass | ssh non int & | pid into var
+  # non interactive session as background job, pass is piped and command string stores it in a var then echoes its pid (how main can read it?) read from stdin (waits), then echoes pass and exit,
+  # inside ssh interactive session is stored a one time pass to decode the real pass encoded and stored elsewhere by a previous non interactive ssh command
+  ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
+  echo "$RSUDO_PASSWORD" \| sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "$@" </dev/tty
+}
+
 #------------------------------------------------------------------------------
 
 # first pass is piped to rsudo-askpass, second is piped to sudo -S
