@@ -36,7 +36,7 @@ randint()
 #------------------------------------------------------------------------------
 
 # randh $n
-# generates a POSIX compliant random hex string of $n characters
+# generates a POSIX compliant random hex string of $n characters (NB each hex digit is represented by 2 ascii characters)
 randh()
 {
   if [ -z "$1" ] || [ "$1" -ne "$1" ]
@@ -59,7 +59,7 @@ rand64()
   fi
 
   # openssl rand -base64 "$1"
-  openssl rand -base64 "$1" | tr -d '\n'
+  openssl rand -base64 "$1" | tr -d '\n'; echo ""
 }
 
 #------------------------------------------------------------------------------
@@ -73,7 +73,7 @@ randstr()
     set -- "32"
   fi
 
-  openssl rand -hex "$1" | openssl enc -A -base64
+  openssl rand -hex "$1" | openssl enc -A -base64; echo ""
 }
 
 #------------------------------------------------------------------------------
