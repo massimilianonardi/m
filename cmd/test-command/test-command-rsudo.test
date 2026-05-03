@@ -67,8 +67,8 @@ test_rsudo()
 # EOF
 
   # must work
-  rsudo
-  # read x; echo "$x" | rsudo
+  # rsudo
+  read x; echo "$x" | rsudo
   # rsudo top # error because executed not interactively
   # RSUDO_INTERACTIVE="true" rsudo top
   # rsudo shell

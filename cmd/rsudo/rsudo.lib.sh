@@ -182,13 +182,11 @@ rsudo_interactive()
 {
   export RSUDO_FIFO="/tmp/$(randstr)"
   mkfifo "$RSUDO_FIFO"
-ls -la "$RSUDO_FIFO"
   chmod 600 "$RSUDO_FIFO"
-ls -la "$RSUDO_FIFO"
   exec 3<>"$RSUDO_FIFO"
   rm -f "$RSUDO_FIFO"
-  echo "$RSUDO_PASSWORD" >"$RSUDO_FIFO"
-log_trace "echoed"
+  echo "$RSUDO_PASSWORD" > "$RSUDO_FIFO"
+
   ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
   sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "$@" </dev/tty
 }

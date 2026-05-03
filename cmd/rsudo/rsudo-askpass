@@ -19,16 +19,28 @@ then
   #   exit 1
   # fi
 
-  rdpid="$(ps -o "ppid=" -p "$PPID")"
-  log_trace "rdpid=$rdpid - RSUDO_PID=$RSUDO_PID"
+  if [ -t 0 ]
+  then
+    if [ -n "$RSUDO_FIFO" ]
+    then
+      exec 0<"$RSUDO_FIFO"
+    else
+      log_fatal "wrong rsudo-askpass method"
+      exit 1
+    fi
+  fi
+
+  # rdpid="$(ps -o "ppid=" -p "$PPID")"
+  # log_trace "rdpid=$rdpid - RSUDO_PID=$RSUDO_PID"
   # ls -la /proc/$RSUDO_PID/fd/ 1>&2
   # ls -la /proc/$PPID/fd/ 1>&2
   # ls -la /proc/$$/fd/ 1>&2
   # exec 0</proc/$$/fd/5
   # exec 0</proc/$RSUDO_PID/fd/3
-  exec 0<"$RSUDO_FIFO"
+  # exec 0<"$RSUDO_FIFO"
   read -r RSUDO_PASSWORD
   echo "$RSUDO_PASSWORD"
+
   log_debug "rsudo askpass called by ssh! RSUDO_PASSWORD $([ -n "$RSUDO_PASSWORD" ] && echo "is not null" || echo "is null")"
   log_trace "RSUDO_PASSWORD=$RSUDO_PASSWORD"
 
