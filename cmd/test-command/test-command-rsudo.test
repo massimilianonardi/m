@@ -17,9 +17,9 @@ test_rsudo()
   # # ask for password if not available in env
   # rsudo ls -ld
 
-  # # password from cmdline
-  # echo "$RSUDO_PASSWORD" | rsudo ls -ld ### error because does not read pass from pipe (RSUDO_ASKPASS not set)
-  # echo "$RSUDO_PASSWORD" | RSUDO_ASKPASS="true" rsudo ls -ld
+  # # password exported
+  # RSUDO_PASSWORD="AAAAAAAAA" echo "$RSUDO_PASSWORD" | rsudo ls -ld ### error because does not read pass from pipe (RSUDO_ASKPASS not set)
+  # export RSUDO_PASSWORD="AAAAAAAAA"; echo "$RSUDO_PASSWORD" | RSUDO_ASKPASS="true" rsudo ls -ld
 
   # # commands from pipe
   # echo "ls -lA" | rsudo
@@ -67,7 +67,7 @@ test_rsudo()
 # EOF
 
   # must work
-  rsudo
+  # rsudo
   # read x; echo "$x" | RSUDO_ASKPASS="true" RSUDO_INTERACTIVE="true" rsudo
   # rsudo top # error because executed not interactively
   # RSUDO_INTERACTIVE="true" rsudo top

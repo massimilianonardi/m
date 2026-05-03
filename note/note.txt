@@ -10,8 +10,7 @@ pkg conf review: firefox, gson, madedit-mod
 find best file manager PCManFM-Qt, make madedit work copy/paste
 
 rsudo file manager
-rsudo non interactive make it more privacy safe by sending command s via pipe if no data is streamed
-rsudo ensure secrets are not exposed via command line and initial env -> only passed by pipe and askpass
+rsudo non interactive make it more privacy safe by sending commands via pipe if no data is streamed
 rsudo-export command extension that exports a list of env vars to an rsudo ssh session (against sshd env limitation)
 rsudo-export check if attached to pipe or args passed
 rsudojobs one encoded file import many scripts + menu to internal functions that call external scripts + interactive ssh to each host + edit script on the fly
