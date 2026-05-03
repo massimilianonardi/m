@@ -96,6 +96,7 @@ test_rsudo()
   # echo "ls -la; x='test_val'; echo \"x evaluated from pipe=\$x\"" | RSUDO_INTERACTIVE="true" rsudo echo "x=\$x"
   # (echo "whoami;"; echo "x='test_val'; echo \"x evaluated from pipe=\$x\"") | RSUDO_INTERACTIVE="true" rsudo echo "x=\$x"
   # rsudo -- 'ls -ld; whoami; whoami && pwd'
+  # rsudo --user admino -- 'ls -ld; whoami; whoami && pwd'
   # rsudo shell
   # rsudo --interactive 'read -p "type something: " x; echo "you typed: $x"; whoami'
   # read x; echo "$x" | rsudo --askpass --interactive

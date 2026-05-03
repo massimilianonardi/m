@@ -1,14 +1,6 @@
 #!/bin/sh
 
-# rsudo [--interactive] [--askpass] [--connect user@host] [--load file:name] [submodule] [--] [args]
-
-# rsudo [args]
-# rsudo -c user@host [args]
-# rsudo -l file:name [args]
-# rsudo [connection args] submodule [args]
-# rsudo [--interactive] [--askpass] [--connect user@host] [--load file:name] [--] [submodule] [args]
-# rsudo [--interactive] [--askpass] [--connect user@host] [--load file:name] [--mod submodule] [--] [args]
-# rsudo [[--interactive] | [--askpass] | [--connect user@host] | [--load file:name]] [submodule] [--] [args]
+# rsudo [--interactive] [--askpass] [--connect user@host] [--load file:name] [--user sudo_as_user] [submodule] [--] [args]
 #
 # if not provided on command line if env vars are defined outside, then they will be used
 # in any case if password is empty in interactive sessions is asked to user, if RSUDO_ASKPASS=true it is read from pipe
@@ -34,6 +26,7 @@
 # optional:
 # RSUDO_AS_USER
 # RSUDO_INTERACTIVE
+# RSUDO_ASKPASS
 rsudo_core()
 {
   log_info "RSUDO STARTED: RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER | RSUDO_PASSWORD $([ -n "$RSUDO_PASSWORD" ] && echo "is not null" || echo "is null")"
@@ -179,114 +172,6 @@ rsudo_not_interactive()
 
 #------------------------------------------------------------------------------
 
-# if first arg is the name of a module, the module is loaded and the rest of the command line is executed,
-# otherwise the "rsudo" function is executed directly with the given args
-rsudo_module_execute()
-{
-  RSUDO_MODULE="rsudo-mod-${1}.lib.sh"
-  if command -v "$RSUDO_MODULE" > /dev/null
-  then
-    . "$RSUDO_MODULE"
-    shift
-    "$@"
-  else
-    rsudo_core "$@"
-  fi
-}
-
-#------------------------------------------------------------------------------
-
-# if connection args are provided, then host user and password are set accordingly,
-# otherwise values are eventually inherited from env vars exported from caller process
-# if host is null, exits with error
-# if user is null, current user is used
-# if password is null: if tty, then it asked to user, else if RSUDO_ASKPASS=true, then it is read from attached pipe (stdin)
-rsudo_detect_connection_args_and_call_rsudo_module_execute()
-{
-  if [ "$1" = "--" ]
-  then
-    shift
-  elif [ "$1" = "-c" ]
-  then
-    shift
-
-    if [ "$1" = "${1#*@}" ]
-    then
-      log_fatal "wrong connection string: $1"
-      exit 1
-    fi
-
-    RSUDO_HOST="${1#*@}"
-    RSUDO_USER="${1%@*}"
-
-    shift
-  elif [ "$1" = "-l" ]
-  then
-    shift
-
-    if [ "$1" = "${1%:*}" ]
-    then
-      log_fatal "wrong load string: $1"
-      exit 1
-    fi
-
-    ENV_ENCODED_FILE="${1%:*}"
-    ENV_GROUP_NAME="${1#*:}"
-
-    if [ -z "$ENV_ENCODED_FILE" ]
-    then
-      log_warn "env file not provided, searching into current env."
-    elif ! rsudoenv_load "$ENV_ENCODED_FILE"
-    then
-      log_warn "env file error! not loaded, searching into current env."
-    fi
-
-    eval "RSUDO_HOST=\"\$RSUDO_ENV_${ENV_GROUP_NAME}_HOST\""
-    eval "RSUDO_USER=\"\$RSUDO_ENV_${ENV_GROUP_NAME}_USER\""
-    eval "RSUDO_PASSWORD=\"\$RSUDO_ENV_${ENV_GROUP_NAME}_PASS\""
-
-    shift
-  fi
-
-  if [ -z "$RSUDO_HOST" ]
-  then
-    log_fatal "empty RSUDO_HOST"
-    exit 1
-  fi
-
-  if [ -z "$RSUDO_USER" ]
-  then
-    log_info "empty RSUDO_USER, setting it to '$USER'"
-    RSUDO_USER="$USER"
-  fi
-
-  # unset RSUDO_PASSWORD ### DEBUG prevents reusing exported env
-  if [ -z "$RSUDO_PASSWORD" ]
-  then
-    if [ "$RSUDO_ASKPASS" = "true" ] && [ ! -t 0 ]
-    then
-      log_debug "read pass from pipe"
-      read -r RSUDO_PASSWORD
-    else
-      log_debug "read pass from tty"
-      RSUDO_PASSWORD="$(readpass "[rsudo] Enter password for ${RSUDO_USER}@${RSUDO_HOST}:" < /dev/tty)"
-    fi
-  fi
-
-  if [ -z "$RSUDO_PASSWORD" ]
-  then
-    log_fatal "empty RSUDO_PASSWORD"
-    exit 1
-  fi
-
-  log_debug "RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER | RSUDO_PASSWORD $([ -n "$RSUDO_PASSWORD" ] && echo "is not null" || echo "is null")"
-  # log_debug "args=$@"
-
-  rsudo_module_execute "$@"
-}
-
-#------------------------------------------------------------------------------
-
 rsudo_parse_connection_args()
 {
   if [ "$1" = "${1#*@}" ]
@@ -373,6 +258,7 @@ rsudo_parse_args_and_execute()
       --askpass) RSUDO_ASKPASS="true";;
       --connect) shift; rsudo_parse_connection_args "$1";;
       --load) shift; rsudo_parse_load_args "$1";;
+      --user) shift; RSUDO_AS_USER="$1";;
       *) log_fatal "bad option: '$1'"; exit 1;;
     esac
     shift
@@ -399,7 +285,6 @@ rsudo_parse_args_and_execute()
 
 rsudo()
 {
-  # rsudo_detect_connection_args_and_call_rsudo_module_execute "$@"
   rsudo_parse_args_and_execute "$@"
 }
 
