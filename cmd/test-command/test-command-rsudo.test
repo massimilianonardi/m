@@ -90,9 +90,8 @@ test_rsudo()
   # rsudo sh -c 'x="my x value"; echo "your x=$x"; whoami'
   # rsudo 'x="my x value"; echo "your x=$x"; whoami'
   # echo "message from pipe" | rsudo cat
-  # echo "message from pipe" | rsudo cat -
   # echo "pwd;" | RSUDO_INTERACTIVE="true" rsudo sh -c "read -p 'type something: ' x; echo 'you typed: '\$x; whoami"
-  # echo "pwd" | RSUDO_INTERACTIVE="true" rsudo "read -p 'type something: ' x; echo 'you typed: '\$x; whoami"
+  # echo "pwd" | RSUDO_INTERACTIVE="true" rsudo "read -p 'type something: ' x; echo 'you typed: '\$x; whoami; su"
   # echo "pwd" | RSUDO_INTERACTIVE="true" rsudo "sh -c \"read -p 'type something: ' x; echo 'you typed: '\\\$x; whoami\""
   # echo "ls -la; x='test_val'; echo \"x evaluated from pipe=\$x\"" | RSUDO_INTERACTIVE="true" rsudo echo "x=\$x"
   # (echo "whoami;"; echo "x='test_val'; echo \"x evaluated from pipe=\$x\"") | RSUDO_INTERACTIVE="true" rsudo echo "x=\$x"

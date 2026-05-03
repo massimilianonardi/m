@@ -117,79 +117,17 @@ rsudo_execute()
 #------------------------------------------------------------------------------
 
 # original with pass exported and exposed in command line as command
-rsudo_interactive()
-{
-  ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
-  echo "$RSUDO_PASSWORD" \| sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "$@" </dev/tty
-}
-
-# secured and working
-rsudo_interactive()
-{
-  # create local fifo two times for better security
-
-
-  # create user daemon for encoded pass exchange
-  # local fifo for ssh-askpass
-
-  # export RSUDO_FIFO="/tmp/$(randstr)"
-  # mkfifo "$RSUDO_FIFO"
-  # chmod 600 "$RSUDO_FIFO"
-  # exec 3<>"$RSUDO_FIFO"
-  # rm -f "$RSUDO_FIFO"
-  # echo "$RSUDO_PASSWORD" > "$RSUDO_FIFO"
-
-  # fifo and token for remote authentication
-  RSUDO_TOKEN="$(randstr 5)"
-  # RSUDO_TOKEN="$(randstr 255)"
-  RSUDO_REMOTE_FIFO="/tmp/$(randstr)"
-
-  # remote daemon code
-  RSUDO_NON_INTERACTIVE_COMMANDS="$(cat << EOF
-  echo "daemon started: RSUDO_TOKEN=$RSUDO_TOKEN" >&2
-  trap "rm -f '$RSUDO_FIFO'" INT QUIT TERM HUP PIPE ABRT TSTP EXIT
-  mkfifo "$RSUDO_REMOTE_FIFO"
-  chmod 777 "$RSUDO_REMOTE_FIFO"
-  read RSUDO_TOKEN < "$RSUDO_REMOTE_FIFO"
-  echo "daemon: RSUDO_TOKEN=\$RSUDO_TOKEN" >&2
-  if [ "\$RSUDO_TOKEN" = "$RSUDO_TOKEN" ]
-  then
-    echo "daemon: token verified!" >&2
-    echo "$RSUDO_PASSWORD" > "$RSUDO_REMOTE_FIFO"
-  else
-    echo "daemon: token NOT verified!" >&2
-    echo "wrong RSUDO_TOKEN!" > "$RSUDO_REMOTE_FIFO"
-  fi
-  read RSUDO_ACKNOWLEDGEMENT < "$RSUDO_REMOTE_FIFO"
-  rm -f '$RSUDO_REMOTE_FIFO'
-  echo "daemon: terminated!" >&2
-EOF
-)"
-
-  # execute remote daemon
-  ((echo "$RSUDO_PASSWORD"; echo "$RSUDO_NON_INTERACTIVE_COMMANDS") | RSUDO_INTERACTIVE="" ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" sh -s) &
-  # (echo "$RSUDO_NON_INTERACTIVE_COMMANDS" | RSUDO_INTERACTIVE="" rsudo) &
-
-  export RSUDO_FIFO="/tmp/$(randstr)"
-  mkfifo "$RSUDO_FIFO"
-  chmod 600 "$RSUDO_FIFO"
-  exec 3<>"$RSUDO_FIFO"
-  rm -f "$RSUDO_FIFO"
-  echo "$RSUDO_PASSWORD" > "$RSUDO_FIFO"
-
-  ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
-  echo "$RSUDO_TOKEN" \> "$RSUDO_REMOTE_FIFO"\; read RSUDO_PASSWORD \< "$RSUDO_REMOTE_FIFO"\; \
-  echo 'client received: RSUDO_PASSWORD=$RSUDO_PASSWORD'\; \
-  echo '$RSUDO_PASSWORD' \| sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "$@" </dev/tty
-  # sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "$@" </dev/tty
-}
+# rsudo_interactive()
+# {
+#   ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
+#   echo "$RSUDO_PASSWORD" \| sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "$@" </dev/tty
+# }
 
 # 1st launches non interactive daemon that listens for token verification and returns sudo password, at acknowledgement , it exits
 # 2nd launches interactive session that send token to daemon and receives sudo password, then executes sudo with user commands and stays with an interactive session open
 rsudo_interactive()
 {
-  RSUDO_TOKEN="$(randstr 5)"
-  # RSUDO_TOKEN="$(randstr 255)"
+  RSUDO_TOKEN="$(randstr 255)"
   RSUDO_REMOTE_FIFO="/tmp/$(randstr)"
 
   RSUDO_DAEMON_COMMANDS="$(cat << EOF
@@ -206,12 +144,10 @@ rsudo_interactive()
   fi
   read RSUDO_ACKNOWLEDGEMENT < "$RSUDO_REMOTE_FIFO"
   rm -f '$RSUDO_REMOTE_FIFO'
-  echo "daemon: terminated!" >&2
 EOF
 )"
 
   ((echo "$RSUDO_PASSWORD"; echo "$RSUDO_DAEMON_COMMANDS") | RSUDO_INTERACTIVE="" ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" sh -s) &
-  # sleep 1
 
   export RSUDO_FIFO="/tmp/$(randstr)"
   mkfifo "$RSUDO_FIFO"
@@ -221,15 +157,14 @@ EOF
   echo "$RSUDO_PASSWORD" > "$RSUDO_FIFO"
 
   ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
-  while [ ! -e "$RSUDO_REMOTE_FIFO" ]\; do echo "remote pipe not yet ready!"\; done\; \
+  while [ ! -e "$RSUDO_REMOTE_FIFO" ]\; do true\; done\; \
   read RSUDO_DAEMON_READY \< "$RSUDO_REMOTE_FIFO"\; echo "$RSUDO_TOKEN" \> "$RSUDO_REMOTE_FIFO"\; read RSUDO_PASSWORD \< "$RSUDO_REMOTE_FIFO"\; echo "OK_ACKNOWLEDGED" \> "$RSUDO_REMOTE_FIFO"\; \
-  echo 'client received: RSUDO_PASSWORD=$RSUDO_PASSWORD'\; \
   echo '$RSUDO_PASSWORD' \| sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "$@" </dev/tty
 }
 
 #------------------------------------------------------------------------------
 
-# first pass is piped to rsudo-askpass, second is piped to sudo -S
+# first password is piped to rsudo-askpass, second is piped to sudo -S
 rsudo_not_interactive()
 {
   (echo "$RSUDO_PASSWORD"; echo "$RSUDO_PASSWORD"; [ ! -t 0 ] && cat) | \
