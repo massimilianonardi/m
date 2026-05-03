@@ -67,7 +67,8 @@ test_rsudo()
 # EOF
 
   # must work
-  # rsudo
+  rsudo
+  # read x; echo "$x" | rsudo
   # rsudo top # error because executed not interactively
   # RSUDO_INTERACTIVE="true" rsudo top
   # rsudo shell
@@ -82,7 +83,7 @@ test_rsudo()
   # rsudo "whoami; sh -c 'ls -ld'"
   # RSUDO_INTERACTIVE="true" rsudo "sh -c \"read -p 'type something: ' x; echo 'you typed: '\\\$x; whoami\"" # double quotes implies nested escaping
   # RSUDO_INTERACTIVE="true" rsudo 'sh -c "read -p \"type something: \" x; echo \"you typed: \"\$x; whoami"' # single quotes simplify escaping madness
-  RSUDO_INTERACTIVE="true" rsudo sh -c "read -p \"type something: \" x; echo \"you typed: \$x\"; whoami" # complex command instead of one string cmd
+  # RSUDO_INTERACTIVE="true" rsudo sh -c "read -p \"type something: \" x; echo \"you typed: \$x\"; whoami" # complex command instead of one string cmd
   # RSUDO_INTERACTIVE="true" rsudo "read -p 'type something: ' x; echo 'you typed: '\$x; whoami"
   # RSUDO_INTERACTIVE="true" rsudo 'read -p "type something: " x; echo "you typed: $x"; whoami'
   # rsudo sh -c "x='my x value'; echo 'your x='\$x; whoami"

@@ -15,6 +15,7 @@
 
 . log.lib.sh
 . arg.lib.sh
+. enc.lib.sh
 . rsudo-env.lib.sh
 
 #------------------------------------------------------------------------------
@@ -57,11 +58,11 @@ rsudo_core()
       if [ -n "$RSUDO_PIPE_COMMANDS" ]
       then
         set -- "${RSUDO_PIPE_COMMANDS}" "$@"
-        echo "PIPED ARGS=$@"
-        for k in "$@"
-        do
-          echo "$k"
-        done
+        # echo "PIPED ARGS=$@"
+        # for k in "$@"
+        # do
+        #   echo "$k"
+        # done
       fi
     fi
 
@@ -86,11 +87,11 @@ rsudo_core()
 
 rsudo_execute()
 {
-  echo "ARGS=$@"
-  for k in "$@"
-  do
-    echo "$k"
-  done
+  # echo "ARGS=$@"
+  # for k in "$@"
+  # do
+  #   echo "$k"
+  # done
 
   # export DISPLAY=":0.0"
   export SSH_ASKPASS="rsudo-askpass"
@@ -123,11 +124,73 @@ rsudo_interactive()
 
 rsudo_interactive()
 {
+  # export RSUDO_PASSWORD
+
+  RSUDO_TOKEN="$(randstr 255)"
+  RSUDO_FIFO="/tmp/$(randstr)"
+
+  RSUDO_NON_INTERACTIVE_COMMANDS="$(cat << EOF
+  echo "daemon started: RSUDO_TOKEN=$RSUDO_TOKEN" >&2
+  trap "rm -f '$RSUDO_FIFO'" INT QUIT TERM HUP PIPE ABRT TSTP EXIT
+  mkfifo "$RSUDO_FIFO"
+  chmod 777 "$RSUDO_FIFO"
+  read RSUDO_TOKEN < "$RSUDO_FIFO"
+  echo "daemon: RSUDO_TOKEN=\$RSUDO_TOKEN" >&2
+  if [ "\$RSUDO_TOKEN" = "$RSUDO_TOKEN" ]
+  then
+    echo "daemon: token verified!" >&2
+    echo "$RSUDO_PASSWORD" > "$RSUDO_FIFO"
+  else
+    echo "daemon: token NOT verified!" >&2
+    echo "wrong RSUDO_TOKEN!" > "$RSUDO_FIFO"
+  fi
+  read RSUDO_ACKNOWLEDGEMENT < "$RSUDO_FIFO"
+  rm -f '$RSUDO_FIFO'
+  echo "daemon: terminated!" >&2
+EOF
+)"
+
+log_trace "YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY"
+  (echo "$RSUDO_NON_INTERACTIVE_COMMANDS" | RSUDO_INTERACTIVE="" rsudo) &
+  # ((echo "$RSUDO_PASSWORD"; echo "$RSUDO_NON_INTERACTIVE_COMMANDS") | RSUDO_INTERACTIVE="" rsudo) &
+  # { cat <&3 3<&- & } 3<&0; echo "TEST"
+
+  RSUDO_INTERACTIVE_COMMANDS="$(cat << EOF
+  echo "TEST--------------------------------" >&2
+  trap "rm -f '$RSUDO_FIFO'" INT QUIT TERM HUP PIPE ABRT TSTP EXIT
+  mkfifo "$RSUDO_FIFO"
+  echo "$RSUDO_TOKEN" > "$RSUDO_FIFO"
+  read RSUDO_PASSWORD < "$RSUDO_FIFO"
+  echo "TEST----interactive: RSUDO_PASSWORD=\$RSUDO_PASSWORD ----------------------------" >&2
+  echo "OK" > "$RSUDO_FIFO"
+  # rm -f '$RSUDO_FIFO'
+EOF
+)"
+
+  (echo "$RSUDO_PASSWORD" | ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
+  -- sh -c "$RSUDO_INTERACTIVE_COMMANDS") </dev/tty
+
+  return 0
   # echo pass | ssh non int & | pid into var
   # non interactive session as background job, pass is piped and command string stores it in a var then echoes its pid (how main can read it?) read from stdin (waits), then echoes pass and exit,
   # inside ssh interactive session is stored a one time pass to decode the real pass encoded and stored elsewhere by a previous non interactive ssh command
   ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
   echo "$RSUDO_PASSWORD" \| sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "$@" </dev/tty
+}
+
+rsudo_interactive()
+{
+  export RSUDO_FIFO="/tmp/$(randstr)"
+  mkfifo "$RSUDO_FIFO"
+ls -la "$RSUDO_FIFO"
+  chmod 600 "$RSUDO_FIFO"
+ls -la "$RSUDO_FIFO"
+  exec 3<>"$RSUDO_FIFO"
+  rm -f "$RSUDO_FIFO"
+  echo "$RSUDO_PASSWORD" >"$RSUDO_FIFO"
+log_trace "echoed"
+  ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
+  sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "$@" </dev/tty
 }
 
 #------------------------------------------------------------------------------
@@ -243,7 +306,7 @@ rsudo_detect_connection_args_and_call_rsudo_module_execute()
   fi
 
   log_debug "RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER | RSUDO_PASSWORD $([ -n "$RSUDO_PASSWORD" ] && echo "is not null" || echo "is null")"
-  log_debug "args=$@"
+  # log_debug "args=$@"
 
   rsudo_module_execute "$@"
 }
