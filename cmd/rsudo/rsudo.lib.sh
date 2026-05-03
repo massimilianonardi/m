@@ -1,9 +1,14 @@
 #!/bin/sh
 
+# rsudo [--interactive] [--askpass] [--connect user@host] [--load file:name] [submodule] [--] [args]
+
 # rsudo [args]
 # rsudo -c user@host [args]
 # rsudo -l file:name [args]
 # rsudo [connection args] submodule [args]
+# rsudo [--interactive] [--askpass] [--connect user@host] [--load file:name] [--] [submodule] [args]
+# rsudo [--interactive] [--askpass] [--connect user@host] [--load file:name] [--mod submodule] [--] [args]
+# rsudo [[--interactive] | [--askpass] | [--connect user@host] | [--load file:name]] [submodule] [--] [args]
 #
 # if not provided on command line if env vars are defined outside, then they will be used
 # in any case if password is empty in interactive sessions is asked to user, if RSUDO_ASKPASS=true it is read from pipe
@@ -282,9 +287,120 @@ rsudo_detect_connection_args_and_call_rsudo_module_execute()
 
 #------------------------------------------------------------------------------
 
+rsudo_parse_connection_args()
+{
+  if [ "$1" = "${1#*@}" ]
+  then
+    log_fatal "wrong connection string: $1"
+    exit 1
+  fi
+
+  RSUDO_HOST="${1#*@}"
+  RSUDO_USER="${1%@*}"
+}
+
+#------------------------------------------------------------------------------
+
+rsudo_parse_load_args()
+{
+  if [ "$1" = "${1%:*}" ]
+  then
+    log_fatal "wrong load string: $1"
+    exit 1
+  fi
+
+  ENV_ENCODED_FILE="${1%:*}"
+  ENV_GROUP_NAME="${1#*:}"
+
+  if [ -z "$ENV_ENCODED_FILE" ]
+  then
+    log_warn "env file not provided, searching into current env."
+  elif ! rsudoenv_load "$ENV_ENCODED_FILE"
+  then
+    log_warn "env file error! not loaded, searching into current env."
+  fi
+
+  eval "RSUDO_HOST=\"\$RSUDO_ENV_${ENV_GROUP_NAME}_HOST\""
+  eval "RSUDO_USER=\"\$RSUDO_ENV_${ENV_GROUP_NAME}_USER\""
+  eval "RSUDO_PASSWORD=\"\$RSUDO_ENV_${ENV_GROUP_NAME}_PASS\""
+}
+
+#------------------------------------------------------------------------------
+
+rsudo_validate_connection_vars()
+{
+  if [ -z "$RSUDO_HOST" ]
+  then
+    log_fatal "empty RSUDO_HOST"
+    exit 1
+  fi
+
+  if [ -z "$RSUDO_USER" ]
+  then
+    log_info "empty RSUDO_USER, setting it to '$USER'"
+    RSUDO_USER="$USER"
+  fi
+
+  if [ -z "$RSUDO_PASSWORD" ]
+  then
+    if [ "$RSUDO_ASKPASS" = "true" ] && [ ! -t 0 ]
+    then
+      log_debug "read pass from pipe"
+      read -r RSUDO_PASSWORD
+    else
+      log_debug "read pass from tty"
+      RSUDO_PASSWORD="$(readpass "[rsudo] Enter password for ${RSUDO_USER}@${RSUDO_HOST}:" < /dev/tty)"
+    fi
+  fi
+
+  if [ -z "$RSUDO_PASSWORD" ]
+  then
+    log_fatal "empty RSUDO_PASSWORD"
+    exit 1
+  fi
+
+  log_debug "RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER | RSUDO_PASSWORD $([ -n "$RSUDO_PASSWORD" ] && echo "is not null" || echo "is null")"
+}
+
+#------------------------------------------------------------------------------
+
+rsudo_parse_args_and_execute()
+{
+  while [ "$#" -gt "0" ] && [ "$1" != "--" ] && [ "$1" != "${1#--}" ]
+  do
+    case "$1" in
+      --interactive) RSUDO_INTERACTIVE="true";;
+      --askpass) RSUDO_ASKPASS="true";;
+      --connect) shift; rsudo_parse_connection_args "$1";;
+      --load) shift; rsudo_parse_load_args "$1";;
+      *) log_fatal "bad option: '$1'"; exit 1;;
+    esac
+    shift
+  done
+
+  rsudo_validate_connection_vars
+
+  if [ "$1" = "--" ]
+  then
+    shift
+    rsudo_core "$@"
+  elif RSUDO_MODULE="rsudo-mod-${1}.lib.sh" && command -v "$RSUDO_MODULE" > /dev/null
+  then
+    log_debug "loading module RSUDO_MODULE=$RSUDO_MODULE"
+    . "$RSUDO_MODULE"
+    shift
+    "$@"
+  else
+    rsudo_core "$@"
+  fi
+}
+
+#------------------------------------------------------------------------------
+
 rsudo()
 {
-  rsudo_detect_connection_args_and_call_rsudo_module_execute "$@"
+  # rsudo_detect_connection_args_and_call_rsudo_module_execute "$@"
+  rsudo_parse_args_and_execute "$@"
 }
 
 #------------------------------------------------------------------------------

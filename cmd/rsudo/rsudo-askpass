@@ -2,7 +2,7 @@
 
 . log.lib.sh
 
-log_debug "rsudo askpass called! ...checking if caller is ssh! RSUDO_PASSWORD $([ -n "$RSUDO_PASSWORD" ] && echo "is exported and not null" || echo "is null")"
+log_debug "rsudo askpass called! ...checking if caller is ssh! RSUDO_PASSWORD $([ -n "$RSUDO_PASSWORD" ] && echo "is exported and not null" || echo "is NOT exported (null)")"
 if [ "$(ps -o "comm=" -p "$PPID")" = "ssh" ]
 then
   if [ -t 0 ]
