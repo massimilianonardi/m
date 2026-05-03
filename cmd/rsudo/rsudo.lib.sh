@@ -180,6 +180,50 @@ EOF
 
 rsudo_interactive()
 {
+  # create local fifo two times for better security
+
+
+  # create user daemon for encoded pass exchange
+  # local fifo for ssh-askpass
+
+  # export RSUDO_FIFO="/tmp/$(randstr)"
+  # mkfifo "$RSUDO_FIFO"
+  # chmod 600 "$RSUDO_FIFO"
+  # exec 3<>"$RSUDO_FIFO"
+  # rm -f "$RSUDO_FIFO"
+  # echo "$RSUDO_PASSWORD" > "$RSUDO_FIFO"
+
+  # fifo and token for remote authentication
+  RSUDO_TOKEN="$(randstr 5)"
+  # RSUDO_TOKEN="$(randstr 255)"
+  RSUDO_REMOTE_FIFO="/tmp/$(randstr)"
+
+  # remote daemon code
+  RSUDO_NON_INTERACTIVE_COMMANDS="$(cat << EOF
+  echo "daemon started: RSUDO_TOKEN=$RSUDO_TOKEN" >&2
+  trap "rm -f '$RSUDO_FIFO'" INT QUIT TERM HUP PIPE ABRT TSTP EXIT
+  mkfifo "$RSUDO_REMOTE_FIFO"
+  chmod 777 "$RSUDO_REMOTE_FIFO"
+  read RSUDO_TOKEN < "$RSUDO_REMOTE_FIFO"
+  echo "daemon: RSUDO_TOKEN=\$RSUDO_TOKEN" >&2
+  if [ "\$RSUDO_TOKEN" = "$RSUDO_TOKEN" ]
+  then
+    echo "daemon: token verified!" >&2
+    echo "$RSUDO_PASSWORD" > "$RSUDO_REMOTE_FIFO"
+  else
+    echo "daemon: token NOT verified!" >&2
+    echo "wrong RSUDO_TOKEN!" > "$RSUDO_REMOTE_FIFO"
+  fi
+  read RSUDO_ACKNOWLEDGEMENT < "$RSUDO_REMOTE_FIFO"
+  rm -f '$RSUDO_REMOTE_FIFO'
+  echo "daemon: terminated!" >&2
+EOF
+)"
+
+  # execute remote daemon
+  ((echo "$RSUDO_PASSWORD"; echo "$RSUDO_NON_INTERACTIVE_COMMANDS") | RSUDO_INTERACTIVE="" ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" sh -s) &
+  # (echo "$RSUDO_NON_INTERACTIVE_COMMANDS" | RSUDO_INTERACTIVE="" rsudo) &
+
   export RSUDO_FIFO="/tmp/$(randstr)"
   mkfifo "$RSUDO_FIFO"
   chmod 600 "$RSUDO_FIFO"
@@ -188,7 +232,10 @@ rsudo_interactive()
   echo "$RSUDO_PASSWORD" > "$RSUDO_FIFO"
 
   ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
-  sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "$@" </dev/tty
+  echo "$RSUDO_TOKEN" \> "$RSUDO_REMOTE_FIFO"\; read RSUDO_PASSWORD \< "$RSUDO_REMOTE_FIFO"\; \
+  echo 'client received: RSUDO_PASSWORD=$RSUDO_PASSWORD'\; \
+  echo '$RSUDO_PASSWORD' \| sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "$@" </dev/tty
+  # sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "$@" </dev/tty
 }
 
 #------------------------------------------------------------------------------
