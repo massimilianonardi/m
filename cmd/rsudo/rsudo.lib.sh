@@ -19,10 +19,12 @@
 
 # replaces rsudo command to allow safe use of env in recursive calls
 # needs the following env vars to be defined outside
+#
 # required:
 # RSUDO_HOST
 # RSUDO_USER
 # RSUDO_PASSWORD
+# 
 # optional:
 # RSUDO_AS_USER
 # RSUDO_INTERACTIVE
