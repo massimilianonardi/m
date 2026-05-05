@@ -95,13 +95,13 @@ test_rsudo()
   # read x; echo "$x" | rsudo --askpass --interactive
   # rsudo --connect admino@localhost "ls -ld; whoami; whoami && pwd"
   # rsudo --connect mnardi@localhost "ls -ld; whoami; whoami && pwd"
-  . rsudo-env.lib.sh
-  rsudoenv set "myhost"
-  echo "step_1"; env | grep "RSUDO" | sort
-  rsudoenv save "/tmp/rsudoenv_vars.enc"
-  rsudoenv edit "/tmp/rsudoenv_vars.enc"
-  rsudo --load "/tmp/rsudoenv_vars.enc":myhost "ls -ld; whoami; whoami && pwd"
-  rm -f "/tmp/rsudoenv_vars.enc"
+  # . rsudo-env.lib.sh
+  # rsudoenv set "myhost"
+  # echo "step_1"; env | grep "RSUDO" | sort
+  # rsudoenv save "/tmp/rsudoenv_vars.enc"
+  # rsudoenv edit "/tmp/rsudoenv_vars.enc"
+  # rsudo --load "/tmp/rsudoenv_vars.enc":myhost "ls -ld; whoami; whoami && pwd"
+  # rm -f "/tmp/rsudoenv_vars.enc"
 
   # read x; echo "$x" | RSUDO_ASKPASS="true" RSUDO_INTERACTIVE="true" rsudo
   # echo "pwd;" | RSUDO_INTERACTIVE="true" rsudo sh -c "read -p 'type something: ' x; echo 'you typed: '\$x; whoami"
@@ -199,9 +199,11 @@ test_rsudo()
   # rsudo-fs
 
   # rsudo-db-pg ################################################################
+  # # rsudo db-pg psql "$@" # args are psql commands, eg.: multiple -c command, -f file.
   # SQL_QUERY="select * from pg_catalog.pg_tables where tablespace = 'pg_global';"
-  # SQL_QUERY="select * from pg_catalog.pg_tables limit 5;"
-  # rsudo db-pg sql postgres "$SQL_QUERY"
+  SQL_QUERY="select * from pg_catalog.pg_tables limit 5;"
+  # rsudo db-pg psql postgres -c "$SQL_QUERY"
+  rsudo db-pg psql postgres -c '\z' -c "$SQL_QUERY"
   # # rsudo-db-pg sql postgres "$SQL_QUERY"
   # # echo "$SQL_QUERY" | rsudo-db-pg sql postgres
   # # rsudo-db-pg sql postgres select \* from pg_catalog.pg_tables limit 5\;

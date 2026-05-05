@@ -155,6 +155,7 @@ rsudo_not_interactive()
 # replaces "rsudo command" with "rsudo function" to allow safe use of env (without exporting) in recursive calls
 rsudo()
 {
+(
   while [ "$#" -gt "0" ] && [ "$1" != "--" ] && [ "$1" != "${1#--}" ]
   do
     case "$1" in
@@ -253,6 +254,7 @@ rsudo()
   else
     rsudo_core "$@"
   fi
+)
 }
 
 #------------------------------------------------------------------------------

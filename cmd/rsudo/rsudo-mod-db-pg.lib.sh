@@ -4,34 +4,16 @@
 
 #------------------------------------------------------------------------------
 
-sql()
+psql()
 {
-# (
-  if [ -z "$1" ]
-  then
-    exit 1
-  fi
-
-  REMOTE_DB="$1"
-  shift
-
-  SQL_COMMAND="$@"
-
-  export RSUDO_AS_USER="postgres"
-  if [ -z "$SQL_COMMAND" ]
-  then
-    rsudo psql "$REMOTE_DB"
-  else
-    rsudo psql "$REMOTE_DB" -c "$SQL_COMMAND"
-  fi
-# )
+  rsudo --user "postgres" psql "$@"
 }
 
 #------------------------------------------------------------------------------
 
 getdb()
 {
-# (
+(
   if [ -z "$1" ]
   then
     exit 1
@@ -44,16 +26,16 @@ getdb()
     cat
   fi
 
-  export RSUDO_AS_USER="postgres"
+  RSUDO_AS_USER="postgres"
   rsudo pg_dump "$REMOTE_DB"
-# )
+)
 }
 
 #------------------------------------------------------------------------------
 
 putdb()
 {
-# (
+(
   if [ -z "$1" ]
   then
     exit 1
@@ -70,7 +52,7 @@ putdb()
   # sql "" "SELECT pg_terminate_backend(pg_stat_activity.procid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$REMOTE_DB' AND procid <> pg_backend_pid();" 1>/dev/null 2>/dev/null
   # sql "" "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$REMOTE_DB' AND pid <> pg_backend_pid();" 1>/dev/null 2>/dev/null
   rsudo systemctl restart postgresql
-  export RSUDO_AS_USER="postgres"
+  RSUDO_AS_USER="postgres"
   rsudo dropdb "$REMOTE_DB"
   # execute_as postgres dropdb "$REMOTE_DB" 1>/dev/null 2>/dev/null
   # execute_as postgres dropdb --if-exists "$REMOTE_DB" 1>/dev/null 2>/dev/null
@@ -82,9 +64,7 @@ putdb()
   else
     cat "$LOCAL_PATH" | sh -c "createdb '$REMOTE_DB' && psql '$REMOTE_DB'"
   fi
-# )
+)
 }
 
 #------------------------------------------------------------------------------
-
-# "$@"
