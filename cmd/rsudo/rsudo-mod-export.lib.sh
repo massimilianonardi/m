@@ -16,7 +16,8 @@ shift
 if [ -t 0 ]
 then
   log_debug "rsudo-export: terminal attached"
-  rsudo "$EXPORT_VARS" "$@"
+  # rsudo "$EXPORT_VARS" "$@"
+  rsudo sh -c "$EXPORT_VARS $@"
 else
   log_debug "rsudo-export: terminal NOT attached"
   (echo "$EXPORT_VARS"; cat) | rsudo "$@"

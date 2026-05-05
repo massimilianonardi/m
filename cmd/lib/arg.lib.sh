@@ -25,13 +25,41 @@ ___saveargs()
   echo " "
 }
 
-saveargs()
+___saveargs()
 {
   for i
   do
     quote "$i"
     printf " "
   done
+}
+
+___saveargs()
+{
+  while [ "$#" -gt "0" ]
+  do
+    quote "$1"
+    shift
+    if [ "$#" -gt "0" ]
+    then
+      printf " "
+    fi
+  done
+}
+
+saveargs()
+{
+  while [ "$#" -gt "1" ]
+  do
+    quote "$1"
+    shift
+    printf " "
+  done
+
+  if [ "$#" -gt "0" ]
+  then
+    quote "$1"
+  fi
 }
 
 #-------------------------------------------------------------------------------
