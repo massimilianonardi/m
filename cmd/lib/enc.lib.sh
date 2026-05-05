@@ -116,7 +116,7 @@ encode()
   then
     openssl enc -e -aes-256-cbc -pbkdf2
   else
-    openssl enc -e -aes-256-cbc -pbkdf2 -pass "env:ENC_PASS"
+    (export ENC_PASS; openssl enc -e -aes-256-cbc -pbkdf2 -pass "env:ENC_PASS")
   fi
 }
 
@@ -130,7 +130,7 @@ decode()
   then
     openssl enc -d -aes-256-cbc -pbkdf2
   else
-    openssl enc -d -aes-256-cbc -pbkdf2 -pass "env:ENC_PASS"
+    (export ENC_PASS; openssl enc -d -aes-256-cbc -pbkdf2 -pass "env:ENC_PASS")
   fi
 }
 

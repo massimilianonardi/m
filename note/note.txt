@@ -10,10 +10,9 @@ pkg conf review: firefox, gson, madedit-mod
 find best file manager PCManFM-Qt, make madedit work copy/paste
 
 rsudo file manager
-rsudo lib remake it with only 2 functions: rsudo and rsudo_core
 rsudo-env lib rethink with the current rsudo architecture
-rsudo export rethink with the current rsudo architecture
 rsudo test with sudoers no pass
+rsudo mod fs test
 rsudo jobs as daemon that listens for new files in a predefined directory and executes them (use cron to move rsudo scripts in that dir at specific schedule)
 rsudo jobs (alternative) daemon listen on a fifo for commands, cron jobs write commands to that fifo
 rsudo non interactive make it more privacy safe by sending commands via pipe if no data is streamed

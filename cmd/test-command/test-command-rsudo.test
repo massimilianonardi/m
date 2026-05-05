@@ -110,28 +110,6 @@ test_rsudo()
   # echo "ls -la; x='test_val'; echo \"x evaluated from pipe=\$x\"" | RSUDO_INTERACTIVE="true" rsudo echo "x=\$x"
   # (echo "whoami;"; echo "x='test_val'; echo \"x evaluated from pipe=\$x\"") | RSUDO_INTERACTIVE="true" rsudo echo "x=\$x"
 
-  # shell interpretation tricks
-  # rsudo sh -c "ls -ld"
-  # rsudo sh -c 'ls -ld'
-  # rsudo sh -c \"ls -ld\"
-  # rsudo whoami && whoami
-  # rsudo "whoami && whoami"
-  # rsudo \(whoami\) \&\& whoami
-  # rsudo whoami\; whoami
-  # rsudo pwd \&\& pwd
-  # rsudo 'whoami && whoami'
-  # rsudo whoami && rsudo whoami
-  # rsudo sh -c 'whoami && whoami'
-#   rsudo << 'EOF'
-# pwd
-# whoami && whoami
-# echo "multiple commands and shell reserverd characters"
-# EOF
-#   rsudo << 'EOF_1' << 'EOF_2'
-# echo "multiple heredocs: 1" # ignored
-# EOF_1
-# echo "multiple heredocs: 2"
-# EOF_2
 #   (cat << EOF_vars; cat << 'EOF_script') | rsudo
 # var_1="multiple heredocs: 1"
 # var_2="multiple heredocs: 2"
@@ -140,50 +118,50 @@ test_rsudo()
 # echo "var_2=$var_2"
 # EOF_script
 
-  # rsudo.lib.sh ###############################################################
-  # . rsudo.lib.sh
+  # rsudo-env.lib.sh ###########################################################
+  . rsudo-env.lib.sh
 
-  # # set myhost from current
-  # rsudoenv set "myhost"
-  # echo "step_1"; env | grep "RSUDO" | sort
-  # # copy myhost into myhost_2
-  # RSUDO_HOST="fake_host" RSUDO_USER="fake_user" RSUDO_PASSWORD="fake_pass" rsudoenv set "myhost_2" "myhost"
-  # echo "step_2"; env | grep "RSUDO" | sort
-  # # delete myhost_2
-  # rsudoenv unset "myhost_2"
-  # echo "step_3"; env | grep "RSUDO" | sort
-  # # delete current
-  # rsudoenv unset
-  # echo "step_4"; env | grep "RSUDO" | sort
-  # # set current from myhost
-  # rsudoenv get "myhost"
-  # echo "step_5"; env | grep "RSUDO" | sort
-  # # save and edit test
-  # rsudoenv pass "store pass for enc/dec next files"
-  # rsudoenv set "myhost_2" "myhost"
-  # rsudoenv save "/tmp/rsudoenv_vars.enc"
-  # rsudoenv edit "/tmp/rsudoenv_vars.enc"
-  # rsudoenv editor "gnome-text-editor"
-  # rsudoenv edit "/tmp/rsudoenv_vars.enc"
-  # rsudoenv unset
-  # rsudoenv unset "myhost"
-  # echo "step_6"; env | grep "RSUDO" | sort
-  # rsudoenv get "/tmp/rsudoenv_vars.enc:myhost"
-  # echo "step_7"; env | grep "RSUDO" | sort
+  # set myhost from current
+  rsudoenv set "myhost"
+  echo "step_1"; set | grep "RSUDO" | sort
+  # copy myhost into myhost_2
+  RSUDO_HOST="fake_host" RSUDO_USER="fake_user" RSUDO_PASSWORD="fake_pass" rsudoenv set "myhost_2" "myhost"
+  echo "step_2"; set | grep "RSUDO" | sort
+  # delete myhost_2
+  rsudoenv unset "myhost_2"
+  echo "step_3"; set | grep "RSUDO" | sort
+  # delete current
+  rsudoenv unset
+  echo "step_4"; set | grep "RSUDO" | sort
+  # set current from myhost
+  rsudoenv get "myhost"
+  echo "step_5"; set | grep "RSUDO" | sort
+  # save and edit test
+  rsudoenv pass "store pass for enc/dec next files"
+  rsudoenv set "myhost_2" "myhost"
+  rsudoenv save "/tmp/rsudoenv_vars.enc"
+  rsudoenv edit "/tmp/rsudoenv_vars.enc"
+  rsudoenv editor "gnome-text-editor"
+  rsudoenv edit "/tmp/rsudoenv_vars.enc"
   # rsudoenv unset
   # rsudoenv unset "myhost"
+  # echo "step_6"; set | grep "RSUDO" | sort
   # rsudoenv get "/tmp/rsudoenv_vars.enc:myhost"
-  # echo "step_8"; env | grep "RSUDO" | sort
+  # echo "step_7"; set | grep "RSUDO" | sort
+  # rsudoenv unset
+  # rsudoenv unset "myhost"
+  # rsudoenv get "/tmp/rsudoenv_vars.enc:myhost"
+  # echo "step_8"; set | grep "RSUDO" | sort
   # rsudoenv unset
   # rsudoenv get ":myhost"
-  # echo "step_9"; env | grep "RSUDO" | sort
+  # echo "step_9"; set | grep "RSUDO" | sort
   # rm -f "/tmp/rsudoenv_vars.enc"
   # rsudoenv get "myuser@myhost"
-  # echo "step_10"; env | grep "RSUDO" | sort
+  # echo "step_10"; set | grep "RSUDO" | sort
   # rsudoenv get "@myhost_2"
-  # echo "step_11"; env | grep "RSUDO" | sort
+  # echo "step_11"; set | grep "RSUDO" | sort
 
-  # rsudo-export ###############################################################
+  # rsudo export ###############################################################
   # rsudo export LOG_LEVEL echo "inside rsudo session: LOG_LEVEL=\$LOG_LEVEL"
   # rsudo export LOG_LEVEL echo 'inside rsudo session: LOG_LEVEL=$LOG_LEVEL'
   # echo "echo \"inside rsudo session: LOG_LEVEL=\$LOG_LEVEL\"" | rsudo export LOG_LEVEL
@@ -194,10 +172,10 @@ test_rsudo()
   # TEST_EXPORT_VAR_1="test_val_1"; TEST_EXPORT_VAR_2="test_val_2"; TEST_EXPORT_VAR_3="test_val_3";
   # rsudo-export TEST_EXPORT_VAR_1 TEST_EXPORT_VAR_2 TEST_EXPORT_VAR_3 -- echo "inside rsudo session: TEST_EXPORT_VAR_1=$TEST_EXPORT_VAR_1 TEST_EXPORT_VAR_2=$TEST_EXPORT_VAR_2 TEST_EXPORT_VAR_3=$TEST_EXPORT_VAR_3"
 
-  # rsudo-fs ###################################################################
-  # rsudo-fs
+  # rsudo fs ###################################################################
+  # rsudo fs
 
-  # rsudo-db-pg ################################################################
+  # rsudo db-pg ################################################################
   # # rsudo db-pg psql "$@" # args are psql commands, eg.: multiple -c command, -f file.
   # SQL_QUERY="select * from pg_catalog.pg_tables where tablespace = 'pg_global';"
   # SQL_QUERY="select * from pg_catalog.pg_tables limit 5;"
@@ -205,6 +183,17 @@ test_rsudo()
   # rsudo db-pg psql postgres -c '\z' -c "$SQL_QUERY"
   # rsudo db-pg resetdb "AAAAAAAAA"
   # rsudo db-pg putdb "system" "/m/tmp/m/data/webgis/postgres-bak/pg_db_bak_system.sql"
+
+  # rsudo apisix ###############################################################
+  # rsudo apisix
+
+  # rsudo keycloak #############################################################
+  # rsudo keycloak
+
+
+
+
+
 
   # rsudosh ####################################################################
   # rsudosh file_1 file_2 file_3 file_4 file_5

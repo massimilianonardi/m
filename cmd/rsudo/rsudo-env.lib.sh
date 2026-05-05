@@ -15,7 +15,8 @@ rsudoenv()
 # pass - asks user on tty for encoding/decoding password to keep in env for silent operations
 rsudoenv_pass()
 {
-  export RSUDO_ENC_PASS="$(readpass "[rsudoenv] enter $([ -z "$1" ] && echo "DEFAULT" || echo "'$1'") encoding/decoding password")"
+  # export RSUDO_ENC_PASS="$(readpass "[rsudoenv] enter $([ -z "$1" ] && echo "DEFAULT" || echo "'$1'") encoding/decoding password")"
+  RSUDO_ENC_PASS="$(readpass "[rsudoenv] enter $([ -z "$1" ] && echo "DEFAULT" || echo "'$1'") encoding/decoding password")"
 }
 
 # load $files - load each encoded $files (password from env)
@@ -51,13 +52,15 @@ rsudoenv_save()
   log_debug "$(echo "rsudoenv_save RSUDO_ENV:"; env_return export $(env_list "RSUDO_ENV"))"
 
   log_echo "rsudoenv_save rsudo env connection vars to file:'$1'"
-  env_return export $(env_list "RSUDO_ENV") | ENC_PASS="$RSUDO_ENC_PASS" encode > "$1"
+  # env_return export $(env_list "RSUDO_ENV") | ENC_PASS="$RSUDO_ENC_PASS" encode > "$1"
+  env_return code $(env_list "RSUDO_ENV") | ENC_PASS="$RSUDO_ENC_PASS" encode > "$1"
 }
 
 # sets the editor to use when calling edit
 rsudoenv_editor()
 {
-  export RSUDO_ENV_EDITOR="$1"
+  # export RSUDO_ENV_EDITOR="$1"
+  RSUDO_ENV_EDITOR="$1"
 }
 
 # edit $file - calls the current editor (default is nano) to decode, edit and reencode $file
@@ -65,7 +68,8 @@ rsudoenv_edit()
 {
   (
     # silently reusing env pass for decoding/re-encoding
-    export ENC_PASS="$RSUDO_ENC_PASS"
+    # export ENC_PASS="$RSUDO_ENC_PASS"
+    ENC_PASS="$RSUDO_ENC_PASS"
     encoded_file_editor "$RSUDO_ENV_EDITOR"
     encoded_file_edit "$1"
   )
@@ -90,8 +94,10 @@ rsudoenv_get()
   then
     # user@host | @host -> always asks for password from tty user input
     log_debug "rsudoenv_get: ARG=$1 - RSUDO_HOST=${1#*@} - RSUDO_USER=${1%@*}"
-    export RSUDO_HOST="${1#*@}"
-    export RSUDO_USER="${1%@*}"
+    # export RSUDO_HOST="${1#*@}"
+    # export RSUDO_USER="${1%@*}"
+    RSUDO_HOST="${1#*@}"
+    RSUDO_USER="${1%@*}"
   else
     # env_name, :env_name, env_encoded_file:env_name
     log_debug "rsudoenv_get: ARG=$1 - ENV_ENCODED_FILE=$([ "$1" = "${1%:*}" ] && echo "" || echo "${1%:*}") - ENV_GROUP_NAME=${1#*:}"
@@ -102,9 +108,12 @@ rsudoenv_get()
 
     set -- "${1#*:}"
 
-    eval "export RSUDO_HOST=\"\$RSUDO_ENV_${1}_HOST\""
-    eval "export RSUDO_USER=\"\$RSUDO_ENV_${1}_USER\""
-    eval "export RSUDO_PASSWORD=\"\$RSUDO_ENV_${1}_PASS\""
+    # eval "export RSUDO_HOST=\"\$RSUDO_ENV_${1}_HOST\""
+    # eval "export RSUDO_USER=\"\$RSUDO_ENV_${1}_USER\""
+    # eval "export RSUDO_PASSWORD=\"\$RSUDO_ENV_${1}_PASS\""
+    eval "RSUDO_HOST=\"\$RSUDO_ENV_${1}_HOST\""
+    eval "RSUDO_USER=\"\$RSUDO_ENV_${1}_USER\""
+    eval "RSUDO_PASSWORD=\"\$RSUDO_ENV_${1}_PASS\""
 
     if [ -z "$RSUDO_HOST" ]
     then
@@ -117,18 +126,20 @@ rsudoenv_get()
   then
     # if user is not stored, it is intentionally wanted set it to current user
     log_info "rsudoenv_get: empty RSUDO_USER, setting it to '$USER'"
-    export RSUDO_USER="$USER"
+    # export RSUDO_USER="$USER"
+    RSUDO_USER="$USER"
   fi
 
   if [ "$1" != "${1#*@}" ] || [ -z "$RSUDO_PASSWORD" ]
   then
     # user@host | @host -> always asks for password from tty user input
     # if password is not stored, it is intentionally wanted set it to ask for it at runtime
-    export RSUDO_PASSWORD="$(readpass "[rsudo] Enter password for ${RSUDO_USER}@${RSUDO_HOST}:")"
+    # export RSUDO_PASSWORD="$(readpass "[rsudo] Enter password for ${RSUDO_USER}@${RSUDO_HOST}:")"
+    RSUDO_PASSWORD="$(readpass "[rsudo] Enter password for ${RSUDO_USER}@${RSUDO_HOST}:")"
   fi
 
-  log_debug "rsudoenv_get: RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER"
-  log_trace "rsudoenv_get: RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER | RSUDO_PASSWORD=$RSUDO_PASSWORD"
+  log_debug "rsudoenv_get: RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER | RSUDO_PASSWORD $([ -n "$RSUDO_PASSWORD" ] && echo "is not null" || echo "is null")"
+  # log_trace "rsudoenv_get: RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER | RSUDO_PASSWORD=$RSUDO_PASSWORD"
 }
 
 # set $name - sets a named group $name of connection variables from current RSUDO_HOST, RSUDO_USER and RSUDO_PASSWORD environment variables
@@ -143,20 +154,26 @@ rsudoenv_set()
 
   if [ -z "$2" ]
   then
-    eval "export RSUDO_ENV_${1}_HOST=\"\${RSUDO_HOST}\""
-    eval "export RSUDO_ENV_${1}_USER=\"\${RSUDO_USER}\""
-    eval "export RSUDO_ENV_${1}_PASS=\"\${RSUDO_PASSWORD}\""
+    # eval "export RSUDO_ENV_${1}_HOST=\"\${RSUDO_HOST}\""
+    # eval "export RSUDO_ENV_${1}_USER=\"\${RSUDO_USER}\""
+    # eval "export RSUDO_ENV_${1}_PASS=\"\${RSUDO_PASSWORD}\""
+    eval "RSUDO_ENV_${1}_HOST=\"\${RSUDO_HOST}\""
+    eval "RSUDO_ENV_${1}_USER=\"\${RSUDO_USER}\""
+    eval "RSUDO_ENV_${1}_PASS=\"\${RSUDO_PASSWORD}\""
   else
     eval "$(
       rsudoenv_get "$2"
-      echo "export RSUDO_ENV_${1}_HOST=\"${RSUDO_HOST}\""
-      echo "export RSUDO_ENV_${1}_USER=\"${RSUDO_USER}\""
-      echo "export RSUDO_ENV_${1}_PASS=\"${RSUDO_PASSWORD}\""
+      # echo "export RSUDO_ENV_${1}_HOST=\"${RSUDO_HOST}\""
+      # echo "export RSUDO_ENV_${1}_USER=\"${RSUDO_USER}\""
+      # echo "export RSUDO_ENV_${1}_PASS=\"${RSUDO_PASSWORD}\""
+      echo "RSUDO_ENV_${1}_HOST=\"${RSUDO_HOST}\""
+      echo "RSUDO_ENV_${1}_USER=\"${RSUDO_USER}\""
+      echo "RSUDO_ENV_${1}_PASS=\"${RSUDO_PASSWORD}\""
     )"
   fi
 
   eval "log_debug \"rsudoenv_set: RSUDO_ENV_${1}_HOST=\$RSUDO_ENV_${1}_HOST | RSUDO_ENV_${1}_USER=\$RSUDO_ENV_${1}_USER\""
-  eval "log_trace \"rsudoenv_set: RSUDO_ENV_${1}_HOST=\$RSUDO_ENV_${1}_HOST | RSUDO_ENV_${1}_USER=\$RSUDO_ENV_${1}_USER | RSUDO_ENV_${1}_PASS=\$RSUDO_ENV_${1}_PASS\""
+  # eval "log_trace \"rsudoenv_set: RSUDO_ENV_${1}_HOST=\$RSUDO_ENV_${1}_HOST | RSUDO_ENV_${1}_USER=\$RSUDO_ENV_${1}_USER | RSUDO_ENV_${1}_PASS=\$RSUDO_ENV_${1}_PASS\""
   log_trace "rsudoenv_set: RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER | RSUDO_PASSWORD=$RSUDO_PASSWORD"
 }
 
@@ -167,15 +184,12 @@ rsudoenv_unset()
   if [ -z "$1" ]
   then
     log_debug "rsudoenv_unset: empty name, resetting RSUDO_HOST, RSUDO_USER, RSUDO_PASSWORD"
-    eval "export RSUDO_HOST=\"\""
-    eval "export RSUDO_USER=\"\""
-    eval "export RSUDO_PASSWORD=\"\""
     eval "unset RSUDO_HOST"
     eval "unset RSUDO_USER"
     eval "unset RSUDO_PASSWORD"
 
     log_debug "rsudoenv_get: RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER"
-    log_trace "rsudoenv_get: RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER | RSUDO_PASSWORD=$RSUDO_PASSWORD"
+    # log_trace "rsudoenv_get: RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER | RSUDO_PASSWORD=$RSUDO_PASSWORD"
   else
     log_debug "rsudoenv_unset: unsetting group name \"$1\""
     eval "unset RSUDO_ENV_${1}_HOST"
@@ -183,6 +197,6 @@ rsudoenv_unset()
     eval "unset RSUDO_ENV_${1}_PASS"
 
     eval "log_debug \"rsudoenv_unset: RSUDO_ENV_${1}_HOST=\$RSUDO_ENV_${1}_HOST | RSUDO_ENV_${1}_USER=\$RSUDO_ENV_${1}_USER\""
-    eval "log_trace \"rsudoenv_unset: RSUDO_ENV_${1}_HOST=\$RSUDO_ENV_${1}_HOST | RSUDO_ENV_${1}_USER=\$RSUDO_ENV_${1}_USER | RSUDO_ENV_${1}_PASS=\$RSUDO_ENV_${1}_PASS\""
+    # eval "log_trace \"rsudoenv_unset: RSUDO_ENV_${1}_HOST=\$RSUDO_ENV_${1}_HOST | RSUDO_ENV_${1}_USER=\$RSUDO_ENV_${1}_USER | RSUDO_ENV_${1}_PASS=\$RSUDO_ENV_${1}_PASS\""
   fi
 }

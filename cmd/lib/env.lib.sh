@@ -101,6 +101,28 @@ env_return_export()
 
 #-------------------------------------------------------------------------------
 
+env_return_code()
+{
+  if [ -z "$*" ]
+  then
+    return 0
+  fi
+
+  if [ "$#" = "1" ]
+  then
+    set -- $@
+  fi
+
+  while [ "$#" -gt "0" ]
+  do
+    eval quoted="\$(quote \"\$$1\")"
+    eval echo "$1=\"$quoted; \""
+    shift
+  done
+}
+
+#-------------------------------------------------------------------------------
+
 env_return()
 {
 (
@@ -127,6 +149,9 @@ env_return()
   if [ "$ENV_RETURN" = "export" ]
   then
     env_return_export "$ENV_LIST"
+  elif [ "$ENV_RETURN" = "code" ]
+  then
+    env_return_code "$ENV_LIST"
   elif [ "$ENV_RETURN" = "cmd" ]
   then
     env_return_cmd "$ENV_LIST"
