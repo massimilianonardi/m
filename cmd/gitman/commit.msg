@@ -1,1 +1,1 @@
-rsudo function executed in a subshell to not change env, env must be changes by rsudoenv functions
+rsudo sub-module invokation change to allow: no delegation, delegate to another delegator or directly to a function

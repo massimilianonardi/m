@@ -91,6 +91,7 @@ test_rsudo()
   # rsudo --user admino -- 'ls -ld; whoami; whoami && pwd'
   # rsudo --user mnardi -- 'ls -ld; whoami; whoami && pwd'
   # rssh
+  rsudo shell
   # rsudo --interactive 'read -p "type something: " x; echo "you typed: $x"; whoami'
   # read x; echo "$x" | rsudo --askpass --interactive
   # rsudo --connect admino@localhost "ls -ld; whoami; whoami && pwd"
@@ -184,7 +185,8 @@ test_rsudo()
   # echo "step_11"; env | grep "RSUDO" | sort
 
   # rsudo-export ###############################################################
-  # rsudo-export LOG_LEVEL -- echo "inside rsudo session: LOG_LEVEL=$LOG_LEVEL"
+  # rsudo export LOG_LEVEL -- eval echo "inside rsudo session: LOG_LEVEL=\$LOG_LEVEL"
+  # echo "echo 'inside rsudo session: LOG_LEVEL=$LOG_LEVEL'" | rsudo export LOG_LEVEL
   # TEST_EXPORT_VAR_1="test_val_1"; TEST_EXPORT_VAR_2="test_val_2"; TEST_EXPORT_VAR_3="test_val_3";
   # rsudo-export TEST_EXPORT_VAR_1 TEST_EXPORT_VAR_2 TEST_EXPORT_VAR_3 -- echo "inside rsudo session: TEST_EXPORT_VAR_1=$TEST_EXPORT_VAR_1 TEST_EXPORT_VAR_2=$TEST_EXPORT_VAR_2 TEST_EXPORT_VAR_3=$TEST_EXPORT_VAR_3"
   # rsudo2 whoami
@@ -201,9 +203,9 @@ test_rsudo()
   # rsudo-db-pg ################################################################
   # # rsudo db-pg psql "$@" # args are psql commands, eg.: multiple -c command, -f file.
   # SQL_QUERY="select * from pg_catalog.pg_tables where tablespace = 'pg_global';"
-  SQL_QUERY="select * from pg_catalog.pg_tables limit 5;"
+  # SQL_QUERY="select * from pg_catalog.pg_tables limit 5;"
   # rsudo db-pg psql postgres -c "$SQL_QUERY"
-  rsudo db-pg psql postgres -c '\z' -c "$SQL_QUERY"
+  # rsudo db-pg psql postgres -c '\z' -c "$SQL_QUERY"
   # # rsudo-db-pg sql postgres "$SQL_QUERY"
   # # echo "$SQL_QUERY" | rsudo-db-pg sql postgres
   # # rsudo-db-pg sql postgres select \* from pg_catalog.pg_tables limit 5\;

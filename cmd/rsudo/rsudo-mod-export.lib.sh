@@ -4,17 +4,22 @@
 
 #------------------------------------------------------------------------------
 
-#-------------------------------------------------------------------------------
+log_debug "rsudo-export args: $@"
+if [ -z "$1" ]
+then
+  log_fatal "env vars list is empty!"
+fi
 
-echo "$@"
-
-while [ "$1" != "--" ] && [ "$#" -gt "0" ]
-do
-  EXPORT_VARS="$EXPORT_VARS $1=\$$1"
-  shift
-done
+EXPORT_VARS="$(env_return set "$1")"
 shift
 
-echo "EXPORT_VARS=$EXPORT_VARS"
-# rsudo $EXPORT_VARS "$@"
-echo "$EXPORT_VARS $@" | rsudo
+if [ -t 0 ]
+then
+  log_debug "rsudo-export: terminal attached"
+  rsudo "$EXPORT_VARS" "$@"
+else
+  log_debug "rsudo-export: terminal NOT attached"
+  (echo "$EXPORT_VARS"; cat) | rsudo "$@"
+fi
+
+#-------------------------------------------------------------------------------

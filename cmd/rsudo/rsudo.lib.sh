@@ -247,10 +247,21 @@ rsudo()
     rsudo_core "$@"
   elif RSUDO_MODULE="rsudo-mod-${1}.lib.sh" && command -v "$RSUDO_MODULE" > /dev/null
   then
-    log_debug "loading module RSUDO_MODULE=$RSUDO_MODULE"
-    . "$RSUDO_MODULE"
+    RSUDO_MODULE_PREFIX="rsudo_mod_${1}"
     shift
-    "$@"
+    log_debug "loading module RSUDO_MODULE=$RSUDO_MODULE - RSUDO_MODULE_PREFIX=$RSUDO_MODULE_PREFIX - RSUDO_MODULE_ARGS=$@"
+    . "$RSUDO_MODULE"
+    if exist_function "${RSUDO_MODULE_PREFIX}"
+    then
+      log_debug "delegate to module function: ${RSUDO_MODULE_PREFIX}"
+      "${RSUDO_MODULE_PREFIX}" "$@"
+    elif exist_function "${RSUDO_MODULE_PREFIX}"_"$1"
+    then
+      log_debug "delegate to module function: ${RSUDO_MODULE_PREFIX}_$1"
+      "${RSUDO_MODULE_PREFIX}"_"$@"
+    else
+      log_debug "no module function to delegate to"
+    fi
   else
     rsudo_core "$@"
   fi
