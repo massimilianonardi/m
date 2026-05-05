@@ -17,14 +17,13 @@
 
 #------------------------------------------------------------------------------
 
-# replaces rsudo command to allow safe use of env in recursive calls
 # needs the following env vars to be defined outside
 #
 # required:
 # RSUDO_HOST
 # RSUDO_USER
 # RSUDO_PASSWORD
-# 
+#
 # optional:
 # RSUDO_AS_USER
 # RSUDO_INTERACTIVE
@@ -58,11 +57,6 @@ rsudo_core()
       if [ -n "$RSUDO_PIPE_COMMANDS" ]
       then
         set -- "${RSUDO_PIPE_COMMANDS}" "$@"
-        # echo "PIPED ARGS=$@"
-        # for k in "$@"
-        # do
-        #   echo "$k"
-        # done
       fi
     fi
 
@@ -75,7 +69,29 @@ rsudo_core()
     # set -- sh -c "$(quote "$1")"
   fi
 
-  rsudo_execute "$@"
+  # prepare vars for executing
+  # export DISPLAY=":0.0"
+  export SSH_ASKPASS="rsudo-askpass"
+  export SSH_ASKPASS_REQUIRE="force"
+
+  # check if impersonating another user
+  if [ -n "$RSUDO_AS_USER" ]
+  then
+    SUDO_AS_USER="--user=\"$RSUDO_AS_USER\""
+  fi
+
+  # execute an interactive or non interactive session
+  if [ "$RSUDO_INTERACTIVE" = "true" ]
+  then
+    # interactive command
+    log_debug "interactive command"
+    rsudo_interactive "$@"
+  else
+    # non interactive command
+    log_debug "non interactive command"
+    rsudo_not_interactive "$@"
+  fi
+
   EXIT_CODE="$?"
 
   log_info "RSUDO ENDED: HOST=$RSUDO_HOST - USER=$RSUDO_USER"
@@ -85,71 +101,33 @@ rsudo_core()
 
 #------------------------------------------------------------------------------
 
-rsudo_execute()
-{
-  # echo "ARGS=$@"
-  # for k in "$@"
-  # do
-  #   echo "$k"
-  # done
-
-  # export DISPLAY=":0.0"
-  export SSH_ASKPASS="rsudo-askpass"
-  # export SSH_ASKPASS="${0}"
-  export SSH_ASKPASS_REQUIRE="force"
-
-  # check if impersonating another user
-  if [ -n "$RSUDO_AS_USER" ]
-  then
-    SUDO_AS_USER="--user=\"$RSUDO_AS_USER\""
-  fi
-
-  if [ "$RSUDO_INTERACTIVE" = "true" ]
-  then
-    log_debug "interactive command"
-    rsudo_interactive "$@"
-  else
-    log_debug "not interactive command"
-    rsudo_not_interactive "$@"
-  fi
-}
-
-#------------------------------------------------------------------------------
-
-# original with pass exported and exposed in command line as command
-# rsudo_interactive()
-# {
-#   ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
-#   echo "$RSUDO_PASSWORD" \| sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "$@" </dev/tty
-# }
-
-# 1st launches non interactive daemon that listens for token verification and returns sudo password, at acknowledgement , it exits
+# 1st launches non interactive daemon that listens for token verification and returns sudo password, at acknowledgement, it exits
 # 2nd launches interactive session that send token to daemon and receives sudo password, then executes sudo with user commands and stays with an interactive session open
 rsudo_interactive()
 {
   RSUDO_TOKEN="$(randstr 255)"
-  RSUDO_REMOTE_FIFO="/tmp/$(randstr)"
+  RSUDO_REMOTE_FIFO="/tmp/$(randstr 32)"
 
   RSUDO_DAEMON_COMMANDS="$(cat << EOF
-  trap "rm -f '$RSUDO_FIFO'" INT QUIT TERM HUP PIPE ABRT TSTP EXIT
-  mkfifo "$RSUDO_REMOTE_FIFO"
-  chmod 600 "$RSUDO_REMOTE_FIFO"
-  echo "READY" > "$RSUDO_REMOTE_FIFO"
-  read RSUDO_TOKEN < "$RSUDO_REMOTE_FIFO"
-  if [ "\$RSUDO_TOKEN" = "$RSUDO_TOKEN" ]
-  then
-    echo "$RSUDO_PASSWORD" > "$RSUDO_REMOTE_FIFO"
-  else
-    echo "wrong RSUDO_TOKEN!" > "$RSUDO_REMOTE_FIFO"
-  fi
-  read RSUDO_ACKNOWLEDGEMENT < "$RSUDO_REMOTE_FIFO"
-  rm -f '$RSUDO_REMOTE_FIFO'
+trap "rm -f '$RSUDO_FIFO'" INT QUIT TERM HUP PIPE ABRT TSTP EXIT
+mkfifo "$RSUDO_REMOTE_FIFO"
+chmod 600 "$RSUDO_REMOTE_FIFO"
+echo "READY" > "$RSUDO_REMOTE_FIFO"
+read RSUDO_TOKEN < "$RSUDO_REMOTE_FIFO"
+if [ "\$RSUDO_TOKEN" = "$RSUDO_TOKEN" ]
+then
+  echo "$RSUDO_PASSWORD" > "$RSUDO_REMOTE_FIFO"
+else
+  echo "wrong RSUDO_TOKEN!" > "$RSUDO_REMOTE_FIFO"
+fi
+read RSUDO_ACKNOWLEDGEMENT < "$RSUDO_REMOTE_FIFO"
+rm -f '$RSUDO_REMOTE_FIFO'
 EOF
 )"
 
   ((echo "$RSUDO_PASSWORD"; echo "$RSUDO_DAEMON_COMMANDS") | RSUDO_INTERACTIVE="" ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" sh -s) &
 
-  export RSUDO_FIFO="/tmp/$(randstr)"
+  export RSUDO_FIFO="/tmp/$(randstr 32)"
   mkfifo "$RSUDO_FIFO"
   chmod 600 "$RSUDO_FIFO"
   exec 3<>"$RSUDO_FIFO"
@@ -174,48 +152,59 @@ rsudo_not_interactive()
 
 #------------------------------------------------------------------------------
 
-rsudo_parse_connection_args()
+# replaces "rsudo command" with "rsudo function" to allow safe use of env (without exporting) in recursive calls
+rsudo()
 {
-  if [ "$1" = "${1#*@}" ]
-  then
-    log_fatal "wrong connection string: $1"
-    exit 1
-  fi
+  while [ "$#" -gt "0" ] && [ "$1" != "--" ] && [ "$1" != "${1#--}" ]
+  do
+    case "$1" in
+      --interactive) RSUDO_INTERACTIVE="true";;
+      --askpass) RSUDO_ASKPASS="true";;
+      --connect)
+        shift
 
-  RSUDO_HOST="${1#*@}"
-  RSUDO_USER="${1%@*}"
-}
+        if [ "$1" = "${1#*@}" ]
+        then
+          log_fatal "wrong connection string: $1"
+          exit 1
+        fi
 
-#------------------------------------------------------------------------------
+        RSUDO_HOST="${1#*@}"
+        RSUDO_USER="${1%@*}"
+      ;;
+      --load)
+        shift
 
-rsudo_parse_load_args()
-{
-  if [ "$1" = "${1%:*}" ]
-  then
-    log_fatal "wrong load string: $1"
-    exit 1
-  fi
+        if [ "$1" = "${1%:*}" ]
+        then
+          log_fatal "wrong load string: $1"
+          exit 1
+        fi
 
-  ENV_ENCODED_FILE="${1%:*}"
-  ENV_GROUP_NAME="${1#*:}"
+        ENV_ENCODED_FILE="${1%:*}"
+        ENV_GROUP_NAME="${1#*:}"
 
-  if [ -z "$ENV_ENCODED_FILE" ]
-  then
-    log_warn "env file not provided, searching into current env."
-  elif ! rsudoenv_load "$ENV_ENCODED_FILE"
-  then
-    log_warn "env file error! not loaded, searching into current env."
-  fi
+        if [ -z "$ENV_ENCODED_FILE" ]
+        then
+          log_warn "env file not provided, searching into current env."
+        elif ! rsudoenv_load "$ENV_ENCODED_FILE"
+        then
+          log_warn "env file error! not loaded, searching into current env."
+        fi
 
-  eval "RSUDO_HOST=\"\$RSUDO_ENV_${ENV_GROUP_NAME}_HOST\""
-  eval "RSUDO_USER=\"\$RSUDO_ENV_${ENV_GROUP_NAME}_USER\""
-  eval "RSUDO_PASSWORD=\"\$RSUDO_ENV_${ENV_GROUP_NAME}_PASS\""
-}
+        eval "RSUDO_HOST=\"\$RSUDO_ENV_${ENV_GROUP_NAME}_HOST\""
+        eval "RSUDO_USER=\"\$RSUDO_ENV_${ENV_GROUP_NAME}_USER\""
+        eval "RSUDO_PASSWORD=\"\$RSUDO_ENV_${ENV_GROUP_NAME}_PASS\""
+      ;;
+      --user) shift; RSUDO_AS_USER="$1";;
+      *) log_fatal "bad option: '$1'"; exit 1;;
+    esac
+    shift
+  done
 
-#------------------------------------------------------------------------------
 
-rsudo_validate_connection_vars()
-{
+
+  # validate connection args: RSUDO_HOST, RSUDO_USER, RSUDO_PASSWORD.
   if [ -z "$RSUDO_HOST" ]
   then
     log_fatal "empty RSUDO_HOST"
@@ -247,27 +236,10 @@ rsudo_validate_connection_vars()
   fi
 
   log_debug "RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER | RSUDO_PASSWORD $([ -n "$RSUDO_PASSWORD" ] && echo "is not null" || echo "is null")"
-}
 
-#------------------------------------------------------------------------------
 
-rsudo_parse_args_and_execute()
-{
-  while [ "$#" -gt "0" ] && [ "$1" != "--" ] && [ "$1" != "${1#--}" ]
-  do
-    case "$1" in
-      --interactive) RSUDO_INTERACTIVE="true";;
-      --askpass) RSUDO_ASKPASS="true";;
-      --connect) shift; rsudo_parse_connection_args "$1";;
-      --load) shift; rsudo_parse_load_args "$1";;
-      --user) shift; RSUDO_AS_USER="$1";;
-      *) log_fatal "bad option: '$1'"; exit 1;;
-    esac
-    shift
-  done
 
-  rsudo_validate_connection_vars
-
+  # determine what has to be called: rsudo_core or a sub-module.
   if [ "$1" = "--" ]
   then
     shift
@@ -281,13 +253,6 @@ rsudo_parse_args_and_execute()
   else
     rsudo_core "$@"
   fi
-}
-
-#------------------------------------------------------------------------------
-
-rsudo()
-{
-  rsudo_parse_args_and_execute "$@"
 }
 
 #------------------------------------------------------------------------------

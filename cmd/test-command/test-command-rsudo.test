@@ -68,11 +68,8 @@ test_rsudo()
 
   # must work
   # rsudo
-  # read x; echo "$x" | RSUDO_ASKPASS="true" RSUDO_INTERACTIVE="true" rsudo
   # rsudo top # error because executed not interactively
   # RSUDO_INTERACTIVE="true" rsudo top
-  # rsudo shell
-  # rsudo shell "/m/src/git/rpr/cmd/rpr-jobs/rpr-env.enc"
   # export LOG_LEVEL="none"
   # rsudo sh -c "ls -ld"
   # rsudo sh -c 'ls -ld'
@@ -90,19 +87,28 @@ test_rsudo()
   # rsudo sh -c 'x="my x value"; echo "your x=$x"; whoami'
   # rsudo 'x="my x value"; echo "your x=$x"; whoami'
   # echo "message from pipe" | rsudo cat
+  # rsudo -- 'ls -ld; whoami; whoami && pwd'
+  # rsudo --user admino -- 'ls -ld; whoami; whoami && pwd'
+  # rsudo --user mnardi -- 'ls -ld; whoami; whoami && pwd'
+  # rssh
+  # rsudo --interactive 'read -p "type something: " x; echo "you typed: $x"; whoami'
+  # read x; echo "$x" | rsudo --askpass --interactive
+  # rsudo --connect admino@localhost "ls -ld; whoami; whoami && pwd"
+  # rsudo --connect mnardi@localhost "ls -ld; whoami; whoami && pwd"
+  . rsudo-env.lib.sh
+  rsudoenv set "myhost"
+  echo "step_1"; env | grep "RSUDO" | sort
+  rsudoenv save "/tmp/rsudoenv_vars.enc"
+  rsudoenv edit "/tmp/rsudoenv_vars.enc"
+  rsudo --load "/tmp/rsudoenv_vars.enc":myhost "ls -ld; whoami; whoami && pwd"
+  rm -f "/tmp/rsudoenv_vars.enc"
+
+  # read x; echo "$x" | RSUDO_ASKPASS="true" RSUDO_INTERACTIVE="true" rsudo
   # echo "pwd;" | RSUDO_INTERACTIVE="true" rsudo sh -c "read -p 'type something: ' x; echo 'you typed: '\$x; whoami"
   # echo "pwd" | RSUDO_INTERACTIVE="true" rsudo "read -p 'type something: ' x; echo 'you typed: '\$x; whoami; su"
   # echo "pwd" | RSUDO_INTERACTIVE="true" rsudo "sh -c \"read -p 'type something: ' x; echo 'you typed: '\\\$x; whoami\""
   # echo "ls -la; x='test_val'; echo \"x evaluated from pipe=\$x\"" | RSUDO_INTERACTIVE="true" rsudo echo "x=\$x"
   # (echo "whoami;"; echo "x='test_val'; echo \"x evaluated from pipe=\$x\"") | RSUDO_INTERACTIVE="true" rsudo echo "x=\$x"
-  # rsudo -- 'ls -ld; whoami; whoami && pwd'
-  # rsudo --user admino -- 'ls -ld; whoami; whoami && pwd'
-  # rssh
-  # rsudo --interactive 'read -p "type something: " x; echo "you typed: $x"; whoami'
-  # read x; echo "$x" | rsudo --askpass --interactive
-  # rsudo --connect admino@localhost "ls -ld; whoami; whoami && pwd"
-  # . rsudo-env.lib.sh
-  # rsudo --load admino@localhost "ls -ld; whoami; whoami && pwd"
 
   # shell interpretation tricks
   # rsudo sh -c "ls -ld"
