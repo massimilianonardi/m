@@ -254,7 +254,8 @@ rsudo()
     rsudo_core "$@"
   elif RSUDO_MODULE="rsudo-mod-${1}.lib.sh" && command -v "$RSUDO_MODULE" > /dev/null
   then
-    RSUDO_MODULE_PREFIX="rsudo_mod_${1}"
+    # RSUDO_MODULE_PREFIX="rsudo_mod_${1}"
+    RSUDO_MODULE_PREFIX="rsudo_mod_$(echo "$1" | sed 's/-/_/g')"
     shift
     log_debug "loading module RSUDO_MODULE=$RSUDO_MODULE - RSUDO_MODULE_PREFIX=$RSUDO_MODULE_PREFIX - RSUDO_MODULE_ARGS=$@"
     . "$RSUDO_MODULE"

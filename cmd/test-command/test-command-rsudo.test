@@ -189,17 +189,10 @@ test_rsudo()
   # echo "echo \"inside rsudo session: LOG_LEVEL=\$LOG_LEVEL\"" | rsudo export LOG_LEVEL
   # echo 'echo "inside rsudo session: LOG_LEVEL=$LOG_LEVEL"' | rsudo export LOG_LEVEL
   # echo 'echo "inside rsudo session: LOG_LEVEL=$LOG_LEVEL"' | rsudo # without export var is null
+  # echo 'echo "inside rsudo session: LOG_LEVEL=$LOG_LEVEL"' | rsudo export LOG_LEVEL echo 'inside rsudo session 2: LOG_LEVEL=$LOG_LEVEL'
 
-  echo 'echo "inside rsudo session: LOG_LEVEL=$LOG_LEVEL"' | rsudo export LOG_LEVEL echo 'inside rsudo session 2: LOG_LEVEL=$LOG_LEVEL'
   # TEST_EXPORT_VAR_1="test_val_1"; TEST_EXPORT_VAR_2="test_val_2"; TEST_EXPORT_VAR_3="test_val_3";
   # rsudo-export TEST_EXPORT_VAR_1 TEST_EXPORT_VAR_2 TEST_EXPORT_VAR_3 -- echo "inside rsudo session: TEST_EXPORT_VAR_1=$TEST_EXPORT_VAR_1 TEST_EXPORT_VAR_2=$TEST_EXPORT_VAR_2 TEST_EXPORT_VAR_3=$TEST_EXPORT_VAR_3"
-  # rsudo2 whoami
-  # rsudo2 bash
-  # rsudo2 whoami \&\& ls -ld
-  # echo "message from pipe" | rsudo2 cat
-  # RSUDO_INTERACTIVE="true" rsudo3 top
-  # RSUDO_INTERACTIVE="true" rsudo3 bash -ic 'read -p "x-var" x; echo "x=$x"'
-  # rsudo3
 
   # rsudo-fs ###################################################################
   # rsudo-fs
@@ -210,9 +203,7 @@ test_rsudo()
   # SQL_QUERY="select * from pg_catalog.pg_tables limit 5;"
   # rsudo db-pg psql postgres -c "$SQL_QUERY"
   # rsudo db-pg psql postgres -c '\z' -c "$SQL_QUERY"
-  # # rsudo-db-pg sql postgres "$SQL_QUERY"
-  # # echo "$SQL_QUERY" | rsudo-db-pg sql postgres
-  # # rsudo-db-pg sql postgres select \* from pg_catalog.pg_tables limit 5\;
+  rsudo db-pg resetdb "cesare_condono"
 
   # rsudosh ####################################################################
   # rsudosh file_1 file_2 file_3 file_4 file_5
