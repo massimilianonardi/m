@@ -1,1 +1,1 @@
-rsudo mod db-pg resetdb perfect
+rsudo mod db-pg completely working perfect

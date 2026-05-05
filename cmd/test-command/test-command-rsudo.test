@@ -203,7 +203,8 @@ test_rsudo()
   # SQL_QUERY="select * from pg_catalog.pg_tables limit 5;"
   # rsudo db-pg psql postgres -c "$SQL_QUERY"
   # rsudo db-pg psql postgres -c '\z' -c "$SQL_QUERY"
-  rsudo db-pg resetdb "cesare_condono"
+  # rsudo db-pg resetdb "AAAAAAAAA"
+  # rsudo db-pg putdb "system" "/m/tmp/m/data/webgis/postgres-bak/pg_db_bak_system.sql"
 
   # rsudosh ####################################################################
   # rsudosh file_1 file_2 file_3 file_4 file_5
