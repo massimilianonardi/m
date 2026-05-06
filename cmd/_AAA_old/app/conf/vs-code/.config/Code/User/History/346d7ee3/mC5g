@@ -1,5 +1,0 @@
-#!/bin/sh
-
-sudo systemctl stop keycloak
-sudo systemctl stop keycloak-vhome
-

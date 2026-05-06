@@ -165,10 +165,18 @@ EOF
 #------------------------------------------------------------------------------
 
 # first password is piped to rsudo-askpass, second is piped to sudo -S
+# rsudo_not_interactive()
+# {
+#   (echo "$RSUDO_PASSWORD"; echo "$RSUDO_PASSWORD"; [ ! -t 0 ] && cat) | \
+#   ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
+#   sudo -S --prompt='' $SUDO_AS_USER -- "$@"
+# }
+
 rsudo_not_interactive()
 {
   (echo "$RSUDO_PASSWORD"; echo "$RSUDO_PASSWORD"; [ ! -t 0 ] && cat) | \
   ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
+  "sudo -K; (sudo -n true 1>/dev/null 2>/dev/null) && read SUDO_PASS;" \
   sudo -S --prompt='' $SUDO_AS_USER -- "$@"
 }
 

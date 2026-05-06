@@ -1,5 +1,0 @@
-#!/bin/sh
-
-sudo systemctl status keycloak-vhome
-sudo systemctl status keycloak
-

@@ -11,7 +11,6 @@ rsudo_mod_fs_delete()
     exit 1
   fi
 
-  # rsudo rm -rf -- "$@"
   rsudo rm -r "$@"
 }
 
@@ -35,7 +34,7 @@ rsudo_mod_fs_get()
     exit 1
   fi
 
-  log_info REMOTE_PATH_TYPE="$REMOTE_PATH_TYPE"
+  log_info "REMOTE_PATH_TYPE=$REMOTE_PATH_TYPE"
 
   if [ "$REMOTE_PATH_TYPE" = "L" ]
   then
@@ -47,7 +46,6 @@ rsudo_mod_fs_get()
     rm -rf -- "$LOCAL_PATH" && mkdir -p "${LOCAL_PATH%/*}" && rsudo cat "$REMOTE_PATH" > "$LOCAL_PATH"
   elif [ "$REMOTE_PATH_TYPE" = "d" ]
   then
-    # rm -rf -- "$LOCAL_PATH" && mkdir -p "$LOCAL_PATH" && cd "$LOCAL_PATH" && rsudo sh -c "cd '$REMOTE_PATH' && tar -c -f - ." | tar -x -f -
     rm -rf -- "$LOCAL_PATH" && mkdir -p "$LOCAL_PATH" && cd "$LOCAL_PATH" && rsudo "cd '$REMOTE_PATH' && tar -c -f - ." | tar -x -f -
   else
     log_error "get: $REMOTE_PATH doesn't exists"
@@ -75,15 +73,12 @@ rsudo_mod_fs_put()
   then
     TARGET=$(ls -ld -- "$LOCAL_PATH")
     TARGET=${TARGET#*" $LOCAL_PATH -> "}
-    # rsudo sh -c "rm -rf -- '$REMOTE_PATH' && mkdir -p '${REMOTE_PATH%/*}' && ln -s '$TARGET' '$REMOTE_PATH'"
     rsudo "rm -rf -- '$REMOTE_PATH' && mkdir -p '${REMOTE_PATH%/*}' && ln -s '$TARGET' '$REMOTE_PATH'"
   elif [ -f "$LOCAL_PATH" ]
   then
-    # cat "$LOCAL_PATH" | rsudo sh -c "rm -rf -- '$REMOTE_PATH' && mkdir -p '${REMOTE_PATH%/*}' && cat > '$REMOTE_PATH'"
     cat "$LOCAL_PATH" | rsudo "rm -rf -- '$REMOTE_PATH' && mkdir -p '${REMOTE_PATH%/*}' && cat > '$REMOTE_PATH'"
   elif [ -d "$LOCAL_PATH" ]
   then
-    # cd "$LOCAL_PATH" && tar -c -f - . | rsudo sh -c "rm -rf -- '$REMOTE_PATH' && mkdir -p '$REMOTE_PATH' && cd '$REMOTE_PATH' && tar -x -f -"
     cd "$LOCAL_PATH" && tar -c -f - . | rsudo "rm -rf -- '$REMOTE_PATH' && mkdir -p '$REMOTE_PATH' && cd '$REMOTE_PATH' && tar -x -f -"
   else
     log_error "put: $LOCAL_PATH doesn't exists"

@@ -1,3 +1,0 @@
-#!/bin/sh
-
-./latest/opt/google/chrome/chrome --user-data-dir="./user-data-dir" "$@"
