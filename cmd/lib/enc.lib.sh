@@ -189,10 +189,21 @@ encoded_file_edit()
       ENCODED_FILE_EDITOR="nano"
     fi
 
+    # DECODED_FILE="${1}.$(date +"[%Y-%m-%d %H:%M:%S]").dec" && \
+    # decode < "$1" > "$DECODED_FILE" && \
+    # "$ENCODED_FILE_EDITOR" "$DECODED_FILE" && \
+    # encode < "$DECODED_FILE" > "$1"
+
     DECODED_FILE="${1}.$(date +"[%Y-%m-%d %H:%M:%S]").dec" && \
     decode < "$1" > "$DECODED_FILE" && \
-    "$ENCODED_FILE_EDITOR" "$DECODED_FILE" && \
-    encode < "$DECODED_FILE" > "$1"
+    "$ENCODED_FILE_EDITOR" "$DECODED_FILE"
+
+    echo "reencode file: $1? YES, NO (default = YES): " >&2
+    read REENCODE_CHOICE
+    if [ "$REENCODE_CHOICE" = "YES" ] || [ "$REENCODE_CHOICE" = "yes" ] || [ "$REENCODE_CHOICE" = "Y" ] || [ "$REENCODE_CHOICE" = "y" ] || [ "$REENCODE_CHOICE" = "Yes" ]
+    then
+      encode < "$DECODED_FILE" > "$1"
+    fi
 
     rm -f "$DECODED_FILE"
   )

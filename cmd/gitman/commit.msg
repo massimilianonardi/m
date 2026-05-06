@@ -1,1 +1,1 @@
-rsudo fixed and tested for sudoers with no pass, fs refined perfect
+enc lib: edit file with reencode confirmation to prevent original data loss when cancelling editing
