@@ -173,8 +173,8 @@ test_rsudo()
   # rsudo-export TEST_EXPORT_VAR_1 TEST_EXPORT_VAR_2 TEST_EXPORT_VAR_3 -- echo "inside rsudo session: TEST_EXPORT_VAR_1=$TEST_EXPORT_VAR_1 TEST_EXPORT_VAR_2=$TEST_EXPORT_VAR_2 TEST_EXPORT_VAR_3=$TEST_EXPORT_VAR_3"
 
   # rsudo fs ###################################################################
-  test_files_start
-  read x
+  # test_files_start
+  # read x
 
   # # NOT working because globbing is NOT interpreted server side (quotes are preserved)
   # rsudo fs delete -v "${TEST_DIR}/*"
@@ -202,11 +202,11 @@ test_rsudo()
   # rsudo fs get "${TEST_DIR}/000" "${TEST_DIR}/download/000"
   # rsudo fs get "${TEST_DIR}/000" "${TEST_DIR}/download/0-0-0"
 
-  ls -lA "${TEST_DIR}/upload"
-  ls -lA "${TEST_DIR}/download"
-  read x
-  test_files_end
-  rsudo fs delete "${TEST_DIR}"
+  # ls -lA "${TEST_DIR}/upload"
+  # ls -lA "${TEST_DIR}/download"
+  # read x
+  # test_files_end
+  # rsudo fs delete "${TEST_DIR}"
 
   # rsudo db-pg ################################################################
   # # rsudo db-pg psql "$@" # args are psql commands, eg.: multiple -c command, -f file.
