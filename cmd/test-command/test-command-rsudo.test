@@ -176,8 +176,10 @@ test_rsudo()
   test_files_start
   read x
 
-  # # working because globbing is interpreted server side
-  # rsudo fs delete "${TEST_DIR}/*"
+  # # NOT working because globbing is NOT interpreted server side (quotes are preserved)
+  # rsudo fs delete -v "${TEST_DIR}/*"
+  # # working because globbing is interpreted server side using --no-preserve-quotes flag
+  # rsudo --no-preserve-quotes fs delete -v "${TEST_DIR}/*"
   # rsudo fs delete -v "${TEST_DIR}/000"
 
   # # not working because multiple paths inside one argument

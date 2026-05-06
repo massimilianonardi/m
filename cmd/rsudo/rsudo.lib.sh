@@ -60,13 +60,16 @@ rsudo_core()
       fi
     fi
 
-    if [ "$#" -gt "1" ]
+    if [ "$RSUDO_NO_PRESERVE_QUOTES" != "true" ]
     then
-      set -- "$(saveargs "$@")"
-    fi
+      if [ "$#" -gt "1" ]
+      then
+        set -- "$(saveargs "$@")"
+      fi
 
-    set -- sh -c "$(quote "$@")"
-    # set -- sh -c "$(quote "$1")"
+      set -- sh -c "$(quote "$@")"
+      # set -- sh -c "$(quote "$1")"
+    fi
   fi
 
   log_debug "ARGS - START"
@@ -178,6 +181,7 @@ rsudo()
   while [ "$#" -gt "0" ] && [ "$1" != "--" ] && [ "$1" != "${1#--}" ]
   do
     case "$1" in
+      --no-preserve-quotes) RSUDO_NO_PRESERVE_QUOTES="true";;
       --interactive) RSUDO_INTERACTIVE="true";;
       --askpass) RSUDO_ASKPASS="true";;
       --connect)
