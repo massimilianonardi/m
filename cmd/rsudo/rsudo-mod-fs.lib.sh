@@ -6,19 +6,20 @@
 
 rsudo_mod_fs_delete()
 {
-  if [ -z "$1" ]
+  if [ -z "$*" ]
   then
     exit 1
   fi
 
-  rsudo rm -rf -- "$1"
+  # rsudo rm -rf -- "$@"
+  rsudo rm -r "$@"
 }
 
 #------------------------------------------------------------------------------
 
 rsudo_mod_fs_get()
 {
-# (
+(
   if [ -z "$1" ] || [ -z "$2" ]
   then
     exit 1
@@ -51,14 +52,14 @@ rsudo_mod_fs_get()
     log_error "get: $REMOTE_PATH doesn't exists"
     exit 1
   fi
-# )
+)
 }
 
 #------------------------------------------------------------------------------
 
 rsudo_mod_fs_put()
 {
-# (
+(
   if [ -z "$1" ] || [ -z "$2" ]
   then
     exit 1
@@ -93,7 +94,7 @@ rsudo_mod_fs_put()
 
   if [ -n "$REMOTE_OWNER_GROUP" ]; then rsudo chown -R "$REMOTE_OWNER_GROUP" "$REMOTE_PATH"; fi && \
   if [ -n "$REMOTE_PERMISSIONS" ]; then rsudo chmod -R "$REMOTE_PERMISSIONS" "$REMOTE_PATH"; fi
-# )
+)
 }
 
 #------------------------------------------------------------------------------

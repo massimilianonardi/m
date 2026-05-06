@@ -65,6 +65,11 @@ rsudoenv_edit()
 
 #------------------------------------------------------------------------------
 
+rsudoenv_echo()
+{
+  echo "rsudoenv_get: RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER | RSUDO_PASSWORD $([ -n "$RSUDO_PASSWORD" ] && echo "is not null" || echo "is null")"
+}
+
 # get - sets connection environment variables RSUDO_HOST, RSUDO_USER and RSUDO_PASSWORD form various sources
 # get $name - gets variables from a named group of variables of the form RSUDO_ENV_${name}_HOST, RSUDO_ENV_${name}_USER and RSUDO_ENV_${name}_PASS
 # get $env_file:$name - loads file $env_file, then gets variables from a named group $name

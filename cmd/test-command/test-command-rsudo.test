@@ -92,7 +92,7 @@ test_rsudo()
   # rsudo --user mnardi -- 'ls -ld; whoami; whoami && pwd'
   # rssh
   # rsudo --interactive 'read -p "type something: " x; echo "you typed: $x"; whoami'
-  read x; echo "$x" | rsudo --askpass --interactive
+  # read x; echo "$x" | rsudo --askpass --interactive
   # rsudo --connect admino@localhost "ls -ld; whoami; whoami && pwd"
   # rsudo --connect mnardi@localhost "ls -ld; whoami; whoami && pwd"
   # . rsudo-env.lib.sh
@@ -173,37 +173,38 @@ test_rsudo()
   # rsudo-export TEST_EXPORT_VAR_1 TEST_EXPORT_VAR_2 TEST_EXPORT_VAR_3 -- echo "inside rsudo session: TEST_EXPORT_VAR_1=$TEST_EXPORT_VAR_1 TEST_EXPORT_VAR_2=$TEST_EXPORT_VAR_2 TEST_EXPORT_VAR_3=$TEST_EXPORT_VAR_3"
 
   # rsudo fs ###################################################################
-  # test_files_start
-  # read x
+  test_files_start
+  read x
 
-  # working because globbing is interpreted server side
-  # rsudo fs delete "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/*"
+  # # working because globbing is interpreted server side
+  # rsudo fs delete "${TEST_DIR}/*"
+  # rsudo fs delete -v "${TEST_DIR}/000"
 
   # # not working because multiple paths inside one argument
-  # rsudo fs delete "$REMOTE_HOST" "$REMOTE_USER" "'${TEST_DIR}/000/'* '${TEST_DIR}/aaa'/*"
+  # rsudo fs delete "'${TEST_DIR}/000/'* '${TEST_DIR}/aaa'/*"
 
   # # globbing server side + multiple entries (with eventual spaces or special characters)
-  # rsudo fs delete "$REMOTE_HOST" "$REMOTE_USER" "\"${TEST_DIR}/000\"/*" "${TEST_DIR}/aaa/*"
+  # rsudo fs delete "\"${TEST_DIR}/000\"/*" "${TEST_DIR}/aaa/*"
 
-  # rsudo fs put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/link-recursive" "${TEST_DIR}/upload/link-aaa-recursive"
-  # rsudo fs put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/bbb/ccc/link-absolute" "${TEST_DIR}/upload/link-absolute"
-  # rsudo fs put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/file_a1" "${TEST_DIR}/upload/file_a1"
-  # rsudo fs put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/colliding/sub-colliding/file_colliding" "${TEST_DIR}/upload/file_colliding_renamed"
-  # rsudo fs put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/upload/000" "admino:admino" "777"
-  # rsudo fs put "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/upload/0-0-0"
+  # rsudo fs put "${TEST_DIR}/aaa/link-recursive" "${TEST_DIR}/upload/link-aaa-recursive"
+  # rsudo fs put "${TEST_DIR}/aaa/bbb/ccc/link-absolute" "${TEST_DIR}/upload/link-absolute"
+  # rsudo fs put "${TEST_DIR}/aaa/file_a1" "${TEST_DIR}/upload/file_a1"
+  # rsudo fs put "${TEST_DIR}/aaa/colliding/sub-colliding/file_colliding" "${TEST_DIR}/upload/file_colliding_renamed"
+  # rsudo fs put "${TEST_DIR}/000" "${TEST_DIR}/upload/000" "admino:admino" "777"
+  # rsudo fs put "${TEST_DIR}/000" "${TEST_DIR}/upload/0-0-0"
   #
-  # rsudo fs get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/link-recursive" "${TEST_DIR}/download/link-aaa-recursive"
-  # rsudo fs get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/bbb/ccc/link-absolute" "${TEST_DIR}/download/link-absolute"
-  # rsudo fs get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/file_a1" "${TEST_DIR}/download/file_a1"
-  # rsudo fs get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/aaa/colliding/sub-colliding/file_colliding" "${TEST_DIR}/download/file_colliding_renamed"
-  # rsudo fs get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/download/000"
-  # rsudo fs get "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}/000" "${TEST_DIR}/download/0-0-0"
+  # rsudo fs get "${TEST_DIR}/aaa/link-recursive" "${TEST_DIR}/download/link-aaa-recursive"
+  # rsudo fs get "${TEST_DIR}/aaa/bbb/ccc/link-absolute" "${TEST_DIR}/download/link-absolute"
+  # rsudo fs get "${TEST_DIR}/aaa/file_a1" "${TEST_DIR}/download/file_a1"
+  # rsudo fs get "${TEST_DIR}/aaa/colliding/sub-colliding/file_colliding" "${TEST_DIR}/download/file_colliding_renamed"
+  # rsudo fs get "${TEST_DIR}/000" "${TEST_DIR}/download/000"
+  # rsudo fs get "${TEST_DIR}/000" "${TEST_DIR}/download/0-0-0"
 
-  # ls -lA "${TEST_DIR}/upload"
-  # ls -lA "${TEST_DIR}/download"
-  # read x
-  # test_files_end
-  # rsudo fs delete "$REMOTE_HOST" "$REMOTE_USER" "${TEST_DIR}"
+  ls -lA "${TEST_DIR}/upload"
+  ls -lA "${TEST_DIR}/download"
+  read x
+  test_files_end
+  rsudo fs delete "${TEST_DIR}"
 
   # rsudo db-pg ################################################################
   # # rsudo db-pg psql "$@" # args are psql commands, eg.: multiple -c command, -f file.
