@@ -112,8 +112,9 @@ rsudo_core()
 # 2nd launches interactive session that send token to daemon and receives sudo password, then executes sudo with user commands and stays with an interactive session open
 rsudo_interactive()
 {
-  RSUDO_TOKEN="$(randstr 255)"
+  export RSUDO_TOKEN="$(randstr 255)"
   RSUDO_REMOTE_FIFO="/tmp/$(randstr 32)"
+  RSUDO_PASSWORD_ENCODED="$(echo "$RSUDO_PASSWORD" | RSUDO_TOKEN="$RSUDO_TOKEN" openssl enc -e -aes-256-cbc -pbkdf2 -pass "env:RSUDO_TOKEN" | openssl enc -e -A -base64)"
 
   RSUDO_DAEMON_COMMANDS="$(cat << EOF
 trap "rm -f '$RSUDO_FIFO'" INT QUIT TERM HUP PIPE ABRT TSTP EXIT
@@ -123,7 +124,8 @@ echo "READY" > "$RSUDO_REMOTE_FIFO"
 read RSUDO_TOKEN < "$RSUDO_REMOTE_FIFO"
 if [ "\$RSUDO_TOKEN" = "$RSUDO_TOKEN" ]
 then
-  echo "$RSUDO_PASSWORD" > "$RSUDO_REMOTE_FIFO"
+  # echo "$RSUDO_PASSWORD" > "$RSUDO_REMOTE_FIFO"
+  echo "$RSUDO_PASSWORD_ENCODED" > "$RSUDO_REMOTE_FIFO"
 else
   echo "wrong RSUDO_TOKEN!" > "$RSUDO_REMOTE_FIFO"
 fi
@@ -138,13 +140,21 @@ EOF
   mkfifo "$RSUDO_FIFO"
   chmod 600 "$RSUDO_FIFO"
   exec 3<>"$RSUDO_FIFO"
-  rm -f "$RSUDO_FIFO"
-  echo "$RSUDO_PASSWORD" > "$RSUDO_FIFO"
+  # echo "$RSUDO_PASSWORD" > "$RSUDO_FIFO"
+  echo "$RSUDO_PASSWORD_ENCODED" > "$RSUDO_FIFO"
 
   ssh -t -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" \
   while [ ! -e "$RSUDO_REMOTE_FIFO" ]\; do true\; done\; \
   read RSUDO_DAEMON_READY \< "$RSUDO_REMOTE_FIFO"\; echo "$RSUDO_TOKEN" \> "$RSUDO_REMOTE_FIFO"\; read RSUDO_PASSWORD \< "$RSUDO_REMOTE_FIFO"\; echo "OK_ACKNOWLEDGED" \> "$RSUDO_REMOTE_FIFO"\; \
+  'RSUDO_PASSWORD=$(echo "$RSUDO_PASSWORD" | openssl enc -d -A -base64 | RSUDO_TOKEN="'$RSUDO_TOKEN'" openssl enc -d -aes-256-cbc -pbkdf2 -pass "env:RSUDO_TOKEN");' \
   echo '$RSUDO_PASSWORD' \| sudo -S --prompt='' -- true\; sudo $SUDO_AS_USER -- "$@" </dev/tty
+
+  EXIT_CODE="$?"
+
+  # delete redundant with rsudo-askpass to ensure removal even on some interruption
+  rm -f "$RSUDO_FIFO"
+
+  return "$EXIT_CODE"
 }
 
 #------------------------------------------------------------------------------
