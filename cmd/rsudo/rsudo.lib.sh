@@ -137,6 +137,8 @@ EOF
   ((echo "$RSUDO_PASSWORD"; echo "$RSUDO_DAEMON_COMMANDS") | RSUDO_INTERACTIVE="" ssh -o 'StrictHostKeyChecking no' -l "$RSUDO_USER" "$RSUDO_HOST" sh -s) &
 
   export RSUDO_FIFO="/tmp/$(randstr 32)"
+  # delete redundant to ensure removal even on some interruption
+  trap "rm -f '$RSUDO_FIFO'" INT QUIT TERM HUP PIPE ABRT TSTP EXIT
   mkfifo "$RSUDO_FIFO"
   chmod 600 "$RSUDO_FIFO"
   exec 3<>"$RSUDO_FIFO"
