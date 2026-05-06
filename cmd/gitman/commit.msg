@@ -1,1 +1,1 @@
-rssh -i interactive fix
+rsudo mod apisix key detection ok

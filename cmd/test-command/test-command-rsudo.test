@@ -219,6 +219,16 @@ test_rsudo()
 
   # rsudo apisix ###############################################################
   # rsudo apisix
+  # rsudo apisix test
+  rssh << 'EOF'
+RSUDO_ENC_PASS="$RSUDO_PASSWORD"
+PATH="/m/src/git/rpr/cmd/rpr-jobs:$PATH"
+rsudoenv_load rpr-env.enc
+set | grep RSUDO_ENV
+
+rsudoenv_get apisix
+rsudo apisix test
+EOF
 
   # rsudo keycloak #############################################################
   # rsudo keycloak
@@ -226,6 +236,9 @@ test_rsudo()
   # rssh #######################################################################
   # rssh
   # rssh -c 'export PATH="/m/src/git/rpr/cmd/rpr-jobs:$PATH"; rsudoenv_load rpr-env.enc rpr-env-pg.enc; set | grep RSUDO_ENV'
+#   rssh -s << 'EOF'
+# export PATH="/m/src/git/rpr/cmd/rpr-jobs:$PATH"; rsudoenv_load rpr-env.enc rpr-env-pg.enc; set | grep RSUDO_ENV
+# EOF
   # echo 'export PATH="/m/src/git/rpr/cmd/rpr-jobs:$PATH"; rsudoenv_load rpr-env.enc rpr-env-pg.enc; set | grep RSUDO_ENV' > "/tmp/rssh_tmp_script"
   # rssh "/tmp/rssh_tmp_script"
   # rm -f "/tmp/rssh_tmp_script"
