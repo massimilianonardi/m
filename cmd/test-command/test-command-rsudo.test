@@ -227,7 +227,8 @@ rsudoenv_load rpr-env.enc
 set | grep RSUDO_ENV
 
 rsudoenv_get apisix
-rsudo apisix test
+rsudo apisix key
+# rsudo apisix test
 EOF
 
   # rsudo keycloak #############################################################
