@@ -67,7 +67,7 @@ test_rsudo()
 # EOF
 
   # must work
-  rsudo
+  # rsudo
   # rsudo top # error because executed not interactively
   # RSUDO_INTERACTIVE="true" rsudo top
   # export LOG_LEVEL="none"
@@ -92,7 +92,7 @@ test_rsudo()
   # rsudo --user mnardi -- 'ls -ld; whoami; whoami && pwd'
   # rssh
   # rsudo --interactive 'read -p "type something: " x; echo "you typed: $x"; whoami'
-  # read x; echo "$x" | rsudo --askpass --interactive
+  read x; echo "$x" | rsudo --askpass --interactive
   # rsudo --connect admino@localhost "ls -ld; whoami; whoami && pwd"
   # rsudo --connect mnardi@localhost "ls -ld; whoami; whoami && pwd"
   # . rsudo-env.lib.sh

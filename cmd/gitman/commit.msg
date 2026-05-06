@@ -1,1 +1,1 @@
-rsudo, rsudo-askpass, rsudo password daemon updated with encryption and fifo removal safeguards (even trap)
+rsudo --askpass flag precedence over exported variable

@@ -237,16 +237,14 @@ rsudo()
     RSUDO_USER="$USER"
   fi
 
-  if [ -z "$RSUDO_PASSWORD" ]
+  if [ "$RSUDO_ASKPASS" = "true" ] && [ ! -t 0 ]
   then
-    if [ "$RSUDO_ASKPASS" = "true" ] && [ ! -t 0 ]
-    then
-      log_debug "read pass from pipe"
-      read -r RSUDO_PASSWORD
-    else
-      log_debug "read pass from tty"
-      RSUDO_PASSWORD="$(readpass "[rsudo] Enter password for ${RSUDO_USER}@${RSUDO_HOST}:" < /dev/tty)"
-    fi
+    log_debug "read pass from pipe"
+    read -r RSUDO_PASSWORD
+  elif [ -z "$RSUDO_PASSWORD" ] && [ -t 0 ]
+  then
+    log_debug "read pass from tty"
+    RSUDO_PASSWORD="$(readpass "[rsudo] Enter password for ${RSUDO_USER}@${RSUDO_HOST}:" < /dev/tty)"
   fi
 
   if [ -z "$RSUDO_PASSWORD" ]
