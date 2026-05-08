@@ -224,10 +224,12 @@ test_rsudo()
 RSUDO_ENC_PASS="$RSUDO_PASSWORD"
 PATH="/m/src/git/rpr/cmd/rpr-jobs:$PATH"
 rsudoenv_load rpr-env.enc
-set | grep RSUDO_ENV
+# set | grep RSUDO_ENV
 
 rsudoenv_get apisix
 rsudo apisix key
+rsudo apisix keyset APISIX_ADMIN_KEY
+set | grep APISIX
 # rsudo apisix test
 EOF
 
