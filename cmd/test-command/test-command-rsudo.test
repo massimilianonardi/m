@@ -220,32 +220,35 @@ test_rsudo()
   # rsudo apisix ###############################################################
   # rsudo apisix
   # rsudo apisix test
-  rssh << 'EOF'
-RSUDO_ENC_PASS="$RSUDO_PASSWORD"
-PATH="/m/src/git/rpr/cmd/rpr-jobs:$PATH"
-rsudoenv_load rpr-env.enc
-# set | grep RSUDO_ENV
-
-# rsudoenv get portale
-# rsudo --interactive
-rsudoenv_get apisix
-rsudo apisix key
-rsudo apisix keyset APISIX_ADMIN_KEY
-set | grep APISIX
-# rsudo apisix test
-EOF
+#   rssh << 'EOF'
+# RSUDO_ENC_PASS="$RSUDO_PASSWORD"
+# PATH="/m/src/git/rpr/cmd/rpr-jobs:$PATH"
+# rsudoenv_load rpr-env.enc
+# # set | grep RSUDO_ENV
+#
+# # rsudoenv get portale
+# # rsudo --interactive
+# rsudoenv_get apisix
+# rsudo apisix key
+# rsudo apisix keyset APISIX_ADMIN_KEY
+# set | grep APISIX
+# # rsudo apisix test
+# EOF
 
   # rsudo keycloak #############################################################
   # rsudo keycloak
 
   # rssh #######################################################################
   # rssh
+  # # executed and shell stays open
   # rssh eval 'export PATH="/m/src/git/rpr/cmd/rpr-jobs:$PATH"; rsudoenv_load rpr-env.enc rpr-env-pg.enc; set | grep RSUDO_ENV'
+#   # executed and shell exits
 #   rssh << 'EOF'
 # export PATH="/m/src/git/rpr/cmd/rpr-jobs:$PATH"; rsudoenv_load rpr-env.enc rpr-env-pg.enc; set | grep RSUDO_ENV
 # EOF
   # echo '#!/bin/sh\nexport PATH="/m/src/git/rpr/cmd/rpr-jobs:$PATH"; rsudoenv_load rpr-env.enc rpr-env-pg.enc; set | grep RSUDO_ENV; echo "args: $@"' > "/tmp/rssh_tmp_script"
   # chmod +x "/tmp/rssh_tmp_script"
+  # # executed as sourced and correct args inside sourced script, outside args are full, shell stays open
   # rssh . "/tmp/rssh_tmp_script" arg1 arg2
   # rm -f "/tmp/rssh_tmp_script"
 
