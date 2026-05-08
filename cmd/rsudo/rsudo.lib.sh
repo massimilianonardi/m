@@ -15,6 +15,8 @@
 . enc.lib.sh
 . rsudo-env.lib.sh
 
+LOG_PROC_NAME="rsudo"
+
 # export PS1='RSSH \u@\h:\w\$ '
 export PS1='$(tput setaf 7)$(tput bold)RSSH$(tput sgr0) $(tput setaf 2)\u$(tput setaf 7)@$(tput setaf 2)\h$(tput setaf 7):$(tput setaf 2)\w$(tput setaf 4) \$$(tput sgr0) '
 
@@ -182,8 +184,6 @@ rsudo_not_interactive()
 rsudo()
 {
 # (
-  LOG_PROC_NAME="rsudo"
-  
   while [ "$#" -gt "0" ] && [ "$1" != "--" ] && [ "$1" != "${1#--}" ]
   do
     case "$1" in

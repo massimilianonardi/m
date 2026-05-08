@@ -1,1 +1,1 @@
-rssh recursive call as init-file to allow execution with all imported functions available
+log lib procname override for more meaningful info (eg bash scripts launched from command line "bash script")

@@ -120,7 +120,11 @@ then
   LOG_LINE_FUNC="log_line_filter_level"
 fi
 
-LOG_PROC_NAME="$(ps -o "comm=" -p "$$")"
+
+if [ -z "$LOG_PROC_NAME" ]
+then
+  LOG_PROC_NAME="$(ps -o "comm=" -p "$$")"
+fi
 
 #if [ -z "$LOG_LEVEL" ] && [ -z "$LOG_LEVEL_PRI" ]
 if [ -z "$LOG_LEVEL" ]
