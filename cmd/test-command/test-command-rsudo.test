@@ -226,6 +226,8 @@ PATH="/m/src/git/rpr/cmd/rpr-jobs:$PATH"
 rsudoenv_load rpr-env.enc
 # set | grep RSUDO_ENV
 
+# rsudoenv get portale
+# rsudo --interactive
 rsudoenv_get apisix
 rsudo apisix key
 rsudo apisix keyset APISIX_ADMIN_KEY

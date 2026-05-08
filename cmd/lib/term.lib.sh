@@ -286,4 +286,18 @@ term_string_count_lines()
   eval echo "\$(($(printf "${1}" | wc -l) + 1))"
 }
 
+term_echo_colors()
+{
+(
+  for f in {0..7}
+  do
+    for b in {0..7}
+    do
+      term_render printf "%s" "$(tput setaf $f)$(tput setab $b) $f/$b "
+    done
+    term_render echo "$(tput sgr 0)"
+  done
+)
+}
+
 #-------------------------------------------------------------------------------

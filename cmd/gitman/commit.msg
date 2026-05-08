@@ -1,1 +1,1 @@
-pkg conf lapce desktop + icon
+rsudo shell prompt colors + term lib echo color map
