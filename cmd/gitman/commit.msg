@@ -1,1 +1,1 @@
-rssh usage comments
+note rsudo script manager
