@@ -245,6 +245,7 @@ test_rsudo()
 #   # executed and shell exits
 #   rssh << 'EOF'
 # export PATH="/m/src/git/rpr/cmd/rpr-jobs:$PATH"; rsudoenv_load rpr-env.enc rpr-env-pg.enc; set | grep RSUDO_ENV
+# set | grep rsudo
 # EOF
   # echo '#!/bin/sh\nexport PATH="/m/src/git/rpr/cmd/rpr-jobs:$PATH"; rsudoenv_load rpr-env.enc rpr-env-pg.enc; set | grep RSUDO_ENV; echo "args: $@"' > "/tmp/rssh_tmp_script"
   # chmod +x "/tmp/rssh_tmp_script"

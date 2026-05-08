@@ -1,1 +1,1 @@
-rssh well tested
+rssh usage comments
