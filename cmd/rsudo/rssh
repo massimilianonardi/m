@@ -1,3 +1,26 @@
 #!/bin/sh
 
-bash --init-file "$(command -v "rsudo.lib.sh")" -i "$@"
+# bash --init-file "$(command -v "rsudo.lib.sh")" -i "$@"
+
+if [ -z "$RSSH" ]
+then
+  . arg.lib.sh
+
+  export RSSH="true"
+  export RSSH_ARGS="$(saveargs "$@")"
+
+  # RSSH="true" bash --init-file "$(command -v "rssh")" -i
+  bash --init-file "$0" -i
+  exit "$?"
+fi
+
+. rsudo.lib.sh
+
+LOG_PROC_NAME="rssh"
+
+log_debug "RSSH init args step 0: $@ - RSSH_ARGS=$RSSH_ARGS"
+eval "set -- $RSSH_ARGS"
+
+log_debug "RSSH init args: $@ - RSSH_ARGS=$RSSH_ARGS"
+
+"$@"

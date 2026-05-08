@@ -1,1 +1,1 @@
-rsudo shell prompt colors + term lib echo color map
+rssh recursive call as init-file to allow execution with all imported functions available

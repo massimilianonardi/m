@@ -182,6 +182,8 @@ rsudo_not_interactive()
 rsudo()
 {
 # (
+  LOG_PROC_NAME="rsudo"
+  
   while [ "$#" -gt "0" ] && [ "$1" != "--" ] && [ "$1" != "${1#--}" ]
   do
     case "$1" in

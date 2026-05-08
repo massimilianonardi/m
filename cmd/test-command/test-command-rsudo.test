@@ -240,12 +240,13 @@ EOF
 
   # rssh #######################################################################
   # rssh
-  # rssh -c 'export PATH="/m/src/git/rpr/cmd/rpr-jobs:$PATH"; rsudoenv_load rpr-env.enc rpr-env-pg.enc; set | grep RSUDO_ENV'
-#   rssh -s << 'EOF'
+  # rssh eval 'export PATH="/m/src/git/rpr/cmd/rpr-jobs:$PATH"; rsudoenv_load rpr-env.enc rpr-env-pg.enc; set | grep RSUDO_ENV'
+#   rssh << 'EOF'
 # export PATH="/m/src/git/rpr/cmd/rpr-jobs:$PATH"; rsudoenv_load rpr-env.enc rpr-env-pg.enc; set | grep RSUDO_ENV
 # EOF
-  # echo 'export PATH="/m/src/git/rpr/cmd/rpr-jobs:$PATH"; rsudoenv_load rpr-env.enc rpr-env-pg.enc; set | grep RSUDO_ENV' > "/tmp/rssh_tmp_script"
-  # rssh "/tmp/rssh_tmp_script"
+  # echo '#!/bin/sh\nexport PATH="/m/src/git/rpr/cmd/rpr-jobs:$PATH"; rsudoenv_load rpr-env.enc rpr-env-pg.enc; set | grep RSUDO_ENV; echo "args: $@"' > "/tmp/rssh_tmp_script"
+  # chmod +x "/tmp/rssh_tmp_script"
+  # rssh . "/tmp/rssh_tmp_script" arg1 arg2
   # rm -f "/tmp/rssh_tmp_script"
 
 #-------------------------------------------------------------------------------

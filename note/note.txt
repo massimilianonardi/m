@@ -9,6 +9,7 @@ pkg conf review: firefox, gson, madedit-mod
 find best file manager PCManFM-Qt (gtk version can show permissions, qt has other advantages), make madedit work copy/paste
 
 rsudo file manager
+rsudo script manager menu + edit script in memory
 rsudo jobs instantaneous read a script and show at terminal and user selects line to execute and temporarily create e new script with commented lines to not execute
 rsudo jobs launches rssh with the script as parameter, then asks for cron params, then asks for required passwords, it creates a cron script that communicate via fifo
 rsudo jobs as daemon that listens for new files in a predefined directory and executes them (use cron to move rsudo scripts in that dir at specific schedule)
