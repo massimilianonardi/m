@@ -22,9 +22,17 @@ test_log_echo()
 
 test_log()
 {
-  . log.lib.sh
+  # . log.lib.sh
+  . log2.lib.sh
 
-  export LOG_LEVEL="all"
+  log echo "test"
+  log debug "test message"
+  log fatal "test message"
+  log level all
+  log debug "test message 2"
+  log fatal "test message 2"
+
+  # export LOG_LEVEL="all"
   # log_warn "test command warn"
   # echo ""
   # test_log_echo
@@ -37,24 +45,24 @@ test_log()
   # test_log_echo 2>/tmp/log_stderr.log | tee /tmp/log_stdout.log 1>/dev/null
   # test_log_echo | <&1 tee /tmp/log_stdout.log | <&2 tee /tmp/log_stderr.log
 
-  cat << 'EOF' > /tmp/log_test
-  echo "out: message 1"
-  echo "err: error 1"  1>&2
-  echo "out: message 2"
-  echo "err: error 2"  1>&2
-  echo "out: message 3"
-  echo "err: error 3"  1>&2
-  echo "err: error 4"  1>&2
-  echo "out: message 4"
-  echo "out: message 5"
-  echo "err: error 5"  1>&2
-  echo "out: message 6"
-  echo "err: error 6"  1>&2
-  exit 32
-EOF
+#   cat << 'EOF' > /tmp/log_test
+#   echo "out: message 1"
+#   echo "err: error 1"  1>&2
+#   echo "out: message 2"
+#   echo "err: error 2"  1>&2
+#   echo "out: message 3"
+#   echo "err: error 3"  1>&2
+#   echo "err: error 4"  1>&2
+#   echo "out: message 4"
+#   echo "out: message 5"
+#   echo "err: error 5"  1>&2
+#   echo "out: message 6"
+#   echo "err: error 6"  1>&2
+#   exit 32
+# EOF
 
   # cat /tmp/log_test
-  chmod +x /tmp/log_test
+  # chmod +x /tmp/log_test
   # /tmp/log_test
 
   # log -l all -- /tmp/log_test
@@ -67,15 +75,15 @@ EOF
   # log -l all -d /tmp --unique -- /tmp/log_test
   # log -l all -d /tmp --sync -- /tmp/log_test
   # log -l all -d /tmp --bad-option -- /tmp/log_test
-  log
+  # log
 
-  echo "EXIT_CODE=$?"
+  # echo "EXIT_CODE=$?"
 
-  echo "OUTPUT FILES:"
-  cat /tmp/*.log
-
-  rm -f /tmp/*.log
-  rm -f /tmp/log_test
+  # echo "OUTPUT FILES:"
+  # cat /tmp/*.log
+  #
+  # rm -f /tmp/*.log
+  # rm -f /tmp/log_test
 
   # echo "OUTPUT FILES:"
   # echo "log_stdout:"

@@ -8,6 +8,20 @@ pkg uninstall eventually data home + postgres
 pkg conf review: firefox, gson, madedit-mod
 find best file manager PCManFM-Qt (gtk version can show permissions, qt has other advantages), make madedit work copy/paste
 
+log lib, log messages abstraction formatting with vars suitable for lang
+  to resolve conflict with actual log command that controls log files and level against log messages (eg "log debug" instad of "log_debug"),
+  everything should be controlled by the lib and log command is only a wrapper,
+  then "log $level-string" resolves to log message functions, "log level" sets the log level and "log file" sets the file logging options
+  log level -> log_level, log debug -> log_debug, log file -> log_file
+  NO, log file -> logfile command because needs too complex options, background processes, pipes and traps -> need a standalone command
+  base echo func (unique), different message formatted functions (print level, pid, proc, etc.), different filter functions
+  (filter by log level, proc name, pid, etc.)
+log debug $args
+log_debug msg
+log_debug - $msg_var [var_names]
+log $level-string $msg $msg-lang-var [$var-names]
+log fatal -- fatal_message var1 var2: if msg is "--" then is ignored, fatal_message is evaluated assuming $var1 is $1, $var2 is $2, etc.
+
 rsudo file manager
 rsudo script example: 1) source rsudo lib and realpaths lib, 2) add THIS_DIR to path, 3) load encoded env, 4) define helper functions, 5) execute commands
 rsudo script manager menu + edit script in memory: 1,2,3) encoded env file arg, 4) functions lib file arg 5) template commands file arg,
@@ -18,8 +32,6 @@ rsudo jobs as daemon that listens for new files in a predefined directory and ex
 rsudo jobs (alternative) daemon listen on a fifo for commands, cron jobs write commands to that fifo
 rsudo jobs one encoded file import many scripts + menu to internal functions that call external scripts + interactive ssh to each host + edit script on the fly
 rsudo jobs $enc_file $script_files (eventually: $script_dir/*): menu of all scripts, enter=execute e=edit
-
-log lib, log messages abstraction formatting with vars suitable for lang
 
 !!! keycloak userinfo + roles
 keycloak change totp provider key

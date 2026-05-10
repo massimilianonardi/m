@@ -1,1 +1,1 @@
-note rsudo script manager
+log reworking
