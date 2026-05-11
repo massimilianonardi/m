@@ -20,10 +20,10 @@ log()
 #-------------------------------------------------------------------------------
 
 # delegates to external logfile command
-log_file()
-{
-  logfile "$@"
-}
+# log_file()
+# {
+#   logfile "$@"
+# }
 
 #-------------------------------------------------------------------------------
 
@@ -31,51 +31,6 @@ log_file()
 log_echo()
 {
   printf %s\\n "$*" 1>&2
-}
-
-#-------------------------------------------------------------------------------
-
-# filters out messages below current log level and delegates to $LOG_LINE_FUNC_FILTER_LEVEL
-log_line_func_filter_level()
-{
-  if [ $(($1)) -le $(($LOG_LEVEL_PRI)) ]
-  then
-    $LOG_LINE_FUNC_FILTER_LEVEL "$@"
-  fi
-}
-
-#-------------------------------------------------------------------------------
-
-# if message is "--" then message is retrieved from a variable and delegated to $LOG_LINE_FUNC_FORMATTER_LANG
-log_line_func_formatter_lang()
-{
-  true
-}
-
-#-------------------------------------------------------------------------------
-
-# if message is "--" then message is retrieved from a variable and delegated to $LOG_LINE_FUNC_FORMATTER_VARS
-log_line_func_formatter_vars()
-{
-  true
-}
-
-#-------------------------------------------------------------------------------
-
-# simple log line function that logs everything
-log_line()
-{
-  log_echo "$(date +"[%Y-%m-%d %H:%M:%S]") [$PPID] [$$] [$LOG_PROC_NAME]" "$@"
-}
-
-#-------------------------------------------------------------------------------
-
-log_line_filter_proc()
-{
-  if [ "$LOG_PROC_NAME" = "$LOG_FILTER_PROC" ]
-  then
-    log_echo "$(date +"[%Y-%m-%d %H:%M:%S]") [$PPID] [$$] [$LOG_PROC_NAME]" "$@"
-  fi
 }
 
 #-------------------------------------------------------------------------------
@@ -92,12 +47,12 @@ log_error()
 
 log_warn()
 {
-  $LOG_LINE_FUNC "3" "warn" "$@"
+  $LOG_LINE_FUNC "3" "warn " "$@"
 }
 
 log_info()
 {
-  $LOG_LINE_FUNC "4" "info" "$@"
+  $LOG_LINE_FUNC "4" "info " "$@"
 }
 
 log_debug()
@@ -108,6 +63,70 @@ log_debug()
 log_trace()
 {
   $LOG_LINE_FUNC "6" "trace" "$@"
+}
+
+#-------------------------------------------------------------------------------
+
+# filters out messages below current log level and delegates to $LOG_LINE_FUNC_FILTER_LEVEL
+log_line_func_filter_level()
+{
+  if [ $(($1)) -le $(($LOG_LEVEL_PRI)) ]
+  then
+    (
+      LOG_MESSAGE_PRI="$1"
+      shift
+      LOG_MESSAGE_LEVEL="$1"
+      shift
+      $LOG_LINE_FUNC_FILTER_LEVEL "$@"
+    )
+  fi
+}
+
+#-------------------------------------------------------------------------------
+
+# if message is "--" then message is retrieved from a variable and delegated to $LOG_LINE_FUNC_FORMATTER_LANG
+log_line_func_formatter_lang()
+{
+  if [ "$1" = "--" ]
+  then
+    shift
+    eval "LOG_MESSAGE_TRANSLATION=\"\$$1\""
+    shift
+    set -- "$LOG_MESSAGE_TRANSLATION" "$@"
+  fi
+
+  $LOG_LINE_FUNC_FORMATTER_LANG "$@"
+}
+
+#-------------------------------------------------------------------------------
+
+# $1 is evaluated passing subsequent args ot it and delegated to $LOG_LINE_FUNC_FORMATTER_VARS
+log_line_func_formatter_vars()
+{
+  # echo "log_line_func_formatter_vars: $@"
+
+  # eval "LOG_MESSAGE_VAR=\"$1\""
+  LOG_MESSAGE_VAR="$1"
+  shift
+  for k in "$@"
+  do
+    # LOG_MESSAGE_VAR_VARS="$LOG_MESSAGE_VAR_VARS $k"
+    LOG_MESSAGE_VAR="$LOG_MESSAGE_VAR [$k=\$$k]"
+    set -- "$@" "$(eval echo "\$$k")"
+    shift
+  done
+  # eval set -- "$@"
+  eval "LOG_MESSAGE_VAR=\"$LOG_MESSAGE_VAR\""
+
+  # $LOG_LINE_FUNC_FORMATTER_VARS "$LOG_MESSAGE_VAR" "$@"
+  $LOG_LINE_FUNC_FORMATTER_VARS "$LOG_MESSAGE_VAR"
+}
+
+#-------------------------------------------------------------------------------
+
+log_line()
+{
+  log_echo "$(date +"[%Y-%m-%d %H:%M:%S]") [${PPID}>${$}] [$LOG_PROC_NAME] [$LOG_MESSAGE_PRI] [$LOG_MESSAGE_LEVEL]" "$@"
 }
 
 #-------------------------------------------------------------------------------
