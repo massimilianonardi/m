@@ -1,7 +1,20 @@
 #!/bin/sh
 
+# log $level $msg $args (eg: log fatal exit_message var1 "i am not a var" var2)
+# if msg is a name of an existing var it is substituted with its contents, same for args, then msg is evaluated with $args as $1, $2, etc.
+# each arg that point to an existing var is explicitly appended at the end with its value
+
 #-------------------------------------------------------------------------------
 
+# delegates to proper lib function
+log()
+{
+  log_"$@"
+}
+
+#-------------------------------------------------------------------------------
+
+# base printing function that redirects to stderr
 log_echo()
 {
   printf %s\\n "$*" 1>&2
@@ -11,59 +24,101 @@ log_echo()
 
 log_line()
 {
-  log_echo "$(date +"[%Y-%m-%d %H:%M:%S]") [$PPID] [$$] [$LOG_PROC_NAME]" "$@"
-}
-
-#-------------------------------------------------------------------------------
-
-log_line_filter_level()
-{
-  if [ $(($1)) -le $(($LOG_LEVEL_PRI)) ]
-  then
-    log_echo "$(date +"[%Y-%m-%d %H:%M:%S]") [$PPID] [$$] [$LOG_PROC_NAME]" "$@"
-  fi
-}
-
-#-------------------------------------------------------------------------------
-
-log_line_filter_proc()
-{
-  if [ "$LOG_PROC_NAME" = "$LOG_FILTER_PROC" ]
-  then
-    log_echo "$(date +"[%Y-%m-%d %H:%M:%S]") [$PPID] [$$] [$LOG_PROC_NAME]" "$@"
-  fi
+  log_echo "$(date +"[%Y-%m-%d %H:%M:%S]") [${PPID}>${$}] [$LOG_PROC_NAME] [$LOG_MESSAGE_PRI] [$LOG_MESSAGE_LEVEL]" "$@"
 }
 
 #-------------------------------------------------------------------------------
 
 log_fatal()
 {
-  $LOG_LINE_FUNC 1 "[FATAL]" "$@"
+  $LOG_LINE_FUNC "1" "fatal" "$@"
 }
 
 log_error()
 {
-  $LOG_LINE_FUNC 2 "[ERROR]" "$@"
+  $LOG_LINE_FUNC "2" "error" "$@"
 }
 
 log_warn()
 {
-  $LOG_LINE_FUNC 3 "[WARN] " "$@"
+  $LOG_LINE_FUNC "3" "warn " "$@"
 }
 
 log_info()
 {
-  $LOG_LINE_FUNC 4 "[INFO] " "$@"
+  $LOG_LINE_FUNC "4" "info " "$@"
 }
 
 log_debug()
 {
-  $LOG_LINE_FUNC 5 "[DEBUG]" "$@"
+  $LOG_LINE_FUNC "5" "debug" "$@"
 }
 
 log_trace()
 {
-  $LOG_LINE_FUNC 6 "[TRACE]" "$@"
+  $LOG_LINE_FUNC "6" "trace" "$@"
+}
+
+#-------------------------------------------------------------------------------
+
+# filters out messages below current log level and delegates to $LOG_LINE_FUNC_FILTER_LEVEL
+log_line_func_filter_level()
+{
+  if [ $(($1)) -le $(($LOG_LEVEL_PRI)) ]
+  then
+    (
+      LOG_MESSAGE_PRI="$1"
+      shift
+      LOG_MESSAGE_LEVEL="$1"
+      shift
+      $LOG_LINE_FUNC_FILTER_LEVEL "$@"
+    )
+  fi
+}
+
+#-------------------------------------------------------------------------------
+
+# if message is "--" then message is retrieved from a variable and delegated to $LOG_LINE_FUNC_FORMATTER_LANG
+log_line_func_formatter_lang()
+{
+  # if [ "$1" = "--" ]
+  if (eval echo "\${$1}" 1>/dev/null 2>/dev/null) && (eval "[ -n \"\${$1+true}\" ]")
+  then
+    # shift
+    eval "LOG_MESSAGE_TRANSLATION=\"\$$1\""
+    shift
+    set -- "$LOG_MESSAGE_TRANSLATION" "$@"
+  fi
+
+  $LOG_LINE_FUNC_FORMATTER_LANG "$@"
+}
+
+#-------------------------------------------------------------------------------
+
+# $1 is evaluated passing subsequent args ot it and delegated to $LOG_LINE_FUNC_FORMATTER_VARS
+log_line_func_formatter_vars()
+{
+  LOG_MESSAGE_VAR_MESSAGE="$1"
+  shift
+
+  for k in "$@"
+  do
+    if (eval echo "\${$k}" 1>/dev/null 2>/dev/null) && (eval "[ -n \"\${$k+true}\" ]")
+    then
+      LOG_MESSAGE_VAR_VARS="$LOG_MESSAGE_VAR_VARS [$k=\"\${$k}\"]"
+      set -- "$@" "$(eval echo "\$$k")"
+      shift
+    else
+      # LOG_MESSAGE_VAR_MESSAGE="$LOG_MESSAGE_VAR_MESSAGE $k"
+      set -- "$@" "$k"
+      shift
+    fi
+  done
+
+  eval "LOG_MESSAGE_VAR_MESSAGE=\"$LOG_MESSAGE_VAR_MESSAGE $LOG_MESSAGE_VAR_VARS\""
+
+  # $LOG_LINE_FUNC_FORMATTER_VARS "$LOG_MESSAGE_VAR_MESSAGE" "$@"
+  $LOG_LINE_FUNC_FORMATTER_VARS "$LOG_MESSAGE_VAR_MESSAGE"
 }
 
 #-------------------------------------------------------------------------------
@@ -117,9 +172,23 @@ log_level_parse()
 
 if [ -z "$LOG_LINE_FUNC" ]
 then
-  LOG_LINE_FUNC="log_line_filter_level"
+  LOG_LINE_FUNC="log_line_func_filter_level"
 fi
 
+if [ -z "$LOG_LINE_FUNC_FILTER_LEVEL" ]
+then
+  LOG_LINE_FUNC_FILTER_LEVEL="log_line_func_formatter_lang"
+fi
+
+if [ -z "$LOG_LINE_FUNC_FORMATTER_LANG" ]
+then
+  LOG_LINE_FUNC_FORMATTER_LANG="log_line_func_formatter_vars"
+fi
+
+if [ -z "$LOG_LINE_FUNC_FORMATTER_VARS" ]
+then
+  LOG_LINE_FUNC_FORMATTER_VARS="log_line"
+fi
 
 if [ -z "$LOG_PROC_NAME" ]
 then

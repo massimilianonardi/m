@@ -1,1 +1,1 @@
-log translation and var formatter perfectly working
+log lib complete and perfectly working, previous log command renamed to "logfile"
