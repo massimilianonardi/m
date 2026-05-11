@@ -14,10 +14,10 @@ run()
     APP_NAME="${APP_DIR##*/}"
   fi
 
-  echo "detected:"
-  echo "APP_DIR=$APP_DIR"
-  echo "APP_NAME=$APP_NAME"
-  echo "APP_ARGS=$@"
+  # echo "detected:"
+  # echo "APP_DIR=$APP_DIR"
+  # echo "APP_NAME=$APP_NAME"
+  # echo "APP_ARGS=$@"
 
   export HOME="$HOME_ROOT_DIR/$APP_NAME"
   export XDG_DATA_HOME="$HOME"

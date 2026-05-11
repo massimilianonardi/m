@@ -1,1 +1,1 @@
-log lib complete and perfectly working, previous log command renamed to "logfile"
+log fixed special treatment for @ (ignored because there is no more visibility of original args)

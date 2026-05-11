@@ -180,3 +180,20 @@ rsudoenv_unset()
     # eval "log_trace \"rsudoenv_unset: RSUDO_ENV_${1}_HOST=\$RSUDO_ENV_${1}_HOST | RSUDO_ENV_${1}_USER=\$RSUDO_ENV_${1}_USER | RSUDO_ENV_${1}_PASS=\$RSUDO_ENV_${1}_PASS\""
   fi
 }
+
+#------------------------------------------------------------------------------
+
+rsudoenv_exec()
+{
+  for k in $1
+  do
+    (
+      log debug "rsudoenv_exec k=\$1 args=\$@" k "@"
+      rsudoenv get "$k"
+      shift
+      "$@"
+    )
+  done
+}
+
+#------------------------------------------------------------------------------

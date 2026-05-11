@@ -119,14 +119,14 @@ test_rsudo()
 # EOF_script
 
   # rsudo-env.lib.sh ###########################################################
-  # . rsudo-env.lib.sh
+  . rsudo-env.lib.sh
 
-  # # set myhost from current
-  # rsudoenv set "myhost"
-  # echo "step_1"; set | grep "RSUDO" | sort
-  # # copy myhost into myhost_2
-  # RSUDO_HOST="fake_host" RSUDO_USER="fake_user" RSUDO_PASSWORD="fake_pass" rsudoenv set "myhost_2" "myhost"
-  # echo "step_2"; set | grep "RSUDO" | sort
+  # set myhost from current
+  rsudoenv set "myhost"
+  echo "step_1"; set | grep "RSUDO" | sort
+  # copy myhost into myhost_2
+  RSUDO_HOST="fake_host" RSUDO_USER="fake_user" RSUDO_PASSWORD="fake_pass" rsudoenv set "myhost_2" "myhost"
+  echo "step_2"; set | grep "RSUDO" | sort
   # # delete myhost_2
   # rsudoenv unset "myhost_2"
   # echo "step_3"; set | grep "RSUDO" | sort
@@ -160,6 +160,7 @@ test_rsudo()
   # echo "step_10"; set | grep "RSUDO" | sort
   # rsudoenv get "@myhost_2"
   # echo "step_11"; set | grep "RSUDO" | sort
+  rsudoenv exec "myhost myhost_2" rsudo "ls -ld"
 
   # rsudo export ###############################################################
   # rsudo export LOG_LEVEL echo "inside rsudo session: LOG_LEVEL=\$LOG_LEVEL"

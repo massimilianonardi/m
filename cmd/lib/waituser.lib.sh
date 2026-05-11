@@ -1,5 +1,13 @@
 #!/bin/sh
 
+wait_continue()
+{
+  echo ""
+  echo "--------------------------------------------------------------------------------"
+  echo "press ENTER to continue"
+  read -r EXIT_VAR
+}
+
 waituser()
 {
   # detect if launched from gui or active terminal

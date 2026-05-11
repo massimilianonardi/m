@@ -101,18 +101,21 @@ log_line_func_formatter_vars()
   LOG_MESSAGE_VAR_MESSAGE="$1"
   shift
 
-  for k in "$@"
+  for LOG_MESSAGE_VAR_k in "$@"
   do
-    if (eval echo "\${$k}" 1>/dev/null 2>/dev/null) && (eval "[ -n \"\${$k+true}\" ]")
+    shift
+    if (eval echo "\${$LOG_MESSAGE_VAR_k}" 1>/dev/null 2>/dev/null) && (eval "[ -n \"\${$LOG_MESSAGE_VAR_k+true}\" ]") && [ "$LOG_MESSAGE_VAR_k" != "@" ]
     then
-      LOG_MESSAGE_VAR_VARS="$LOG_MESSAGE_VAR_VARS [$k=\"\${$k}\"]"
-      set -- "$@" "$(eval echo "\$$k")"
-      shift
+      LOG_MESSAGE_VAR_VARS="$LOG_MESSAGE_VAR_VARS [$LOG_MESSAGE_VAR_k=\"\${$LOG_MESSAGE_VAR_k}\"]"
+      set -- "$@" "$(eval echo "\$$LOG_MESSAGE_VAR_k")"
+    elif [ "$LOG_MESSAGE_VAR_k" = "@" ]
+    then
+      true
     else
-      # LOG_MESSAGE_VAR_MESSAGE="$LOG_MESSAGE_VAR_MESSAGE $k"
-      set -- "$@" "$k"
-      shift
+      # LOG_MESSAGE_VAR_MESSAGE="$LOG_MESSAGE_VAR_MESSAGE $LOG_MESSAGE_VAR_k"
+      set -- "$@" "$LOG_MESSAGE_VAR_k"
     fi
+    echo "args: $@" 1>&2
   done
 
   eval "LOG_MESSAGE_VAR_MESSAGE=\"$LOG_MESSAGE_VAR_MESSAGE $LOG_MESSAGE_VAR_VARS\""
