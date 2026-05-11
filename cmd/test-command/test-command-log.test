@@ -35,15 +35,19 @@ test_log()
   # LOG_MSG_LANG_test="test translated message"
   # log info -- LOG_MSG_LANG_test "arg1" "arg2"
 
-  arg1="test arg evaluation"
-  log info "logging var 1 \$1 and var '\$2'" "arg1" "arg2"
+  # arg1="test arg evaluation"
+  # log info "logging var 1 \$1 and var '\$2'" "arg1" "arg2"
 
-  arg1="test arg evaluation"
-  arg2="another arg evaluated..."
-  LOG_MSG_LANG_test2="test translated message with vars: v1 is [\$1], v2 is '\$2'"
-  log info -- LOG_MSG_LANG_test2 "arg1" "arg2"
+  # arg1="test arg evaluation"
+  # arg2="another arg evaluated..."
+  # LOG_MSG_LANG_test2="test translated message with vars: v1 is [\$1], v2 is '\$2'"
+  # log info -- LOG_MSG_LANG_test2 "arg1" "arg2"
 
-  echo "LOG_MESSAGE_PRI=$LOG_MESSAGE_PRI - LOG_MESSAGE_LEVEL=$LOG_MESSAGE_LEVEL"
+  resilience_of="resilience OF"
+  # log fatal "check error: v1 is <\$1>, v2 is '\$2'" "resilience_of" "whole_processing"
+  log fatal "check error: v1 is <\$1>, v2 is '\$2'" "see if works" "resilience_of" "whole processing"
+
+  # echo "LOG_MESSAGE_PRI=$LOG_MESSAGE_PRI - LOG_MESSAGE_LEVEL=$LOG_MESSAGE_LEVEL"
 
   # export LOG_LEVEL="all"
   # log_warn "test command warn"

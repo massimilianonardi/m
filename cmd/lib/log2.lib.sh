@@ -103,23 +103,27 @@ log_line_func_formatter_lang()
 # $1 is evaluated passing subsequent args ot it and delegated to $LOG_LINE_FUNC_FORMATTER_VARS
 log_line_func_formatter_vars()
 {
-  # echo "log_line_func_formatter_vars: $@"
-
-  # eval "LOG_MESSAGE_VAR=\"$1\""
-  LOG_MESSAGE_VAR="$1"
+  LOG_MESSAGE_VAR_MESSAGE="$1"
   shift
+
   for k in "$@"
   do
-    # LOG_MESSAGE_VAR_VARS="$LOG_MESSAGE_VAR_VARS $k"
-    LOG_MESSAGE_VAR="$LOG_MESSAGE_VAR [$k=\$$k]"
-    set -- "$@" "$(eval echo "\$$k")"
-    shift
+    if (eval echo "\${$k}" 1>/dev/null 2>/dev/null) && (eval "[ -n \"\${$k+true}\" ]")
+    then
+      LOG_MESSAGE_VAR_VARS="$LOG_MESSAGE_VAR_VARS [$k=\"\${$k}\"]"
+      set -- "$@" "$(eval echo "\$$k")"
+      shift
+    else
+      LOG_MESSAGE_VAR_MESSAGE="$LOG_MESSAGE_VAR_MESSAGE $k"
+      set -- "$@" "$k"
+      shift
+    fi
   done
-  # eval set -- "$@"
-  eval "LOG_MESSAGE_VAR=\"$LOG_MESSAGE_VAR\""
 
-  # $LOG_LINE_FUNC_FORMATTER_VARS "$LOG_MESSAGE_VAR" "$@"
-  $LOG_LINE_FUNC_FORMATTER_VARS "$LOG_MESSAGE_VAR"
+  eval "LOG_MESSAGE_VAR_MESSAGE=\"$LOG_MESSAGE_VAR_MESSAGE $LOG_MESSAGE_VAR_VARS\""
+
+  # $LOG_LINE_FUNC_FORMATTER_VARS "$LOG_MESSAGE_VAR_MESSAGE" "$@"
+  $LOG_LINE_FUNC_FORMATTER_VARS "$LOG_MESSAGE_VAR_MESSAGE"
 }
 
 #-------------------------------------------------------------------------------
