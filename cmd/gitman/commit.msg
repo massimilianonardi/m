@@ -1,1 +1,1 @@
-log fixed special treatment for @ (ignored because there is no more visibility of original args)
+rsudoenv exec "env_groups" command: executes command for each server in env_groups

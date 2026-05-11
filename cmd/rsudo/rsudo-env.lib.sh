@@ -183,12 +183,13 @@ rsudoenv_unset()
 
 #------------------------------------------------------------------------------
 
+# rsudoenv_exec "$env_groups" command: executes command for each server in $env_groups
 rsudoenv_exec()
 {
   for k in $1
   do
     (
-      log debug "rsudoenv_exec k=\$1 args=\$@" k "@"
+      log debug "rsudoenv_exec env_group=\$1" $k
       rsudoenv get "$k"
       shift
       "$@"
