@@ -52,16 +52,18 @@ install_extra_features()
   # postgres installer (on demand)
   if [ -n "$POSTGRES_NAME" ]
   then
-    echo "POSTGRES_NAME=\"$POSTGRES_NAME\"" > "./${POSTGRES_NAME}-postgres"
-    echo "POSTGRES_EXTENSIONS=\"$POSTGRES_EXTENSIONS\"" >> "./${POSTGRES_NAME}-postgres"
-    chmod +x "./${POSTGRES_NAME}-postgres"
-    if [ -z "$SYMLINKS" ]
-    then
-      SYMLINKS="${PKG_NAME}-postgres=${POSTGRES_NAME}-postgres"
-    else
-      SYMLINKS="$SYMLINKS ${PKG_NAME}-postgres=${POSTGRES_NAME}-postgres"
-    fi
-    cat << 'EOF' >> "./${POSTGRES_NAME}-postgres"
+    (
+      cd "$PKG_INST_DEEPEST_DIR"
+      echo "POSTGRES_NAME=\"$POSTGRES_NAME\"" > "./${POSTGRES_NAME}-postgres"
+      echo "POSTGRES_EXTENSIONS=\"$POSTGRES_EXTENSIONS\"" >> "./${POSTGRES_NAME}-postgres"
+      chmod +x "./${POSTGRES_NAME}-postgres"
+      if [ -z "$SYMLINKS" ]
+      then
+        SYMLINKS="${PKG_NAME}-postgres=${POSTGRES_NAME}-postgres"
+      else
+        SYMLINKS="$SYMLINKS ${PKG_NAME}-postgres=${POSTGRES_NAME}-postgres"
+      fi
+      cat << 'EOF' >> "./${POSTGRES_NAME}-postgres"
 #!/bin/sh
 
 echo "DO YOU WANT TO INSTALL POSTGRES DB? YES, NO (default = NO): "
@@ -104,7 +106,8 @@ sudo -u postgres psql -d ${POSTGRES_NAME} -c "GRANT ALL PRIVILEGES ON DATABASE $
 SUDO
 EOF
 
-    "./${POSTGRES_NAME}-postgres"
+      "./${POSTGRES_NAME}-postgres"
+    )
   fi
 
   # service

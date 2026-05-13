@@ -2,7 +2,12 @@
 
 # amd64
 wget -O - http://repos.apiseven.com/pubkey.gpg | sudo apt-key add -
+wget -O - http://repos.apiseven.com/pubkey.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/apisix-repo.gpg
 echo "deb http://repos.apiseven.com/packages/debian bullseye main" | sudo tee /etc/apt/sources.list.d/apisix.list
+
+curl -fsSL https://repos.apiseven.com/pubkey.gpg | sudo gpg --dearmor -o /usr/share/keyrings/apisix-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/apisix-archive-keyring.gpg] https://repos.apiseven.com/packages/ubuntu $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/apisix.list
+echo "deb [signed-by=/usr/share/keyrings/apisix-archive-keyring.gpg] https://repos.apiseven.com/packages/ubuntu bullseye main" | sudo tee /etc/apt/sources.list.d/apisix.list
 
 # arm64
 #wget -O - http://repos.apiseven.com/pubkey.gpg | sudo apt-key add -

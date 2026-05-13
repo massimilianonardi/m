@@ -35,7 +35,8 @@ export PS1='$(tput setaf 7)$(tput bold)RSSH$(tput sgr0) $(tput setaf 2)\u$(tput 
 # RSUDO_ASKPASS
 rsudo_core()
 {
-  log_info "RSUDO STARTED: RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER | RSUDO_PASSWORD $([ -n "$RSUDO_PASSWORD" ] && echo "is not null" || echo "is null")"
+  log_debug "RSUDO STARTED: RSUDO_HOST=$RSUDO_HOST | RSUDO_USER=$RSUDO_USER | RSUDO_PASSWORD $([ -n "$RSUDO_PASSWORD" ] && echo "is not null" || echo "is null")"
+  log info "RSUDO STARTED - \$2@\$1: $@" RSUDO_HOST RSUDO_USER
 
   if [ -z "$RSUDO_HOST" ] || [ -z "$RSUDO_USER" ] || [ -z "$RSUDO_PASSWORD" ]
   then
@@ -109,7 +110,8 @@ rsudo_core()
 
   EXIT_CODE="$?"
 
-  log_info "RSUDO ENDED: HOST=$RSUDO_HOST - USER=$RSUDO_USER"
+  log_debug "RSUDO ENDED: HOST=$RSUDO_HOST - USER=$RSUDO_USER"
+  log info "RSUDO ENDED - \$2@\$1: $@" RSUDO_HOST RSUDO_USER
 
   return "$EXIT_CODE"
 }
