@@ -1,1 +1,1 @@
-log formatter vars simplified to work flawlessly
+pkg-download add unzip install if not installed

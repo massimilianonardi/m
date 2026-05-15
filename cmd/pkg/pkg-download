@@ -17,6 +17,10 @@ unpack()
 
     if [ "$FILE_TYPE" = "zip" ]
     then
+      if ! command -v unzip 1>/dev/null 2>/dev/null
+      then
+        sudo apt install unzip
+      fi
       unzip "$PACKED_FILE"
     elif [ "$FILE_TYPE" = "tar.gz" ] || [ "$FILE_TYPE" = "tgz" ] || [ "$FILE_TYPE" = "tar" ] || [ "$FILE_TYPE" = "gzip" ] || [ "$FILE_TYPE" = "bzip" ] || [ "$FILE_TYPE" = "tar.xz" ] || [ "$FILE_TYPE" = "xz" ]
     then
