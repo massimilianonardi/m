@@ -106,22 +106,92 @@ log_line_func_formatter_vars()
     shift
     if (eval echo "\${$LOG_MESSAGE_VAR_k}" 1>/dev/null 2>/dev/null) && (eval "[ -n \"\${$LOG_MESSAGE_VAR_k+true}\" ]") && [ "$LOG_MESSAGE_VAR_k" != "@" ]
     then
+echo "$LOG_MESSAGE_VAR_k is a valued var" 1>&2
       LOG_MESSAGE_VAR_VARS="$LOG_MESSAGE_VAR_VARS [$LOG_MESSAGE_VAR_k=\"\${$LOG_MESSAGE_VAR_k}\"]"
       set -- "$@" "$(eval echo "\$$LOG_MESSAGE_VAR_k")"
     elif [ "$LOG_MESSAGE_VAR_k" = "@" ]
     then
+echo "$LOG_MESSAGE_VAR_k is @" 1>&2
       true
     else
+echo "$LOG_MESSAGE_VAR_k is a fixed param" 1>&2
       # LOG_MESSAGE_VAR_MESSAGE="$LOG_MESSAGE_VAR_MESSAGE $LOG_MESSAGE_VAR_k"
       set -- "$@" "$LOG_MESSAGE_VAR_k"
     fi
-    echo "args: $@" 1>&2
+    # echo "args: $@" 1>&2
   done
+    echo "args: $@" 1>&2
 
   eval "LOG_MESSAGE_VAR_MESSAGE=\"$LOG_MESSAGE_VAR_MESSAGE $LOG_MESSAGE_VAR_VARS\""
 
   # $LOG_LINE_FUNC_FORMATTER_VARS "$LOG_MESSAGE_VAR_MESSAGE" "$@"
   $LOG_LINE_FUNC_FORMATTER_VARS "$LOG_MESSAGE_VAR_MESSAGE"
+}
+
+# $1 is evaluated passing subsequent args ot it and delegated to $LOG_LINE_FUNC_FORMATTER_VARS
+log_line_func_formatter_vars()
+{
+  LOG_MESSAGE_VAR_MESSAGE="$1"
+  shift
+
+  while [ "$#" -gt "0" ] && [ "$1" != "--" ]
+  do
+    LOG_MESSAGE_VAR_MESSAGE="$LOG_MESSAGE_VAR_MESSAGE $1"
+    shift
+  done
+
+  if [ "$1" = "--" ]
+  then
+    shift
+
+    for LOG_MESSAGE_VAR_k in "$@"
+    do
+      shift
+      if (eval echo "\${$LOG_MESSAGE_VAR_k}" 1>/dev/null 2>/dev/null) && (eval "[ -n \"\${$LOG_MESSAGE_VAR_k+true}\" ]") && [ "$LOG_MESSAGE_VAR_k" != "@" ]
+      then
+echo "$LOG_MESSAGE_VAR_k is a valued var" 1>&2
+        LOG_MESSAGE_VAR_VARS="$LOG_MESSAGE_VAR_VARS [$LOG_MESSAGE_VAR_k=\"\${$LOG_MESSAGE_VAR_k}\"]"
+        set -- "$@" "$(eval echo "\$$LOG_MESSAGE_VAR_k")"
+      elif [ "$LOG_MESSAGE_VAR_k" = "@" ]
+      then
+echo "$LOG_MESSAGE_VAR_k is @" 1>&2
+        true
+      else
+echo "$LOG_MESSAGE_VAR_k is a fixed param" 1>&2
+        # LOG_MESSAGE_VAR_MESSAGE="$LOG_MESSAGE_VAR_MESSAGE $LOG_MESSAGE_VAR_k"
+        set -- "$@" "$LOG_MESSAGE_VAR_k"
+      fi
+      # echo "args: $@" 1>&2
+    done
+echo "args: $@" 1>&2
+  fi
+
+# echo  eval "LOG_MESSAGE_VAR_MESSAGE=\"$LOG_MESSAGE_VAR_MESSAGE $LOG_MESSAGE_VAR_VARS\""
+  # LOG_MESSAGE_VAR_MESSAGE="$(echo "$LOG_MESSAGE_VAR_MESSAGE") $LOG_MESSAGE_VAR_VARS"
+  LOG_MESSAGE_VAR_MESSAGE="$(eval echo "$LOG_MESSAGE_VAR_MESSAGE $LOG_MESSAGE_VAR_VARS")"
+
+  # $LOG_LINE_FUNC_FORMATTER_VARS "$LOG_MESSAGE_VAR_MESSAGE" "$@"
+  $LOG_LINE_FUNC_FORMATTER_VARS "$LOG_MESSAGE_VAR_MESSAGE"
+}
+
+# $1 is evaluated passing subsequent args ot it and delegated to $LOG_LINE_FUNC_FORMATTER_VARS
+log_line_func_formatter_vars()
+{
+  LOG_MESSAGE_VAR_MESSAGE=""
+
+  while [ "$#" -gt "0" ]
+  do
+    # @ \* \# ? - !
+    if [ "$1" != '@' ] && [ "$1" != '*' ] && [ "$1" != '#' ] && [ "$1" != '?' ] && [ "$1" != '-' ] && [ "$1" != '!' ] && (eval "[ -n \"\${$1+true}\" ]" 1>/dev/null 2>/dev/null)
+    then
+      LOG_MESSAGE_VAR_VARS="$LOG_MESSAGE_VAR_VARS [$(eval echo "'$1'=\"\${$1}\"")]"
+    else
+      LOG_MESSAGE_VAR_MESSAGE="$LOG_MESSAGE_VAR_MESSAGE $1"
+    fi
+    shift
+  done
+
+  $LOG_LINE_FUNC_FORMATTER_VARS "$LOG_MESSAGE_VAR_MESSAGE $LOG_MESSAGE_VAR_VARS"
 }
 
 #-------------------------------------------------------------------------------
