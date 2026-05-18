@@ -1,1 +1,1 @@
-post install notes
+xnview env wayland conf
