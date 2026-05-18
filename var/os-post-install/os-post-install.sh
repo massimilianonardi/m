@@ -1,27 +1,24 @@
 #!/bin/sh
 
-# read -p "PRESS ENTER TO EXIT" test
-# exit 0
-
-sudo apt install -y ca-certificates
-sudo cp "${0%/*}/certs/rpr-DOM-CA.pem" /usr/local/share/ca-certificates
-sudo cp "${0%/*}/certs/rpr.local.pem" /usr/local/share/ca-certificates
+# sudo apt install -y ca-certificates
+# sudo cp "${0%/*}/certs/rpr-DOM-CA.pem" /usr/local/share/ca-certificates
+sudo cp "/m/src/git/m/cmd/cert/rpr-spa.it/rpr-DOM-CA.crt" /usr/local/share/ca-certificates
 sudo update-ca-certificates
 
 sudo apt install -y git-all
-sudo apt install -y screen
+# sudo apt install -y screen
 sudo apt install -y curl
-#sudo apt install -y podman
 sudo apt install -y nmap
 sudo apt install -y meld
-sudo apt install -y openjdk-21-jdk
+sudo apt install -y default-jdk
 sudo apt install -y remmina remmina-plugin-vnc
 sudo apt install -y libreoffice
-sudo apt install -y copyq
-#sudo dpkg -i "${0%/*}/../omnissa/Omnissa-Horizon-Client-2412-8.14.0-12437214089.x64.deb"
 
-sudo apt install -y nodejs npm
-sudo apt install -y yui-compressor
+#sudo dpkg -i "/m/data/omnissa/libxml2_2.12.7+dfsg+really2.9.14-2.1+deb13u2_amd64.deb"
+#sudo dpkg -i "/m/data/omnissa/Omnissa-Horizon-Client-2412-8.14.0-12437214089.x64.deb"
+
+# sudo apt install -y nodejs npm
+# sudo apt install -y yui-compressor
 
 sudo apt install -y build-essential
 sudo apt install -y g++
