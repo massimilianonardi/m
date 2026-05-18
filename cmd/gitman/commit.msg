@@ -1,1 +1,1 @@
-xnview env wayland conf
+pkg template conf
