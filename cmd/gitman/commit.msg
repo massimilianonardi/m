@@ -1,1 +1,1 @@
-pkg template conf
+xnview conf
