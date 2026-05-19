@@ -1,1 +1,1 @@
-xnview conf
+note pkg install

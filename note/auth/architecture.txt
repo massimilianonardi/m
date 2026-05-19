@@ -37,9 +37,15 @@ https://apps.rpr-spa.it/apisix/authz/headers
 
 --------------------------------------------------------------------------------
 
+# nginx
+nano /etc/nginx/sites-enabled/default
+
+--------------------------------------------------------------------------------
+
+# openresty
 /usr/local/openresty
 /usr/local/openresty/nginx/
-/usr/local/openresty/nginx/conf/nginx.conf
+nano /usr/local/openresty/nginx/conf/nginx.conf
 
 openresty -t && systemctl restart openresty
 systemctl status openresty
@@ -48,6 +54,9 @@ less /usr/local/openresty/nginx/logs/access.log
 less /usr/local/openresty/nginx/logs/error.log
 
 --------------------------------------------------------------------------------
+
+# apisix > openresty > nginx
+nano /usr/local/apisix/conf/nginx.conf
 
 less /usr/local/apisix/logs/access.log
 less /usr/local/apisix/logs/error.log
@@ -60,6 +69,7 @@ systemctl status keycloak
 less /m/pkg/keycloak-26.4.2/keycloak-26.4.2/data/log/keycloak.log
 bin/kc.sh --spi-theme-static-max-age=-1 --spi-theme-cache-themes=false --spi-theme-cache-templates=false
 rm-f keycloak/data/tmp
+sudo -u keycloak bin/kc.sh build # also chown -R keycloak:keycloak inst dir before doing it
 
 --------------------------------------------------------------------------------
 

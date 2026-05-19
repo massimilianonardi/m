@@ -3,6 +3,7 @@
 m install review m dirs and test m install from scratch online (with certs support)
 m install and pkg have /m/app and /m/bin hardcoded, pkg has also pkg/conf/home -> parametrize all m paths
 
+pkg install symlink /m/pkg/pkg-name-ver to /m/pkg/pkg-name for things independent from specific version (also uninstall)
 pkg install implement move and link conf from home (with support of files not yet created!)
 pkg uninstall eventually data home + postgres
 pkg conf review: firefox, gson, madedit-mod
