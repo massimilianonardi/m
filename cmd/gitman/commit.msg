@@ -1,1 +1,1 @@
-note pkg install
+rsudo apisix
