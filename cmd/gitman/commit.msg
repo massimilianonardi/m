@@ -1,1 +1,1 @@
-env_echo_from_template
+rsudo apisix

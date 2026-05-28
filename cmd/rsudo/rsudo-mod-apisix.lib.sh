@@ -491,7 +491,7 @@ rsudo_mod_apisix_create_route_authn()
   rsudo_mod_apisix_create_route "${ID}" "/${URI_OR_URIS} /${URI_OR_URIS}/*" '
   "plugins":
   {
-  '"$(env_from_template "APISIX_PLUGIN_CONF_KEYCLOAK_AUTHN_TEMPLATE" "my_client_id" "my_client_secret" "my_callback_uri1")"'
+  '"$(env_echo_from_template "APISIX_PLUGIN_CONF_KEYCLOAK_AUTHN_TEMPLATE" "my_client_id" "my_client_secret" "my_callback_uri1")"'
   }
   '
 )
