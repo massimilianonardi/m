@@ -221,20 +221,36 @@ test_rsudo()
   # rsudo apisix ###############################################################
   # rsudo apisix
   # rsudo apisix test
-#   rssh << 'EOF'
-# RSUDO_ENC_PASS="$RSUDO_PASSWORD"
+  rssh << 'EOF'
+RSUDO_ENC_PASS="$RSUDO_PASSWORD"
 # PATH="/m/src/git/rpr/cmd/rpr-jobs:$PATH"
-# rsudoenv_load rpr-env.enc
-# # set | grep RSUDO_ENV
-#
-# # rsudoenv get portale
-# # rsudo --interactive
-# rsudoenv_get apisix
+PATH="/m/src/git/rpr/cmd/rpr-rsudo-jobs:$PATH"
+rsudoenv_load rpr-env.enc
+# set | grep RSUDO_ENV
+
+# rsudoenv get portale
+# rsudo --interactive
+rsudoenv_get apisix
+# rsudoenv get portale_dev
 # rsudo apisix key
 # rsudo apisix keyset APISIX_ADMIN_KEY
 # set | grep APISIX
-# # rsudo apisix test
-# EOF
+rsudo apisix json_string_or_array "uri" "uris" "uri1"
+rsudo apisix json_string_or_array "uri" "uris" "uri1 uri2"
+env_set_from_template "APISIX_TEST_VAR" "APISIX_PLUGIN_CONF_KEYCLOAK_AUTHN_TEMPLATE" "my_client_id" "my_client_secret" "my_callback_uri1"
+echo "APISIX_TEST_VAR=<<<$APISIX_TEST_VAR>>>"
+# set | grep APISIX
+# rsudo apisix api "routes"
+# rsudo apisix get "routes"
+# rsudo apisix create service_simple "test-service-id" "https" "my_host.local:80"
+# rsudo apisix get "services"
+# rsudo apisix create route "test-route-id" "uri1 uri2" '"service_id": "test-service-id"'
+# rsudo apisix get "routes"
+# rsudo apisix delete route "test-route-id"
+# rsudo apisix get "routes"
+# rsudo apisix delete service "test-service-id"
+# rsudo apisix get "services"
+EOF
 
   # rsudo keycloak #############################################################
   # rsudo keycloak
