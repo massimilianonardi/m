@@ -2,10 +2,8 @@
 
 . log.lib.sh
 
-# export PROXY_HOST="apps.rpr-spa.it"
-
-APISIX_HOST="apisix.rpr-spa.it"
-APISIX_PORT="9443"
+export KEYCLOAK_CLIENT_ID="apisix-authn-authz"
+export KEYCLOAK_CLIENT_SECRET="WiLDWAtS9FMMjSzAP7fElIzvHn9ftrTU"
 
 KEYCLOAK_HOST="keycloak.rpr-spa.it"
 KEYCLOAK_PORT="8443"
@@ -16,8 +14,17 @@ KEYCLOAK_REALM_URL="https://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_
 AUTHN_DISCOVERY_URL="${KEYCLOAK_REALM_URL}/.well-known/openid-configuration"
 AUTHZ_DISCOVERY_URL="${KEYCLOAK_REALM_URL}/.well-known/uma2-configuration"
 
+
+
+# export PROXY_HOST="apps.rpr-spa.it"
+
+APISIX_HOST="apisix.rpr-spa.it"
+APISIX_PORT="9443"
+
 AUTHN_REDIRECT_BASE_URL="https://${APISIX_HOST}:${APISIX_PORT}"
 #export AUTHN_REDIRECT_BASE_URL="https://${PROXY_HOST}/apisix"
+
+
 
 APISIX_PLUGIN_CONF_KEYCLOAK_AUTHN_TEMPLATE='
 "openid-connect":
@@ -491,7 +498,7 @@ rsudo_mod_apisix_create_route_authn()
   rsudo_mod_apisix_create_route "${ID}" "/${URI_OR_URIS} /${URI_OR_URIS}/*" '
   "plugins":
   {
-  '"$(env_echo_from_template "APISIX_PLUGIN_CONF_KEYCLOAK_AUTHN_TEMPLATE" "my_client_id" "my_client_secret" "my_callback_uri1")"'
+  '"$(env_echo_from_template "APISIX_PLUGIN_CONF_KEYCLOAK_AUTHN_TEMPLATE" "${KEYCLOAK_CLIENT_ID}" "${KEYCLOAK_CLIENT_SECRET}" "${URI_OR_URIS}")"'
   }
   '
 )
