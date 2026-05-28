@@ -1,1 +1,1 @@
-rsudo apisix
+env_from_template

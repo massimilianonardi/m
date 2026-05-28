@@ -237,8 +237,9 @@ rsudoenv_get apisix
 # set | grep APISIX
 rsudo apisix json_string_or_array "uri" "uris" "uri1"
 rsudo apisix json_string_or_array "uri" "uris" "uri1 uri2"
-env_set_from_template "APISIX_TEST_VAR" "APISIX_PLUGIN_CONF_KEYCLOAK_AUTHN_TEMPLATE" "my_client_id" "my_client_secret" "my_callback_uri1"
-echo "APISIX_TEST_VAR=<<<$APISIX_TEST_VAR>>>"
+env_from_template "APISIX_PLUGIN_CONF_KEYCLOAK_AUTHN_TEMPLATE" "my_client_id" "my_client_secret" "my_callback_uri1"
+# env_set_from_template "APISIX_TEST_VAR" "APISIX_PLUGIN_CONF_KEYCLOAK_AUTHN_TEMPLATE" "my_client_id" "my_client_secret" "my_callback_uri1"
+# echo "APISIX_TEST_VAR=<<<$APISIX_TEST_VAR>>>"
 # set | grep APISIX
 # rsudo apisix api "routes"
 # rsudo apisix get "routes"

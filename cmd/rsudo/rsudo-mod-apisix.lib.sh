@@ -2,9 +2,6 @@
 
 . log.lib.sh
 
-KEYCLOAK_CLIENT_ID_AUTHN_AUTHZ="apisix-authn-authz"
-KEYCLOAK_CLIENT_SECRET="WiLDWAtS9FMMjSzAP7fElIzvHn9ftrTU"
-
 # export PROXY_HOST="apps.rpr-spa.it"
 
 APISIX_HOST="apisix.rpr-spa.it"
@@ -472,6 +469,31 @@ rsudo_mod_apisix_create_route()
     '"${URI_OR_URIS}"',
     '"${PARAMS}"'
   }'
+)
+}
+
+#-------------------------------------------------------------------------------
+
+rsudo_mod_apisix_create_route_authn()
+{
+(
+  if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]
+  then
+    exit 1
+  fi
+
+  ID="$1"
+  URI_OR_URIS="$2"
+  PREFIX_REMOVE="$3"
+  RESOURCE="$4"
+  SERVICE_ID="$5"
+
+  rsudo_mod_apisix_create_route "${ID}" "/${URI_OR_URIS} /${URI_OR_URIS}/*" '
+  "plugins":
+  {
+  '"$(env_from_template "APISIX_PLUGIN_CONF_KEYCLOAK_AUTHN_TEMPLATE" "my_client_id" "my_client_secret" "my_callback_uri1")"'
+  }
+  '
 )
 }
 
