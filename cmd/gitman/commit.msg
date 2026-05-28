@@ -1,1 +1,1 @@
-env_from_template
+env_echo_from_template

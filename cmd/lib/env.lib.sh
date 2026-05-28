@@ -20,9 +20,9 @@ exec_if_exist_function()
 
 #-------------------------------------------------------------------------------
 
-# env_from_template $template_var $@
+# env_echo_from_template $template_var $@
 # copies content of $template_var and echoes to stdout after substituting positional parameters with remaining args $@
-env_from_template()
+env_echo_from_template()
 {
   if [ -z "$1" ]
   then
