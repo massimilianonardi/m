@@ -5,10 +5,10 @@
 KEYCLOAK_CLIENT_ID_AUTHN_AUTHZ="apisix-authn-authz"
 KEYCLOAK_CLIENT_SECRET="WiLDWAtS9FMMjSzAP7fElIzvHn9ftrTU"
 
-export PROXY_HOST="apps.rpr-spa.it"
+# export PROXY_HOST="apps.rpr-spa.it"
 
-export APISIX_HOST="apisix.rpr-spa.it"
-export APISIX_PORT="9443"
+APISIX_HOST="apisix.rpr-spa.it"
+APISIX_PORT="9443"
 
 KEYCLOAK_HOST="keycloak.rpr-spa.it"
 KEYCLOAK_PORT="8443"
@@ -17,9 +17,9 @@ KEYCLOAK_REALM="rpr"
 KEYCLOAK_REALM_URL="https://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM}"
 
 AUTHN_DISCOVERY_URL="${KEYCLOAK_REALM_URL}/.well-known/openid-configuration"
-export AUTHZ_DISCOVERY_URL="${KEYCLOAK_REALM_URL}/.well-known/uma2-configuration"
+AUTHZ_DISCOVERY_URL="${KEYCLOAK_REALM_URL}/.well-known/uma2-configuration"
 
-export AUTHN_REDIRECT_BASE_URL="https://${APISIX_HOST}:${APISIX_PORT}"
+AUTHN_REDIRECT_BASE_URL="https://${APISIX_HOST}:${APISIX_PORT}"
 #export AUTHN_REDIRECT_BASE_URL="https://${PROXY_HOST}/apisix"
 
 APISIX_PLUGIN_CONF_KEYCLOAK_AUTHN_TEMPLATE='
@@ -38,6 +38,34 @@ APISIX_PLUGIN_CONF_KEYCLOAK_AUTHN_TEMPLATE='
   {
     "secret": "apisix_openid_connect_session_secret"
   }
+}
+'
+
+APISIX_PLUGIN_CONF_KEYCLOAK_AUTHZ_TEMPLATE='
+"authz-keycloak":
+{
+  "client_id": "${1}",
+  "client_secret": "${2}",
+  "discovery": "'"${AUTHZ_DISCOVERY_URL}"'",
+  "policy_enforcement_mode": "ENFORCING",
+  "lazy_load_paths": false,
+  "http_method_as_scope": false,
+  "permissions": ["${3}"],
+  "ssl_verify": true
+}
+'
+
+APISIX_PLUGIN_CONF_PROXY_REWRITE_TEMPLATE='
+"proxy-rewrite":
+{
+  "headers":
+  {
+    "remove":
+    [
+      "Cookie"
+    ]
+  },
+  "regex_uri": ["^/${1}/(.*)", "/\$1"]
 }
 '
 
