@@ -27,6 +27,24 @@ rsudo_mod_keycloak_set_auth_vars()
 
 rsudo_mod_keycloak_access_token()
 {
+  if [ -n "$1" ]
+  then
+    KEYCLOAK_USER_NAME="$1"
+    shift
+  fi
+
+  if [ -n "$1" ]
+  then
+    KEYCLOAK_USER_PASS="$1"
+    shift
+  fi
+
+  if [ -z "$KEYCLOAK_USER_NAME" ] || [ -z "$KEYCLOAK_USER_PASS" ]
+  then
+    log_debug "rsudo_mod_keycloak_access_token: empty credentials"
+    return 1
+  fi
+
   curl "https://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token" \
     -d "client_id=admin-cli" \
     -d "username=${KEYCLOAK_USER_NAME}" \
@@ -44,11 +62,72 @@ rsudo_mod_keycloak_access_token_set()
     return 1
   fi
 
-  eval "$1=\"\$(rsudo_mod_keycloak_access_token)\""
+  eval $1='"$(shift; rsudo_mod_keycloak_access_token "$@")"'
 }
 
 #-------------------------------------------------------------------------------
 
-# keycloak
+rsudo_mod_keycloak_api()
+{
 
-true
+  if [ -z "$ACCESS_TOKEN" ]
+  then
+    ACCESS_TOKEN="$(rsudo_mod_keycloak_access_token)"
+  fi
+
+(
+  if [ -z "$1" ]
+  then
+    exit 1
+  fi
+
+  if [ -z "$KEYCLOAK_ADMIN_REALM_URL" ]
+  then
+    retun 1
+  fi
+
+  if [ -z "$2" ]
+  then
+    HTTP_METHOD="GET"
+  else
+    HTTP_METHOD="$2"
+  fi
+
+  if [ -z "$3" ]
+  then
+    curl -i "${KEYCLOAK_ADMIN_REALM_URL}/${1}" -H "Authorization: Bearer ${ACCESS_TOKEN}" -X ${HTTP_METHOD} -d "scope=openid email profile"
+  else
+    curl -i "${KEYCLOAK_ADMIN_REALM_URL}/${1}" -H "Authorization: Bearer ${ACCESS_TOKEN}" -X ${HTTP_METHOD} -d "scope=openid email profile" -d '${3}'
+  fi
+)
+}
+
+#-------------------------------------------------------------------------------
+
+rsudo_mod_keycloak_get()
+{
+  rsudo_mod_keycloak_api "$1" "GET"
+}
+
+#-------------------------------------------------------------------------------
+
+rsudo_mod_keycloak_put()
+{
+  rsudo_mod_keycloak_api "$1" "PUT" "$2"
+}
+
+#-------------------------------------------------------------------------------
+
+rsudo_mod_keycloak_post()
+{
+  rsudo_mod_keycloak_api "$1" "POST" "PUT" "$2"
+}
+
+#-------------------------------------------------------------------------------
+
+rsudo_mod_keycloak_del()
+{
+  rsudo_mod_keycloak_api "$1" "DELETE"
+}
+
+#-------------------------------------------------------------------------------
