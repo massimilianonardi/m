@@ -20,6 +20,42 @@ exec_if_exist_function()
 
 #-------------------------------------------------------------------------------
 
+# env_eval $template_var $@
+# copies content of $template_var and echoes to stdout after substituting positional parameters with remaining args $@
+env_eval()
+{
+  if [ -z "$1" ]
+  then
+    return 1
+  fi
+
+  eval echo '$(shift; cat << EOF
+'"${1}"'
+EOF
+)'
+}
+
+#-------------------------------------------------------------------------------
+
+# env_eval_set destination_var_to_set $template_var $@
+# copies content of $template_var into destination_var_to_set after substituting positional parameters with remaining args $@
+env_eval_set()
+{
+  if [ -z "$1" ] || [ -z "$2" ]
+  then
+    return 1
+  fi
+
+  eval ${1}='$(shift 2; cat << EOF
+'"${2}"'
+EOF
+)'
+}
+
+#-------------------------------------------------------------------------------
+
+# TO REMOVE
+
 # env_echo_from_template $template_var $@
 # copies content of $template_var and echoes to stdout after substituting positional parameters with remaining args $@
 env_echo_from_template()
@@ -36,6 +72,8 @@ EOF
 }
 
 #-------------------------------------------------------------------------------
+
+# TO REMOVE
 
 # env_set_from_template $destination_var_to_set $template_var $@
 # copies content of $template_var into $destination_var_to_set after substituting positional parameters with remaining args $@
