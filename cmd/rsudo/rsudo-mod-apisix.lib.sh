@@ -2,62 +2,7 @@
 
 . log.lib.sh
 
-export KEYCLOAK_CLIENT_ID="apisix-authn-authz"
-export KEYCLOAK_CLIENT_SECRET="WiLDWAtS9FMMjSzAP7fElIzvHn9ftrTU"
-
-KEYCLOAK_HOST="keycloak.rpr-spa.it"
-KEYCLOAK_PORT="8443"
-KEYCLOAK_REALM="rpr"
-
-KEYCLOAK_REALM_URL="https://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM}"
-
-AUTHN_DISCOVERY_URL="${KEYCLOAK_REALM_URL}/.well-known/openid-configuration"
-AUTHZ_DISCOVERY_URL="${KEYCLOAK_REALM_URL}/.well-known/uma2-configuration"
-
-
-
-# export PROXY_HOST="apps.rpr-spa.it"
-
-APISIX_HOST="apisix.rpr-spa.it"
-APISIX_PORT="9443"
-
-AUTHN_REDIRECT_BASE_URL="https://${APISIX_HOST}:${APISIX_PORT}"
-#export AUTHN_REDIRECT_BASE_URL="https://${PROXY_HOST}/apisix"
-
-
-
-APISIX_PLUGIN_CONF_KEYCLOAK_AUTHN_TEMPLATE='
-"openid-connect":
-{
-  "client_id": "${1}",
-  "client_secret": "${2}",
-  "discovery": "'"${AUTHN_DISCOVERY_URL}"'",
-  "redirect_uri": "'"${AUTHN_REDIRECT_BASE_URL}"'/${3}/callback",
-  "scope": "openid email profile",
-  "use_pkce": true,
-  "bearer_only": false,
-  "access_token_in_authorization_header": true,
-  "set_userinfo_header": true,
-  "session":
-  {
-    "secret": "apisix_openid_connect_session_secret"
-  }
-}
-'
-
-APISIX_PLUGIN_CONF_KEYCLOAK_AUTHZ_TEMPLATE='
-"authz-keycloak":
-{
-  "client_id": "${1}",
-  "client_secret": "${2}",
-  "discovery": "'"${AUTHZ_DISCOVERY_URL}"'",
-  "policy_enforcement_mode": "ENFORCING",
-  "lazy_load_paths": false,
-  "http_method_as_scope": false,
-  "permissions": ["${3}"],
-  "ssl_verify": true
-}
-'
+#------------------------------------------------------------------------------
 
 APISIX_PLUGIN_CONF_PROXY_REWRITE_TEMPLATE='
 "proxy-rewrite":
@@ -74,6 +19,80 @@ APISIX_PLUGIN_CONF_PROXY_REWRITE_TEMPLATE='
 '
 
 #------------------------------------------------------------------------------
+
+rsudo_mod_apisix_set_auth_vars()
+{
+  [ -z "$1" ] && return 1; APISIX_HOST="$1"; shift
+  [ -z "$1" ] && return 1; APISIX_PORT="$1"; shift
+
+  [ -z "$1" ] && return 1; APISIX_KEYCLOAK_HOST="$1"; shift
+  [ -z "$1" ] && return 1; APISIX_KEYCLOAK_PORT="$1"; shift
+  [ -z "$1" ] && return 1; APISIX_KEYCLOAK_REALM="$1"; shift
+
+  [ -z "$1" ] && return 1; APISIX_KEYCLOAK_CLIENT_ID="$1"; shift
+  [ -z "$1" ] && return 1; APISIX_KEYCLOAK_CLIENT_SECRET="$1"; shift
+
+  if [ -z "$1" ]
+  then
+    APISIX_KEYCLOAK_CLIENT_SESSION_SECRET="apisix_openid_connect_session_secret"
+  else
+    APISIX_KEYCLOAK_CLIENT_SESSION_SECRET="$1"
+  fi
+
+  if [ "$APISIX_PORT" = "443" ]
+  then
+    APISIX_BASE_URL="https://${APISIX_HOST}"
+  else
+    APISIX_BASE_URL="https://${APISIX_HOST}:${APISIX_PORT}"
+  fi
+
+  if [ "$APISIX_KEYCLOAK_PORT" = "443" ]
+  then
+    APISIX_KEYCLOAK_REALM_URL="https://${APISIX_KEYCLOAK_HOST}/realms/${APISIX_KEYCLOAK_REALM}"
+  else
+    APISIX_KEYCLOAK_REALM_URL="https://${APISIX_KEYCLOAK_HOST}:${APISIX_KEYCLOAK_PORT}/realms/${APISIX_KEYCLOAK_REALM}"
+  fi
+
+  APISIX_KEYCLOAK_AUTHN_DISCOVERY_URL="${APISIX_KEYCLOAK_REALM_URL}/.well-known/openid-configuration"
+  APISIX_KEYCLOAK_AUTHZ_DISCOVERY_URL="${APISIX_KEYCLOAK_REALM_URL}/.well-known/uma2-configuration"
+
+
+
+  APISIX_PLUGIN_CONF_KEYCLOAK_AUTHN_TEMPLATE='
+"openid-connect":
+{
+  "client_id": "'"${APISIX_KEYCLOAK_CLIENT_ID}"'",
+  "client_secret": "'"${APISIX_KEYCLOAK_CLIENT_SECRET}"'",
+  "discovery": "'"${APISIX_KEYCLOAK_AUTHN_DISCOVERY_URL}"'",
+  "redirect_uri": "'"${APISIX_BASE_URL}"'/${1}/callback",
+  "scope": "openid email profile",
+  "use_pkce": true,
+  "bearer_only": false,
+  "access_token_in_authorization_header": true,
+  "set_userinfo_header": true,
+  "session":
+  {
+    "secret": "'"${APISIX_KEYCLOAK_CLIENT_SESSION_SECRET}"'"
+  }
+}
+'
+
+  APISIX_PLUGIN_CONF_KEYCLOAK_AUTHZ_TEMPLATE='
+"authz-keycloak":
+{
+  "client_id": "'"${APISIX_KEYCLOAK_CLIENT_ID}"'",
+  "client_secret": "'"${APISIX_KEYCLOAK_CLIENT_SECRET}"'",
+  "discovery": "'"${APISIX_KEYCLOAK_AUTHZ_DISCOVERY_URL}"'",
+  "policy_enforcement_mode": "ENFORCING",
+  "lazy_load_paths": false,
+  "http_method_as_scope": false,
+  "permissions": ["${1}"],
+  "ssl_verify": true
+}
+'
+}
+
+#-------------------------------------------------------------------------------
 
 rsudo_mod_apisix_json_string_or_array()
 {
@@ -405,6 +424,55 @@ rsudo_mod_apisix_create()
 
 #-------------------------------------------------------------------------------
 
+rsudo_mod_apisix_create_upstream()
+{
+(
+  if [ -z "$1" ] || [ -z "$2" ]
+  then
+    exit 1
+  fi
+
+  ID="$1"
+  PARAMS="$2"
+
+  rsudo_mod_apisix_put "upstreams" '
+  {
+    "id": "'"${ID}"'",
+    "name": "'"${ID}"'",
+    '"${PARAMS}"'
+  }
+  '
+)
+}
+
+#-------------------------------------------------------------------------------
+
+rsudo_mod_apisix_create_upstream_simple()
+{
+(
+  if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]
+  then
+    exit 1
+  fi
+
+  ID="$1"
+  SCHEME="$2"
+  ADDRESS_PORT="$3"
+
+  rsudo_mod_apisix_create_upstream "${ID}" '
+  "scheme": "'"${SCHEME}"'",
+  "retries": 1,
+  "type": "roundrobin",
+  "nodes":
+  {
+    "'"${ADDRESS_PORT}"'": 1
+  }
+  '
+)
+}
+
+#-------------------------------------------------------------------------------
+
 rsudo_mod_apisix_create_service()
 {
 (
@@ -457,6 +525,30 @@ rsudo_mod_apisix_create_service_simple()
 
 #-------------------------------------------------------------------------------
 
+rsudo_mod_apisix_create_service_standard()
+{
+(
+  if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]
+  then
+    exit 1
+  fi
+
+  ID="$1"
+  UPSTREAM_ID="$2"
+  PLUGINS="$3"
+
+  rsudo_mod_apisix_create_service "${ID}" '
+  "upstream_id": "'"${UPSTREAM_ID}"'",
+  "plugins":
+  {
+    '"${PLUGINS}"'
+  }
+  '
+)
+}
+
+#-------------------------------------------------------------------------------
+
 rsudo_mod_apisix_create_route()
 {
 (
@@ -495,10 +587,10 @@ rsudo_mod_apisix_create_route_authn()
   RESOURCE="$4"
   SERVICE_ID="$5"
 
-  rsudo_mod_apisix_create_route "${ID}" "/${URI_OR_URIS} /${URI_OR_URIS}/*" '
+  rsudo_mod_apisix_create_route "${ID}" "${URI_OR_URIS}" '
   "plugins":
   {
-  '"$(env_echo_from_template "APISIX_PLUGIN_CONF_KEYCLOAK_AUTHN_TEMPLATE" "${KEYCLOAK_CLIENT_ID}" "${KEYCLOAK_CLIENT_SECRET}" "${URI_OR_URIS}")"'
+  '"$(env_echo "$APISIX_PLUGIN_CONF_KEYCLOAK_AUTHN_TEMPLATE" "${URI_OR_URIS}")"'
   }
   '
 )

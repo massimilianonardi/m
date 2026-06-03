@@ -240,7 +240,44 @@ rsudo apisix json_string_or_array "uri" "uris" "uri1 uri2"
 # env_eval "$APISIX_PLUGIN_CONF_KEYCLOAK_AUTHN_TEMPLATE" "my_client_id" "my_client_secret" "my_callback_uri1"
 # env_eval_set "APISIX_TEST_VAR" "$APISIX_PLUGIN_CONF_KEYCLOAK_AUTHN_TEMPLATE" "my_client_id" "my_client_secret" "my_callback_uri1"
 # echo "APISIX_TEST_VAR=<<<$APISIX_TEST_VAR>>>"
+# rsudo apisix set_auth_vars "apisix_host.local" "443" "keycloak_host.local" "443" "keycloak-realm" "kc_apisix_client_id" "kc_apisix_client_secret" "kc_apisix_client_session_secret"
+# rsudo apisix set_auth_vars "apisix_host.local" "9443" "keycloak_host.local" "8443" "keycloak-realm" "kc_apisix_client_id" "kc_apisix_client_secret" "kc_apisix_client_session_secret"
 # set | grep APISIX
+KEYCLOAK_USER_NAME="admin"
+KEYCLOAK_USER_PASS="admin"
+KEYCLOAK_HOST="keycloak.rpr-spa.it"
+KEYCLOAK_PORT="8443"
+KEYCLOAK_REALM="master"
+ACCESS_TOKEN="$(curl "https://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token" \
+  -d "client_id=admin-cli" \
+  -d "username=${KEYCLOAK_USER_NAME}" \
+  -d "password=${KEYCLOAK_USER_PASS}" \
+  -d "grant_type=password" \
+  -d "scope=openid email profile" \
+  | sed -e 's/^.*access_token":"//g' -e 's/",".*//g')"
+echo "ACCESS_TOKEN=$ACCESS_TOKEN"
+curl -i "https://keycloak.rpr-spa.it:8443/admin/realms/rpr/clients" -X GET \
+  -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+  -d "scope=openid email profile" \
+  | sed -e 's/"id":/\n\n"id":/g'
+curl -i "https://keycloak.rpr-spa.it:8443/admin/realms/rpr/clients/0e7de9cc-81d2-44ac-8d20-fdb51c1df9c2/client-secret" -X GET \
+  -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+  -d "scope=openid email profile"
+curl -i "https://keycloak.rpr-spa.it:8443/admin/realms/rpr/clients/0e7de9cc-81d2-44ac-8d20-fdb51c1df9c2" -X GET \
+  -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+  -d "scope=openid email profile"
+curl -i "https://keycloak.rpr-spa.it:8443/admin/realms/rpr/users" -X GET \
+  -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+  -d "scope=openid email profile" \
+  | sed -e 's/"id":/\n\n"id":/g'
+
+curl "https://${KEYCLOAK_HOST}:${KEYCLOAK_PORT}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/userinfo" \
+  -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+  -d "scope=openid email profile"
+
+# curl -i "https://keycloak.rpr-spa.it:8443/admin/realms/master/users/admin" -X GET \
+#   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+#   -d "scope=openid email profile"
 # rsudo apisix api "routes"
 # rsudo apisix get "routes"
 # rsudo apisix create service_simple "test-service-id" "https" "my_host.local:80"
