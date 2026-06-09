@@ -206,7 +206,7 @@ rsudo_mod_apisix_put()
 
 rsudo_mod_apisix_post()
 {
-  rsudo_mod_apisix_api "$1" "POST" "PUT" "$2"
+  rsudo_mod_apisix_api "$1" "POST" "$2"
 }
 
 #-------------------------------------------------------------------------------
