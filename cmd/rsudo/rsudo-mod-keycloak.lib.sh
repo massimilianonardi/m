@@ -73,7 +73,7 @@ rsudo_mod_keycloak_access_token_set()
 
 #-------------------------------------------------------------------------------
 
-rsudo_mod_keycloak_api()
+rsudo_mod_keycloak_api___()
 {
 
   if [ -z "$ACCESS_TOKEN" ]
@@ -137,11 +137,13 @@ rsudo_mod_keycloak_api()
   if [ -z "$3" ]
   then
     rsudo << EOF
-curl -s "${KEYCLOAK_ADMIN_REALM_URL}/${1}" -H "Authorization: Bearer ${ACCESS_TOKEN}" -H "Content-Type: application/json" -X ${HTTP_METHOD} -d "scope=openid email profile"
+# curl -s "${KEYCLOAK_ADMIN_REALM_URL}/${1}" -H "Authorization: Bearer ${ACCESS_TOKEN}" -H "Content-Type: application/json" -X ${HTTP_METHOD} -d "scope=openid email profile"
+curl -s "${KEYCLOAK_ADMIN_REALM_URL}/${1}" -H "Authorization: Bearer ${ACCESS_TOKEN}" -X ${HTTP_METHOD}
 EOF
   else
     rsudo << EOF
-curl -s "${KEYCLOAK_ADMIN_REALM_URL}/${1}" -H "Authorization: Bearer ${ACCESS_TOKEN}" -H "Content-Type: application/json" -X ${HTTP_METHOD} -d "scope=openid email profile" -d '${3}'
+# curl -i "${KEYCLOAK_ADMIN_REALM_URL}/${1}" -H "Authorization: Bearer ${ACCESS_TOKEN}" -H "Content-Type: application/json" -X ${HTTP_METHOD} -d "scope=openid email profile" -d '${3}'
+curl -s "${KEYCLOAK_ADMIN_REALM_URL}/${1}" -H "Authorization: Bearer ${ACCESS_TOKEN}" -H "Content-Type: application/json" -X ${HTTP_METHOD} -d '${3}'
 EOF
   fi
 )
@@ -149,28 +151,28 @@ EOF
 
 #-------------------------------------------------------------------------------
 
-rsudo_mod_keycloak_get()
+rsudo_mod_keycloak_method_get()
 {
   rsudo_mod_keycloak_api "$1" "GET"
 }
 
 #-------------------------------------------------------------------------------
 
-rsudo_mod_keycloak_put()
+rsudo_mod_keycloak_method_put()
 {
   rsudo_mod_keycloak_api "$1" "PUT" "$2"
 }
 
 #-------------------------------------------------------------------------------
 
-rsudo_mod_keycloak_post()
+rsudo_mod_keycloak_method_post()
 {
   rsudo_mod_keycloak_api "$1" "POST" "$2"
 }
 
 #-------------------------------------------------------------------------------
 
-rsudo_mod_keycloak_del()
+rsudo_mod_keycloak_method_delete()
 {
   rsudo_mod_keycloak_api "$1" "DELETE"
 }
@@ -186,7 +188,8 @@ rsudo_mod_keycloak_delete()
 
 rsudo_mod_keycloak_delete_client()
 {
-  rsudo_mod_keycloak_del "clients/${1}"
+  set -- "$(rsudo_mod_keycloak_get_client "$1" | sed -e 's/\[{"id":"//g' -e 's/",.*//g')"
+  rsudo_mod_keycloak_method_delete "clients/${1}"
 }
 
 #-------------------------------------------------------------------------------
@@ -202,14 +205,21 @@ rsudo_mod_keycloak_create_client()
 {
   # "$KEYCLOAK_ADMIN_CMD" create clients -r "$KEYCLOAK_REALM" -f ZZZ
 
-  rsudo_mod_keycloak_post "clients/$1" "$2"
+  rsudo_mod_keycloak_method_post "clients" "$1"
 }
 
 #-------------------------------------------------------------------------------
 
-rsudo_mod_keycloak_get___()
+rsudo_mod_keycloak_get()
 {
   rsudo_mod_keycloak_get_"$@"
+}
+
+#-------------------------------------------------------------------------------
+
+rsudo_mod_keycloak_get_client()
+{
+  rsudo_mod_keycloak_method_get "clients?clientId=$1"
 }
 
 #-------------------------------------------------------------------------------
