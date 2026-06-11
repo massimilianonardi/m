@@ -18,6 +18,7 @@ rsudo jobs one encoded file import many scripts + menu to internal functions tha
 rsudo jobs $enc_file $script_files (eventually: $script_dir/*): menu of all scripts, enter=execute e=edit
 
 !!! keycloak userinfo + roles
+keycloak check if userinfo is possible at login page inside template
 keycloak change totp provider key
 keycloak backup restore + disaster recovery + recreate by rest api calls by means of helper functions
 
