@@ -10,6 +10,93 @@ KEYCLOAK_REG_CMD="/m/bin/kcreg"
 
 #------------------------------------------------------------------------------
 
+KEYCLOAK_CLIENT_CONF_TEMPLATE='
+{
+  "allowRemoteResourceManagement": true,
+  "policyEnforcementMode": "ENFORCING",
+  "resources": [
+    {
+      "name": "Default Resource",
+      "type": "urn:apisix-authn-authz:resources:default",
+      "ownerManagedAccess": false,
+      "attributes": {},
+      "uris": [
+        "/*"
+      ]
+    },
+    {
+      "name": "main-resource",
+      "displayName": "main-resource",
+      "uris": [
+        "main"
+      ],
+      "ownerManagedAccess": false,
+      "attributes": {},
+      "icon_uri": ""
+    },
+    {
+      "name": "protected-resource",
+      "displayName": "protected-resource",
+      "uris": [
+        "protected"
+      ],
+      "ownerManagedAccess": false,
+      "attributes": {},
+      "icon_uri": ""
+    }
+  ],
+  "policies": [
+    {
+      "name": "Default Policy",
+      "description": "A policy that grants access only for users within this realm",
+      "type": "js",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "code": "// by default, grants any permission associated with this policy\n$evaluation.grant();\n"
+      }
+    },
+    {
+      "name": "Default Permission",
+      "description": "A permission that applies to the default resource type",
+      "type": "resource",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "defaultResourceType": "urn:apisix-authn-authz:resources:default",
+        "applyPolicies": "[\"Default Policy\"]"
+      }
+    },
+    {
+      "name": "main-permission",
+      "description": "",
+      "type": "resource",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"main-resource\"]",
+        "applyPolicies": "[\"Default Policy\"]"
+      }
+    },
+    {
+      "name": "protected-permission",
+      "description": "",
+      "type": "resource",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"protected-resource\"]",
+        "applyPolicies": "[\"Default Policy\"]"
+      }
+    }
+  ],
+  "scopes": [],
+  "decisionStrategy": "UNANIMOUS"
+}
+'
+
+#------------------------------------------------------------------------------
+
 rsudo_mod_keycloak_set_auth_vars()
 {
   [ -z "$1" ] && return 1; KEYCLOAK_HOST="$1"; shift
