@@ -4,6 +4,18 @@
 
 #------------------------------------------------------------------------------
 
+APISIX_PLUGIN_CONF_RESPONSE_REWRITE_USERINFO='
+"response-rewrite":
+{
+  "headers":
+  {
+    "X-Userinfo": "$http_x_userinfo"
+  }
+}
+'
+
+#------------------------------------------------------------------------------
+
 APISIX_PLUGIN_CONF_PROXY_REWRITE_TEMPLATE='
 "proxy-rewrite":
 {

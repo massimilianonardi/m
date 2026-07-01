@@ -1,4 +1,49 @@
 
+production psn:
+- apisix: apisix-psn -> applicazioni
+- keycloak: keycloak-psn
+- apps: apps-psn
+- gis: gis
+
+
+
+client <-> apisix <-> (keycloak + services-servers)
+
+apisix, keycloak: single instances -> todo future cluster architecture
+services-servers: apps + gis + dms
+
+apisix:
+- etcd
+- http to https redirection with nginx
+- url-cloaking app with nginx
+- apisix public port 9443 to 443
+- bind admin api to 127.0.0.1
+- bind dashboard to 127.0.0.1 (accessible from secured apisix route)
+- find better deployment separating engine, conf, admin based on its specific capabilities
+
+keycloak:
+- find better admin access
+- local postgres
+
+apps:
+- html (apache2)
+- php (apache2)
+- java (jetty embedded + eventual wildfly)
+
+gis:
+- secured public postgres or bind postgres to 127.0.0.1 ???
+- geoserver on local postgres
+- web acces to gis files (images and pdf) -> to be removed in the future or linked to dms
+
+dms:
+- ocr
+- ai
+- GlusterFS or similar
+- tags, no physical folders
+- automation and workflows
+
+
+
 - auth / keycloak: kc + postgres
 - apigw / apisix: apisix + etcd
 - micro / srv / srvs / apps / apps-dev: microservices -> html, js, resources + java-db + java-file-manager + geoserver
