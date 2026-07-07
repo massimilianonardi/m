@@ -1,1 +1,1 @@
-rsudo apisix userinfo
+rsudo-apisix userinfo plugins

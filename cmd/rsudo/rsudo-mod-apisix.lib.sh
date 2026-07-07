@@ -16,6 +16,19 @@ APISIX_PLUGIN_CONF_RESPONSE_REWRITE_USERINFO='
 
 #------------------------------------------------------------------------------
 
+APISIX_PLUGIN_CONF_CORS_USERINFO_TEMPLATE='
+"cors":
+{
+  "allow_headers": "**",
+  "allow_origins": "${1}",
+  "expose_headers": "X-Userinfo",
+  "allow_methods": "GET,POST,PUT,DELETE,OPTIONS",
+  "allow_credential": true
+}
+'
+
+#------------------------------------------------------------------------------
+
 APISIX_PLUGIN_CONF_PROXY_REWRITE_TEMPLATE='
 "proxy-rewrite":
 {
