@@ -4,6 +4,36 @@
 
 #------------------------------------------------------------------------------
 
+APISIX_GLOBAL_RULE_CONF_RESPONSE_REWRITE_FLUSH_COOKIES='
+"response-rewrite":
+{
+  "headers":
+  {
+    "Set-Cookie": "session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax"
+  },
+  "vars":
+  [
+    [
+      "status",
+      "~=",
+      404
+    ],
+    [
+      "status",
+      ">=",
+      400
+    ],
+    [
+      "status",
+      "<",
+      500
+    ]
+  ]
+}
+'
+
+#------------------------------------------------------------------------------
+
 APISIX_PLUGIN_CONF_RESPONSE_REWRITE_USERINFO='
 "response-rewrite":
 {
