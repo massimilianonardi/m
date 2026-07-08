@@ -127,6 +127,7 @@ rsudo_mod_apisix_set_auth_vars()
   "set_userinfo_header": true,
   "session":
   {
+    "redis": {},
     "secret": "'"${APISIX_KEYCLOAK_CLIENT_SESSION_SECRET}"'"
   }
 }
@@ -613,7 +614,7 @@ rsudo_mod_apisix_create_route()
   fi
 
   ID="$1"
-  URI_OR_URIS="$(rsudo_mod_apisix_json_string_or_array "uri" "uris" $2)"
+  URI_OR_URIS="$(rsudo_mod_apisix_json_string_or_array "uri" "uris" "$2")"
   PARAMS="$3"
 
   rsudo_mod_apisix_put "routes" '
@@ -623,6 +624,24 @@ rsudo_mod_apisix_create_route()
     '"${URI_OR_URIS}"',
     '"${PARAMS}"'
   }'
+)
+}
+
+#-------------------------------------------------------------------------------
+
+rsudo_mod_apisix_create_route_simple()
+{
+(
+  if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]
+  then
+    exit 1
+  fi
+
+  ID="$1"
+  URI_OR_URIS="$2"
+  SERVICE_ID="$3"
+
+  rsudo_mod_apisix_create_route "${ID}" "${URI_OR_URIS}" '"service_id": "'"${SERVICE_ID}"'"'
 )
 }
 
@@ -638,14 +657,76 @@ rsudo_mod_apisix_create_route_authn()
 
   ID="$1"
   URI_OR_URIS="$2"
-  PREFIX_REMOVE="$3"
-  RESOURCE="$4"
-  SERVICE_ID="$5"
+  SERVICE_ID="$3"
+
+  CALLBACK_URI="authz/$URI_OR_URIS"
+  URI_OR_URIS="/authz/$URI_OR_URIS /authz/$URI_OR_URIS/*"
 
   rsudo_mod_apisix_create_route "${ID}" "${URI_OR_URIS}" '
+  "service_id": "'"${SERVICE_ID}"'",
   "plugins":
   {
-  '"$(env_echo "$APISIX_PLUGIN_CONF_KEYCLOAK_AUTHN_TEMPLATE" "${URI_OR_URIS}")"'
+    '"$(env_eval "$APISIX_PLUGIN_CONF_KEYCLOAK_AUTHN_TEMPLATE" "${CALLBACK_URI}")"',
+    '"$(env_eval "$APISIX_PLUGIN_CONF_PROXY_REWRITE_TEMPLATE" "authz")"',
+    '"$(env_eval "$APISIX_PLUGIN_CONF_CORS_USERINFO_TEMPLATE" "${APISIX_BASE_URL}")"',
+    '"$APISIX_PLUGIN_CONF_RESPONSE_REWRITE_USERINFO"'
+  }
+  '
+)
+}
+
+#-------------------------------------------------------------------------------
+
+rsudo_mod_apisix_create_route_authn_authz()
+{
+(
+  if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ -z "$4" ]
+  then
+    exit 1
+  fi
+
+  ID="$1"
+  URI_OR_URIS="$2"
+  SERVICE_ID="$3"
+  RESOURCE="$4"
+
+  CALLBACK_URI="authz/$URI_OR_URIS"
+  URI_OR_URIS="/authz/$URI_OR_URIS /authz/$URI_OR_URIS/*"
+
+  rsudo_mod_apisix_create_route "${ID}" "${URI_OR_URIS}" '
+  "service_id": "'"${SERVICE_ID}"'",
+  "plugins":
+  {
+    '"$(env_eval "$APISIX_PLUGIN_CONF_KEYCLOAK_AUTHN_TEMPLATE" "${CALLBACK_URI}")"',
+    '"$(env_eval "$APISIX_PLUGIN_CONF_KEYCLOAK_AUTHZ_TEMPLATE" "${RESOURCE}")"',
+    '"$(env_eval "$APISIX_PLUGIN_CONF_PROXY_REWRITE_TEMPLATE" "authz")"',
+    '"$(env_eval "$APISIX_PLUGIN_CONF_CORS_USERINFO_TEMPLATE" "${APISIX_BASE_URL}")"',
+    '"$APISIX_PLUGIN_CONF_RESPONSE_REWRITE_USERINFO"'
+  }
+  '
+)
+}
+
+#-------------------------------------------------------------------------------
+
+rsudo_mod_apisix_create_global_rule()
+{
+(
+  if [ -z "$1" ] || [ -z "$2" ]
+  then
+    exit 1
+  fi
+
+  ID="$1"
+  PLUGINS="$2"
+
+  rsudo_mod_apisix_put "global_rules" '
+  {
+    "id": "'"${ID}"'",
+    "plugins":
+    {
+      '"${PLUGINS}"'
+    }
   }
   '
 )
