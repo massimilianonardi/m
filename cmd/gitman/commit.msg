@@ -1,1 +1,1 @@
-rsudo-apisix userinfo + clear cookies at session expiration
+apisix inject klaro cookie consent

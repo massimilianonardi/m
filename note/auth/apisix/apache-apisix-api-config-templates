@@ -1,5 +1,189 @@
 #!/bin/sh
 
+# klaro cookie consent ---------------------------------------------------------
+
+var headReplace = `"
+  <script>
+    var klaroConfig =
+    {
+      elementID: 'klaro',
+      mustConsent: true,
+      privacyPolicy: '/privacy-policy.html',
+      hideDeclineAll: true,
+      lang: 'it',
+      services:
+      [
+        {
+          name: 'rpr',
+          title: 'Servizi RpR',
+          purposes: ['analytics'],
+          required: true,
+          cookies:
+          [
+            ['session'], // Cancella questi cookie se il consenso viene revocato
+            ['_gid']
+          ]
+        },
+        {
+          name: 'google-analytics',
+          title: 'Google Analytics',
+          purposes: ['analytics'],
+          required: false, // Se true, l'utente non può disattivarlo
+          cookies:
+          [
+            [/^_ga/, '/', 'google.com'], // Cancella questi cookie se il consenso viene revocato
+            ['_gid']
+          ]
+        }
+      ],
+
+      translations:
+      {
+        it:
+        {
+          consentModal:
+          {
+            title: 'Informazioni sui Cookie',
+            description: 'Qui puoi vedere e gestire le informazioni che raccogliamo su di te.',
+          },
+          consentNotice:
+          {
+            changeDescription: 'Ci sono state modifiche dall\\\\\\'ultima visita, aggiorna le tue scelte.',
+            description: 'Utilizziamo i cookie per ottimizzare il nostro sito web.',
+            learnMore: 'Scopri di più o personalizza',
+            acceptAll: 'Accetta tutti',
+            declineAll: 'Rifiuta tutti'
+          },
+          purposes:
+          {
+            analytics: 'Statistiche e Analisi'
+          }
+        }
+      }
+    };
+  </script>
+
+  <script defer type='text/javascript' src='https://cdn.kiprotect.com/klaro/latest/klaro.js'></script>
+</head>
+"`;
+
+headReplace = JSON.parse(headReplace.replace(/\n/g, '\\\\n').trim());
+
+const apisixPluginConfig = `
+{
+  "filters": [
+    {
+      "scope": "once",
+      "regex": "</head>",
+      "replace": "${headReplace}"
+    }
+  ]
+}
+`;
+
+console.log(apisixPluginConfig);
+
+# cookie consent (orest bida) --------------------------------------------------
+
+var headReplace = `"
+  <link rel='stylesheet' type='text/css' href='https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.1.0/dist/cookieconsent.css' />
+  <script src='https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.1.0/dist/cookieconsent.umd.js'></script>
+</head>
+"`;
+
+headReplace = JSON.parse(headReplace.replace(/\s+/g, ' ').trim());
+
+var bodyReplace = `"
+<script>
+CookieConsent.run(
+{
+  categories:
+  {
+    necessary:
+    {
+      enabled: true,  // this category is enabled by default
+      readOnly: true  // this category cannot be disabled
+    },
+    analytics: {}
+  },
+
+  language:
+  {
+    default: 'en',
+    translations:
+    {
+      en:
+      {
+        consentModal:
+        {
+          title: 'We use cookies',
+          description: 'Cookie modal description',
+          acceptAllBtn: 'Accept all',
+          acceptNecessaryBtn: 'Reject all',
+          showPreferencesBtn: 'Manage Individual preferences'
+        },
+        preferencesModal:
+        {
+          title: 'Manage cookie preferences',
+          acceptAllBtn: 'Accept all',
+          acceptNecessaryBtn: 'Reject all',
+          savePreferencesBtn: 'Accept current selection',
+          closeIconLabel: 'Close modal',
+          sections:
+          [
+            {
+              title: 'Somebody said ... cookies?',
+              description: 'I want one!'
+            },
+            {
+              title: 'Strictly Necessary cookies',
+              description: 'These cookies are essential for the proper functioning of the website and cannot be disabled.',
+
+              //this field will generate a toggle linked to the 'necessary' category
+              linkedCategory: 'necessary'
+            },
+            {
+              title: 'Performance and Analytics',
+              description: 'These cookies collect information about how you use our website. All of the data is anonymized and cannot be used to identify you.',
+              linkedCategory: 'analytics'
+            },
+            {
+              title: 'More information',
+              description: 'For any queries in relation to my policy on cookies and your choices, please contact us'
+            }
+          ]
+        }
+      }
+    }
+  }
+});
+</script>
+</body>
+"`;
+
+bodyReplace = JSON.parse(bodyReplace.replace(/\s+/g, ' ').trim());
+
+const apisixPluginConfig = `
+{
+  "filters": [
+    {
+      "scope": "once",
+      "regex": "</head>",
+      "replace": "${headReplace}"
+    },
+    {
+      "scope": "once",
+      "regex": "</body>",
+      "replace": "${bodyReplace}"
+    }
+  ]
+}
+`;
+
+console.log(apisixPluginConfig);
+
+#-------------------------------------------------------------------------------
+
 export APISIX_RELATIVE_REDIRECT_URI="/callback"
 export APISIX_PUBLIC_URI="pub"
 export APISIX_AUTHENTICATED_URI="authn"
