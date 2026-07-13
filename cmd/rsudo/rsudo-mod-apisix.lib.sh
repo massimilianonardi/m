@@ -480,6 +480,29 @@ rsudo_mod_apisix_create()
 
 #-------------------------------------------------------------------------------
 
+rsudo_mod_apisix_create_generic()
+{
+(
+  if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]
+  then
+    exit 1
+  fi
+
+  URL="$1"
+  ID="$2"
+  PARAMS="$3"
+
+  rsudo_mod_apisix_put "$URL" '
+  {
+    "id": "'"${ID}"'",
+    '"${PARAMS}"'
+  }
+  '
+)
+}
+
+#-------------------------------------------------------------------------------
+
 rsudo_mod_apisix_create_upstream()
 {
 (

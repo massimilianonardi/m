@@ -5,6 +5,18 @@ production psn:
 - apps: apps-psn
 - gis: gis
 
+apisix:
+- 9443 -> 443
+- route /apisix/admin -> apisix dashboard ui (authenticated???)
+- bind dashboard and admin api on 127.0.0.1
+- route / -> apps/url-cloaker
+- route /main: -> apps/main: app that reads userinfo and determines default app for user (defaults to menu)
+- route /menu: -> apps/menu: app that reads userinfo and determines apps to show in menu
+
+apps:
+- ingress nginx/openresty/apache2 that allows only apisix connections
+- apps only on 127.0.0.1: html, php, java
+
 
 
 client <-> apisix <-> (keycloak + services-servers)

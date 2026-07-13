@@ -16,23 +16,11 @@ var headReplace = `"
         {
           name: 'rpr',
           title: 'Servizi RpR',
-          purposes: ['analytics'],
+          purposes: ['functional'],
           required: true,
           cookies:
           [
-            ['session'], // Cancella questi cookie se il consenso viene revocato
-            ['_gid']
-          ]
-        },
-        {
-          name: 'google-analytics',
-          title: 'Google Analytics',
-          purposes: ['analytics'],
-          required: false, // Se true, l'utente non può disattivarlo
-          cookies:
-          [
-            [/^_ga/, '/', 'google.com'], // Cancella questi cookie se il consenso viene revocato
-            ['_gid']
+            ['session']
           ]
         }
       ],
@@ -48,15 +36,15 @@ var headReplace = `"
           },
           consentNotice:
           {
-            changeDescription: 'Ci sono state modifiche dall\\\\\\'ultima visita, aggiorna le tue scelte.',
-            description: 'Utilizziamo i cookie per ottimizzare il nostro sito web.',
+            changeDescription: 'Ci sono state modifiche dall\\\\\\\\'ultima visita, aggiorna le tue scelte.',
+            description: 'Utilizziamo i cookie per garantire la sicurezza dei servizi offerti.',
             learnMore: 'Scopri di più o personalizza',
             acceptAll: 'Accetta tutti',
             declineAll: 'Rifiuta tutti'
           },
           purposes:
           {
-            analytics: 'Statistiche e Analisi'
+            functional: 'Autenticazione ed autorizzazioni'
           }
         }
       }
