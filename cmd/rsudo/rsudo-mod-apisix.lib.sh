@@ -670,6 +670,44 @@ rsudo_mod_apisix_create_route_simple()
 
 #-------------------------------------------------------------------------------
 
+rsudo_mod_apisix_create_route_map()
+{
+(
+  if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ -z "$4" ]
+  then
+    exit 1
+  fi
+
+  ID="$1"
+  URI_OR_URIS="$2"
+  URI_MAPPED="$3"
+  SERVICE_ID="$4"
+
+  CALLBACK_URI="$URI_OR_URIS"
+  URI_OR_URIS="/$URI_OR_URIS /$URI_OR_URIS/*"
+
+  rsudo_mod_apisix_create_route "${ID}" "${URI_OR_URIS}" '
+  "service_id": "'"${SERVICE_ID}"'",
+  "plugins":
+  {
+    "proxy-rewrite":
+    {
+      "headers":
+      {
+        "remove":
+        [
+          "Cookie"
+        ]
+      },
+      "regex_uri": ["^/'"${2}"'/(.*)", "/'"${URI_MAPPED}"'\$1"]
+    }
+  }
+  '
+)
+}
+
+#-------------------------------------------------------------------------------
+
 rsudo_mod_apisix_create_route_authn()
 {
 (

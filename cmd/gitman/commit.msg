@@ -1,1 +1,1 @@
-apisix inject klaro cookie consent
+msh prompt
