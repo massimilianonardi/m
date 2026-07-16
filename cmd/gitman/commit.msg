@@ -1,1 +1,1 @@
-msh prompt
+rsudo apisix

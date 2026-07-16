@@ -686,6 +686,8 @@ rsudo_mod_apisix_create_route_map()
   CALLBACK_URI="$URI_OR_URIS"
   URI_OR_URIS="/$URI_OR_URIS /$URI_OR_URIS/*"
 
+log fatal '--->       "regex_uri": ["^/'"${2}"'/(.*)", "/'"${URI_MAPPED}"'\$1"]'
+
   rsudo_mod_apisix_create_route "${ID}" "${URI_OR_URIS}" '
   "service_id": "'"${SERVICE_ID}"'",
   "plugins":
@@ -699,7 +701,7 @@ rsudo_mod_apisix_create_route_map()
           "Cookie"
         ]
       },
-      "regex_uri": ["^/'"${2}"'/(.*)", "/'"${URI_MAPPED}"'\$1"]
+      "regex_uri": ["^/'"${2}"'/(.*)", "/'"${URI_MAPPED}"'/$1"]
     }
   }
   '
