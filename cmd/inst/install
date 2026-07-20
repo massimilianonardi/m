@@ -35,6 +35,7 @@ ENV_PATH="/m/bin:$ENV_PATH"
 
 echo "ENV_PATH=$ENV_PATH"
 
+mkdir -p "$(dirname "$ENV_FILE")"
 (echo "PATH=\"$ENV_PATH:\$PATH\"" | sudo tee "$ENV_FILE" > /dev/null) \
 && (echo "Defaults	secure_path=\"$ENV_PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin\"" | sudo tee "$SUDOERS_FILE" > /dev/null) \
 && sudo rm -f "$PROFILE_FILE" \
