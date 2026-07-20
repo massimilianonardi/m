@@ -13,6 +13,9 @@ echo "deb [signed-by=/usr/share/keyrings/apisix-archive-keyring.gpg] https://rep
 #wget -O - http://repos.apiseven.com/pubkey.gpg | sudo apt-key add -
 #echo "deb http://repos.apiseven.com/packages/arm64/debian bullseye main" | sudo tee /etc/apt/sources.list.d/apisix.list
 
+wget "http://ftp.de.debian.org/debian/pool/main/p/pcre3/libpcre3_8.39-15_amd64.deb"
+sudo dpkg -i ./libpcre3_8.39-15_amd64.deb
+
 sudo apt update
 sudo apt install -y apisix
 

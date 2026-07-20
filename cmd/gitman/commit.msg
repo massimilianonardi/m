@@ -1,1 +1,1 @@
-install fix for ubuntu 26.04 missing etc dir
+apisix install fix old pcre on ubuntu 26.04
