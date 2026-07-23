@@ -22,7 +22,8 @@ deployment:
     admin_api_version: v3
     admin_listen:
       port: 9180
-      ip: 0.0.0.0
+      ip: 127.0.0.1
+      #ip: 0.0.0.0
     admin_key_required: true
     admin_key:
     - name: admin
