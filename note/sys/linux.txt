@@ -44,4 +44,7 @@ get to the terminal to see wmclass
 wayland: on a terminal ALT+F2, type lg (looking glass), select "Windows" tab
 
 
-linux tilde: F6 or CTRL+SHIFT+u 7E (SPACE or ENTER)
+linux tilde:
+AltGr+ì / AltGr+^
+F6
+CTRL+SHIFT+u 7E (SPACE or ENTER)
