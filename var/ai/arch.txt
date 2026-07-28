@@ -1,0 +1,2175 @@
+Quello che descrivi è molto simile a un framework per agenti, più che a una semplice applicazione che interroga un LLM. La scelta di procedere per piccoli passi con test incrementali è probabilmente quella che ti farà risparmiare più tempo: ogni nuova capacità introduce nuovi punti di errore e isolarli rende il debug molto più semplice.
+
+Io eviterei di costruire subito un "mega agente". Progetterei invece un **core** minimale e una serie di moduli indipendenti.
+
+## Architettura proposta
+
+```text
+utente
+   │
+   ▼
+┌───────────────────────┐
+│       API/WebUI       │
+└───────────┬───────────┘
+            │
+            ▼
+┌───────────────────────┐
+│      Agent Core       │
+│                       │
+│ - Prompt             │
+│ - Memoria            │
+│ - Planner            │
+│ - Tool Dispatcher    │
+└──────┬─────────┬──────┘
+       │         │
+       │         │
+       ▼         ▼
+  Ollama      Tool Registry
+                  │
+     ┌────────────┼───────────────┐
+     ▼            ▼               ▼
+   RAG        Terminal        Browser
+                               │
+                     Computer Use
+                               │
+                     FileSystem
+                               │
+                         Database
+```
+
+Il punto importante è che **l'Agent Core non conosce gli strumenti**. Conosce solo un'interfaccia comune.
+
+Ad esempio:
+
+```python
+class Tool:
+
+    name = ""
+    description = ""
+
+    def execute(self, **kwargs):
+        pass
+```
+
+Ogni nuova funzionalità implementa questa interfaccia.
+
+---
+
+# Fase 1
+
+Prima ancora del RAG io costruirei il **Tool Dispatcher**.
+
+Anche se inizialmente hai un solo tool.
+
+```
+tools/
+    terminal.py
+```
+
+Il test è semplicissimo.
+
+Prompt
+
+> che ore sono?
+
+↓
+
+Gemma risponde
+
+↓
+
+usa TerminalTool
+
+↓
+
+```
+date
+```
+
+↓
+
+ritorna il risultato
+
+↓
+
+Gemma formula la risposta.
+
+Finché questo non è stabile non aggiungerei altro.
+
+---
+
+# Fase 2
+
+Filesystem.
+
+```
+FileTool
+
+read_file()
+
+write_file()
+
+list_directory()
+
+search()
+```
+
+Test:
+
+```
+Leggi README.md
+```
+
+oppure
+
+```
+scrivi test.txt
+```
+
+---
+
+# Fase 3
+
+Terminale
+
+Qui conviene usare una whitelist.
+
+Ad esempio
+
+```
+ls
+pwd
+cat
+grep
+find
+git
+python
+podman
+systemctl
+```
+
+e vietare
+
+```
+rm
+mkfs
+shutdown
+reboot
+```
+
+almeno nella prima fase.
+
+---
+
+# Fase 4
+
+Browser
+
+Qui hai varie possibilità.
+
+Io sceglierei Playwright.
+
+Perché permette di:
+
+```
+aprire pagina
+
+cliccare
+
+scrivere
+
+fare screenshot
+
+leggere testo
+
+scaricare file
+
+eseguire javascript
+```
+
+Tutto localmente.
+
+---
+
+# Fase 5
+
+RAG
+
+Non partirei subito con database vettoriali enormi.
+
+Prima farei
+
+```
+cartella
+
+↓
+
+Loader
+
+↓
+
+Chunk
+
+↓
+
+Embedding
+
+↓
+
+ChromaDB
+
+↓
+
+Retriever
+
+↓
+
+Gemma
+```
+
+Con una sola directory.
+
+Per esempio
+
+```
+docs/
+
+manuale.pdf
+
+note.md
+
+codice/
+```
+
+Se funziona puoi aggiungere:
+
+* indicizzazione automatica
+* aggiornamento incrementale
+* metadati
+* filtri
+
+---
+
+# Fase 6
+
+Memoria
+
+Separerei
+
+```
+short memory
+```
+
+(contesto della chat)
+
+da
+
+```
+long memory
+```
+
+(SQLite)
+
+e
+
+```
+semantic memory
+```
+
+(vettoriale)
+
+Sono tre problemi differenti.
+
+---
+
+# Fase 7
+
+Computer Use
+
+Qui la situazione cambia.
+
+Esistono due approcci.
+
+## livello OS
+
+controlli direttamente
+
+```
+mouse
+
+tastiera
+
+clipboard
+
+screenshot
+```
+
+con librerie Python.
+
+## livello browser
+
+usi Playwright.
+
+Per moltissime automazioni è molto più affidabile.
+
+---
+
+# Fase 8
+
+Planner
+
+È la parte che distingue un chatbot da un agente.
+
+```
+Utente
+
+↓
+
+Planner
+
+↓
+
+Serve usare tool?
+
+↓
+
+quale tool?
+
+↓
+
+esegui
+
+↓
+
+serve un altro tool?
+
+↓
+
+risposta
+```
+
+---
+
+# Come organizzerei il repository
+
+```
+backend/
+
+    agent/
+        core.py
+        planner.py
+        dispatcher.py
+
+    llm/
+        ollama.py
+        prompts.py
+
+    memory/
+        chat.py
+        sqlite.py
+
+    rag/
+        loader.py
+        chunker.py
+        embeddings.py
+        retriever.py
+
+    tools/
+        base.py
+        terminal.py
+        filesystem.py
+        browser.py
+        computer.py
+
+    api/
+        routes.py
+
+    config.py
+```
+
+Così ogni cartella rappresenta una responsabilità ben definita.
+
+## La roadmap che seguirei
+
+Se il tuo obiettivo finale è un assistente locale paragonabile a quelli più evoluti, procederei in quest'ordine:
+
+1. **Client Ollama** ben incapsulato (senza più `ask.py`).
+2. **Agent Core** con gestione di messaggi, prompt e stato della conversazione.
+3. **Sistema di tool** (registry + dispatcher), con un primo tool molto semplice per validare il flusso.
+4. **Tool Filesystem** e **Tool Terminal**, limitando inizialmente i comandi consentiti.
+5. **Browser automation** con Playwright.
+6. **RAG** (loader, chunking, embeddings e retrieval).
+7. **Memoria persistente** (cronologia e memoria semantica).
+8. **Planner** capace di concatenare più tool nella stessa richiesta.
+9. **Computer Use**, che richiede un ciclo di osservazione (screenshot) → ragionamento → azione → nuova osservazione.
+
+Questa sequenza ti permette di verificare ogni componente prima di introdurre il successivo. In particolare, il sistema di tool è la base comune su cui si appoggeranno terminale, browser, RAG e Computer Use: se progetti bene quella parte, aggiungere nuove capacità diventerà soprattutto una questione di implementare nuovi moduli anziché modificare il cuore dell'agente.
+
+--------------------------------------------------------------------------------
+
+La Fase 1 è, secondo me, la più importante dell'intero progetto. Se viene progettata bene, aggiungere RAG, Browser, Terminale o ComputerUse diventerà semplicemente aggiungere nuovi plugin.
+
+L'obiettivo della Fase 1 **non è usare davvero dei tool**, ma costruire l'infrastruttura che permetterà all'agente di usarli.
+
+---
+
+# Obiettivo della Fase 1
+
+Alla fine della fase dovresti avere questo flusso:
+
+```
+Utente
+   │
+   ▼
+Agent
+   │
+   ▼
+Planner
+   │
+   ▼
+Tool Dispatcher
+   │
+   ▼
+Tool
+   │
+   ▼
+Risultato
+   │
+   ▼
+LLM
+   │
+   ▼
+Risposta finale
+```
+
+Anche se esiste un solo tool.
+
+Non importa se il tool fa una cosa banale.
+
+---
+
+# Step 1 - Creare la struttura del progetto
+
+Io inizierei con qualcosa di molto semplice.
+
+```
+backend/
+
+    app.py
+
+    llm/
+        ollama.py
+
+    agent/
+        core.py
+        planner.py
+        dispatcher.py
+
+    tools/
+        base.py
+        registry.py
+
+    tests/
+```
+
+Non aggiungerei altro.
+
+Niente RAG.
+
+Niente memoria.
+
+Niente browser.
+
+---
+
+# Step 2 - Incapsulare Ollama
+
+Non dovresti più avere codice che chiama Ollama direttamente.
+
+Invece crea una classe.
+
+```
+OllamaClient
+```
+
+che esponga solo metodi come
+
+```
+chat()
+
+generate()
+
+embeddings()   (servirà dopo)
+```
+
+Tutto il resto del progetto dovrà parlare esclusivamente con questa classe.
+
+Così se un giorno vorrai sostituire Ollama con vLLM o LM Studio non dovrai modificare il resto del codice.
+
+---
+
+# Step 3 - Creare il concetto di Tool
+
+Questa è la parte fondamentale.
+
+Tutti i tool dovranno avere la stessa interfaccia.
+
+Ad esempio:
+
+```
+nome
+
+descrizione
+
+schema degli argomenti
+
+execute()
+```
+
+Non importa ancora come sia implementata.
+
+L'importante è che tutti i tool abbiano la stessa API.
+
+Esempio concettuale
+
+```
+Tool
+
+↓
+
+TerminalTool
+
+↓
+
+BrowserTool
+
+↓
+
+RagTool
+
+↓
+
+FilesystemTool
+```
+
+---
+
+# Step 4 - Tool Registry
+
+Serve un oggetto che conosce tutti i tool disponibili.
+
+Ad esempio
+
+```
+registry
+
+↓
+
+terminal
+
+filesystem
+
+browser
+
+rag
+```
+
+Quando il programma parte registra automaticamente tutti i tool.
+
+Così il Planner non dovrà conoscere i singoli tool.
+
+Gli basta dire
+
+> dammi il tool chiamato "terminal"
+
+---
+
+# Step 5 - Tool Dispatcher
+
+Il dispatcher ha un solo compito.
+
+Riceve
+
+```
+tool
+
++
+
+argomenti
+```
+
+e chiama il tool corretto.
+
+Quindi:
+
+```
+Dispatcher
+
+↓
+
+ToolRegistry
+
+↓
+
+TerminalTool
+
+↓
+
+execute()
+
+↓
+
+risultato
+```
+
+Il dispatcher non deve sapere cosa fa il tool.
+
+---
+
+# Step 6 - Primo Tool di prova
+
+Non partirei dal terminale.
+
+Farei qualcosa di completamente innocuo.
+
+Per esempio
+
+```
+EchoTool
+```
+
+che restituisce semplicemente il testo ricevuto.
+
+Input
+
+```
+ciao
+```
+
+Output
+
+```
+Echo: ciao
+```
+
+Oppure
+
+```
+TimeTool
+```
+
+che restituisce
+
+```
+15:48
+```
+
+Sono perfetti per verificare che tutta la catena funzioni.
+
+---
+
+# Step 7 - Planner
+
+Per ora il Planner può essere semplicissimo.
+
+Può usare una logica fissa.
+
+Ad esempio.
+
+Se il prompt contiene
+
+```
+ora
+```
+
+usa
+
+```
+TimeTool
+```
+
+altrimenti
+
+```
+rispondi direttamente con Gemma
+```
+
+Sembra banale.
+
+Lo è.
+
+Ma ti permette di verificare tutto il flusso senza introdurre il problema della scelta automatica dei tool da parte dell'LLM.
+
+---
+
+# Step 8 - Agent Core
+
+Questa classe coordina tutto.
+
+Riceve
+
+```
+prompt
+```
+
+↓
+
+chiede al planner cosa fare
+
+↓
+
+se serve un tool
+
+↓
+
+chiama il dispatcher
+
+↓
+
+riceve il risultato
+
+↓
+
+lo passa all'LLM
+
+↓
+
+restituisce la risposta
+
+È il "direttore d'orchestra" del sistema.
+
+---
+
+# Step 9 - Test
+
+Prima ancora di scrivere API o interfacce, farei un piccolo script di test.
+
+```
+python test_agent.py
+```
+
+con casi come:
+
+### Test 1
+
+```
+ciao
+```
+
+Atteso
+
+```
+Gemma risponde
+```
+
+---
+
+### Test 2
+
+```
+che ore sono?
+```
+
+Atteso
+
+```
+Planner
+
+↓
+
+TimeTool
+
+↓
+
+Gemma
+
+↓
+
+Risposta
+```
+
+---
+
+### Test 3
+
+```
+echo pippo
+```
+
+Atteso
+
+```
+Echo: pippo
+```
+
+---
+
+# Step 10 - Logging
+
+Aggiungi logging fin da subito. Ti sarà utilissimo quando il sistema crescerà.
+
+Ogni richiesta dovrebbe produrre qualcosa del genere:
+
+```
+[Agent] Nuova richiesta
+
+↓
+
+[Planner] Tool scelto: TimeTool
+
+↓
+
+[Dispatcher] Invocazione TimeTool
+
+↓
+
+[Tool] Restituito: 15:48
+
+↓
+
+[LLM] Generazione risposta
+
+↓
+
+[Agent] Fine richiesta
+```
+
+In questo modo, quando in futuro un BrowserTool o un RAG non funzioneranno come previsto, potrai capire immediatamente in quale punto della catena si è verificato il problema.
+
+---
+
+# Criteri di completamento della Fase 1
+
+Considererei conclusa questa fase quando il sistema soddisfa questi requisiti:
+
+* **Separazione delle responsabilità**: il codice che parla con Ollama, il planner, il dispatcher e i tool sono moduli distinti.
+* **Tool intercambiabili**: aggiungere un nuovo tool richiede solo implementare l'interfaccia comune e registrarlo, senza modificare il core dell'agente.
+* **Flusso completo funzionante**: almeno una richiesta attraversa correttamente Planner → Dispatcher → Tool → LLM → Risposta.
+* **Test automatizzati di base**: almeno alcuni casi verificano il comportamento del planner e del dispatcher.
+* **Logging leggibile**: ogni passaggio principale è tracciato.
+
+Una volta raggiunti questi obiettivi, avrai una base solida su cui costruire le fasi successive. Il **TerminalTool**, il **BrowserTool**, il **RAG** e il **Computer Use** diventeranno semplicemente nuovi moduli che sfruttano la stessa infrastruttura, invece di richiedere modifiche al cuore dell'agente.
+
+--------------------------------------------------------------------------------
+
+Perfetto. Partiamo con la Fase 1.1 - Bootstrap del progetto.
+
+Questa prima fase non introduce ancora logica applicativa. Il suo scopo è creare una base ordinata e stabile.
+
+Obiettivi di questo script
+
+Lo script 01-bootstrap.sh:
+
+è compatibile con POSIX sh (non usa funzionalità specifiche Bash);
+può essere eseguito più volte senza distruggere il lavoro precedente;
+crea la struttura del progetto;
+prepara Git;
+prepara Python packaging moderno;
+prepara configurazione ambiente;
+crea cartelle dedicate ai futuri moduli;
+crea un primo README.
+
+Dopo questa fase il progetto sarà pronto per ricevere il codice vero dell'agente.
+
+Struttura risultante
+local-agent/
+│
+├── app/
+│   ├── __init__.py
+│   ├── agent/
+│   ├── api/
+│   ├── llm/
+│   ├── tools/
+│   ├── memory/
+│   ├── rag/
+│   └── config.py
+│
+├── tests/
+│
+├── scripts/
+│
+├── data/
+│
+├── logs/
+│
+├── .env.example
+├── .gitignore
+├── pyproject.toml
+├── requirements.txt
+├── README.md
+└── 01-bootstrap.sh
+
+./01-bootstrap.sh
+cd local-agent
+pip install -r requirements.txt
+cd ..
+
+--------------------------------------------------------------------------------
+
+Perfetto. Passiamo alla Fase 1.2 - Configurazione centralizzata.
+
+In questa fase introduciamo un principio importante: nessun modulo del progetto deve avere configurazioni scritte direttamente nel codice.
+
+Da ora in poi:
+
+Ollama host;
+modello utilizzato;
+livello di logging;
+ambiente di esecuzione;
+eventuali parametri futuri (database, RAG, browser, ecc.)
+
+saranno gestiti da un unico punto.
+
+Obiettivo della fase
+Alla fine avremo:
+.env
+   |
+   v
+config.py
+   |
+   +---- Agent
+   |
+   +---- Ollama Client
+   |
+   +---- API
+   |
+   +---- Tools
+
+Ogni componente leggerà la configurazione senza sapere da dove arriva.
+
+Nuovi file creati
+
+Aggiungeremo:
+
+app/
+│
+├── config.py
+│
+└── tests/
+    └── test_config.py
+
+e aggiorneremo:
+
+.env.example
+
+Scelte tecniche
+
+Utilizziamo:
+
+python-dotenv per caricare il file .env;
+pydantic-settings per una configurazione tipizzata.
+
+Aggiungiamo quindi una dipendenza.
+
+Questo ci prepara anche per il futuro, perché potremo avere:
+
+settings.OLLAMA_HOST
+settings.RAG_DATABASE
+settings.BROWSER_TIMEOUT
+settings.ALLOWED_COMMANDS
+
+senza passare variabili ovunque.
+Perché questa fase è importante
+
+Da questo momento in poi eviteremo codice del tipo:
+
+client = Client(
+    host="http://ollama:11434"
+)
+
+che crea dipendenze nascoste.
+
+Avremo invece:
+
+settings = get_settings()
+
+client = Client(
+    host=settings.ollama_host
+)
+
+Questo sarà fondamentale quando passeremo a:
+
+container Podman multipli;
+ambienti sviluppo/test/produzione;
+modelli diversi;
+configurazioni RAG;
+autorizzazioni dei tool.
+
+./02-config.sh
+cd local-agent
+pip install -r requirements.txt
+pytest tests/test_config.py
+cd ..
+
+--------------------------------------------------------------------------------
+
+Perfetto. Passiamo alla Fase 1.3 - Logging centralizzato.
+
+Questa fase introduce un componente che diventerà fondamentale quando l'agente inizierà a fare operazioni complesse:
+
+chiamate a Ollama;
+selezione dei tool;
+esecuzione terminale;
+navigazione browser;
+pipeline RAG;
+errori nei workflow.
+
+Un agente senza logging è molto difficile da diagnosticare. Vogliamo poter ricostruire una richiesta completa leggendo i log.
+
+Obiettivo della fase
+
+Alla fine avremo:
+
+app/
+│
+├── logging.py
+│
+└── tests/
+    └── test_logging.py
+
+e tutti i componenti futuri useranno:
+
+from app.logging import get_logger
+
+logger = get_logger(__name__)
+
+invece di creare logger autonomi.
+
+Design scelto
+
+Utilizziamo il modulo standard Python:
+
+logging
+
+senza aggiungere dipendenze.
+
+Avremo:
+
+formato uniforme;
+livello configurabile tramite .env;
+output su console;
+output su file.
+
+Esempio:
+
+2026-07-28 14:30:10 | INFO | agent.core | Agent inizializzato
+
+2026-07-28 14:30:12 | DEBUG | llm.client | Richiesta Ollama inviata
+
+Piccolo miglioramento consigliato prima di proseguire
+
+Prima della fase Ollama, ti suggerisco di fare una verifica:
+
+cat .gitignore
+
+e assicurarti che:
+
+logs/*
+
+sia presente.
+
+I log non devono finire nel repository Git.
+
+Stato dell'architettura dopo questa fase
+
+Ora abbiamo:
+
+.env
+ |
+ v
+config.py
+ |
+ v
+logging.py
+ |
+ +----------------+
+ |                |
+Agent futuro   Tool futuro
+
+Le prossime componenti potranno quindi nascere già seguendo lo stesso schema:
+
+from app.config import get_settings
+from app.logging import get_logger
+
+./03-logging.sh
+cd local-agent
+pip install -r requirements.txt
+python tests/test_logging.py
+cd ..
+
+--------------------------------------------------------------------------------
+
+Fase 1.4 - Ollama Client
+
+Questa fase è molto importante perché separa completamente il nostro agente dal backend LLM.
+
+Attualmente hai già un pod Ollama funzionante con Gemma 4. Probabilmente il tuo ask.py fa qualcosa di simile:
+
+from ollama import Client
+
+client = Client(
+    host="http://ollama:11434"
+)
+
+client.chat(...)
+
+Da ora questo codice sparisce.
+
+Tutto passerà attraverso:
+
+Agent
+  |
+  v
+OllamaClient
+  |
+  v
+Ollama API
+  |
+  v
+Gemma 4
+
+Obiettivi della fase
+
+Creiamo:
+
+app/
+│
+└── llm/
+    │
+    ├── __init__.py
+    └── client.py
+
+
+tests/
+│
+└── test_ollama.py
+
+Il client dovrà:
+
+leggere configurazione da config.py;
+usare logging centralizzato;
+gestire errori di connessione;
+astrarre Ollama dal resto dell'applicazione.
+
+Design del client
+
+L'interfaccia iniziale sarà:
+
+client = OllamaClient()
+
+response = client.chat(
+    "ciao"
+)
+
+Il resto del progetto non saprà mai che sotto c'è Ollama.
+
+Prima del test
+
+Assicurati che il pod Ollama sia raggiungibile dal container Python.
+
+Dal tuo container Python puoi verificare:
+
+curl http://ollama.ai:11434/api/tags
+
+./04-ollama.sh
+cd local-agent
+pip install -r requirements.txt
+pytest tests/test_ollama.py
+cd ..
+
+--------------------------------------------------------------------------------
+
+Perfetto. Abbiamo completato i primi quattro mattoni fondamentali:
+
+✓ Bootstrap progetto
+✓ Configurazione centralizzata
+✓ Logging centralizzato
+✓ Client Ollama
+
+Ora possiamo iniziare a costruire il vero comportamento da agente.
+
+Passiamo alla:
+
+Fase 1.5 - Tool Engine
+
+Questa è una delle fasi più importanti dell'intero progetto.
+
+Da qui in avanti il sistema smetterà di essere un semplice chatbot e inizierà ad avere una struttura estendibile.
+
+L'obiettivo è creare un meccanismo generico dove un componente può dire:
+
+"voglio eseguire uno strumento chiamato X con questi parametri"
+
+senza conoscere l'implementazione dello strumento.
+
+Architettura introdotta
+
+Dopo questa fase avremo:
+
+                Agent
+                  |
+                  v
+             Dispatcher
+                  |
+                  v
+            Tool Registry
+                  |
+        +---------+---------+
+        |                   |
+        v                   v
+   TimeTool            Futuri Tool
+
+                         |
+        +----------------+----------------+
+        |                |                |
+        v                v                v
+    Terminal          Browser           RAG
+
+Il vantaggio è che il core dell'agente non cambierà quando aggiungeremo:
+
+terminale;
+filesystem;
+browser;
+database;
+RAG;
+Computer Use.
+
+Componenti della fase
+
+Creeremo:
+
+app/
+│
+└── tools/
+    │
+    ├── base.py
+    ├── registry.py
+    └── dispatcher.py
+
+
+tests/
+│
+└── test_tools.py
+
+Design
+Tool base
+
+Ogni strumento dovrà avere:
+
+nome;
+descrizione;
+esecuzione.
+
+Esempio:
+
+class Tool:
+
+    name = "time"
+
+    description = "Restituisce l'ora"
+
+    execute()
+
+Registry
+
+Il registry mantiene gli strumenti disponibili:
+
+Registry
+
+time
+terminal
+browser
+rag
+
+Esempio:
+
+registry.get("time")
+
+restituisce:
+
+TimeTool
+Dispatcher
+
+Il dispatcher esegue il tool.
+
+Riceve:
+
+tool="time"
+
+e:
+
+{}
+
+restituisce:
+
+14:35:22
+Primo tool
+
+Aggiungiamo un tool di test:
+
+EchoTool
+
+Non fa nulla di pericoloso.
+
+Input:
+
+ciao
+
+Output:
+
+Echo: ciao
+
+Serve solo per verificare tutta la catena.
+
+Verifica architetturale
+
+Dopo questa fase avremo il primo vero punto di estensione:
+
+registry.register(
+    MyNewTool()
+)
+
+e il sistema potrà utilizzarlo senza modificare:
+
+Ollama;
+configurazione;
+logging;
+API future;
+Agent Core.
+
+Nota per il futuro
+
+Quando arriveremo al TerminalTool, non lo implementeremo direttamente nel core.
+
+Diventerà semplicemente:
+
+app/tools/terminal.py
+
+con:
+
+class TerminalTool(Tool):
+
+e verrà registrato nello stesso modo.
+
+La stessa cosa varrà per:
+
+BrowserTool
+RagTool
+ComputerUseTool
+
+Esegui lo script, verifica che:
+
+./05-tools.sh
+cd local-agent
+pip install -r requirements.txt
+pytest tests/test_tools.py
+cd ..
+
+--------------------------------------------------------------------------------
+
+Perfetto. Passiamo alla Fase 1.6 - Planner.
+
+Questa fase introduce il primo livello di "ragionamento operativo" dell'agente.
+
+Fino ad ora abbiamo costruito:
+
+Configurazione
+      |
+      v
+Logging
+      |
+      v
+Ollama Client
+      |
+      v
+Tool Engine
+
+Ora aggiungiamo un componente che decide:
+
+"Questa richiesta richiede un tool oppure posso rispondere direttamente?"
+
+Obiettivo della fase
+Alla fine avremo:
+
+app/
+│
+└── agent/
+    │
+    ├── __init__.py
+    └── planner.py
+
+
+tests/
+│
+└── test_planner.py
+Nota architetturale importante
+Il Planner che realizziamo ora sarà volutamente semplice.
+
+Non useremo ancora l'LLM per decidere.
+
+Perché?
+
+Perché vogliamo validare prima la struttura:
+
+Input utente
+      |
+      v
+Planner
+      |
+      +---- tool richiesto
+      |
+      +---- nessun tool
+
+Solo successivamente sostituiremo il planner statico con uno basato su Gemma.
+La progressione sarà:
+
+Planner statico
+       |
+       v
+Planner con regole
+       |
+       v
+Planner LLM
+       |
+       v
+Planner multi-step
+
+Decisione del Planner
+Per ora gestirà un solo caso:
+
+Se l'utente chiede di fare un echo:
+
+echo ciao
+
+oppure:
+
+ripeti ciao
+
+allora:
+
+{
+ "tool": "echo",
+ "arguments": {
+     "text": "ciao"
+ }
+}
+
+Altrimenti:
+{
+ "tool": null
+}
+
+Perché restituiamo un dizionario?
+
+Perché in futuro il Planner dovrà produrre qualcosa di più complesso:
+
+{
+ "tool": "browser",
+ "arguments": {
+    "url": "https://..."
+ },
+ "reason": "devo leggere una pagina"
+}
+
+Quindi definiamo subito una struttura estendibile.
+
+Stato dell'architettura dopo questa fase
+
+Ora abbiamo:
+
+              Richiesta utente
+                    |
+                    v
+                Planner
+                    |
+          +---------+---------+
+          |                   |
+          v                   v
+       Tool                Ollama
+    (Dispatcher)        (risposta diretta)
+
+Il Planner però ancora non esegue nulla: decide solamente.
+
+Questa separazione è intenzionale.
+
+Perché separare Planner e Dispatcher?
+
+Perché più avanti potremo avere:
+
+Planner
+
+"devo leggere un PDF"
+
+        |
+        v
+
+Dispatcher
+
+usa:
+    - filesystem tool
+    - rag tool
+    - llm
+
+oppure:
+
+Planner
+
+"prenota un appuntamento"
+
+        |
+        v
+
+Workflow Engine
+
+1. browser
+2. login
+3. compilazione
+4. conferma
+
+Il Planner decide cosa fare.
+Il Dispatcher decide come farlo.
+
+./06-planner.sh
+cd local-agent
+pip install -r requirements.txt
+pytest tests/test_planner.py
+cd ..
+
+--------------------------------------------------------------------------------
+
+Perfetto. Passiamo alla Fase 1.7 - Agent Core.
+
+Questa è una milestone importante: fino ad ora abbiamo creato componenti isolati e testabili. Ora li colleghiamo per creare il primo ciclo completo dell'agente.
+
+Dopo questa fase avremo finalmente questo flusso:
+
+                 Utente
+                   |
+                   v
+              Agent Core
+                   |
+          +--------+--------+
+          |                 |
+          v                 v
+       Planner          OllamaClient
+          |
+          v
+     ToolDispatcher
+          |
+          v
+       Tool Engine
+
+L'Agent Core sarà il coordinatore. Non dovrà sapere come funziona Ollama e non dovrà sapere come funziona un tool specifico.
+
+Dovrà solo orchestrare.
+
+Obiettivo della fase
+
+Creiamo:
+
+app/
+│
+└── agent/
+    │
+    ├── core.py
+    └── __init__.py
+
+
+tests/
+│
+└── test_agent.py
+Logica dell'Agent Core
+
+Il ciclo sarà:
+
+Riceve una richiesta.
+Chiede al Planner cosa fare.
+Se il Planner indica un tool:
+esegue il tool tramite Dispatcher;
+manda il risultato a Ollama;
+restituisce la risposta finale.
+Se non serve un tool:
+manda direttamente la richiesta a Ollama.
+
+Schema:
+
+Input:
+
+"echo ciao"
+
+
+        |
+        v
+
+Planner
+
+
+        |
+        v
+
+Tool echo
+
+
+        |
+        v
+
+Risultato:
+
+"Echo: ciao"
+
+
+        |
+        v
+
+Gemma
+
+
+        |
+        v
+
+Risposta utente
+Nota progettuale
+
+In questa fase non introduciamo ancora:
+
+memoria conversazionale;
+streaming;
+gestione sessioni;
+multi-tool;
+retry;
+code asincrone.
+
+Sono responsabilità successive.
+
+L'obiettivo è avere il primo agente funzionante end-to-end.
+
+Stato dell'architettura dopo questa fase
+
+A questo punto hai il primo agente locale:
+
+                User
+                 |
+                 v
+             Agent Core
+                 |
+        +--------+--------+
+        |                 |
+        v                 v
+     Planner          Ollama
+        |
+        v
+ Dispatcher
+        |
+        v
+    Tool Registry
+        |
+        v
+      Tools
+
+Questa è la base sulla quale costruiremo tutto il resto.
+
+Le prossime fasi saranno:
+
+1.8 FastAPI → esporre l'agente come servizio;
+1.9 TimeTool → primo tool reale;
+1.10 Test suite → consolidare la base.
+
+./07-agent.sh
+cd local-agent
+pip install -r requirements.txt
+pytest tests/test_agent.py
+cd ..
+
+--------------------------------------------------------------------------------
+
+Perfetto. Passiamo alla Fase 1.8 - API FastAPI.
+
+Questa fase cambia leggermente il modo in cui utilizzeremo l'agente.
+
+Fino ad ora l'Agent Core veniva chiamato direttamente da uno script Python:
+
+test_agent.py
+      |
+      v
+  Agent.ask()
+
+Da ora introduciamo un livello API:
+
+              Client
+                |
+                v
+          FastAPI Server
+                |
+                v
+            Agent Core
+                |
+        +-------+-------+
+        |               |
+        v               v
+     Tools           Ollama
+
+Questo ci permetterà in futuro di collegare:
+
+Open WebUI;
+applicazioni web;
+automazioni;
+script esterni;
+altri container Podman;
+servizi locali.
+Obiettivo della fase
+
+Creiamo:
+
+app/
+│
+└── api/
+    │
+    ├── server.py
+    └── models.py
+
+
+tests/
+│
+└── test_api.py
+
+Avremo un endpoint:
+
+POST /chat
+
+con richiesta:
+
+{
+    "message": "echo ciao"
+}
+
+e risposta:
+
+{
+    "response": "..."
+}
+Scelte architetturali
+
+Separiamo:
+
+Modello API
+
+Gestisce:
+
+input;
+output;
+validazione.
+Server
+
+Gestisce:
+
+HTTP;
+routing;
+istanza Agent.
+
+L'API non deve sapere come funziona il Planner o Ollama.
+
+Esecuzione
+
+Dalla root:
+
+chmod +x 08-api.sh
+
+./08-api.sh
+Test
+
+Esegui:
+
+pytest tests/test_api.py
+
+Risultato:
+
+1 passed
+Avvio manuale
+
+Avvia il server:
+
+uvicorn app.api.server:app \
+    --host 0.0.0.0 \
+    --port 8000
+
+Dovresti vedere:
+
+Uvicorn running on http://0.0.0.0:8000
+Test HTTP
+
+Da un altro terminale:
+
+curl http://localhost:8000/health
+
+Risultato:
+
+{
+    "status":"ok"
+}
+
+Poi:
+
+curl \
+-X POST \
+http://localhost:8000/chat \
+-H "Content-Type: application/json" \
+-d '{"message":"echo ciao"}'
+
+Risposta attesa:
+
+{
+    "response":"..."
+}
+
+La risposta sarà generata da Gemma perché il flusso ora è:
+
+HTTP
+ |
+ v
+FastAPI
+ |
+ v
+Agent
+ |
+ +--> Planner
+ |
+ +--> Tool
+ |
+ +--> Ollama
+ |
+ v
+JSON Response
+Nota importante per il tuo ambiente Podman
+
+Dato che hai già:
+
+Open WebUI in un pod;
+Ollama in un pod;
+Python in un container;
+
+questa API diventerà probabilmente il punto di integrazione tra Open WebUI e il tuo agente.
+
+Più avanti potremo:
+
+esporre questa API sulla rete Podman;
+creare un endpoint compatibile OpenAI (/v1/chat/completions);
+collegare Open WebUI direttamente al tuo Agent Core invece che a Ollama.
+
+Quando:
+
+lo script è eseguito;
+pytest tests/test_api.py passa;
+il server risponde a /health;
+
+scrivimi:
+
+avanti
+
+e passeremo alla Fase 1.9 - Primo Tool reale (TimeTool), dove aggiungeremo un tool indipendente dal test EchoTool e prepareremo la base per TerminalTool, BrowserTool e RAG.
+
+--------------------------------------------------------------------------------
+Perfetto. Passiamo alla Fase 1.9 - Primo Tool reale: TimeTool.
+
+Finora il sistema ha un EchoTool che serve solo a verificare il meccanismo. Ora aggiungiamo un vero strumento che fa un'operazione utile e introduce alcuni concetti che useremo per i tool futuri.
+
+Il TimeTool sarà il modello di riferimento per:
+
+TerminalTool;
+FilesystemTool;
+BrowserTool;
+RAGTool;
+ComputerUseTool.
+Obiettivo della fase
+
+Aggiungiamo:
+
+app/
+│
+└── tools/
+    │
+    ├── time.py
+    └── registry.py  (aggiornato)
+
+
+tests/
+│
+└── test_time_tool.py
+Nuovo flusso
+
+Dopo questa fase:
+
+Utente
+
+"che ora è?"
+
+        |
+        v
+
+Planner
+
+        |
+        v
+
+TimeTool
+
+        |
+        v
+
+Ora corrente
+
+        |
+        v
+
+Gemma
+
+        |
+        v
+
+Risposta naturale
+Una modifica importante al Planner
+
+Attualmente il Planner riconosce solo:
+
+echo qualcosa
+
+Dobbiamo estenderlo per riconoscere:
+
+che ora è
+
+oppure:
+
+dimmi l'ora
+
+Questa è l'ultima volta che faremo un planner basato su stringhe.
+
+Nella fase successiva, quando consolideremo i test, inizieremo a preparare la sostituzione con un planner LLM.
+
+Esecuzione
+
+Dalla root del progetto:
+
+chmod +x 09-timetool.sh
+
+./09-timetool.sh
+Test
+
+Esegui:
+
+pytest tests/test_time_tool.py
+
+Risultato atteso:
+
+2 passed
+Test completo dell'agente
+
+Ora prova anche:
+
+pytest tests/test_agent.py
+
+e poi manualmente:
+
+python tests/test_agent.py
+
+oppure tramite API:
+
+curl \
+-X POST \
+http://localhost:8000/chat \
+-H "Content-Type: application/json" \
+-d '{"message":"che ora è?"}'
+Stato dell'architettura dopo questa fase
+
+Ora il sistema è realmente modulare:
+
+                 Agent
+                   |
+                   v
+               Planner
+                   |
+        +----------+----------+
+        |                     |
+        v                     v
+     EchoTool              TimeTool
+        |
+        v
+  ToolDispatcher
+        |
+        v
+     Ollama
+
+La cosa importante è che per aggiungere un nuovo strumento non dovremo modificare l'Agent.
+
+Per esempio il futuro:
+
+TerminalTool
+
+sarà semplicemente:
+
+app/tools/terminal.py
+
+con:
+
+class TerminalTool(Tool):
+
+e una registrazione nel registry.
+
+Quando:
+
+pytest tests/test_time_tool.py passa;
+hai verificato che "che ora è?" attraversa Planner → Tool → Ollama;
+
+scrivimi:
+
+avanti
+
+e procederemo con la Fase 1.10 - Consolidamento test e qualità del progetto, dove metteremo ordine prima di aggiungere strumenti più potenti come TerminalTool, Browser e RAG.
+
+--------------------------------------------------------------------------------
+
+Perfetto. Passiamo alla Fase 1.10 - Consolidamento test e qualità del progetto.
+
+Questa fase è diversa dalle precedenti: non aggiungiamo ancora nuove capacità all'agente. Facciamo una fase di stabilizzazione prima di introdurre strumenti più delicati come:
+
+TerminalTool;
+FilesystemTool;
+BrowserTool;
+RAG;
+ComputerUse.
+
+È un passaggio importante perché da questo momento in poi il sistema inizierà ad avere componenti con effetti reali sul mondo esterno.
+
+Obiettivo della fase
+
+Alla fine avremo:
+
+local-agent/
+
+tests/
+│
+├── test_config.py
+├── test_logging.py
+├── test_ollama.py
+├── test_tools.py
+├── test_planner.py
+├── test_agent.py
+├── test_api.py
+└── test_quality.py
+
+e aggiungiamo:
+
+un controllo che tutti i moduli principali siano importabili;
+un test dell'elenco completo dei tool;
+una verifica che il flusso base agente funzioni;
+un comando unico per lanciare tutti i test.
+Perché farlo ora
+
+Finora abbiamo verificato i componenti singolarmente:
+
+config       ✓
+logging      ✓
+ollama       ✓
+tools        ✓
+planner      ✓
+agent        ✓
+api          ✓
+
+Ma non abbiamo ancora una verifica globale.
+
+Da ora in avanti vogliamo poter fare:
+
+pytest
+
+e sapere immediatamente se una nuova funzionalità rompe qualcosa.
+
+Esecuzione
+
+Dalla root:
+
+chmod +x 10-tests.sh
+
+./10-tests.sh
+
+Poi:
+
+./scripts/test.sh
+Risultato atteso
+
+Dovresti vedere qualcosa simile:
+
+============================= test session starts =============================
+
+tests/test_agent.py ........
+tests/test_api.py ..........
+tests/test_config.py .......
+tests/test_logging.py ......
+tests/test_ollama.py .......
+tests/test_planner.py ......
+tests/test_quality.py ......
+tests/test_time_tool.py ....
+tests/test_tools.py ........
+
+============================= XX passed =============================
+Piccola verifica consigliata
+
+Controlla lo stato Git:
+
+git status
+
+Dovresti vedere nuovi file:
+
+10-tests.sh
+scripts/test.sh
+tests/test_quality.py
+
+A questo punto è consigliabile creare un checkpoint:
+
+git add .
+
+git commit -m "Add project quality checks and test suite"
+Stato dell'architettura dopo Fase 1.10
+
+Abbiamo raggiunto il primo traguardo:
+
+                  API
+                   |
+                   v
+                Agent
+                   |
+          +--------+--------+
+          |                 |
+          v                 v
+       Planner          Ollama
+          |
+          v
+    Tool Dispatcher
+          |
+    +-----+-----+
+    |           |
+    v           v
+ EchoTool    TimeTool
+
+con:
+
+configurazione esterna;
+logging uniforme;
+test automatici;
+struttura modulare.
+Prossimo passo
+
+Dalla prossima fase iniziamo ad aggiungere capacità più vicine a un vero agente.
+
+La Fase 2.1 - TerminalTool sicuro introdurrà:
+
+esecuzione comandi dal sistema;
+whitelist dei comandi permessi;
+timeout;
+cattura stdout/stderr;
+protezioni iniziali.
+
+Non faremo subito un terminale libero: costruiremo prima una base controllata, perché un agente locale con accesso alla shell è una componente potente e va progettata con attenzione.
+
+Quando hai completato i test scrivimi:
+
+avanti
+
+--------------------------------------------------------------------------------

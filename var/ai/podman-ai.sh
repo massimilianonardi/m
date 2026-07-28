@@ -113,6 +113,8 @@ podman container restart python-container
 podman container exec -it ollama-container ollama pull gemma4
 
 # ai test ----------------------------------------------------------------------
+podman container exec -it python-container bash
+
 cat << 'EOF' > ./config.py
 OLLAMA_URL = "http://ollama.ai:11434"
 MODEL = "gemma4"
