@@ -1,1 +1,1 @@
-chat ai bootstrap to act as a shell script
+chat ai bootstrap RumiAI from scratch
