@@ -1,1 +1,1 @@
-chat ai bootstrap RumiAI from scratch
+ai project from scratch
