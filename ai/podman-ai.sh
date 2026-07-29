@@ -84,7 +84,9 @@ podman container create --name ollama-container --pod ollama-pod \
   -v ${LOCAL_CA_CERT}:/etc/ssl/certs/CA_Aziendale.crt:ro \
   ollama/ollama
 podman container create --name webui-container --pod webui-pod \
-  -e OLLAMA_BASE_URL=http://ollama.ai:11434 \
+  -e OPENAI_API_BASE_URL=http://core.ai:2000/v1 \
+  -e OPENAI_API_KEY=core_ai_api_key_dummy \
+  -e ENABLE_OLLAMA_API=false \
   -v webui-vol:/app/backend/data \
   --restart always \
   ghcr.io/open-webui/open-webui:main
@@ -146,99 +148,41 @@ pip install fastapi uvicorn requests
 cd /app
 
 cat << 'EOF' > ./core-ai.py
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
-from ollama import Client
-
-app = FastAPI()
-
-# Client verso Ollama
-client = Client(host="http://ollama.ai:11434")
-
-
-@app.post("/v1/chat/completions")
-async def chat(request: Request):
-    body = await request.json()
-
-    response = client.chat(
-        model=body["model"],
-        messages=body["messages"]
-    )
-
-    return JSONResponse(content=response)
-
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host="0.0.0.0", port=2000)
-
-EOF
-
-cat << 'EOF' > ./core-ai.py
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
-from ollama import Client
-
-app = FastAPI()
-
-client = Client(host="http://ollama.ai:11434")
-
-@app.post("/v1/chat/completions")
-async def chat(request: Request):
-    try:
-        body = await request.json()
-
-        print(body)
-
-        response = client.chat(
-            model=body["model"],
-            messages=body["messages"]
-        )
-
-        print(response)
-
-        # return JSONResponse(content=response)
-        # return JSONResponse(content=response.model_dump())
-        return response.model_dump()
-
-    except Exception as e:
-        print(e)
-        raise
-
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host="0.0.0.0", port=2000)
-
-EOF
-
-cat << 'EOF' > ./core-ai.py
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 import requests
 
 app = FastAPI()
 
 OLLAMA_URL = "http://ollama.ai:11434"
 
+@app.api_route("/v1/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE"])
+async def proxy(path: str, request: Request):
+    url = f"{OLLAMA_URL}/v1/{path}"
 
-@app.post("/v1/chat/completions")
-async def chat(request: Request):
-    body = await request.json()
+    headers = {
+        k: v
+        for k, v in request.headers.items()
+        if k.lower() not in ("host", "content-length")
+    }
 
-    response = requests.post(
-        f"{OLLAMA_URL}/v1/chat/completions",
-        json=body,
-        timeout=300
+    body = await request.body()
+
+    response = requests.request(
+        method=request.method,
+        url=url,
+        headers=headers,
+        data=body,
+        timeout=300,
     )
 
-    response.raise_for_status()
-
-    return response.json()
-
+    return Response(
+        content=response.content,
+        status_code=response.status_code,
+        media_type=response.headers.get("content-type", "application/json"),
+    )
 
 if __name__ == "__main__":
     import uvicorn
-
     uvicorn.run(app, host="0.0.0.0", port=2000)
 
 EOF
@@ -249,33 +193,6 @@ podman container exec -it core-ai-container python /app/core-ai.py
 
 # terminal gateway
 podman container exec -it terminal-gateway-container bash
-
-curl http://ollama.ai:11434/api/tags # ollama
-curl -X POST http://ollama.ai:11434/api/chat \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model":"gemma4",
-    "messages":[
-      {
-        "role":"user",
-        "content":"Ciao, rispondi con una sola parola."
-      }
-    ],
-    "stream":false
-  }'
-
-curl http://core.ai:2000/openapi.json # core-ai fastapi
-curl -X POST http://core.ai:2000/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "gemma4",
-    "messages": [
-      {
-        "role": "user",
-        "content": "Ciao! Rispondi con una sola parola."
-      }
-    ]
-  }'
 
 pip install requests
 cd /app
@@ -329,7 +246,6 @@ def ask(prompt: str) -> str:
 
     data = response.json()
 
-    # return data["message"]["content"]
     return data["choices"][0]["message"]["content"]
 
 EOF
@@ -352,6 +268,8 @@ EOF
 exit
 
 podman container exec -it terminal-gateway-container python /app/terminal_gateway_client.py
+
+
 
 podman container exec -it python-container pip install fastapi uvicorn ollama
 podman container exec -it python-container pip install lancedb pyarrow pandas sentence-transformers

@@ -9,6 +9,33 @@ export PODMAN_RUN_ROOT="${PODMAN_HOME}/run/user/${USER}/containers"
 mkdir -p "$AI_HOME"
 cd "$AI_HOME"
 
+curl http://ollama.ai:11434/api/tags # ollama
+curl -X POST http://ollama.ai:11434/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model":"gemma4",
+    "messages":[
+      {
+        "role":"user",
+        "content":"Ciao, rispondi con una sola parola."
+      }
+    ],
+    "stream":false
+  }'
+
+curl http://core.ai:2000/openapi.json # core-ai fastapi
+curl -X POST http://core.ai:2000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gemma4",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Ciao! Rispondi con una sola parola."
+      }
+    ]
+  }'
+
 # podman install and config ----------------------------------------------------
 sudo apt install podman
 mkdir -p "$PODMAN_HOME"

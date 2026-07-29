@@ -235,5 +235,39 @@ ricevere la risposta;
 stamparla sul terminale;
 gestire lo streaming della risposta.
 Il Gateway non salva nulla su disco.
-CORE_AI_URL = "http://ollama.ai:11434"
-MODEL = "gemma4"
+
+Un principio metodologico
+Quando un'interfaccia tra due moduli è stata validata sperimentalmente e soddisfa i requisiti architetturali, essa viene considerata stabile. Lo sviluppo successivo si concentra esclusivamente all'interno dei moduli, senza modificare il contratto tra essi.
+
+Regola di raffinamento architetturale
+Ogni livello dell'architettura definisce moduli e contratti astratti. Una volta validati, tali contratti diventano stabili e i livelli successivi si limitano a dettagliare l'interno dei moduli, senza modificarne le interfacce pubbliche. Lo sviluppo può quindi procedere in parallelo sui diversi moduli, mantenendo il sistema coerente e riducendo la complessità complessiva.
+
+Principio generale di sviluppo architetturale
+I componenti appartenenti allo stesso livello architetturale non comunicano mai direttamente tra loro. Tutta la comunicazione avviene esclusivamente attraverso il livello immediatamente superiore, che agisce come coordinatore, punto di osservazione e garante del contratto.
+
+Core IA come Kernel
+possiede solo le seguenti responsabilità:
+- lifecycle
+- dispatch
+- context
+- event log
+
+In realtà non stiamo definendo un sistema di plugin, ma un sistema di Capability-Based Architecture.
+
+quattro livelli:
+Richiesta
+Kernel-Mod
+Capability
+Implementazione
+
+Il Kernel diventa un resolver:
+Kernel
+execute(plugin)
+plugin restituisce capability
+Kernel
+PluginManager.resolve(capability)
+execute(plugin)
+
+Il Plugin Manager
+Non registra moduli.
+Registra implementazioni di capability.
